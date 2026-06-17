@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Inicio
+{% endblock %}
+
+{% block content %}
+
+    <section class="hero-inicio">
+        <div class="hero-texto">
+            <h1>
+                Cuidamos y fortalecemos tus <span>colmenas</span>
+            </h1>
+
+            <p>
+                Servicios de manejo, traslado, evaluación y fortalecimiento apícola.
+            </p>
+
+            <a href="{% url 'Contactanos' %}" class="btn-hero">
+                Contáctanos
+            </a>
+        </div>
+    </section>
+    
+{% endblock %}

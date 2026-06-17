@@ -1,0 +1,483 @@
+/* =========================
+CONFIGURACIÓN GENERAL
+========================= */
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body{
+    width: 100%;
+    min-height: 100%;
+}
+
+body{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "Montserrat Alternates", sans-serif;
+    color: #111;
+    overflow-x: hidden;
+}
+
+/* =========================
+HEADER
+========================= */
+
+.header-elegante{
+    width: 100%;
+    height: 90px;
+    padding: 0 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F6DE87;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all .4s ease;
+}
+
+.header-elegante.scrolled{
+    width: 85%;
+    height: 70px;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 50px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.15);
+    padding: 0 35px;
+}
+
+/* =========================
+LOGO
+========================= */
+
+.logo-header{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-header img{
+    width: 55px;
+}
+
+.logo-header span{
+    font-size: 22px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: 1px;
+}
+
+/* =========================
+MENÚ
+========================= */
+
+.menu-header{
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+.menu-header a{
+    color: #111;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    transition: .3s ease;
+}
+
+.menu-header a:hover{
+    color: #f0a000;
+}
+
+.btn-login{
+    background: #111;
+    color: white !important;
+    padding: 12px 25px;
+    border-radius: 30px;
+}
+
+.btn-login:hover{
+    background: #f0a000;
+    color: #111 !important;
+}
+
+/* =========================
+CONTENIDO PRINCIPAL
+========================= */
+
+.contenido-principal{
+    flex: 1;
+    margin-top: 90px;
+    padding: 0;
+}
+
+/* =========================
+HERO INICIO
+========================= */
+
+.hero-inicio{
+    width: 100%;
+    min-height: calc(100vh - 90px);
+    margin: 0;
+    padding-left: 70px;
+
+    background-image: url("../img/1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+}
+
+.hero-texto{
+    max-width: 530px;
+    text-align: center;
+}
+
+.hero-texto h1{
+    font-size: 42px;
+    line-height: 1.15;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 25px;
+}
+
+.hero-texto h1 span{
+    color: #f0a000;
+}
+
+.hero-texto p{
+    font-size: 16px;
+    line-height: 1.5;
+    color: #111;
+    margin-bottom: 35px;
+}
+
+.btn-hero{
+    display: inline-block;
+    background: rgba(246, 190, 80, .9);
+    color: #111;
+    padding: 15px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 600;
+    transition: .3s ease;
+}
+
+.btn-hero:hover{
+    background: #f0a000;
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* =========================
+FOOTER
+========================= */
+
+.footer{
+    width: 100%;
+    background: linear-gradient(
+        to bottom,
+        #ffffff,
+        #f7fbf8,
+        #edf6f0,
+        #dff0e4,
+        #d8f8e6
+    );
+    padding: 30px 60px;
+}
+
+.footer-col h3{
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.footer-col p,
+.footer-col a{
+    display: block;
+    font-size: 13px;
+    margin: 8px 0;
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-col p{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-col p i{
+    font-size: 20px;
+    min-width: 25px;
+}
+
+.footer-col a{
+    transition: .3s ease;
+}
+
+.footer-col a:hover{
+    color: #2CAE76;
+    transform: translateX(6px);
+}
+
+.ubicacion img{
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.footer-abajo{
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.logo-footer{
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+}
+
+.logo-sena{
+    width: 60px;
+}
+
+.footer-col img,
+.logo-footer,
+.logo-sena{
+    transition: .3s ease;
+}
+
+.footer-col img:hover,
+.logo-footer:hover,
+.logo-sena:hover{
+    transform: scale(1.1);
+}
+
+/* =========================
+TABLET
+========================= */
+
+@media (max-width: 992px){
+
+    .header-elegante{
+        padding: 0 30px;
+    }
+
+    .menu-header{
+        gap: 20px;
+    }
+
+    .menu-header a{
+        font-size: 14px;
+    }
+
+    .logo-header span{
+        font-size: 19px;
+    }
+
+    .hero-inicio{
+        padding-left: 40px;
+    }
+
+    .hero-texto{
+        max-width: 460px;
+    }
+
+    .hero-texto h1{
+        font-size: 34px;
+    }
+}
+
+/* =========================
+MÓVIL
+========================= */
+
+@media (max-width: 768px){
+
+    .header-elegante{
+        height: auto;
+        min-height: 140px;
+        padding: 15px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .header-elegante.scrolled{
+        width: 95%;
+        height: auto;
+        min-height: 125px;
+        padding: 15px;
+        border-radius: 25px;
+    }
+
+    .menu-header{
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .menu-header a{
+        font-size: 13px;
+    }
+
+    .btn-login{
+        padding: 9px 18px;
+    }
+
+    .contenido-principal{
+        margin-top: 140px;
+    }
+
+    .hero-inicio{
+        min-height: calc(100vh - 140px);
+        padding: 0 25px;
+        justify-content: center;
+        background-position: center;
+    }
+
+    .hero-texto{
+        max-width: 100%;
+    }
+
+    .hero-texto h1{
+        font-size: 30px;
+    }
+
+    .hero-texto p{
+        font-size: 14px;
+    }
+
+    .footer{
+        padding: 25px;
+    }
+
+    .footer-col{
+        text-align: center;
+    }
+
+    .footer-col p{
+        justify-content: center;
+    }
+}
+
+/* =========================
+CELULARES PEQUEÑOS
+========================= */
+
+@media (max-width: 480px){
+
+    .header-elegante{
+        min-height: 160px;
+    }
+
+    .contenido-principal{
+        margin-top: 160px;
+    }
+
+    .hero-inicio{
+        min-height: calc(100vh - 160px);
+        padding: 0 18px;
+    }
+
+    .logo-header img{
+        width: 45px;
+    }
+
+    .logo-header span{
+        font-size: 16px;
+    }
+
+    .menu-header{
+        gap: 10px;
+    }
+
+    .menu-header a{
+        font-size: 12px;
+    }
+
+    .hero-texto h1{
+        font-size: 26px;
+    }
+
+    .hero-texto p{
+        font-size: 13px;
+    }
+
+    .btn-hero{
+        padding: 12px 25px;
+        font-size: 15px;
+    }
+
+    .footer-abajo{
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px){
+
+    .hero-inicio{
+        align-items: flex-start;
+        padding-top: 90px;
+        padding-left: 20px;
+        padding-right: 20px;
+        background-position: center;
+    }
+
+    .hero-texto{
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .hero-texto h1{
+        font-size: 32px;
+        line-height: 1.15;
+        margin-bottom: 25px;
+    }
+
+    .hero-texto p{
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 35px;
+    }
+
+    .btn-hero{
+        font-size: 16px;
+        padding: 14px 32px;
+    }
+}
+
+@media (max-width: 480px){
+
+    .hero-inicio{
+        padding-top: 100px;
+    }
+
+    .hero-texto h1{
+        font-size: 29px;
+    }
+
+    .hero-texto p{
+        font-size: 14px;
+    }
+}

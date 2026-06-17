@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'home/css/base.css' %}">
+    <title>{% block title %} MiColmena {% endblock %}</title>
+</head>
+
+<body>
+
+    <header class="header-elegante" id="header">
+        <div class="logo-header">
+            <img src="{% static 'home/img/logoo.png' %}" alt="Logo">
+            <span>MI COLMENA</span>
+        </div>
+
+        <nav class="menu-header">
+            <a href="{% url 'Inicio' %}">Inicio</a>
+            <a href="{% url 'Quienes' %}">Quiénes somos</a>
+            <a href="{% url 'Servicios' %}">Servicios</a>
+            <a href="{% url 'Contactanos' %}">Contáctanos</a>
+            <a href="#" class="btn-login">Acceso</a>
+        </nav>
+    </header>
+
+    <main class="contenido-principal">
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container-fluid footer-contenido">
+            <div class="row g-4">
+
+                <div class="col-12 col-md-6 col-lg footer-col">
+                    <h3>Contáctenos</h3>
+                    <p><i class="bi bi-envelope"></i> juanku690@gmail.com</p>
+                    <p><i class="bi bi-telephone-fill"></i> 3146035811 - 3128246658</p>
+                    <p><i class="bi bi-geo-alt"></i> Urrao (ANT)</p>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg footer-col">
+                    <h3>Redes sociales</h3>
+                    <p><i class="bi bi-instagram"></i> kemi_colombia_oficial</p>
+                    <p><i class="bi bi-facebook"></i> kemi_colombia_oficial</p>
+                    <p><i class="bi bi-whatsapp"></i> 3146035811</p>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg footer-col">
+                    <h3>Navegación</h3>
+                    <a href="{% url 'Inicio' %}">Inicio</a>
+                    <a href="{% url 'Servicios' %}">Servicios</a>
+                    <a href="#">Preguntas frecuentes</a>
+                    <a href="#">Ayuda/Soporte</a>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg footer-col ubicacion">
+                    <h3>Ubicación</h3>
+                    <a href="https://acortar.link/1IHWrA"><img src="{% static 'home/img/ubicacion.png' %}" alt="Ubicación"></a>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg footer-col">
+                    <h3>Desarrollado por:</h3>
+                    <a href="https://github.com/Nocturn676">Jaime Andrés Arboleda Ochoa</a>
+                    <a href="https://github.com/JUNMARANC">Juan Manuel Herrera</a>
+                    <a href="https://github.com/JohnyGat">John Mario Ríos Valencia</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-abajo">
+            <p>© 2025 Mi Colmena. Todos los derechos reservados.</p>
+
+            <img src="{% static 'home/img/kemi.png' %}" alt="Logo Kemi" class="logo-footer">
+            <a href="https://senalasalada.blogspot.com/"><img src="{% static 'home/img/Sena.png' %}" alt="Logo Sena" class="logo-sena"></a>
+            <p>Términos y condiciones | Políticas de privacidad</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'home/js/base.js' %}"></script>
+    
+</body>
+</html>
