@@ -1,12 +1,240 @@
 {% extends 'base.html' %}
-{% load static %}
 
-<link rel="stylesheet" href="{% static 'static/home/css/base.css' %}">
+{% load static %}
 
 {% block title %}
     Servicios
 {% endblock %}
 
 {% block content %}
+<section id="servicios" class="servicios-section position-relative overflow-hidden">
 
+    <!-- RAMAS DECORATIVAS -->
+    <img src="{% static 'home/img/rama_izquierda.png' %}" 
+         class="rama-izquierda" 
+         alt="Rama izquierda">
+
+    <img src="{% static 'home/img/rama_derecha.png' %}" 
+         class="rama-derecha" 
+         alt="Rama derecha">
+
+    <div class="container">
+
+        <!-- TÍTULO -->
+        <div class="text-center servicios-titulo">
+            <h2>Servicios apícolas <br> para tu crecimiento</h2>
+            <p>
+                Soluciones integrales que abarcan <br>
+                todos los aspectos de la apicultura
+            </p>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="servicios-contenido">
+
+            <div class="servicios-grid">
+
+                <!-- TARJETA 1 -->
+                <div class="servicio-card card-uno">
+                    <img src="{% static 'home/img/casita_de_abeja_targeta.png' %}" 
+                         class="servicio-icono" 
+                         alt="Icono">
+
+                    <h3>Manejo y fortalecimiento de colmenas</h3>
+
+                    <p>
+                        Revisión completa de salud, diagnóstico y recomendaciones
+                        para mejorar la productividad.
+                    </p>
+
+                    <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalManejo">
+                        más información
+                    </button>
+                </div>
+
+                <!-- TARJETA 2 -->
+                <div class="servicio-card card-dos">
+                    <img src="{% static 'home/img/icono_targeta2.png' %}" 
+                         class="servicio-icono" 
+                         alt="Icono">
+
+                    <h3>Traslado seguro de colmenas</h3>
+
+                    <p>
+                        Revisión completa de salud, diagnóstico y recomendaciones
+                        para mejorar.
+                    </p>
+
+                    <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalTraslado">
+                        más información
+                    </button>
+                </div>
+
+                <!-- TARJETA 3 -->
+                <div class="servicio-card card-tres">
+                    <img src="{% static 'home/img/cono_targeta3.png' %}" 
+                         class="servicio-icono" 
+                         alt="Icono">
+
+                    <h3>Instalación de apiarios y asesoría técnica</h3>
+
+                    <p>
+                        Montaje profesional de apiarios, ubicación estratégica
+                        y guía técnica.
+                    </p>
+
+                    <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalInstalacion">
+                        más información
+                    </button>
+                </div>
+
+                <!-- TARJETA 4 -->
+                <div class="servicio-card card-cuatro">
+                    <img src="{% static 'home/img/icono_targeta4.png' %}" 
+                         class="servicio-icono" 
+                         alt="Icono">
+
+                    <h3>Evaluación sanitaria apícola</h3>
+
+                    <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalEvaluacion">
+                        más información
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- IMAGEN CENTRAL -->
+            <img src="{% static 'home/img/Abejas con apíarios.png' %}" 
+                 class="apiarios-img" 
+                 alt="Abejas con apiarios">
+
+        </div>
+
+    </div>
+
+    <!-- MODAL 1 -->
+    <div class="modal fade" id="modalManejo" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-servicio">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manejo y fortalecimiento de colmenas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Realizamos revisiones para conocer el estado de las colmenas,
+                        fortalecerlas y mejorar su producción de manera responsable.
+                    </p>
+
+                    <ul class="lista-modal">
+                        <li>Diagnóstico general.</li>
+                        <li>Revisión de productividad.</li>
+                        <li>Recomendaciones técnicas.</li>
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cerrar-modal" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2 -->
+    <div class="modal fade" id="modalTraslado" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-servicio">
+                <div class="modal-header">
+                    <h5 class="modal-title">Traslado seguro de colmenas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Apoyamos el traslado de colmenas cuidando la seguridad de las abejas,
+                        del apicultor y del nuevo lugar donde serán ubicadas.
+                    </p>
+
+                    <ul class="lista-modal">
+                        <li>Traslado organizado.</li>
+                        <li>Cuidado de las abejas.</li>
+                        <li>Ubicación segura del apiario.</li>
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cerrar-modal" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3 -->
+    <div class="modal fade" id="modalInstalacion" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-servicio">
+                <div class="modal-header">
+                    <h5 class="modal-title">Instalación de apiarios y asesoría técnica</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Brindamos orientación para instalar apiarios en lugares adecuados,
+                        teniendo en cuenta ubicación, manejo, seguridad y condiciones del entorno.
+                    </p>
+
+                    <ul class="lista-modal">
+                        <li>Selección del lugar.</li>
+                        <li>Montaje del apiario.</li>
+                        <li>Asesoría técnica.</li>
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cerrar-modal" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4 -->
+    <div class="modal fade" id="modalEvaluacion" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-servicio">
+                <div class="modal-header">
+                    <h5 class="modal-title">Evaluación sanitaria apícola</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Revisamos el estado sanitario de las colmenas para detectar posibles
+                        problemas, prevenir enfermedades y recomendar acciones de manejo.
+                    </p>
+
+                    <ul class="lista-modal">
+                        <li>Prevención de enfermedades.</li>
+                        <li>Control sanitario.</li>
+                        <li>Recomendaciones de manejo.</li>
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cerrar-modal" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
 {% endblock %}
