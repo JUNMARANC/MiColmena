@@ -1,12 +1,104 @@
 {% extends 'base.html' %}
-{% load static %}
 
-<link rel="stylesheet" href="{% static 'static/home/css/base.css' %}">
+{% load static %}
 
 {% block title %}
     Quienes Somos
 {% endblock %}
 
 {% block content %}
+    <section class="quienes-section position-relative overflow-hidden">
 
+        <!-- Panal derecho -->
+        <img src="{% static 'home/img/pana_derechal.png' %}" 
+            class="panal-derecha" 
+            alt="Panal">
+
+        <div class="container py-5">
+
+            <div class="row align-items-center g-5">
+
+                <!-- Imagen izquierda -->
+                <div class="col-12 col-lg-5 text-center contenedor-foto">
+
+                    <img src="{% static 'home/img/abeja_larga.png' %}" 
+                        class="abeja-larga" 
+                        alt="Decoración abeja">
+
+                    <img src="{% static 'home/img/hermanos.png' %}" 
+                        class="img-fluid foto-apicultores" 
+                        alt="Apicultores">
+
+                </div>
+
+                <!-- Contenido derecho -->
+                <div class="col-12 col-lg-7 text-center">
+
+                    <h6 class="titulo-pequeno">QUIENES SOMOS?</h6>
+
+                    <div class="titulo-kemi">
+                        <span></span>
+                        <h1>KEMI</h1>
+                        <span></span>
+                    </div>
+
+                    <div class="separador-abeja">
+                        <span></span>
+                        <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja">
+                        <span></span>
+                    </div>
+
+                    <div class="mision">
+                        <h2>Nuestra misión</h2>
+                        <p>
+                            Apoyar a las diferentes empresas en la mejora de la producción,
+                            la salud de sus colmenas y la sostenibilidad de cada apiario mediante
+                            conocimiento, acompañamiento personalizado y prácticas manuales
+                            adaptadas a cada necesidad.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Iconos inferiores -->
+            <div class="row mt-5 g-4">
+
+                <div class="col-12 col-md-4">
+                    <div class="item-info">
+                        <div class="icono-circulo">
+                            <img src="{% static 'home/img/icono_izquierda.png' %}" alt="Icono">
+                        </div>
+                        <p>
+                            Creemos firmemente que la apicultura es una labor que transforma
+                            territorios, protege la biodiversidad y genera oportunidades para
+                            cientos de familias.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="item-info">
+                        <div class="icono-circulo">
+                            <img src="{% static 'home/img/icono_centro.png' %}" alt="Icono">
+                        </div>
+                        <p>Protección de la biodiversidad</p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="item-info">
+                        <div class="icono-circulo">
+                            <img src="{% static 'home/img/icono_derecha.png' %}" alt="Icono">
+                        </div>
+                        <p>Monitoreo de colmenas</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}
+    Mensaje Enviado
+{% endblock %}
+
+{% block content %}
+
+    <section class="enviado-section">
+
+        <div class="contenedor-enviado">
+
+            <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja" class="abeja-enviada">
+
+            <h1>¡Mensaje enviado!</h1>
+
+            <p>
+                Gracias por comunicarte con <strong>Mi Colmena</strong>.
+                Hemos recibido tu mensaje correctamente y te responderemos
+                lo antes posible.
+            </p>
+
+            <a href="{% url 'Inicio' %}" class="btn-volver">Volver al inicio</a>
+
+        </div>
+
+    </section>
+
+{% endblock %}
