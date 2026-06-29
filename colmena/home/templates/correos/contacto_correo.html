@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+    <body style="margin:0; padding:0; background:#edf6f0; font-family:Arial, sans-serif;">
+
+    <div style="max-width:680px; margin:35px auto; background:white; border-radius:28px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,.15);">
+
+        <div style="background:#d8f8e6; padding:35px 25px; text-align:center;">
+        <img src="home/static/home/img/logoo.png" alt="Mi Colmena" style="width:120px; margin-bottom:15px;">
+        <h1 style="margin:0; color:#1f4d2f; font-size:32px;">Nuevo mensaje recibido</h1>
+        <p style="margin:10px 0 0; color:#000; font-size:16px;">
+            Formulario de contacto · Mi Colmena
+        </p>
+        </div>
+
+        <div style="padding:35px 30px;">
+
+        <div style="background:#f7fbf8; border:1px solid #dff0e4; border-radius:18px; padding:22px; margin-bottom:22px;">
+            <p style="margin:0 0 12px; color:#1f4d2f; font-size:18px; font-weight:bold;">Información del usuario</p>
+
+            <p><strong style="color:#2f7d46;"> Nombre:</strong> {{ nombre }}</p>
+            <p><strong style="color:#2f7d46;"> Correo:</strong> {{ correo }}</p>
+            <p><strong style="color:#2f7d46;"> Teléfono:</strong> {{ telefono }}</p>
+            <p><strong style="color:#2f7d46;"> Asunto:</strong> {{ asunto }}</p>
+        </div>
+
+        <div style="background:#edf6f0; border-left:7px solid #2f7d46; border-radius:18px; padding:24px;">
+            <h2 style="margin:0 0 12px; color:#1f4d2f; font-size:22px;"> Mensaje</h2>
+            <p style="margin:0; color:#333; line-height:1.8; font-size:16px;">
+            {{ mensaje }}
+            </p>
+        </div>
+
+        <div style="text-align:center; margin-top:30px;">
+            <a href="mailto:{{ correo }}" style="background:#c2f7d9; color:#000; text-decoration:none; padding:14px 28px; border-radius:40px; font-weight:bold;">
+            Responder ahora
+            </a>
+        </div>
+
+        </div>
+
+        <div style="background:#d8f8e6; padding:25px; text-align:center;">
+            <p style="margin:0; color:#000; font-weight:bold;">Mi Colmena</p>
+        <p style="margin:8px 0 0; color:#000; font-size:14px;">
+            Sistema de gestión apícola
+        </p>
+        </div>
+
+    </div>
+
+    </body>
+</html>

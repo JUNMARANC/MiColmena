@@ -313,5 +313,88 @@
 
     </section>
 
+    <!-- Contactanos -->
     
+    <section id="contactanos" class="contacto-section position-relative overflow-hidden">
+
+        <!-- Decoraciones -->
+
+        <img src="{% static 'home/img/ramas_izquierda_contactanos.png' %}" class="rama-contacto-izquierda" alt="rama">
+
+        <img src="{% static 'home/img/ramas_derecha_contactanos.png' %}" class="rama-contacto-derecha" alt="rama">
+
+        <img src="{% static 'home/img/abejita_contanos.png' %}" class="abeja-contacto" alt="abeja">
+
+        <img src="{% static 'home/img/panal_contactanos.png' %}" class="panal-contacto" alt="panal">
+
+        <div class="container contacto-contenedor">
+
+            <div class="row align-items-center">
+
+                <!-- IZQUIERDA -->
+
+                <div class="col-lg-6">
+
+                    <div class="contenido-contacto">
+
+                        <img src="{% static 'home/img/cartel_contactanos.png' %}" class="cartel-contacto" alt="contactanos">
+
+                        <div class="texto-contacto">
+                            <h2>
+                                Hablemos sobre <br>
+                                apicultura juntos
+                            </h2>
+
+                            <p>
+                                Tu aliado en monitoreo, salud y
+                                producción de colmenas
+                            </p>
+                        </div>
+
+                        <img src="{% static 'home/img/Apicultor_Contactanos.png' %}" class="apicultor-contacto" alt="apicultor">
+
+                    </div>
+
+                </div>
+
+                <!-- DERECHA -->
+
+                <div class="col-lg-6">
+
+                    <div class="formulario-contacto">
+
+                        <form action="{% url 'Correo_de_Contacto' %}" method="POST">
+
+                            {% csrf_token %}
+
+                            <label>Estoy interesado en...</label>
+
+                            <div class="tags-contacto">
+
+                                <span>Monitoreo de colmenas</span>
+                                <span>Asesorías</span>
+                                <span>Instalación apiarios</span>
+                                <span>Otro</span>
+
+                            </div>
+
+                            <input type="text" name="nombre" placeholder="Tu nombre" required>
+
+                            <input type="email" name="correo" placeholder="Tu correo electrónico" required>
+
+                            <textarea name="mensaje" rows="4" placeholder="Tu mensaje" required></textarea>
+
+                            <button type="submit"> <i class="bi bi-send"></i> Enviar mensaje </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 {% endblock %}

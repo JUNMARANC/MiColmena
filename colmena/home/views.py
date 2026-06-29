@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 def inicio(request):
     return render(request,'inicio.html')
@@ -21,15 +22,28 @@ def correo(request):
         correo = request.POST.get("correo")
         mensaje = request.POST.get("mensaje")
 
-        texto = f""" Nombre: {nombre} Correo: {correo} Mensaje: {mensaje} """
+        texto = f"""
+        Nombre: {nombre}
+        Correo: {correo}
+        Mensaje: {mensaje}
+        """
 
-        send_mail(
-            subject="Nuevo mensaje desde Mi Colmena",
-            message=texto,
-            from_email=None,
-            recipient_list=["micolmena690@gmail.com"],
+        html = render_to_string("correos/contacto_correo.html", {
+            "nombre": nombre,
+            "correo": correo,
+            "mensaje": mensaje,
+        })
+
+        email = EmailMultiAlternatives(
+            subject = f"{nombre.title()} te quiere contactar",
+            body = texto,
+            from_email = None,
+            to = ["micolmena690@gmail.com"],
         )
 
-        return render(request,"enviado.html")
+        email.attach_alternative(html, "text/html")
+        email.send()
 
-    return render(request,"contactanos.html")
+        return render(request, "enviado.html")
+
+    return render(request, "contactanos.html")
