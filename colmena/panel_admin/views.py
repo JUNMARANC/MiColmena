@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from dbmicolmena.models import Apiario, Apicultor
+from django.core.paginator import Paginator
 
 def dashboard_admin(request):
     return render(request, 'admin_panel/dashboard.html')
 
-def apiarios_admin(request):
-    return render(request, 'admin_panel/apiarios.html')
 
 def colmenas_admin(request):
     return render(request, 'admin_panel/colmenas.html')
@@ -36,15 +35,21 @@ def configuracion_admin(request):
 
 
 
+from django.core.paginator import Paginator
+from dbmicolmena.models import Apiario, Apicultor
+
 def apiarios_admin(request):
-    apiarios = Apiario.objects.all()
+    apiarios_lista = Apiario.objects.all().order_by('id_apiario')
     apicultores = Apicultor.objects.all()
+
+    paginator = Paginator(apiarios_lista, 5)  # 6 registros por página
+    page_number = request.GET.get('page')
+    apiarios = paginator.get_page(page_number)
 
     return render(request, 'admin_panel/apiarios.html', {
         'apiarios': apiarios,
         'apicultores': apicultores,
     })
-
 
 def crear_apiario(request):
     if request.method == "POST":

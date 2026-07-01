@@ -221,30 +221,30 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label">Nombre del Apiario</label>
-                                            <input type="text"
-                                                   name="nombre_apiario"
-                                                   class="form-control"
-                                                   value="{{ apiario.nombreapiario }}"
-                                                   required>
+                                            <input type="text" 
+                                                name="nombre_apiario"
+                                                class="form-control"
+                                                value="{{ apiario.nombreapiario }}"
+                                                required>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label">Ubicación</label>
                                             <input type="text"
-                                                   name="ubicacion"
-                                                   class="form-control"
-                                                   value="{{ apiario.ubicacion }}"
-                                                   required>
+                                                name="ubicacion"
+                                                class="form-control"
+                                                value="{{ apiario.ubicacion }}"
+                                                required>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label">Cantidad de Colmenas</label>
                                             <input type="number"
-                                                   name="cantidad_colmenas"
-                                                   class="form-control"
-                                                   value="{{ apiario.cantidadcolmenas }}"
-                                                   min="0"
-                                                   required>
+                                                name="cantidad_colmenas"
+                                                class="form-control"
+                                                value="{{ apiario.cantidadcolmenas }}"
+                                                min="0"
+                                                required>
                                         </div>
 
                                         <div class="col-md-6">
@@ -267,10 +267,10 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Fecha de Registro</label>
                                             <input type="date"
-                                                   name="fecha_registro"
-                                                   class="form-control"
-                                                   value="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
-                                                   required>
+                                                name="fecha_registro"
+                                                class="form-control"
+                                                value="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
+                                                required>
                                         </div>
 
                                         <div class="col-md-6">
@@ -400,6 +400,52 @@
     </div>
 </div>
 
+{% if apiarios.has_other_pages %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center align-items-center">
+
+        {% if apiarios.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ apiarios.previous_page_number }}">
+                    Anterior
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+        {% endif %}
+
+        {% for num in apiarios.paginator.page_range %}
+            {% if apiarios.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if apiarios.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ apiarios.next_page_number }}">
+                    Siguiente
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Siguiente</span>
+            </li>
+        {% endif %}
+
+    </ul>
+</nav>
+{% endif %}
+
 <!-- MODAL AGREGAR APIARIO -->
 <div class="modal fade" id="modalAgregarApiario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -428,28 +474,28 @@
                         <div class="col-md-6">
                             <label class="form-label">Nombre del Apiario</label>
                             <input type="text"
-                                   name="nombre_apiario"
-                                   class="form-control"
-                                   placeholder="Ej: Prado del Sol"
-                                   required>
+                                name="nombre_apiario"
+                                class="form-control"
+                                placeholder="Ej: Prado del Sol"
+                                required>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Ubicación</label>
                             <input type="text"
-                                   name="ubicacion"
-                                   class="form-control"
-                                   placeholder="Ej: Urrao - Antioquia"
-                                   required>
+                                name="ubicacion"
+                                class="form-control"
+                                placeholder="Ej: Urrao - Antioquia"
+                                required>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Cantidad de Colmenas</label>
                             <input type="number"
-                                   name="cantidad_colmenas"
-                                   class="form-control"
-                                   min="0"
-                                   required>
+                                name="cantidad_colmenas"
+                                class="form-control"
+                                min="0"
+                                required>
                         </div>
 
                         <div class="col-md-6">
@@ -464,9 +510,9 @@
                         <div class="col-md-6">
                             <label class="form-label">Fecha de Registro</label>
                             <input type="date"
-                                   name="fecha_registro"
-                                   class="form-control"
-                                   required>
+                                name="fecha_registro"
+                                class="form-control"
+                                required>
                         </div>
 
                         <div class="col-md-6">

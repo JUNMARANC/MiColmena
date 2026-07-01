@@ -715,4 +715,65 @@ RESPONSIVE
     }
 }
 
-/*  */
+/*==================================================
+PAGINADOR
+==================================================*/
+
+.pagination {
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pagination .page-item .page-link {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 14px;
+
+    background: var(--blanco);
+    color: var(--verde-oscuro);
+
+    font-weight: 600;
+    font-size: 14px;
+
+    box-shadow: 0 8px 20px rgba(33, 79, 59, .10);
+    transition: .25s ease;
+}
+
+.pagination .page-item .page-link:hover {
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+    transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--verde-medio);
+    color: white;
+    box-shadow: 0 10px 24px rgba(95, 151, 129, .35);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #edf6f0;
+    color: #8aa397;
+    box-shadow: none;
+}
+
+@media (max-width: 576px) {
+    .pagination {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pagination .page-item .page-link {
+        min-width: 36px;
+        height: 36px;
+        font-size: 12px;
+        border-radius: 11px;
+    }
+}
