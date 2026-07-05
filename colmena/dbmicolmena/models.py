@@ -23,6 +23,8 @@ class Apiario(models.Model):
     estadoapiario = models.CharField(db_column='EstadoApiario', max_length=50, blank=True, null=True)  # Field name made lowercase.
     fechaeclosionapiario = models.DateField(db_column='FechaEclosionApiario', blank=True, null=True)  # Field name made lowercase.
     ubicacion = models.CharField(db_column='Ubicacion', max_length=150, blank=True, null=True)  # Field name made lowercase.
+    descripcion = models.TextField(db_column='Descripcion', blank=True, null=True)
+    imagen = models.ImageField(db_column='Imagen', upload_to='apiarios/', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -49,6 +51,8 @@ class Colmena(models.Model):
     codigocolmena = models.CharField(db_column='CodigoColmena', max_length=50, blank=True, null=True)  # Field name made lowercase.
     estadocolmena = models.CharField(db_column='EstadoColmena', max_length=50, blank=True, null=True)  # Field name made lowercase.
     fecharegistro = models.DateField(db_column='FechaRegistro', blank=True, null=True)  # Field name made lowercase.
+    descripcion = models.TextField(db_column='Descripcion', blank=True, null=True)
+    imagen = models.ImageField(db_column='Imagen', upload_to='colmenas/', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -95,14 +99,37 @@ class Incidencia(models.Model):
 
 
 class Mantenimiento(models.Model):
-    id_mantenimiento = models.AutoField(db_column='Id_Mantenimiento', primary_key=True)  # Field name made lowercase.
-    id_colmena = models.ForeignKey(Colmena, models.DO_NOTHING, db_column='Id_Colmena')  # Field name made lowercase.
-    tipo = models.CharField(db_column='Tipo', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    fechaejecucion = models.DateField(db_column='FechaEjecucion', blank=True, null=True)  # Field name made lowercase.
-    estado = models.CharField(db_column='Estado', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    prioridad = models.CharField(db_column='Prioridad', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    observaciones = models.CharField(db_column='Observaciones', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    responsable = models.CharField(db_column='Responsable', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    id_mantenimiento = models.AutoField(db_column='Id_Mantenimiento', primary_key=True)
+
+    id_colmena = models.ForeignKey(
+        Colmena,
+        models.DO_NOTHING,
+        db_column='Id_Colmena',
+        blank=True,
+        null=True
+    )
+
+    id_apiario = models.ForeignKey(
+        Apiario,
+        models.DO_NOTHING,
+        db_column='Id_Apiario',
+        blank=True,
+        null=True
+    )
+
+    entidadmantenimiento = models.CharField(
+        db_column='EntidadMantenimiento',
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
+    tipo = models.CharField(db_column='Tipo', max_length=100, blank=True, null=True)
+    fechaejecucion = models.DateField(db_column='FechaEjecucion', blank=True, null=True)
+    estado = models.CharField(db_column='Estado', max_length=50, blank=True, null=True)
+    prioridad = models.CharField(db_column='Prioridad', max_length=50, blank=True, null=True)
+    observaciones = models.CharField(db_column='Observaciones', max_length=255, blank=True, null=True)
+    responsable = models.CharField(db_column='Responsable', max_length=100, blank=True, null=True)
 
     class Meta:
         managed = False

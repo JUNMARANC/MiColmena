@@ -22,4 +22,33 @@ if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
     });
 }
 
-/*SIDEBAR */
+/*mantenimientos */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const radios = document.querySelectorAll(".tipo-mantenimiento-radio");
+    const campoApiario = document.getElementById("campoApiarioMantenimiento");
+    const campoColmena = document.getElementById("campoColmenaMantenimiento");
+
+    if (!radios.length || !campoApiario || !campoColmena) {
+        return;
+    }
+
+    radios.forEach(function (radio) {
+        radio.addEventListener("change", function () {
+
+            if (this.value === "Apiario") {
+                campoApiario.classList.remove("d-none");
+                campoColmena.classList.add("d-none");
+            }
+
+            if (this.value === "Colmena") {
+                campoColmena.classList.remove("d-none");
+                campoApiario.classList.add("d-none");
+            }
+
+        });
+    });
+
+});
+

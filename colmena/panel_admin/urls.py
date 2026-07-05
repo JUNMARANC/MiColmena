@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
 
@@ -14,9 +16,16 @@ urlpatterns = [
 
     # Colmenas
     path('colmenas/', views.colmenas_admin, name='colmenas_admin'),
+    path('colmenas/crear/', views.crear_colmena, name='crear_colmena'),
+    path('colmenas/editar/<int:id>/', views.editar_colmena, name='editar_colmena'),
+    path('colmenas/eliminar/<int:id>/', views.eliminar_colmena, name='eliminar_colmena'),
 
     # Mantenimientos
     path('mantenimientos/', views.mantenimientos_admin, name='mantenimientos_admin'),
+    path('mantenimientos/crear/', views.crear_mantenimiento, name='crear_mantenimiento'),
+    path('mantenimientos/editar/<int:id>/', views.editar_mantenimiento, name='editar_mantenimiento'),
+    path('mantenimientos/eliminar/<int:id>/', views.eliminar_mantenimiento, name='eliminar_mantenimiento'),
+
 
     # Incidencias
     path('incidencias/', views.incidencias_admin, name='incidencias_admin'),
@@ -39,3 +48,6 @@ urlpatterns = [
     # Configuración
     path('configuracion/', views.configuracion_admin, name='configuracion_admin'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
