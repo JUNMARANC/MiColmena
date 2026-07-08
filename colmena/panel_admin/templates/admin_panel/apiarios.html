@@ -211,7 +211,7 @@
                                             </small>
                                             <h5>
                                                 {% if apiario.id_apicultor %}
-                                                    {{ apiario.id_apicultor.nombre }}
+                                                    {{ apiario.id_apicultor.nombre_completo }}
                                                 {% else %}
                                                     Sin responsable
                                                 {% endif %}
@@ -326,11 +326,8 @@
                                             <label class="form-label">Apicultor Responsable</label>
                                             <select name="id_apicultor" class="form-select" required>
                                                 {% for apicultor in apicultores %}
-                                                    <option value="{{ apicultor.id_apicultor }}"
-                                                        {% if apiario.id_apicultor and apicultor.id_apicultor == apiario.id_apicultor.id_apicultor %}
-                                                            selected
-                                                        {% endif %}>
-                                                        {{ apicultor.nombre }}
+                                                    <option value="{{ apicultor.id_apicultor }}">
+                                                        {{ apicultor.nombre_completo }}
                                                     </option>
                                                 {% endfor %}
                                             </select>
@@ -479,8 +476,7 @@
 
         {% if apiarios.has_previous %}
             <li class="page-item">
-                <a class="page-link"
-                   href="?page={{ apiarios.previous_page_number }}&estado={{ request.GET.estado }}">
+                <a class="page-link" href="?page={{ apiarios.previous_page_number }}&estado={{ request.GET.estado }}">
                     Anterior
                 </a>
             </li>
@@ -497,8 +493,7 @@
                 </li>
             {% else %}
                 <li class="page-item">
-                    <a class="page-link"
-                       href="?page={{ num }}&estado={{ request.GET.estado }}">
+                    <a class="page-link" href="?page={{ num }}&estado={{ request.GET.estado }}">
                         {{ num }}
                     </a>
                 </li>
@@ -507,8 +502,7 @@
 
         {% if apiarios.has_next %}
             <li class="page-item">
-                <a class="page-link"
-                   href="?page={{ apiarios.next_page_number }}&estado={{ request.GET.estado }}">
+                <a class="page-link" href="?page={{ apiarios.next_page_number }}&estado={{ request.GET.estado }}">
                     Siguiente
                 </a>
             </li>
@@ -595,10 +589,9 @@
                             <label class="form-label">Apicultor Responsable</label>
                             <select name="id_apicultor" class="form-select" required>
                                 <option value="">Seleccione un apicultor</option>
-
                                 {% for apicultor in apicultores %}
                                     <option value="{{ apicultor.id_apicultor }}">
-                                        {{ apicultor.nombre }}
+                                        {{ apicultor.nombre_completo }}
                                     </option>
                                 {% endfor %}
                             </select>

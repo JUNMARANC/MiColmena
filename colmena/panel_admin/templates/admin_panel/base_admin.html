@@ -97,14 +97,35 @@
         </nav>
 
         <div class="sidebar-user">
+
             <div class="user-avatar">
-                <i class="bi bi-person-fill"></i>
+                {% if perfil_usuario and perfil_usuario.fotoperfil %}
+                    <img src="{{ perfil_usuario.fotoperfil.url }}" alt="Foto perfil">
+                {% else %}
+                    <i class="bi bi-person-fill"></i>
+                {% endif %}
             </div>
 
             <div class="user-info">
-                <strong>Juan Herrera</strong>
-                <span>Administrador</span>
+                {% if request.user.is_authenticated %}
+                    <strong>
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </strong>
+
+                    <span>
+                        {{ rol_usuario|default:"Usuario" }}
+                    </span>
+
+                    <a href="{% url 'logout' %}" class="logout-sidebar">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Cerrar sesión
+                    </a>
+                {% else %}
+                    <strong>Invitado</strong>
+                    <span>Sin iniciar sesión</span>
+                {% endif %}
             </div>
+
         </div>
 
     </aside>

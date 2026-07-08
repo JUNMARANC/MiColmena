@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'home',
     'panel_admin',
     'dbmicolmena',
+    'usuarios',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'usuarios.context_processors.perfil_usuario',
             ],
         },
     },
@@ -81,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dbmicolmena',
         'USER' : 'root',
-        'PASSWORD' : 'admin',
+        'PASSWORD' : 'juan',
         'HOST' : 'localhost',
         'PORT' : '3306'
     }
@@ -135,3 +137,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "micolmena690@gmail.com"
 EMAIL_HOST_PASSWORD = "thwbzoouzgbvpnqs"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard_admin"
+LOGOUT_REDIRECT_URL = "login"
