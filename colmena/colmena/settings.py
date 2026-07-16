@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dbmicolmena',
         'USER' : 'root',
-        'PASSWORD' : 'juan',
+        'PASSWORD' : 'admin',
         'HOST' : 'localhost',
         'PORT' : '3306'
     }
@@ -141,3 +141,12 @@ EMAIL_HOST_PASSWORD = "thwbzoouzgbvpnqs"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard_admin"
 LOGOUT_REDIRECT_URL = "login"
+ccccc
+# La sesión termina al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# 30 minutos
+SESSION_COOKIE_AGE = 1800
+
+# Reinicia el contador en cada petición
+SESSION_SAVE_EVERY_REQUEST = True
