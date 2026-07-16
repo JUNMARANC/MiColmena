@@ -16,47 +16,78 @@
 </div>
 
 <div class="card-admin mb-4">
-    <form method="GET" class="row g-3 align-items-end">
 
-        <div class="col-12 col-md-3">
-            <label class="form-label">Tipo:</label>
-            <select name="tipo_entidad" class="form-select">
-                <option value="">Todos</option>
-                <option value="Apiario">Apiario</option>
-                <option value="Colmena">Colmena</option>
-            </select>
+    <form method="GET">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="mb-0 fw-bold" style="color:#234F39;">
+                    <i class="bi bi-funnel me-2"></i>
+                    Filtros de búsqueda
+                </h5>
+                <small class="text-muted">
+                    Filtra por apiario, colmena o estado.
+                </small>
+            </div>
+
+            <a href="{% url 'mantenimientos_admin' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise me-2"></i>
+                Limpiar
+            </a>
         </div>
 
-        <div class="col-12 col-md-3">
-            <label class="form-label">Apiario:</label>
-            <select name="apiario" class="form-select">
-                <option value="">Todos los apiarios</option>
-                {% for apiario in apiarios %}
-                    <option value="{{ apiario.id_apiario }}">{{ apiario.nombreapiario }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <div class="row g-3 align-items-end">
 
-        <div class="col-12 col-md-3">
-            <label class="form-label">Colmena:</label>
-            <select name="colmena" class="form-select">
-                <option value="">Todas las colmenas</option>
-                {% for colmena in colmenas %}
-                    <option value="{{ colmena.id_colmena }}">
-                        {{ colmena.codigocolmena }} - {{ colmena.id_apiario.nombreapiario }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="col-md-4">
+                <label class="form-label">Apiario</label>
+                <select name="apiario" id="filtroApiario" class="form-select">
+                    <option value="">Todos los apiarios</option>
 
-        <div class="col-12 col-md-3">
-            <button type="submit" class="btn btn-outline-success w-100">
-                <i class="bi bi-filter me-2"></i>
-                Filtrar
-            </button>
+                    {% for apiario in apiarios %}
+                        <option value="{{ apiario.id_apiario }}"
+                                {% if request.GET.apiario == apiario.id_apiario|stringformat:"s" %}selected{% endif %}>
+                            {{ apiario.nombreapiario }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Colmena</label>
+                <select name="colmena" id="filtroColmena" class="form-select">
+                    <option value="">Todas las colmenas</option>
+
+                    {% for colmena in colmenas %}
+                        <option value="{{ colmena.id_colmena }}"
+                                data-apiario="{{ colmena.id_apiario.id_apiario }}"
+                                {% if request.GET.colmena == colmena.id_colmena|stringformat:"s" %}selected{% endif %}>
+                            {{ colmena.codigocolmena }} - {{ colmena.id_apiario.nombreapiario }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="Pendiente" {% if request.GET.estado == "Pendiente" %}selected{% endif %}>Pendiente</option>
+                    <option value="Completado" {% if request.GET.estado == "Completado" %}selected{% endif %}>Completado</option>
+                    <option value="Cancelado" {% if request.GET.estado == "Cancelado" %}selected{% endif %}>Cancelado</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-search"></i>
+                    Filtrar
+                </button>
+            </div>
+
         </div>
 
     </form>
+
 </div>
 
 <div class="card-admin">
@@ -156,8 +187,8 @@
 
                                     <div class="col-md-6">
                                         <div class="modal-info-box">
-                                            <small>Tipo de mantenimiento</small>
-                                            <h5>{{ mantenimiento.entidadmantenimiento }}</h5>
+                                            <small>Responsable</small>
+                                            <h5>{{ mantenimiento.responsable }}</h5>
                                         </div>
                                     </div>
 
@@ -178,6 +209,21 @@
 
                                     <div class="col-md-6">
                                         <div class="modal-info-box">
+                                            <small>Alcance</small>
+                                            <h5>
+                                                {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+                                                    Todo el apiario
+                                                {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
+                                                    Colmena específica
+                                                {% else %}
+                                                    Sin definir
+                                                {% endif %}
+                                            </h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="modal-info-box">
                                             <small>Colmena</small>
                                             <h5>
                                                 {% if mantenimiento.id_colmena %}
@@ -186,13 +232,6 @@
                                                     No aplica
                                                 {% endif %}
                                             </h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Responsable</small>
-                                            <h5>{{ mantenimiento.responsable }}</h5>
                                         </div>
                                     </div>
 
@@ -220,7 +259,9 @@
                                     <div class="col-12">
                                         <div class="modal-info-box">
                                             <small>Observaciones</small>
-                                            <p class="mb-0">{{ mantenimiento.observaciones|default:"Sin observaciones." }}</p>
+                                            <p class="mb-0">
+                                                {{ mantenimiento.observaciones|default:"Sin observaciones." }}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -228,7 +269,9 @@
                             </div>
 
                             <div class="modal-footer border-0">
-                                <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                                    Cerrar
+                                </button>
                             </div>
 
                         </div>
@@ -259,25 +302,29 @@
                                     <div class="row g-3">
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Tipo de mantenimiento</label>
+                                            <label class="form-label">Alcance</label>
                                             <select name="entidad_mantenimiento" class="form-select" required>
-                                                <option value="Apiario" {% if mantenimiento.entidadmantenimiento == "Apiario" %}selected{% endif %}>Apiario</option>
-                                                <option value="Colmena" {% if mantenimiento.entidadmantenimiento == "Colmena" %}selected{% endif %}>Colmena</option>
+                                                <option value="Apiario" {% if mantenimiento.entidadmantenimiento == "Apiario" %}selected{% endif %}>
+                                                    Todo el apiario
+                                                </option>
+                                                <option value="Colmena" {% if mantenimiento.entidadmantenimiento == "Colmena" %}selected{% endif %}>
+                                                    Colmena específica
+                                                </option>
                                             </select>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Tarea</label>
-                                            <input type="text" name="tipo" class="form-control" value="{{ mantenimiento.tipo }}" required>
-                                        </div>
-
-                                        <div class="col-md-6">
                                             <label class="form-label">Apiario</label>
-                                            <select name="id_apiario" class="form-select">
+                                            <select name="id_apiario" class="form-select" required>
                                                 <option value="">Seleccione un apiario</option>
+
                                                 {% for apiario in apiarios %}
                                                     <option value="{{ apiario.id_apiario }}"
-                                                        {% if mantenimiento.id_apiario and apiario.id_apiario == mantenimiento.id_apiario.id_apiario %}selected{% endif %}>
+                                                        {% if mantenimiento.id_apiario and apiario.id_apiario == mantenimiento.id_apiario.id_apiario %}
+                                                            selected
+                                                        {% elif mantenimiento.id_colmena and apiario.id_apiario == mantenimiento.id_colmena.id_apiario.id_apiario %}
+                                                            selected
+                                                        {% endif %}>
                                                         {{ apiario.nombreapiario }}
                                                     </option>
                                                 {% endfor %}
@@ -287,10 +334,13 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Colmena</label>
                                             <select name="id_colmena" class="form-select">
-                                                <option value="">Seleccione una colmena</option>
+                                                <option value="">No aplica / Todo el apiario</option>
+
                                                 {% for colmena in colmenas %}
                                                     <option value="{{ colmena.id_colmena }}"
-                                                        {% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}selected{% endif %}>
+                                                        {% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}
+                                                            selected
+                                                        {% endif %}>
                                                         {{ colmena.codigocolmena }} - {{ colmena.id_apiario.nombreapiario }}
                                                     </option>
                                                 {% endfor %}
@@ -299,12 +349,29 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label">Responsable</label>
-                                            <input type="text" name="responsable" class="form-control" value="{{ mantenimiento.responsable }}" required>
+                                            <input type="text"
+                                                name="responsable"
+                                                class="form-control"
+                                                value="{{ mantenimiento.responsable }}"
+                                                required>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tarea</label>
+                                            <input type="text"
+                                                name="tipo"
+                                                class="form-control"
+                                                value="{{ mantenimiento.tipo }}"
+                                                required>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label">Fecha programada</label>
-                                            <input type="date" name="fecha_ejecucion" class="form-control" value="{{ mantenimiento.fechaejecucion|date:'Y-m-d' }}" required>
+                                            <input type="date"
+                                                name="fecha_ejecucion"
+                                                class="form-control"
+                                                value="{{ mantenimiento.fechaejecucion|date:'Y-m-d' }}"
+                                                required>
                                         </div>
 
                                         <div class="col-md-6">
@@ -334,7 +401,10 @@
                                 </div>
 
                                 <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+
                                     <button type="submit" class="btn btn-success">
                                         <i class="bi bi-save me-2"></i>
                                         Guardar Cambios
@@ -372,14 +442,34 @@
                                         <strong>Advertencia:</strong> se eliminará este mantenimiento.
                                     </div>
 
-                                    <div class="modal-info-box verde">
-                                        <small>Tarea</small>
-                                        <h5>{{ mantenimiento.tipo }}</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="modal-info-box verde">
+                                                <small>Tarea</small>
+                                                <h5>{{ mantenimiento.tipo }}</h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="modal-info-box">
+                                                <small>Alcance</small>
+                                                <h5>
+                                                    {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+                                                        Todo el apiario
+                                                    {% else %}
+                                                        Colmena específica
+                                                    {% endif %}
+                                                </h5>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+
                                     <button type="submit" class="btn btn-danger">
                                         <i class="bi bi-trash me-2"></i>
                                         Sí, eliminar
@@ -399,10 +489,6 @@
                     </td>
                 </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
 
 <!-- MODAL AGREGAR -->
 <div class="modal fade" id="modalAgregarMantenimiento" tabindex="-1">
@@ -427,68 +513,90 @@
                 <div class="modal-body">
                     <div class="row g-3">
 
-                        <div class="col-12">
-                            <label class="form-label">¿El mantenimiento es para?</label>
+                        <!-- RESPONSABLE -->
+                        <div class="col-md-6">
+                            <label class="form-label">Responsable</label>
+                            <select name="id_apicultor"
+                                    id="responsableMantenimiento"
+                                    class="form-select"
+                                    required>
+                                <option value="">Seleccione un responsable</option>
 
-                            <div class="d-flex gap-3 flex-wrap">
-                                <label class="btn btn-outline-success rounded-3 px-4">
-                                    <input type="radio"
-                                           name="entidad_mantenimiento"
-                                           value="Apiario"
-                                           class="tipo-mantenimiento-radio"
-                                           required>
-                                    Apiario
-                                </label>
-
-                                <label class="btn btn-outline-success rounded-3 px-4">
-                                    <input type="radio"
-                                           name="entidad_mantenimiento"
-                                           value="Colmena"
-                                           class="tipo-mantenimiento-radio"
-                                           required>
-                                    Colmena
-                                </label>
-                            </div>
+                                {% for apicultor in apicultores %}
+                                    <option value="{{ apicultor.id_apicultor }}">
+                                        {{ apicultor.nombre_completo }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
 
-                        <div class="col-md-6 d-none" id="campoApiarioMantenimiento">
+                        <!-- APIARIO -->
+                        <div class="col-md-6">
                             <label class="form-label">Apiario</label>
-                            <select name="id_apiario" class="form-select">
+                            <select name="id_apiario"
+                                    id="apiarioMantenimiento"
+                                    class="form-select"
+                                    required>
                                 <option value="">Seleccione un apiario</option>
+
                                 {% for apiario in apiarios %}
-                                    <option value="{{ apiario.id_apiario }}">
+                                    <option value="{{ apiario.id_apiario }}"
+                                            data-apicultor="{{ apiario.id_apicultor.id_apicultor }}">
                                         {{ apiario.nombreapiario }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
 
+                        <!-- ALCANCE -->
+                        <div class="col-12">
+                            <label class="form-label">Alcance del mantenimiento</label>
+
+                            <div class="d-flex gap-3 flex-wrap">
+                                <label class="btn btn-outline-success rounded-3 px-4">
+                                    <input type="radio"
+                                           name="entidad_mantenimiento"
+                                           value="Apiario"
+                                           class="alcance-mantenimiento-radio"
+                                           required>
+                                    Todo el apiario
+                                </label>
+
+                                <label class="btn btn-outline-success rounded-3 px-4">
+                                    <input type="radio"
+                                           name="entidad_mantenimiento"
+                                           value="Colmena"
+                                           class="alcance-mantenimiento-radio"
+                                           required>
+                                    Una colmena del apiario
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- COLMENA -->
                         <div class="col-md-6 d-none" id="campoColmenaMantenimiento">
                             <label class="form-label">Colmena</label>
-                            <select name="id_colmena" class="form-select">
+                            <select name="id_colmena"
+                                    id="colmenaMantenimiento"
+                                    class="form-select">
                                 <option value="">Seleccione una colmena</option>
+
                                 {% for colmena in colmenas %}
-                                    <option value="{{ colmena.id_colmena }}">
-                                        {{ colmena.codigocolmena }} - {{ colmena.id_apiario.nombreapiario }}
+                                    <option value="{{ colmena.id_colmena }}"
+                                            data-apiario="{{ colmena.id_apiario.id_apiario }}">
+                                        {{ colmena.codigocolmena }} - {{ colmena.estadocolmena }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
 
+                        <!-- DATOS DEL MANTENIMIENTO -->
                         <div class="col-md-6">
                             <label class="form-label">Tarea</label>
                             <input type="text"
                                    name="tipo"
                                    class="form-control"
                                    placeholder="Ej: Revisión general"
-                                   required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Responsable</label>
-                            <input type="text"
-                                   name="responsable"
-                                   class="form-control"
                                    required>
                         </div>
 

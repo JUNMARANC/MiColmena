@@ -1,8 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from dbmicolmena.models import Administrador
 
+@login_required(login_url="login")
 def dashboard_admin(request):
+    if not Administrador.objects.filter(user=request.user).exists():
+        return redirect("login")
+
     return render(request, 'admin_panel/dashboard.html')
 
 
@@ -190,22 +196,25 @@ def eliminar_colmena(request, id):
 
     return redirect("colmenas_admin")
 
-#LOGICA DE ANTENIMIENTOS
+#LOGICA DE MATENIMIENTOS
 def mantenimientos_admin(request):
+    apicultores = Apicultor.objects.select_related("user").all()
     apiarios = Apiario.objects.all()
-    colmenas = Colmena.objects.select_related('id_apiario').all()
+    colmenas = Colmena.objects.select_related("id_apiario").all()
 
     mantenimientos_lista = Mantenimiento.objects.select_related(
-        'id_colmena',
-        'id_colmena__id_apiario'
-    ).all().order_by('id_mantenimiento')
+        "id_apiario",
+        "id_colmena",
+        "id_colmena__id_apiario"
+    ).all().order_by("id_mantenimiento")
 
-    apiario_id = request.GET.get('apiario')
-    colmena_id = request.GET.get('colmena')
+    apiario_id = request.GET.get("apiario")
+    colmena_id = request.GET.get("colmena")
+    estado = request.GET.get("estado")
 
     if apiario_id:
         mantenimientos_lista = mantenimientos_lista.filter(
-            id_colmena__id_apiario_id=apiario_id
+            id_apiario_id=apiario_id
         )
 
     if colmena_id:
@@ -213,14 +222,20 @@ def mantenimientos_admin(request):
             id_colmena_id=colmena_id
         )
 
+    if estado:
+        mantenimientos_lista = mantenimientos_lista.filter(
+            estado=estado
+        )
+
     paginator = Paginator(mantenimientos_lista, 5)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     mantenimientos = paginator.get_page(page_number)
 
-    return render(request, 'admin_panel/mantenimientos.html', {
-        'mantenimientos': mantenimientos,
-        'apiarios': apiarios,
-        'colmenas': colmenas,
+    return render(request, "admin_panel/mantenimientos.html", {
+        "mantenimientos": mantenimientos,
+        "apicultores": apicultores,
+        "apiarios": apiarios,
+        "colmenas": colmenas,
     })
 
 

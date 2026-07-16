@@ -777,3 +777,27 @@ PAGINADOR
         border-radius: 11px;
     }
 }
+
+/* estilo de la foto del adm y el boton de cerrar seccion */
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.logout-sidebar {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #b3261e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.logout-sidebar:hover {
+    color: #7a1111;
+}
