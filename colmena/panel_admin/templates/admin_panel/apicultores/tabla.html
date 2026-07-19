@@ -1,0 +1,761 @@
+{% load static %}
+
+<div class="card card-tabla-apicultores border-0 shadow-sm rounded-4 overflow-hidden">
+
+    <!-- =====================================================
+         ENCABEZADO DE LA TABLA
+    ====================================================== -->
+    <div class="card-header bg-white border-0 px-4 py-3">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="tabla-apicultores-icono">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <h5 class="fw-bold mb-0">
+                        Lista de apicultores
+                    </h5>
+
+                    <small class="text-muted">
+                        Apicultores registrados en el sistema
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="contador-apicultores">
+
+                <i class="bi bi-person-check-fill me-1"></i>
+
+                <span>
+                    {{ apicultores.paginator.count }}
+                </span>
+
+                registrado{{ apicultores.paginator.count|pluralize:"s" }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         CONTENIDO DE LA TABLA
+    ====================================================== -->
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table tabla-apicultores align-middle mb-0">
+
+                <thead>
+
+                    <tr>
+                        <th class="ps-4">
+                            Apicultor
+                        </th>
+
+                        <th>
+                            Información de contacto
+                        </th>
+
+                        <th>
+                            Zona de trabajo
+                        </th>
+
+                        <th class="text-center">
+                            Experiencia
+                        </th>
+
+                        <th class="text-center">
+                            Apiarios
+                        </th>
+
+                        <th class="text-center pe-4">
+                            Acciones
+                        </th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for apicultor in apicultores %}
+
+                        <tr>
+
+                            <!-- ==========================================
+                                 APICULTOR: FOTO, NOMBRE, USUARIO Y ROL
+                            =========================================== -->
+                            <td class="ps-4">
+
+                                <div class="d-flex align-items-center gap-3">
+
+                                    <div class="contenedor-foto-apicultor">
+
+                                        {% if apicultor.fotoperfil %}
+
+                                            <img
+                                                src="{{ apicultor.fotoperfil.url }}"
+                                                alt="Foto de {{ apicultor.nombre_completo }}"
+                                                class="foto-apicultor"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="foto-apicultor-sin-imagen">
+
+                                                <i class="bi bi-person-fill"></i>
+
+                                            </div>
+
+                                        {% endif %}
+
+                                        {% if apicultor.user.is_active %}
+
+                                            <span
+                                                class="estado-usuario estado-activo"
+                                                title="Usuario activo"
+                                            ></span>
+
+                                        {% else %}
+
+                                            <span
+                                                class="estado-usuario estado-inactivo"
+                                                title="Usuario inactivo"
+                                            ></span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="datos-principales-apicultor">
+
+                                        <div class="nombre-apicultor">
+
+                                            {{ apicultor.nombre_completo }}
+
+                                        </div>
+
+                                        {% if apicultor.user %}
+
+                                            <div class="usuario-apicultor">
+
+                                                <i class="bi bi-at"></i>
+
+                                                {{ apicultor.user.username }}
+
+                                            </div>
+
+                                        {% else %}
+
+                                            <div class="usuario-apicultor text-danger">
+
+                                                Sin usuario asociado
+
+                                            </div>
+
+                                        {% endif %}
+
+                                        <span class="rol-apicultor">
+
+                                            <i class="bi bi-award-fill me-1"></i>
+
+                                            {{ apicultor.id_rol.nombrerol|default:"Apicultor" }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <!-- ==========================================
+                                 INFORMACIÓN DE CONTACTO
+                            =========================================== -->
+                            <td>
+
+                                <div class="informacion-contacto">
+
+                                    <div class="dato-contacto">
+
+                                        <span class="icono-contacto">
+                                            <i class="bi bi-person-vcard-fill"></i>
+                                        </span>
+
+                                        <div>
+                                            <small>Identificación</small>
+
+                                            <span>
+                                                {{ apicultor.identificacion|default:"Sin registrar" }}
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="dato-contacto">
+
+                                        <span class="icono-contacto">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </span>
+
+                                        <div>
+                                            <small>Teléfono</small>
+
+                                            {% if apicultor.telefono %}
+
+                                                <a href="tel:{{ apicultor.telefono }}">
+                                                    {{ apicultor.telefono }}
+                                                </a>
+
+                                            {% else %}
+
+                                                <span class="text-muted">
+                                                    Sin registrar
+                                                </span>
+
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+
+                                    <div class="dato-contacto">
+
+                                        <span class="icono-contacto">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </span>
+
+                                        <div>
+                                            <small>Correo electrónico</small>
+
+                                            {% if apicultor.user.email %}
+
+                                                <a
+                                                    href="mailto:{{ apicultor.user.email }}"
+                                                    class="correo-apicultor"
+                                                    title="{{ apicultor.user.email }}"
+                                                >
+                                                    {{ apicultor.user.email }}
+                                                </a>
+
+                                            {% else %}
+
+                                                <span class="text-muted">
+                                                    Sin registrar
+                                                </span>
+
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <!-- ==========================================
+                                 ZONA DE TRABAJO
+                            =========================================== -->
+                            <td>
+
+                                {% if apicultor.zona_trabajo %}
+
+                                    <div class="zona-apicultor">
+
+                                        <span class="icono-zona">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </span>
+
+                                        <span>
+                                            {{ apicultor.zona_trabajo }}
+                                        </span>
+
+                                    </div>
+
+                                {% else %}
+
+                                    <span class="dato-no-registrado">
+                                        Sin zona registrada
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- ==========================================
+                                 EXPERIENCIA
+                            =========================================== -->
+                            <td class="text-center">
+
+                                {% if apicultor.experienciaanios is not None %}
+
+                                    <div class="experiencia-apicultor">
+
+                                        <i class="bi bi-briefcase-fill"></i>
+
+                                        <strong>
+                                            {{ apicultor.experienciaanios }}
+                                        </strong>
+
+                                        <span>
+                                            año{{ apicultor.experienciaanios|pluralize:"s" }}
+                                        </span>
+
+                                    </div>
+
+                                {% else %}
+
+                                    <span class="dato-no-registrado">
+                                        Sin registrar
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- ==========================================
+                                TOTAL DE APIARIOS
+                            =========================================== -->
+                            <td class="text-center">
+
+                                <div class="cantidad-apiarios">
+
+                                    <div class="icono-apiarios">
+                                        <i class="bi-house-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <strong>
+                                            {{ apicultor.apiarios.count }}
+                                        </strong>
+
+                                        <span>
+                                            Apiario{{ apicultor.apiarios.count|pluralize:"s" }}
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <!-- ==========================================
+                                BOTONES DE ACCIONES
+                            =========================================== -->
+                            <td class="text-center pe-4">
+
+                                <div class="acciones-apicultor">
+
+                                    <!-- VER DETALLE -->
+                                    <button
+                                        type="button"
+                                        class="btn-accion-apicultor btn-ver-apicultor"
+                                        title="Ver información"
+                                        aria-label="Ver información de {{ apicultor.nombre_completo }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDetalleApicultor"
+
+                                        data-id="{{ apicultor.id_apicultor }}"
+                                        data-perfil-url="{% url 'perfil_apicultor' apicultor.id_apicultor %}"
+                                        data-nombre="{{ apicultor.nombre_completo|escape }}"
+                                        data-nombres="{{ apicultor.user.first_name|default:''|escape }}"
+                                        data-apellidos="{{ apicultor.user.last_name|default:''|escape }}"
+                                        data-username="{{ apicultor.user.username|default:''|escape }}"
+                                        data-identificacion="{{ apicultor.identificacion|default:''|escape }}"
+                                        data-correo="{{ apicultor.user.email|default:''|escape }}"
+                                        data-telefono="{{ apicultor.telefono|default:''|escape }}"
+                                        data-zona="{{ apicultor.zona_trabajo|default:''|escape }}"
+                                        data-experiencia="{{ apicultor.experienciaanios|default_if_none:'' }}"
+                                        data-rol="{{ apicultor.id_rol.nombrerol|default:'Apicultor'|escape }}"
+                                        data-apiarios="{{ apicultor.apiarios.count }}"
+                                        data-activo="{% if apicultor.user.is_active %}Sí{% else %}No{% endif %}"
+                                        {% if apicultor.fotoperfil %}
+                                            data-foto="{{ apicultor.fotoperfil.url }}"
+                                        {% else %}
+                                            data-foto=""
+                                        {% endif %}
+                                    >
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </button>
+
+                                    <!-- EDITAR -->
+                                    <button
+                                        type="button"
+                                        class="btn-accion-apicultor btn-editar-apicultor"
+                                        title="Editar apicultor"
+                                        aria-label="Editar a {{ apicultor.nombre_completo }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarApicultor"
+
+                                        data-id="{{ apicultor.id_apicultor }}"
+                                        data-url="{% url 'editar_apicultor' apicultor.id_apicultor %}"
+                                        data-nombres="{{ apicultor.user.first_name|default:''|escape }}"
+                                        data-apellidos="{{ apicultor.user.last_name|default:''|escape }}"
+                                        data-username="{{ apicultor.user.username|default:''|escape }}"
+                                        data-identificacion="{{ apicultor.identificacion|default:''|escape }}"
+                                        data-correo="{{ apicultor.user.email|default:''|escape }}"
+                                        data-telefono="{{ apicultor.telefono|default:''|escape }}"
+                                        data-zona="{{ apicultor.zona_trabajo|default:''|escape }}"
+                                        data-experiencia="{{ apicultor.experienciaanios|default_if_none:'' }}"
+                                        data-activo="{% if apicultor.user and apicultor.user.is_active %}1{% else %}0{% endif %}"
+                                        {% if apicultor.fotoperfil %}
+                                            data-foto="{{ apicultor.fotoperfil.url }}"
+                                        {% else %}
+                                            data-foto=""
+                                        {% endif %}
+                                    >
+
+                                        <i class="bi bi-pencil-fill"></i>
+
+                                    </button>
+
+                                    <!-- ELIMINAR -->
+                                    <button
+                                        type="button"
+                                        class="btn-accion-apicultor btn-eliminar-apicultor"
+                                        title="Eliminar apicultor"
+                                        aria-label="Eliminar a {{ apicultor.nombre_completo }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarApicultor"
+
+                                        data-id="{{ apicultor.id_apicultor }}"
+                                        data-nombre="{{ apicultor.nombre_completo|escape }}"
+                                        data-url="{% url 'eliminar_apicultor' apicultor.id_apicultor %}"
+                                        data-apiarios="{{ apicultor.apiarios.count }}"
+                                    >
+
+                                        <i class="bi bi-trash-fill"></i>
+
+                                    </button>
+
+                                </div>
+                                <!-- =====================================================
+                                    INFORMACIÓN OCULTA DE LOS APIARIOS DEL APICULTOR
+                                ====================================================== -->
+                                <template id="templateApiariosApicultor{{ apicultor.id_apicultor }}">
+
+                                    {% for apiario in apicultor.apiarios.all %}
+
+                                        <article class="item-apiario-detalle">
+
+                                            <div class="icono-item-apiario-detalle">
+                                                <i class="bi bi-boxes"></i>
+                                            </div>
+
+                                            <div class="informacion-item-apiario">
+
+                                                <strong>
+                                                    {{ apiario.nombreapiario|default:"Apiario sin nombre" }}
+                                                </strong>
+
+                                                <div class="datos-secundarios-apiario">
+
+                                                    {% if apiario.ubicacion %}
+
+                                                        <span>
+                                                            <i class="bi bi-geo-alt-fill"></i>
+                                                            {{ apiario.ubicacion }}
+                                                        </span>
+
+                                                    {% endif %}
+
+                                                    {% if apiario.cantidadcolmenas is not None %}
+
+                                                        <span>
+                                                            <i class="bi bi-hexagon-fill"></i>
+
+                                                            {{ apiario.cantidadcolmenas }}
+
+                                                            colmena{{ apiario.cantidadcolmenas|pluralize:"s" }}
+                                                        </span>
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </div>
+
+                                            {% if apiario.estadoapiario %}
+
+                                                <span class="estado-apiario-en-detalle">
+                                                    {{ apiario.estadoapiario }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        </article>
+
+                                    {% empty %}
+
+                                        <div class="estado-sin-apiarios-detalle">
+
+                                            <div class="icono-sin-apiarios-detalle">
+                                                <i class="bi bi-inboxes-fill"></i>
+                                            </div>
+
+                                            <h6>
+                                                No tiene apiarios asignados
+                                            </h6>
+
+                                            <p>
+                                                Este apicultor todavía no tiene apiarios relacionados.
+                                            </p>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </template>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <!-- ==========================================
+                            ESTADO VACÍO
+                        =========================================== -->
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div class="estado-vacio-apicultores">
+
+                                    <div class="estado-vacio-icono">
+
+                                        <i class="bi bi-person-x-fill"></i>
+
+                                    </div>
+
+                                    {% if busqueda %}
+
+                                        <h5>
+                                            No se encontraron resultados
+                                        </h5>
+
+                                        <p>
+                                            No existen apicultores que coincidan con
+                                            “{{ busqueda }}”.
+                                        </p>
+
+                                        <a
+                                            href="{% url 'apicultores_admin' %}"
+                                            class="btn btn-outline-success rounded-pill px-4"
+                                        >
+                                            <i class="bi bi-arrow-clockwise me-1"></i>
+
+                                            Limpiar búsqueda
+                                        </a>
+
+                                    {% else %}
+
+                                        <h5>
+                                            No hay apicultores registrados
+                                        </h5>
+
+                                        <p>
+                                            Registra el primer apicultor para comenzar
+                                            a administrar sus apiarios.
+                                        </p>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-success rounded-pill px-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalAgregarApicultor"
+                                        >
+                                            <i class="bi bi-person-plus-fill me-1"></i>
+
+                                            Registrar apicultor
+                                        </button>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         PIE Y PAGINACIÓN
+    ====================================================== -->
+    {% if apicultores.paginator.num_pages > 1 %}
+
+        <div class="card-footer bg-white border-0 px-4 py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                <div class="informacion-paginacion">
+
+                    Mostrando
+
+                    <strong>
+                        {{ apicultores.start_index }}
+                    </strong>
+
+                    a
+
+                    <strong>
+                        {{ apicultores.end_index }}
+                    </strong>
+
+                    de
+
+                    <strong>
+                        {{ apicultores.paginator.count }}
+                    </strong>
+
+                    registros
+
+                </div>
+
+                <nav aria-label="Paginación de apicultores">
+
+                    <ul class="pagination paginacion-apicultores mb-0">
+
+                        <!-- PRIMERA PÁGINA -->
+                        {% if apicultores.has_previous %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page=1{% if tipo_filtro %}&tipo_filtro={{ tipo_filtro|urlencode }}{% endif %}{% if busqueda %}&busqueda={{ busqueda|urlencode }}{% endif %}"
+                                    title="Primera página"
+                                >
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+
+                            </li>
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page={{ apicultores.previous_page_number }}{% if tipo_filtro %}&tipo_filtro={{ tipo_filtro|urlencode }}{% endif %}{% if busqueda %}&busqueda={{ busqueda|urlencode }}{% endif %}"
+                                    title="Página anterior"
+                                >
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </span>
+                            </li>
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="bi bi-chevron-left"></i>
+                                </span>
+                            </li>
+
+                        {% endif %}
+
+                        <!-- NÚMEROS DE PÁGINA -->
+                        {% for numero in apicultores.paginator.page_range %}
+
+                            {% if numero == apicultores.number %}
+
+                                <li
+                                    class="page-item active"
+                                    aria-current="page"
+                                >
+                                    <span class="page-link">
+                                        {{ numero }}
+                                    </span>
+                                </li>
+
+                            {% elif numero >= apicultores.number|add:"-2" and numero <= apicultores.number|add:"2" %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page={{ numero }}{% if tipo_filtro %}&tipo_filtro={{ tipo_filtro|urlencode }}{% endif %}{% if busqueda %}&busqueda={{ busqueda|urlencode }}{% endif %}"
+                                    >
+                                        {{ numero }}
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                        <!-- SIGUIENTE Y ÚLTIMA PÁGINA -->
+                        {% if apicultores.has_next %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page={{ apicultores.next_page_number }}{% if tipo_filtro %}&tipo_filtro={{ tipo_filtro|urlencode }}{% endif %}{% if busqueda %}&busqueda={{ busqueda|urlencode }}{% endif %}"
+                                    title="Página siguiente"
+                                >
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+                            </li>
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page={{ apicultores.paginator.num_pages }}{% if tipo_filtro %}&tipo_filtro={{ tipo_filtro|urlencode }}{% endif %}{% if busqueda %}&busqueda={{ busqueda|urlencode }}{% endif %}"
+                                    title="Última página"
+                                >
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="bi bi-chevron-right"></i>
+                                </span>
+                            </li>
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </span>
+                            </li>
+
+                        {% endif %}
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>

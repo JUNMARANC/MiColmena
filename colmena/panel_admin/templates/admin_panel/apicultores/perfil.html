@@ -1,0 +1,801 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid perfil-apicultor-pagina">
+
+    <!-- =====================================================
+         NAVEGACIÓN Y ENCABEZADO
+    ====================================================== -->
+    <div class="encabezado-pagina-perfil">
+
+        <div>
+
+            <a
+                href="{% url 'apicultores_admin' %}"
+                class="volver-apicultores"
+            >
+                <i class="bi bi-arrow-left"></i>
+                Volver a apicultores
+            </a>
+
+            <h2 class="fw-bold mb-1 mt-3">
+                Perfil del apicultor
+            </h2>
+
+            <p class="text-muted mb-0">
+                Información completa y apiarios asignados.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'reporte_apicultor_pdf' apicultor.id_apicultor %}"
+            class="btn btn-reporte-pdf-apicultor"
+            target="_blank"
+        >
+            <i class="bi bi-file-earmark-pdf-fill me-2"></i>
+            Descargar PDF
+        </a>
+
+        <a
+            href="{% url 'apicultores_admin' %}"
+            class="btn btn-outline-success rounded-pill px-4"
+        >
+            <i class="bi bi-people-fill me-2"></i>
+            Lista de apicultores
+        </a>
+
+    </div>
+
+    <!-- =====================================================
+         TARJETA PRINCIPAL
+    ====================================================== -->
+    <section class="card-perfil-principal">
+
+        <div class="fondo-perfil-apicultor"></div>
+
+        <div class="contenido-perfil-principal">
+
+            <div class="foto-perfil-grande">
+
+                {% if apicultor.fotoperfil %}
+
+                    <img
+                        src="{{ apicultor.fotoperfil.url }}"
+                        alt="Foto de {{ apicultor.nombre_completo }}"
+                    >
+
+                {% else %}
+
+                    <div class="foto-perfil-grande-vacia">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                {% endif %}
+
+                <span
+                    class="
+                        estado-perfil-grande
+                        {% if apicultor.user.is_active %}
+                            estado-perfil-activo
+                        {% else %}
+                            estado-perfil-inactivo
+                        {% endif %}
+                    "
+                ></span>
+
+            </div>
+
+            <div class="datos-perfil-principal">
+
+                <div class="d-flex align-items-center flex-wrap gap-2">
+
+                    <h3 class="mb-0">
+                        {{ apicultor.nombre_completo }}
+                    </h3>
+
+                    <span class="badge-rol-perfil">
+                        <i class="bi bi-award-fill"></i>
+
+                        {{ apicultor.id_rol.nombrerol|default:"Apicultor" }}
+                    </span>
+
+                </div>
+
+                <div class="usuario-perfil-completo">
+                    <i class="bi bi-at"></i>
+                    {{ apicultor.user.username|default:"Sin usuario" }}
+                </div>
+
+                <div class="estado-texto-perfil">
+
+                    {% if apicultor.user.is_active %}
+
+                        <span class="usuario-activo-perfil">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Usuario activo
+                        </span>
+
+                    {% else %}
+
+                        <span class="usuario-inactivo-perfil">
+                            <i class="bi bi-x-circle-fill"></i>
+                            Usuario inactivo
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         ESTADÍSTICAS
+    ====================================================== -->
+    <div class="row g-4 mt-1">
+
+        <div class="col-md-4">
+
+            <article class="tarjeta-estadistica-perfil">
+
+                <div class="icono-estadistica-perfil icono-estadistica-apiarios">
+                    <i class="bi bi-houses-fill"></i>
+                </div>
+
+                <div>
+                    <span>Apiarios asignados</span>
+
+                    <strong>
+                        {{ total_apiarios }}
+                    </strong>
+                </div>
+
+            </article>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <article class="tarjeta-estadistica-perfil">
+
+                <div class="icono-estadistica-perfil icono-estadistica-colmenas">
+                    <i class="bi bi-hexagon-fill"></i>
+                </div>
+
+                <div>
+                    <span>Total de colmenas</span>
+
+                    <strong>
+                        {{ total_colmenas }}
+                    </strong>
+                </div>
+
+            </article>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <article class="tarjeta-estadistica-perfil">
+
+                <div class="icono-estadistica-perfil icono-estadistica-experiencia">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+
+                <div>
+                    <span>Experiencia</span>
+
+                    <strong>
+                        {% if apicultor.experienciaanios is not None %}
+                            {{ apicultor.experienciaanios }}
+                            año{{ apicultor.experienciaanios|pluralize:"s" }}
+                        {% else %}
+                            Sin registrar
+                        {% endif %}
+                    </strong>
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         INFORMACIÓN Y APIARIOS
+    ====================================================== -->
+    <div class="row g-4 mt-1">
+
+        <!-- INFORMACIÓN -->
+        <div class="col-xl-4">
+
+            <section class="tarjeta-perfil-seccion">
+
+                <div class="titulo-seccion-perfil">
+
+                    <div class="icono-seccion-perfil">
+                        <i class="bi bi-person-vcard-fill"></i>
+                    </div>
+
+                    <div>
+                        <h5>Información personal</h5>
+                        <small>Datos registrados del apicultor</small>
+                    </div>
+
+                </div>
+
+                <div class="lista-datos-perfil">
+
+                    <div class="dato-perfil-completo">
+
+                        <span>
+                            <i class="bi bi-person-badge-fill"></i>
+                        </span>
+
+                        <div>
+                            <small>Identificación</small>
+
+                            <strong>
+                                {{ apicultor.identificacion|default:"Sin registrar" }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <div class="dato-perfil-completo">
+
+                        <span>
+                            <i class="bi bi-envelope-fill"></i>
+                        </span>
+
+                        <div>
+                            <small>Correo electrónico</small>
+
+                            <a href="mailto:{{ apicultor.user.email }}">
+                                {{ apicultor.user.email|default:"Sin registrar" }}
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="dato-perfil-completo">
+
+                        <span>
+                            <i class="bi bi-telephone-fill"></i>
+                        </span>
+
+                        <div>
+                            <small>Teléfono</small>
+
+                            {% if apicultor.telefono %}
+
+                                <a href="tel:{{ apicultor.telefono }}">
+                                    {{ apicultor.telefono }}
+                                </a>
+
+                            {% else %}
+
+                                <strong>Sin registrar</strong>
+
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="dato-perfil-completo">
+
+                        <span>
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </span>
+
+                        <div>
+                            <small>Zona de trabajo</small>
+
+                            <strong>
+                                {{ apicultor.zona_trabajo|default:"Sin registrar" }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- LISTA DE APIARIOS -->
+        <div class="col-xl-8">
+
+            <section class="tarjeta-perfil-seccion">
+
+                <div class="titulo-seccion-perfil justify-content-between">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="icono-seccion-perfil icono-seccion-apiarios">
+                            <i class="bi bi-houses-fill"></i>
+                        </div>
+
+                        <div>
+                            <h5>Apiarios asignados</h5>
+
+                            <small>
+                                Apiarios que dependen del apicultor
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <span class="contador-apiarios-perfil">
+                        {{ total_apiarios }}
+                    </span>
+
+                </div>
+
+                <div class="lista-apiarios-perfil">
+
+                    {% for apiario in apiarios %}
+
+                        <article class="apiario-perfil-item">
+
+                            <div class="icono-apiario-perfil-item">
+                                <i class="bi bi-house-door-fill"></i>
+                            </div>
+
+                            <div class="informacion-apiario-perfil">
+
+                                <h6>
+                                    {{ apiario.nombreapiario|default:"Apiario sin nombre" }}
+                                </h6>
+
+                                <div class="detalles-apiario-perfil">
+
+                                    <span>
+                                        <i class="bi bi-geo-alt-fill"></i>
+
+                                        {{ apiario.ubicacion|default:"Sin ubicación" }}
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-hexagon-fill"></i>
+
+                                        {{ apiario.cantidadcolmenas|default:0 }}
+                                        colmena{{ apiario.cantidadcolmenas|default:0|pluralize:"s" }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <span class="estado-apiario-perfil">
+                                {{ apiario.estadoapiario|default:"Sin estado" }}
+                            </span>
+
+                        </article>
+
+                    {% empty %}
+
+                        <div class="sin-apiarios-perfil">
+
+                            <div>
+                                <i class="bi bi-house-x-fill"></i>
+                            </div>
+
+                            <h5>
+                                No tiene apiarios asignados
+                            </h5>
+
+                            <p>
+                                Este apicultor todavía no tiene apiarios
+                                relacionados.
+                            </p>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+    <!-- =====================================================
+        INFORMACIÓN LABORAL DEL APICULTOR
+    ====================================================== -->
+    <section class="seccion-control-laboral mt-4">
+
+        <div class="encabezado-control-laboral">
+
+            <div>
+
+                <span class="etiqueta-control-laboral">
+                    Gestión laboral
+                </span>
+
+                <h4>
+                    Tiempo y jornada de trabajo
+                </h4>
+
+                <p>
+                    Registra la antigüedad, los días habituales y
+                    el tiempo trabajado durante cada mes.
+                </p>
+
+            </div>
+
+            <div class="resumen-antiguedad-laboral">
+
+                <i class="bi bi-hourglass-split"></i>
+
+                <div>
+                    <small>Tiempo vinculado</small>
+
+                    <strong>
+                        {{ antiguedad.texto }}
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-4 mt-1">
+
+            <!-- VINCULACIÓN -->
+            <div class="col-xl-5">
+
+                <article class="tarjeta-control-laboral">
+
+                    <div class="titulo-control-laboral">
+
+                        <span>
+                            <i class="bi bi-calendar-check-fill"></i>
+                        </span>
+
+                        <div>
+                            <h5>Vinculación laboral</h5>
+
+                            <small>
+                                Fecha de ingreso y días habituales
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{% url 'guardar_vinculacion_apicultor' apicultor.id_apicultor %}"
+                    >
+
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+
+                            <label class="form-label label-control-laboral">
+                                Fecha de ingreso
+                            </label>
+
+                            {{ formulario_vinculacion.fecha_ingreso }}
+
+                        </div>
+
+                        <label class="form-label label-control-laboral">
+                            Días habituales de trabajo
+                        </label>
+
+                        <div class="selector-dias-laborales">
+
+                            <label>
+                                {{ formulario_vinculacion.lunes }}
+                                <span>Lunes</span>
+                            </label>
+
+                            <label>
+                                {{ formulario_vinculacion.martes }}
+                                <span>Martes</span>
+                            </label>
+
+                            <label>
+                                {{ formulario_vinculacion.miercoles }}
+                                <span>Miércoles</span>
+                            </label>
+
+                            <label>
+                                {{ formulario_vinculacion.jueves }}
+                                <span>Jueves</span>
+                            </label>
+
+                            <label>
+                                {{ formulario_vinculacion.viernes }}
+                                <span>Viernes</span>
+                            </label>
+
+                            <label>
+                                {{ formulario_vinculacion.sabado }}
+                                <span>Sábado</span>
+                            </label>
+
+                            <label>
+                                {{ formulario_vinculacion.domingo }}
+                                <span>Domingo</span>
+                            </label>
+
+                        </div>
+
+                        <div class="dato-actual-laboral">
+
+                            <i class="bi bi-calendar-week-fill"></i>
+
+                            <div>
+                                <small>Días registrados actualmente</small>
+
+                                <strong>
+                                    {{ dias_habituales }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-guardar-control-laboral w-100"
+                        >
+                            <i class="bi bi-floppy-fill me-2"></i>
+
+                            Guardar vinculación
+                        </button>
+
+                    </form>
+
+                </article>
+
+            </div>
+
+            <!-- REGISTRO MENSUAL -->
+            <div class="col-xl-7">
+
+                <article class="tarjeta-control-laboral">
+
+                    <div class="titulo-control-laboral">
+
+                        <span>
+                            <i class="bi bi-clock-history"></i>
+                        </span>
+
+                        <div>
+                            <h5>Registro mensual</h5>
+
+                            <small>
+                                Días y horas trabajadas durante el mes
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{% url 'guardar_registro_laboral_mensual' apicultor.id_apicultor %}"
+                    >
+
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+
+                                <label class="form-label label-control-laboral">
+                                    Mes del reporte
+                                </label>
+
+                                {{ formulario_registro.mes_reporte }}
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label label-control-laboral">
+                                    Días trabajados
+                                </label>
+
+                                {{ formulario_registro.dias_trabajados_mes }}
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label label-control-laboral">
+                                    Horas trabajadas
+                                </label>
+
+                                {{ formulario_registro.horas_trabajadas_mes }}
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label class="form-label label-control-laboral">
+                                    Observaciones
+                                </label>
+
+                                {{ formulario_registro.observaciones }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="alerta-registro-mensual">
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                            <span>
+                                Si ya existe información para el mes
+                                seleccionado, el registro será actualizado.
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-guardar-control-laboral w-100"
+                        >
+                            <i class="bi bi-calendar-plus-fill me-2"></i>
+
+                            Guardar registro mensual
+                        </button>
+
+                    </form>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+        HISTORIAL LABORAL
+    ====================================================== -->
+    <section class="tarjeta-historial-laboral mt-4">
+
+        <div class="titulo-historial-laboral">
+
+            <div>
+
+                <h5>
+                    <i class="bi bi-journal-text me-2"></i>
+                    Historial mensual
+                </h5>
+
+                <small>
+                    Registros de tiempo trabajado por mes
+                </small>
+
+            </div>
+
+            <span>
+                {{ registros_laborales.count }}
+                registro{{ registros_laborales.count|pluralize:"s" }}
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table tabla-historial-laboral mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Mes</th>
+                        <th>Días trabajados</th>
+                        <th>Horas trabajadas</th>
+                        <th>Promedio diario</th>
+                        <th>Observaciones</th>
+                        <th>Reporte</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for registro in registros_laborales %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ registro.mes_reporte|date:"F Y" }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ registro.dias_trabajados_mes }}
+                                día{{ registro.dias_trabajados_mes|pluralize:"s" }}
+                            </td>
+
+                            <td>
+                                {{ registro.horas_trabajadas_mes }}
+                                horas
+                            </td>
+
+                            <td>
+
+                                {% if registro.dias_trabajados_mes > 0 %}
+
+                                    {% widthratio registro.horas_trabajadas_mes registro.dias_trabajados_mes 1 %}
+                                    horas/día
+
+                                {% else %}
+
+                                    0 horas/día
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ registro.observaciones|default:"Sin observaciones" }}
+                            </td>
+                            
+                            <td>
+                                <a
+                                    href="{% url 'reporte_apicultor_pdf' apicultor.id_apicultor %}?mes={{ registro.mes_reporte|date:'Y-m' }}"
+                                    class="btn-pdf-mes"
+                                    target="_blank"
+                                    title="Descargar reporte de este mes"
+                                >
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                    PDF
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div class="sin-registros-laborales">
+
+                                    <i class="bi bi-calendar-x-fill"></i>
+
+                                    <h6>
+                                        No hay registros mensuales
+                                    </h6>
+
+                                    <p>
+                                        Guarda el primer registro laboral
+                                        utilizando el formulario anterior.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

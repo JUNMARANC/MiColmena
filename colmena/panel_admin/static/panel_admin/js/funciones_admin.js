@@ -156,3 +156,188 @@ document.addEventListener("DOMContentLoaded", function () {
     filtrarColmenasPorApiario();
 });
 
+/* JS DE INCIDENCIAS */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    function mostrarCamposEntidad(selector) {
+        const formulario = selector.dataset.formulario;
+        const entidad = selector.value;
+
+        const campoApicultor = document.querySelector(
+            `.campo-apicultor-${formulario}`
+        );
+
+        const campoApiario = document.querySelector(
+            `.campo-apiario-${formulario}`
+        );
+
+        const campoColmena = document.querySelector(
+            `.campo-colmena-${formulario}`
+        );
+
+        if (campoApicultor) {
+            campoApicultor.style.display =
+                entidad === "Apicultor" ? "block" : "none";
+        }
+
+        if (campoApiario) {
+            campoApiario.style.display =
+                entidad === "Apiario" || entidad === "Colmena"
+                    ? "block"
+                    : "none";
+        }
+
+        if (campoColmena) {
+            campoColmena.style.display =
+                entidad === "Colmena" ? "block" : "none";
+        }
+    }
+
+    function filtrarColmenas(apiarioSelect) {
+        const formulario = apiarioSelect.dataset.formulario;
+        const apiarioId = apiarioSelect.value;
+
+        const colmenaSelect = document.querySelector(
+            `.selector-colmena-${formulario}`
+        );
+
+        if (!colmenaSelect) {
+            return;
+        }
+
+        const opciones = colmenaSelect.querySelectorAll(
+            "option[data-apiario]"
+        );
+
+        opciones.forEach(function (opcion) {
+            const corresponde =
+                !apiarioId ||
+                opcion.dataset.apiario === apiarioId;
+
+            opcion.hidden = !corresponde;
+            opcion.disabled = !corresponde;
+        });
+
+        const opcionSeleccionada =
+            colmenaSelect.options[colmenaSelect.selectedIndex];
+
+        if (
+            opcionSeleccionada &&
+            opcionSeleccionada.dataset.apiario &&
+            opcionSeleccionada.dataset.apiario !== apiarioId
+        ) {
+            colmenaSelect.value = "";
+        }
+    }
+
+    document
+        .querySelectorAll(".selector-entidad")
+        .forEach(function (selector) {
+
+            mostrarCamposEntidad(selector);
+
+            selector.addEventListener("change", function () {
+                mostrarCamposEntidad(this);
+            });
+        });
+
+    document
+        .querySelectorAll(".selector-apiario")
+        .forEach(function (selector) {
+
+            filtrarColmenas(selector);
+
+            selector.addEventListener("change", function () {
+                filtrarColmenas(this);
+            });
+        });
+
+    // Filtros superiores
+    const filtroEntidad = document.getElementById("filtroEntidad");
+    const filtroApicultor = document.querySelector(".filtro-apicultor");
+    const filtroApiario = document.querySelector(".filtro-apiario");
+    const filtroColmena = document.querySelector(".filtro-colmena");
+
+    function actualizarFiltrosEntidad() {
+        if (!filtroEntidad) {
+            return;
+        }
+
+        const entidad = filtroEntidad.value;
+
+        if (filtroApicultor) {
+            filtroApicultor.style.display =
+                entidad === "Apicultor" ? "block" : "none";
+        }
+
+        if (filtroApiario) {
+            filtroApiario.style.display =
+                entidad === "Apiario" || entidad === "Colmena"
+                    ? "block"
+                    : "none";
+        }
+
+        if (filtroColmena) {
+            filtroColmena.style.display =
+                entidad === "Colmena" ? "block" : "none";
+        }
+    }
+
+    if (filtroEntidad) {
+        filtroEntidad.addEventListener(
+            "change",
+            actualizarFiltrosEntidad
+        );
+    }
+
+    // Filtrar las colmenas del filtro superior
+    const filtroApiarioSelect =
+        document.getElementById("filtroApiario");
+
+    const filtroColmenaSelect =
+        document.getElementById("filtroColmena");
+
+    function actualizarColmenasFiltro() {
+        if (!filtroApiarioSelect || !filtroColmenaSelect) {
+            return;
+        }
+
+        const apiarioId = filtroApiarioSelect.value;
+
+        const opciones = filtroColmenaSelect.querySelectorAll(
+            "option[data-apiario]"
+        );
+
+        opciones.forEach(function (opcion) {
+            const corresponde =
+                !apiarioId ||
+                opcion.dataset.apiario === apiarioId;
+
+            opcion.hidden = !corresponde;
+            opcion.disabled = !corresponde;
+        });
+
+        const seleccionada =
+            filtroColmenaSelect.options[
+                filtroColmenaSelect.selectedIndex
+            ];
+
+        if (
+            seleccionada &&
+            seleccionada.dataset.apiario &&
+            seleccionada.dataset.apiario !== apiarioId
+        ) {
+            filtroColmenaSelect.value = "";
+        }
+    }
+
+    if (filtroApiarioSelect) {
+        filtroApiarioSelect.addEventListener(
+            "change",
+            actualizarColmenasFiltro
+        );
+
+        actualizarColmenasFiltro();
+    }
+});
