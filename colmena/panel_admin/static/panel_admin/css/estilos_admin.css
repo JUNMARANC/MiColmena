@@ -801,3 +801,3343 @@ PAGINADOR
 .logout-sidebar:hover {
     color: #7a1111;
 }
+
+/* estilos INCIDENCIAS */
+
+    .incidencias-container {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(33, 79, 59, 0.08);
+    }
+
+    .incidencias-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .incidencias-header h2 {
+        color: var(--verde-oscuro, #214f3b);
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .incidencias-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .btn-agregar-incidencia {
+        background: var(--verde-oscuro, #214f3b);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 20px;
+        font-weight: 600;
+    }
+
+    .btn-agregar-incidencia:hover {
+        background: #163c2c;
+        color: white;
+    }
+
+    .filtros-incidencias {
+        background: #f7fbf8;
+        border: 1px solid #dcebe1;
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .filtros-incidencias label {
+        color: #214f3b;
+        font-size: 0.88rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .filtros-incidencias .form-select,
+    .filtros-incidencias .form-control {
+        border-radius: 10px;
+        border: 1px solid #ceddd3;
+        min-height: 42px;
+    }
+
+    .tabla-incidencias {
+        overflow-x: auto;
+    }
+
+    .tabla-incidencias table {
+        min-width: 1000px;
+    }
+
+    .tabla-incidencias thead th {
+        background: #f1f8f3;
+        color: #214f3b;
+        border-bottom: none;
+        font-size: 0.88rem;
+        white-space: nowrap;
+        padding: 15px;
+    }
+
+    .tabla-incidencias tbody td {
+        vertical-align: middle;
+        padding: 15px;
+        color: #34473e;
+    }
+
+    .entidad-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .entidad-apicultor {
+        background: #e9f2ff;
+        color: #2f65a7;
+    }
+
+    .entidad-apiario {
+        background: #e6f6eb;
+        color: #287547;
+    }
+
+    .entidad-colmena {
+        background: #fff5d8;
+        color: #8c6812;
+    }
+
+    .badge-prioridad,
+    .badge-estado {
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 0.80rem;
+        font-weight: 600;
+    }
+
+    .prioridad-baja {
+        background: #dff5e5;
+        color: #287547;
+    }
+
+    .prioridad-media {
+        background: #fff4ca;
+        color: #8c6812;
+    }
+
+    .prioridad-alta {
+        background: #ffe2cc;
+        color: #a44e14;
+    }
+
+    .prioridad-critica {
+        background: #ffd9dc;
+        color: #a72330;
+    }
+
+    .estado-pendiente {
+        background: #fff4ca;
+        color: #8c6812;
+    }
+
+    .estado-proceso {
+        background: #dcecff;
+        color: #245e9e;
+    }
+
+    .estado-resuelta {
+        background: #dff5e5;
+        color: #287547;
+    }
+
+    .acciones-incidencia {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-accion {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        border: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-ver {
+        background: #e9f2ff;
+        color: #2f65a7;
+    }
+
+    .btn-editar {
+        background: #fff4ca;
+        color: #8c6812;
+    }
+
+    .btn-eliminar {
+        background: #ffdfe2;
+        color: #a72330;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .modal-header-incidencia {
+        background: linear-gradient(135deg, #214f3b, #5f9781);
+        color: white;
+        border-bottom: none;
+        padding: 20px 24px;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .modal-body label {
+        color: #214f3b;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .modal-body .form-control,
+    .modal-body .form-select {
+        border-radius: 10px;
+        border: 1px solid #ceddd3;
+    }
+
+    .imagen-incidencia {
+        width: 100%;
+        max-height: 280px;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+    .sin-imagen {
+        background: #f1f8f3;
+        border-radius: 14px;
+        padding: 35px;
+        text-align: center;
+        color: #789085;
+    }
+
+    .detalle-item {
+        background: #f7fbf8;
+        border-radius: 12px;
+        padding: 12px 15px;
+        height: 100%;
+    }
+
+    .detalle-item small {
+        color: #708178;
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .detalle-item strong {
+        color: #214f3b;
+    }
+
+    .paginacion-incidencias .page-link {
+        color: #214f3b;
+        border-radius: 9px;
+        margin: 0 3px;
+    }
+
+    .paginacion-incidencias .page-item.active .page-link {
+        background: #214f3b;
+        border-color: #214f3b;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .incidencias-container {
+            padding: 18px;
+        }
+
+        .incidencias-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .btn-agregar-incidencia {
+            width: 100%;
+        }
+    }
+
+
+/* =========================================================
+   TABLA DE APICULTORES
+========================================================= */
+
+.card-tabla-apicultores {
+    background: #ffffff;
+}
+
+.tabla-apicultores-icono {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #e8f7ed;
+    color: var(--verde-oscuro);
+    font-size: 1.3rem;
+}
+
+.contador-apicultores {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 50px;
+    background: #e8f7ed;
+    color: var(--verde-oscuro);
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.contador-apicultores span {
+    margin-right: 4px;
+    font-size: 1rem;
+}
+
+
+/* Encabezado */
+
+.tabla-apicultores thead th {
+    padding: 15px 18px;
+    border-top: 1px solid #e8eeee;
+    border-bottom: 1px solid #e3eaea;
+    background: #f7fbf8;
+    color: #4c6158;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+
+/* Filas */
+
+.tabla-apicultores tbody td {
+    padding: 18px;
+    border-color: #edf1ef;
+    color: #294237;
+    vertical-align: middle;
+}
+
+.tabla-apicultores tbody tr {
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.tabla-apicultores tbody tr:hover {
+    background: #fbfefc;
+}
+
+
+/* Foto */
+
+.contenedor-foto-apicultor {
+    position: relative;
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+}
+
+.foto-apicultor,
+.foto-apicultor-sin-imagen {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid #dcefe3;
+    box-shadow: 0 5px 14px rgba(33, 79, 59, 0.11);
+}
+
+.foto-apicultor {
+    display: block;
+    object-fit: cover;
+}
+
+.foto-apicultor-sin-imagen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf5ee;
+    color: var(--verde-medio);
+    font-size: 1.8rem;
+}
+
+.estado-usuario {
+    position: absolute;
+    right: 1px;
+    bottom: 2px;
+    width: 15px;
+    height: 15px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+}
+
+.estado-activo {
+    background: #2eb85c;
+}
+
+.estado-inactivo {
+    background: #adb5bd;
+}
+
+
+/* Información principal */
+
+.datos-principales-apicultor {
+    min-width: 175px;
+}
+
+.nombre-apicultor {
+    color: var(--verde-oscuro);
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.usuario-apicultor {
+    margin-top: 3px;
+    color: #7b8b84;
+    font-size: 0.8rem;
+}
+
+.rol-apicultor {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 7px;
+    padding: 4px 9px;
+    border-radius: 50px;
+    background: #fff5cf;
+    color: #725b00;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+
+/* Contacto */
+
+.informacion-contacto {
+    display: flex;
+    min-width: 220px;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dato-contacto {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.icono-contacto {
+    width: 29px;
+    min-width: 29px;
+    height: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #eff7f2;
+    color: var(--verde-medio);
+    font-size: 0.78rem;
+}
+
+.dato-contacto div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.dato-contacto small {
+    color: #8b9892;
+    font-size: 0.66rem;
+    line-height: 1;
+}
+
+.dato-contacto span,
+.dato-contacto a {
+    margin-top: 3px;
+    color: #30483d;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.dato-contacto a:hover {
+    color: var(--verde-medio);
+}
+
+.correo-apicultor {
+    display: block;
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* Zona */
+
+.zona-apicultor {
+    display: inline-flex;
+    min-width: 130px;
+    max-width: 190px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 11px;
+    border: 1px solid #e1eee6;
+    border-radius: 12px;
+    background: #f8fcf9;
+    color: #395247;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.icono-zona {
+    color: #e26363;
+    font-size: 1rem;
+}
+
+
+/* Experiencia */
+
+.experiencia-apicultor {
+    display: inline-flex;
+    min-width: 95px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 11px;
+    border-radius: 11px;
+    background: #f3f7f5;
+    color: #53675e;
+    font-size: 0.76rem;
+}
+
+.experiencia-apicultor i {
+    color: var(--verde-medio);
+}
+
+.experiencia-apicultor strong {
+    color: var(--verde-oscuro);
+    font-size: 0.92rem;
+}
+
+.dato-no-registrado {
+    color: #9aa7a1;
+    font-size: 0.78rem;
+    font-style: italic;
+}
+
+
+/* Apiarios */
+
+.cantidad-apiarios {
+    display: inline-flex;
+    min-width: 105px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 8px 11px;
+    border: 1px solid #f1df9d;
+    border-radius: 13px;
+    background: #fff9e4;
+}
+
+.icono-apiarios {
+    width: 31px;
+    height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--amarillo);
+    color: #675000;
+}
+
+.cantidad-apiarios > div:last-child {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.cantidad-apiarios strong {
+    color: #5b4800;
+    font-size: 0.92rem;
+    line-height: 1;
+}
+
+.cantidad-apiarios span {
+    margin-top: 3px;
+    color: #8a772e;
+    font-size: 0.65rem;
+}
+
+
+/* Acciones */
+
+.acciones-apicultor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.btn-accion-apicultor {
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.btn-accion-apicultor:hover {
+    transform: translateY(-2px);
+}
+
+.btn-ver-apicultor {
+    background: #e9f2ff;
+    color: #2b6cb0;
+}
+
+.btn-ver-apicultor:hover {
+    background: #d9eaff;
+    box-shadow: 0 5px 12px rgba(43, 108, 176, 0.18);
+}
+
+.btn-editar-apicultor {
+    background: #fff6d9;
+    color: #987000;
+}
+
+.btn-editar-apicultor:hover {
+    background: #ffedb1;
+    box-shadow: 0 5px 12px rgba(152, 112, 0, 0.18);
+}
+
+.btn-eliminar-apicultor {
+    background: #ffe9eb;
+    color: #c03948;
+}
+
+.btn-eliminar-apicultor:hover {
+    background: #ffd9dd;
+    box-shadow: 0 5px 12px rgba(192, 57, 72, 0.18);
+}
+
+
+/* Estado vacío */
+
+.estado-vacio-apicultores {
+    padding: 65px 20px;
+    text-align: center;
+}
+
+.estado-vacio-icono {
+    width: 82px;
+    height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #edf7f0;
+    color: var(--verde-medio);
+    font-size: 2.1rem;
+}
+
+.estado-vacio-apicultores h5 {
+    color: var(--verde-oscuro);
+    font-weight: 700;
+}
+
+.estado-vacio-apicultores p {
+    max-width: 430px;
+    margin: 0 auto 22px;
+    color: #7e8d86;
+}
+
+
+/* Paginación */
+
+.informacion-paginacion {
+    color: #7d8c85;
+    font-size: 0.8rem;
+}
+
+.informacion-paginacion strong {
+    color: var(--verde-oscuro);
+}
+
+.paginacion-apicultores {
+    gap: 5px;
+}
+
+.paginacion-apicultores .page-link {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 10px;
+    background: #f0f5f2;
+    color: var(--verde-oscuro);
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.paginacion-apicultores .page-link:hover {
+    background: #dff0e4;
+    color: var(--verde-oscuro);
+}
+
+.paginacion-apicultores .page-item.active .page-link {
+    background: var(--verde-oscuro);
+    color: #ffffff;
+}
+
+.paginacion-apicultores .page-item.disabled .page-link {
+    background: #f5f6f6;
+    color: #bac2be;
+}
+
+
+/* Responsive */
+
+@media (max-width: 991px) {
+
+    .card-tabla-apicultores .table-responsive {
+        overflow-x: auto;
+    }
+
+    .tabla-apicultores {
+        min-width: 1120px;
+    }
+
+}
+
+@media (max-width: 576px) {
+
+    .card-tabla-apicultores .card-header,
+    .card-tabla-apicultores .card-footer {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .tabla-apicultores-icono {
+        width: 40px;
+        height: 40px;
+    }
+
+    .contador-apicultores {
+        font-size: 0.75rem;
+    }
+
+    .estado-vacio-apicultores {
+        padding: 45px 15px;
+    }
+
+    .paginacion-apicultores .page-link {
+        min-width: 32px;
+        height: 32px;
+    }
+
+}
+
+/* AGREGAR APICULTOR*/
+
+/* =========================================================
+   MODAL DE APICULTORES
+========================================================= */
+
+.modal-apicultor {
+    overflow: hidden;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 25px 70px rgba(23, 59, 44, 0.22);
+}
+
+.modal-header-apicultor {
+    padding: 22px 28px;
+    border-bottom: 0;
+    background:
+        linear-gradient(
+            135deg,
+            var(--verde-oscuro),
+            var(--verde-medio)
+        );
+    color: #ffffff;
+}
+
+.modal-header-apicultor p {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.85rem;
+}
+
+.modal-icono-apicultor {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.13);
+    color: #ffffff;
+    font-size: 1.4rem;
+}
+
+
+/* Secciones */
+
+.seccion-formulario-apicultor,
+.seccion-foto-apicultor {
+    padding: 24px;
+    border: 1px solid #e6eee9;
+    border-radius: 18px;
+    background: #ffffff;
+}
+
+.seccion-foto-apicultor {
+    height: 100%;
+    background:
+        linear-gradient(
+            180deg,
+            #f8fcf9 0%,
+            #ffffff 100%
+        );
+}
+
+.titulo-seccion-modal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.titulo-seccion-modal h6 {
+    color: var(--verde-oscuro);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.titulo-seccion-modal small {
+    color: #89978f;
+    font-size: 0.73rem;
+}
+
+.icono-seccion-modal {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #e8f5ec;
+    color: var(--verde-medio);
+    font-size: 1rem;
+}
+
+
+/* Foto */
+
+.contenedor-preview-apicultor {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.preview-foto-apicultor {
+    width: 155px;
+    height: 155px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 4px solid #e1f0e6;
+    border-radius: 50%;
+    background: #edf7f0;
+    color: var(--verde-medio);
+    box-shadow: 0 10px 25px rgba(33, 79, 59, 0.12);
+}
+
+.preview-foto-apicultor > i {
+    font-size: 4rem;
+}
+
+.preview-foto-apicultor img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-seleccionar-foto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 17px;
+    border: 0;
+    border-radius: 12px;
+    background: #68a088;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-seleccionar-foto:hover {
+    transform: translateY(-2px);
+    background: #163f2e;
+    box-shadow: 0 7px 15px rgba(33, 79, 59, 0.2);
+}
+
+.texto-ayuda-foto {
+    display: block;
+    max-width: 210px;
+    margin-top: 13px;
+    color: #8d9993;
+    font-size: 0.69rem;
+    line-height: 1.5;
+}
+
+.btn-quitar-foto {
+    margin-top: 13px;
+    padding: 7px 11px;
+    border: 0;
+    border-radius: 9px;
+    background: #ffecef;
+    color: #c23c4a;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+
+/* Etiquetas */
+
+.label-apicultor {
+    margin-bottom: 7px;
+    color: #3b5147;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.campo-obligatorio {
+    color: #d94b59;
+}
+
+.texto-opcional {
+    margin-left: 5px;
+    color: #9aa59f;
+    font-size: 0.65rem;
+    font-weight: 500;
+}
+
+
+/* Inputs */
+
+.input-group-apicultor {
+    overflow: hidden;
+    border: 1px solid #dce7e1;
+    border-radius: 12px;
+    background: #ffffff;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.input-group-apicultor:focus-within {
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 3px rgba(95, 151, 129, 0.14);
+}
+
+.input-group-apicultor .input-group-text {
+    min-width: 44px;
+    justify-content: center;
+    border: 0;
+    background: #f2f8f4;
+    color: var(--verde-medio);
+}
+
+.input-group-apicultor .form-control {
+    min-height: 45px;
+    border: 0;
+    color: #294137;
+    font-size: 0.82rem;
+    box-shadow: none;
+}
+
+.input-group-apicultor .form-control::placeholder {
+    color: #a9b3ae;
+}
+
+.input-group-apicultor .form-control:focus {
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.input-group-apicultor .form-control.is-invalid {
+    padding-right: 12px;
+    background-image: none;
+}
+
+.input-group-apicultor .form-control.is-valid {
+    padding-right: 12px;
+    background-image: none;
+}
+
+.btn-mostrar-password {
+    min-width: 44px;
+    border: 0;
+    border-left: 1px solid #e4ece7;
+    border-radius: 0;
+    background: #f8fbf9;
+    color: #718078;
+}
+
+.btn-mostrar-password:hover,
+.btn-mostrar-password:focus {
+    background: #edf6f0;
+    color: var(--verde-oscuro);
+}
+
+.form-text-apicultor {
+    display: block;
+    margin-top: 6px;
+    color: #929e98;
+    font-size: 0.68rem;
+}
+
+
+/* Información de credenciales */
+
+.alerta-credenciales {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 13px;
+    border: 1px solid #dce9ff;
+    border-radius: 11px;
+    background: #f2f7ff;
+    color: #42658f;
+    font-size: 0.74rem;
+}
+
+.alerta-credenciales i {
+    color: #3576bd;
+    font-size: 0.9rem;
+}
+
+.mensaje-password-no-coincide {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    color: #c23d4c;
+    font-size: 0.69rem;
+}
+
+
+/* Pie del modal */
+
+.modal-footer-apicultor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    border-top: 1px solid #e8eeea;
+    background: #f9fbfa;
+}
+
+.texto-campos-obligatorios {
+    color: #89958f;
+    font-size: 0.73rem;
+}
+
+.texto-campos-obligatorios span {
+    color: #d94b59;
+    font-weight: 700;
+}
+
+.btn-cancelar-apicultor,
+.btn-guardar-apicultor {
+    min-height: 42px;
+    padding: 9px 18px;
+    border-radius: 11px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.btn-cancelar-apicultor {
+    border: 1px solid #d7dfdb;
+    background: #ffffff;
+    color: #66766e;
+}
+
+.btn-cancelar-apicultor:hover {
+    background: #f0f4f2;
+    color: #3f5148;
+}
+
+.btn-guardar-apicultor {
+    border: 1px solid var(--verde-oscuro);
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(33, 79, 59, 0.16);
+}
+
+.btn-guardar-apicultor:hover {
+    border-color: #163f2e;
+    background: #163f2e;
+    color: #ffffff;
+}
+
+.btn-guardar-apicultor:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+/* Responsive */
+
+@media (max-width: 991px) {
+
+    .seccion-foto-apicultor {
+        height: auto;
+    }
+
+    .contenedor-preview-apicultor {
+        padding-bottom: 4px;
+    }
+
+}
+
+@media (max-width: 767px) {
+
+    .modal-header-apicultor {
+        padding: 18px;
+    }
+
+    .modal-icono-apicultor {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+    }
+
+    .modal-header-apicultor h4 {
+        font-size: 1.05rem;
+    }
+
+    .modal-header-apicultor p {
+        font-size: 0.72rem;
+    }
+
+    .seccion-formulario-apicultor,
+    .seccion-foto-apicultor {
+        padding: 18px;
+    }
+
+    .modal-footer-apicultor {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 16px 18px;
+    }
+
+    .modal-footer-apicultor > div:last-child {
+        width: 100%;
+    }
+
+    .btn-cancelar-apicultor,
+    .btn-guardar-apicultor {
+        flex: 1;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .modal-footer-apicultor > div:last-child {
+        flex-direction: column;
+    }
+
+    .preview-foto-apicultor {
+        width: 135px;
+        height: 135px;
+    }
+
+}
+
+/* =========================================================
+   CORRECCIONES DEL MODAL AGREGAR APICULTOR
+========================================================= */
+
+/* El modal nunca debe superar la altura de la pantalla */
+
+#modalAgregarApicultor .modal-dialog-apicultor {
+    width: calc(100% - 2rem);
+    height: calc(100vh - 2rem);
+    max-height: calc(100vh - 2rem);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+
+/* Contenedor principal */
+
+#modalAgregarApicultor .modal-content {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+
+/*
+El formulario debe funcionar como contenedor flexible.
+Esto permite que modal-body tenga un scroll independiente.
+*/
+
+#modalAgregarApicultor .form-modal-apicultor {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+
+/* El encabezado siempre permanece visible */
+
+#modalAgregarApicultor .modal-header-apicultor {
+    flex: 0 0 auto;
+}
+
+
+/* La parte central es la que se desplaza */
+
+#modalAgregarApicultor .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+}
+
+
+/* El pie siempre permanece visible */
+
+#modalAgregarApicultor .modal-footer-apicultor {
+    flex: 0 0 auto;
+}
+
+
+/* =========================================================
+   COLORES DEL ENCABEZADO
+========================================================= */
+
+#modalAgregarApicultor .modal-header-apicultor {
+    background: linear-gradient(
+        135deg,
+        #214f3b 0%,
+        #5f9781 100%
+    ) !important;
+}
+
+#modalAgregarApicultor .modal-header-apicultor .modal-title,
+#modalAgregarApicultor .modal-header-apicultor h4,
+#modalAgregarApicultor .modal-header-apicultor p {
+    color: #ffffff !important;
+}
+
+#modalAgregarApicultor .modal-header-apicultor p {
+    opacity: 0.9;
+}
+
+#modalAgregarApicultor .modal-icono-apicultor,
+#modalAgregarApicultor .modal-icono-apicultor i {
+    color: #ffffff !important;
+}
+
+#modalAgregarApicultor .modal-header-apicultor .btn-close {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+}
+
+
+/* =========================================================
+   BOTÓN PARA SELECCIONAR FOTO
+========================================================= */
+
+#modalAgregarApicultor label.btn-seleccionar-foto {
+    width: 100%;
+    max-width: 205px;
+    min-height: 42px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    background: #214f3b !important;
+    color: #ffffff !important;
+    font-size: 0.8rem !important;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#modalAgregarApicultor label.btn-seleccionar-foto span,
+#modalAgregarApicultor label.btn-seleccionar-foto i {
+    display: inline-block !important;
+    color: #ffffff !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#modalAgregarApicultor label.btn-seleccionar-foto:hover {
+    transform: translateY(-2px);
+    background: #163f2e !important;
+    color: #ffffff !important;
+    box-shadow: 0 7px 16px rgba(33, 79, 59, 0.25);
+}
+
+
+/* =========================================================
+   BARRA DE DESPLAZAMIENTO
+========================================================= */
+
+#modalAgregarApicultor .modal-body::-webkit-scrollbar {
+    width: 9px;
+}
+
+#modalAgregarApicultor .modal-body::-webkit-scrollbar-track {
+    background: #f1f5f2;
+}
+
+#modalAgregarApicultor .modal-body::-webkit-scrollbar-thumb {
+    border: 2px solid #f1f5f2;
+    border-radius: 20px;
+    background: #8eb6a5;
+}
+
+#modalAgregarApicultor .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #5f9781;
+}
+
+
+/* =========================================================
+   PANTALLAS PEQUEÑAS
+========================================================= */
+
+@media (max-width: 575.98px) {
+
+    #modalAgregarApicultor .modal-dialog-apicultor {
+        width: auto;
+        height: calc(100vh - 1rem);
+        height: calc(100dvh - 1rem);
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+        margin: 0.5rem;
+    }
+
+    #modalAgregarApicultor .modal-header-apicultor {
+        padding: 16px;
+    }
+
+    #modalAgregarApicultor .modal-body {
+        padding: 16px !important;
+    }
+
+}
+
+/* =========================================================
+   MODAL DETALLE DEL APICULTOR
+========================================================= */
+
+.modal-detalle-apicultor {
+    overflow: hidden;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 25px 70px rgba(23, 59, 44, 0.24);
+}
+
+
+/* Encabezado */
+
+.modal-header-detalle-apicultor {
+    padding: 22px 26px;
+    border-bottom: 0;
+    background:
+        linear-gradient(
+            135deg,
+            #214f3b 0%,
+            #5f9781 100%
+        );
+    color: #ffffff;
+}
+
+.modal-header-detalle-apicultor .modal-title,
+.modal-header-detalle-apicultor p {
+    color: #ffffff !important;
+}
+
+.modal-header-detalle-apicultor p {
+    font-size: 0.82rem;
+    opacity: 0.86;
+}
+
+.icono-header-detalle-apicultor {
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    font-size: 1.35rem;
+}
+
+
+/* Perfil principal */
+
+.encabezado-perfil-apicultor {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 28px;
+    border-bottom: 1px solid #e7eee9;
+    background:
+        linear-gradient(
+            135deg,
+            #f3faf5 0%,
+            #ffffff 70%
+        );
+}
+
+.foto-detalle-apicultor {
+    position: relative;
+    width: 104px;
+    min-width: 104px;
+    height: 104px;
+}
+
+.foto-detalle-apicultor img,
+.foto-detalle-sin-imagen {
+    width: 104px;
+    height: 104px;
+    border: 4px solid #d9eee1;
+    border-radius: 50%;
+    box-shadow: 0 10px 24px rgba(33, 79, 59, 0.15);
+}
+
+.foto-detalle-apicultor img {
+    display: block;
+    object-fit: cover;
+}
+
+.foto-detalle-sin-imagen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf6ed;
+    color: var(--verde-medio);
+    font-size: 2.7rem;
+}
+
+.estado-detalle-apicultor {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 19px;
+    height: 19px;
+    border: 4px solid #ffffff;
+    border-radius: 50%;
+}
+
+.indicador-detalle-activo {
+    background: #2eb85c;
+}
+
+.indicador-detalle-inactivo {
+    background: #adb5bd;
+}
+
+.informacion-principal-detalle {
+    flex: 1;
+    min-width: 0;
+}
+
+.informacion-principal-detalle h3 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+.usuario-detalle-apicultor {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 5px;
+    color: #75857d;
+    font-size: 0.84rem;
+}
+
+.badges-detalle-apicultor {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.badge-rol-detalle,
+.badge-estado-detalle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.badge-rol-detalle {
+    background: #fff3bf;
+    color: #725900;
+}
+
+.badge-estado-detalle {
+    background: #edf1ef;
+    color: #637169;
+}
+
+.estado-detalle-activo {
+    background: #dcf6e4;
+    color: #237c41;
+}
+
+.estado-detalle-inactivo {
+    background: #f0f1f1;
+    color: #737d78;
+}
+
+
+/* Resumen de apiarios */
+
+.resumen-apiarios-detalle {
+    display: flex;
+    min-width: 135px;
+    align-items: center;
+    gap: 11px;
+    padding: 14px 16px;
+    border: 1px solid #f0db8d;
+    border-radius: 16px;
+    background: #fff9df;
+}
+
+.icono-resumen-apiarios {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--amarillo);
+    color: #665000;
+    font-size: 1.15rem;
+}
+
+.resumen-apiarios-detalle > div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.resumen-apiarios-detalle strong {
+    color: #5a4700;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.resumen-apiarios-detalle span {
+    margin-top: 4px;
+    color: #88752d;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+
+/* Contenido */
+
+.contenido-detalle-apicultor {
+    padding: 26px 28px 30px;
+    background: #f8fbf9;
+}
+
+.tarjeta-informacion-detalle {
+    height: 100%;
+    padding: 21px;
+    border: 1px solid #e3ece6;
+    border-radius: 17px;
+    background: #ffffff;
+}
+
+.titulo-tarjeta-detalle {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #edf1ef;
+}
+
+.icono-tarjeta-detalle {
+    width: 39px;
+    min-width: 39px;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #e8f5ec;
+    color: var(--verde-medio);
+}
+
+.titulo-tarjeta-detalle h6 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-size: 0.9rem;
+    font-weight: 750;
+}
+
+.titulo-tarjeta-detalle small {
+    color: #8b9991;
+    font-size: 0.69rem;
+}
+
+
+/* Filas informativas */
+
+.lista-informacion-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 18px;
+}
+
+.fila-informacion-detalle {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.icono-dato-detalle {
+    width: 35px;
+    min-width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #f0f7f2;
+    color: var(--verde-medio);
+    font-size: 0.84rem;
+}
+
+.fila-informacion-detalle > div:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.fila-informacion-detalle small,
+.dato-laboral-detalle small {
+    color: #929f98;
+    font-size: 0.67rem;
+}
+
+.fila-informacion-detalle strong,
+.fila-informacion-detalle a,
+.dato-laboral-detalle strong {
+    margin-top: 3px;
+    color: #31483d;
+    font-size: 0.82rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+}
+
+.fila-informacion-detalle a:hover {
+    color: var(--verde-medio);
+}
+
+.enlace-dato-vacio {
+    color: #99a49f !important;
+    font-style: italic;
+    pointer-events: none;
+}
+
+
+/* Información laboral */
+
+.dato-laboral-detalle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid #e5eee8;
+    border-radius: 14px;
+    background: #f9fcfa;
+}
+
+.icono-laboral-detalle {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #e9f5ed;
+    color: var(--verde-medio);
+}
+
+.icono-zona-detalle {
+    background: #fff0f0;
+    color: #dc5d67;
+}
+
+.dato-laboral-detalle > div:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+
+/* Pie */
+
+.modal-footer-detalle-apicultor {
+    padding: 17px 26px;
+    border-top: 1px solid #e5ece7;
+    background: #ffffff;
+}
+
+.btn-cerrar-detalle-apicultor {
+    padding: 9px 20px;
+    border: 1px solid #d5dfd9;
+    border-radius: 11px;
+    background: #ffffff;
+    color: #596b62;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.btn-cerrar-detalle-apicultor:hover {
+    background: #edf4ef;
+    color: var(--verde-oscuro);
+}
+
+
+/* Responsive */
+
+@media (max-width: 767px) {
+
+    .encabezado-perfil-apicultor {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 22px;
+    }
+
+    .resumen-apiarios-detalle {
+        width: 100%;
+    }
+
+    .contenido-detalle-apicultor {
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .modal-header-detalle-apicultor {
+        padding: 17px;
+    }
+
+    .icono-header-detalle-apicultor {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+    }
+
+    .modal-header-detalle-apicultor h4 {
+        font-size: 1rem;
+    }
+
+    .foto-detalle-apicultor,
+    .foto-detalle-apicultor img,
+    .foto-detalle-sin-imagen {
+        width: 88px;
+        min-width: 88px;
+        height: 88px;
+    }
+
+}
+
+/* =========================================================
+   LISTA DE APIARIOS EN EL DETALLE DEL APICULTOR
+========================================================= */
+
+/* Contador convertido en botón */
+
+.boton-apiarios-detalle {
+    position: relative;
+    border: 1px solid #f0db8d;
+    cursor: pointer;
+    text-align: left;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.boton-apiarios-detalle:hover {
+    transform: translateY(-2px);
+    border-color: #e0c35c;
+    box-shadow: 0 8px 18px rgba(116, 91, 0, 0.12);
+}
+
+.boton-apiarios-detalle:focus {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(246, 222, 135, 0.38);
+}
+
+.contenido-contador-apiarios {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.icono-desplegar-apiarios {
+    margin-left: 7px;
+    color: #88752d;
+    font-size: 0.85rem;
+    transition: transform 0.25s ease;
+}
+
+.boton-apiarios-detalle[aria-expanded="true"]
+.icono-desplegar-apiarios {
+    transform: rotate(180deg);
+}
+
+
+/* Panel desplegable */
+
+.panel-apiarios-detalle {
+    padding: 22px 28px;
+    border-bottom: 1px solid #e2ebe5;
+    background:
+        linear-gradient(
+            180deg,
+            #fffdf5 0%,
+            #ffffff 100%
+        );
+}
+
+.encabezado-panel-apiarios {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+
+.icono-panel-apiarios {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #fff1b8;
+    color: #725900;
+    font-size: 1.05rem;
+}
+
+.encabezado-panel-apiarios h6 {
+    color: var(--verde-oscuro);
+    font-size: 0.92rem;
+    font-weight: 750;
+}
+
+.encabezado-panel-apiarios small {
+    color: #8b9791;
+    font-size: 0.7rem;
+}
+
+.contador-panel-apiarios {
+    min-width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 9px;
+    border-radius: 50px;
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+
+/* Lista */
+
+.lista-apiarios-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-apiario-detalle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 15px;
+    border: 1px solid #e2eae5;
+    border-radius: 14px;
+    background: #ffffff;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.item-apiario-detalle:hover {
+    transform: translateX(3px);
+    border-color: #cfe1d6;
+    box-shadow: 0 7px 16px rgba(33, 79, 59, 0.08);
+}
+
+.icono-item-apiario-detalle {
+    width: 41px;
+    min-width: 41px;
+    height: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #fff4c8;
+    color: #755c00;
+    font-size: 1rem;
+}
+
+.informacion-item-apiario {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.informacion-item-apiario strong {
+    color: var(--verde-oscuro);
+    font-size: 0.83rem;
+    font-weight: 750;
+}
+
+.datos-secundarios-apiario {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 15px;
+    margin-top: 5px;
+}
+
+.datos-secundarios-apiario span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #849089;
+    font-size: 0.69rem;
+}
+
+.datos-secundarios-apiario i {
+    color: var(--verde-medio);
+}
+
+.estado-apiario-en-detalle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 50px;
+    background: #e9f6ed;
+    color: #34754e;
+    font-size: 0.67rem;
+    font-weight: 700;
+}
+
+
+/* Sin apiarios */
+
+.estado-sin-apiarios-detalle {
+    padding: 25px 15px;
+    text-align: center;
+}
+
+.icono-sin-apiarios-detalle {
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: #f1f6f3;
+    color: #8ca095;
+    font-size: 1.35rem;
+}
+
+.estado-sin-apiarios-detalle h6 {
+    margin-bottom: 5px;
+    color: var(--verde-oscuro);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.estado-sin-apiarios-detalle p {
+    margin: 0;
+    color: #8c9992;
+    font-size: 0.72rem;
+}
+
+
+/* Responsive */
+
+@media (max-width: 767px) {
+
+    .boton-apiarios-detalle {
+        width: 100%;
+    }
+
+    .panel-apiarios-detalle {
+        padding: 18px 20px;
+    }
+
+    .item-apiario-detalle {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .estado-apiario-en-detalle {
+        margin-left: 53px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .panel-apiarios-detalle {
+        padding: 16px;
+    }
+
+    .datos-secundarios-apiario {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+}
+
+/* =========================================================
+   MODAL EDITAR APICULTOR
+========================================================= */
+
+#modalEditarApicultor .modal-dialog-editar-apicultor {
+    width: calc(100% - 2rem);
+    height: calc(100vh - 2rem);
+    max-height: calc(100vh - 2rem);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#modalEditarApicultor .modal-content {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+#modalEditarApicultor .form-editar-apicultor {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#modalEditarApicultor .modal-header-apicultor,
+#modalEditarApicultor .modal-footer-apicultor {
+    flex: 0 0 auto;
+}
+
+#modalEditarApicultor .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+#modalEditarApicultor .modal-header-apicultor .modal-title,
+#modalEditarApicultor .modal-header-apicultor p,
+#modalEditarApicultor .modal-header-apicultor i {
+    color: #ffffff !important;
+}
+
+#modalEditarApicultor .modal-header-apicultor p {
+    opacity: 0.9;
+}
+
+
+/* Estado de la cuenta */
+
+.estado-cuenta-editar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 15px 17px;
+    border: 1px solid #dfe9e3;
+    border-radius: 14px;
+    background: #f8fbf9;
+}
+
+.icono-estado-cuenta {
+    width: 43px;
+    min-width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #e4f5e9;
+    color: #2c8750;
+    font-size: 1rem;
+}
+
+.estado-cuenta-editar h6 {
+    color: var(--verde-oscuro);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.estado-cuenta-editar small {
+    color: #89968f;
+    font-size: 0.69rem;
+}
+
+.estado-cuenta-editar .form-check {
+    min-width: 135px;
+    margin: 0;
+}
+
+.estado-cuenta-editar .form-check-input {
+    width: 42px;
+    height: 22px;
+    margin-top: 0;
+    cursor: pointer;
+}
+
+.estado-cuenta-editar .form-check-input:checked {
+    border-color: var(--verde-medio);
+    background-color: var(--verde-medio);
+}
+
+.estado-cuenta-editar .form-check-label {
+    margin-left: 7px;
+    color: #2d7048;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.texto-usuario-inactivo {
+    color: #b04450 !important;
+}
+
+
+/* Scroll */
+
+#modalEditarApicultor .modal-body::-webkit-scrollbar {
+    width: 9px;
+}
+
+#modalEditarApicultor .modal-body::-webkit-scrollbar-track {
+    background: #f1f5f2;
+}
+
+#modalEditarApicultor .modal-body::-webkit-scrollbar-thumb {
+    border: 2px solid #f1f5f2;
+    border-radius: 20px;
+    background: #8eb6a5;
+}
+
+#modalEditarApicultor .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #5f9781;
+}
+
+
+/* Responsive */
+
+@media (max-width: 767px) {
+
+    .estado-cuenta-editar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .estado-cuenta-editar .form-check {
+        min-width: auto;
+    }
+
+}
+
+@media (max-width: 575.98px) {
+
+    #modalEditarApicultor .modal-dialog-editar-apicultor {
+        width: auto;
+        height: calc(100dvh - 1rem);
+        max-height: calc(100dvh - 1rem);
+        margin: 0.5rem;
+    }
+
+    #modalEditarApicultor .modal-body {
+        padding: 16px !important;
+    }
+
+}
+
+/* =========================================================
+   MODAL ELIMINAR APICULTOR
+========================================================= */
+
+.modal-eliminar-apicultor {
+    overflow: hidden;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 24px 65px rgba(81, 28, 35, 0.25);
+}
+
+.modal-header-eliminar-apicultor {
+    padding: 20px 24px;
+    border-bottom: 0;
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+    color: #ffffff;
+}
+
+.modal-header-eliminar-apicultor .modal-title,
+.modal-header-eliminar-apicultor p,
+.modal-header-eliminar-apicultor i {
+    color: #ffffff !important;
+}
+
+.modal-header-eliminar-apicultor p {
+    font-size: 0.78rem;
+    opacity: 0.88;
+}
+
+.icono-header-eliminar {
+    width: 47px;
+    min-width: 47px;
+    height: 47px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.14);
+    font-size: 1.25rem;
+}
+
+.contenido-eliminar-apicultor {
+    text-align: center;
+}
+
+.icono-advertencia-eliminar {
+    width: 78px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px auto 18px;
+    border-radius: 50%;
+    background: #fff1f2;
+    color: #d34c5a;
+    font-size: 2rem;
+}
+
+.contenido-eliminar-apicultor h5 {
+    color: #35483f;
+    font-weight: 750;
+}
+
+.contenido-eliminar-apicultor > p {
+    margin-bottom: 14px;
+    color: #7e8b85;
+    font-size: 0.82rem;
+}
+
+.nombre-apicultor-eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 17px;
+    border-radius: 12px;
+    background: #f4f7f5;
+    color: var(--verde-oscuro);
+}
+
+.nombre-apicultor-eliminar i {
+    color: var(--verde-medio);
+}
+
+.alerta-eliminacion-permitida,
+.alerta-eliminacion-bloqueada {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-top: 22px;
+    padding: 14px;
+    border-radius: 13px;
+    text-align: left;
+}
+
+.alerta-eliminacion-permitida {
+    border: 1px solid #f0d3d7;
+    background: #fff7f8;
+    color: #9c3b47;
+}
+
+.alerta-eliminacion-bloqueada {
+    border: 1px solid #efd58a;
+    background: #fff9e5;
+    color: #806300;
+}
+
+.alerta-eliminacion-permitida > i,
+.alerta-eliminacion-bloqueada > i {
+    margin-top: 2px;
+    font-size: 1rem;
+}
+
+.alerta-eliminacion-permitida div,
+.alerta-eliminacion-bloqueada div {
+    display: flex;
+    flex-direction: column;
+}
+
+.alerta-eliminacion-permitida strong,
+.alerta-eliminacion-bloqueada strong {
+    font-size: 0.8rem;
+}
+
+.alerta-eliminacion-permitida span,
+.alerta-eliminacion-bloqueada span {
+    margin-top: 3px;
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+.modal-footer-eliminar-apicultor {
+    padding: 17px 24px;
+    border-top: 1px solid #ecefed;
+    background: #fafbfa;
+}
+
+.btn-cancelar-eliminacion,
+.btn-confirmar-eliminacion {
+    min-height: 41px;
+    padding: 9px 17px;
+    border-radius: 11px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.btn-cancelar-eliminacion {
+    border: 1px solid #d8dfdb;
+    background: #ffffff;
+    color: #637069;
+}
+
+.btn-cancelar-eliminacion:hover {
+    background: #eef3f0;
+    color: #3e5147;
+}
+
+.btn-confirmar-eliminacion {
+    border: 1px solid #bd3f4d;
+    background: #bd3f4d;
+    color: #ffffff;
+}
+
+.btn-confirmar-eliminacion:hover {
+    border-color: #9e2e3a;
+    background: #9e2e3a;
+    color: #ffffff;
+}
+
+.btn-confirmar-eliminacion:disabled {
+    border-color: #b7beb9;
+    background: #b7beb9;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   PERFIL COMPLETO DEL APICULTOR
+========================================================= */
+
+.perfil-apicultor-pagina {
+    padding-bottom: 35px;
+}
+
+.encabezado-pagina-perfil {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.volver-apicultores {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--verde-medio);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.volver-apicultores:hover {
+    color: var(--verde-oscuro);
+}
+
+
+/* Tarjeta principal */
+
+.card-perfil-principal {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e1ebe5;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(33, 79, 59, 0.08);
+}
+
+.fondo-perfil-apicultor {
+    height: 125px;
+    background:
+        linear-gradient(
+            135deg,
+            #214f3b 0%,
+            #5f9781 65%,
+            #8abca7 100%
+        );
+}
+
+.contenido-perfil-principal {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    padding: 0 30px 27px;
+}
+
+.foto-perfil-grande {
+    position: relative;
+    width: 145px;
+    min-width: 145px;
+    height: 145px;
+    margin-top: -72px;
+}
+
+.foto-perfil-grande img,
+.foto-perfil-grande-vacia {
+    width: 145px;
+    height: 145px;
+    border: 6px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 10px 25px rgba(24, 61, 45, 0.2);
+}
+
+.foto-perfil-grande img {
+    object-fit: cover;
+}
+
+.foto-perfil-grande-vacia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f5ec;
+    color: var(--verde-medio);
+    font-size: 3.5rem;
+}
+
+.estado-perfil-grande {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 23px;
+    height: 23px;
+    border: 5px solid #ffffff;
+    border-radius: 50%;
+}
+
+.estado-perfil-activo {
+    background: #2eb85c;
+}
+
+.estado-perfil-inactivo {
+    background: #aab3ae;
+}
+
+.datos-perfil-principal {
+    padding-top: 18px;
+}
+
+.datos-perfil-principal h3 {
+    color: var(--verde-oscuro);
+    font-weight: 800;
+}
+
+.badge-rol-perfil {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    border-radius: 50px;
+    background: #fff2b9;
+    color: #735a00;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.usuario-perfil-completo {
+    margin-top: 6px;
+    color: #75857d;
+    font-size: 0.84rem;
+}
+
+.estado-texto-perfil {
+    margin-top: 11px;
+}
+
+.usuario-activo-perfil,
+.usuario-inactivo-perfil {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.usuario-activo-perfil {
+    background: #e0f7e7;
+    color: #287844;
+}
+
+.usuario-inactivo-perfil {
+    background: #f0f1f1;
+    color: #747e79;
+}
+
+
+/* Estadísticas */
+
+.tarjeta-estadistica-perfil {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 100%;
+    padding: 20px;
+    border: 1px solid #e2ebe6;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 7px 20px rgba(33, 79, 59, 0.06);
+}
+
+.icono-estadistica-perfil {
+    width: 53px;
+    min-width: 53px;
+    height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    font-size: 1.3rem;
+}
+
+.icono-estadistica-apiarios {
+    background: #fff3c4;
+    color: #735a00;
+}
+
+.icono-estadistica-colmenas {
+    background: #e7f4eb;
+    color: var(--verde-medio);
+}
+
+.icono-estadistica-experiencia {
+    background: #e9f2ff;
+    color: #3975b3;
+}
+
+.tarjeta-estadistica-perfil > div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.tarjeta-estadistica-perfil span {
+    color: #839089;
+    font-size: 0.72rem;
+}
+
+.tarjeta-estadistica-perfil strong {
+    margin-top: 4px;
+    color: var(--verde-oscuro);
+    font-size: 1.25rem;
+}
+
+
+/* Secciones */
+
+.tarjeta-perfil-seccion {
+    height: 100%;
+    padding: 23px;
+    border: 1px solid #e2ebe6;
+    border-radius: 19px;
+    background: #ffffff;
+    box-shadow: 0 7px 20px rgba(33, 79, 59, 0.06);
+}
+
+.titulo-seccion-perfil {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #edf1ef;
+}
+
+.icono-seccion-perfil {
+    width: 43px;
+    min-width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #e8f5ec;
+    color: var(--verde-medio);
+}
+
+.icono-seccion-apiarios {
+    background: #fff3c4;
+    color: #735a00;
+}
+
+.titulo-seccion-perfil h5 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-size: 0.95rem;
+    font-weight: 750;
+}
+
+.titulo-seccion-perfil small {
+    color: #89958f;
+    font-size: 0.69rem;
+}
+
+.contador-apiarios-perfil {
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+
+/* Datos personales */
+
+.lista-datos-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 20px;
+}
+
+.dato-perfil-completo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dato-perfil-completo > span {
+    width: 37px;
+    min-width: 37px;
+    height: 37px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #eef6f1;
+    color: var(--verde-medio);
+}
+
+.dato-perfil-completo > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.dato-perfil-completo small {
+    color: #909c95;
+    font-size: 0.67rem;
+}
+
+.dato-perfil-completo strong,
+.dato-perfil-completo a {
+    margin-top: 3px;
+    color: #344b40;
+    font-size: 0.8rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+}
+
+
+/* Apiarios */
+
+.lista-apiarios-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding-top: 20px;
+}
+
+.apiario-perfil-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    border: 1px solid #e1ebe5;
+    border-radius: 15px;
+    background: #fbfdfc;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.apiario-perfil-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 7px 17px rgba(33, 79, 59, 0.08);
+}
+
+.icono-apiario-perfil-item {
+    width: 45px;
+    min-width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: #fff2bb;
+    color: #725900;
+    font-size: 1.1rem;
+}
+
+.informacion-apiario-perfil {
+    flex: 1;
+    min-width: 0;
+}
+
+.informacion-apiario-perfil h6 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-size: 0.84rem;
+    font-weight: 750;
+}
+
+.detalles-apiario-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 15px;
+    margin-top: 6px;
+}
+
+.detalles-apiario-perfil span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #819087;
+    font-size: 0.68rem;
+}
+
+.detalles-apiario-perfil i {
+    color: var(--verde-medio);
+}
+
+.estado-apiario-perfil {
+    padding: 5px 10px;
+    border-radius: 50px;
+    background: #e7f5eb;
+    color: #34784e;
+    font-size: 0.66rem;
+    font-weight: 700;
+}
+
+.sin-apiarios-perfil {
+    padding: 42px 15px;
+    text-align: center;
+}
+
+.sin-apiarios-perfil > div {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #eef5f1;
+    color: #879a90;
+    font-size: 1.6rem;
+}
+
+.sin-apiarios-perfil h5 {
+    color: var(--verde-oscuro);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.sin-apiarios-perfil p {
+    margin: 0;
+    color: #8b9891;
+    font-size: 0.73rem;
+}
+
+
+/* Botón del modal */
+
+.btn-perfil-completo-apicultor {
+    padding: 9px 18px;
+    border: 1px solid var(--verde-oscuro);
+    border-radius: 11px;
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.btn-perfil-completo-apicultor:hover {
+    border-color: #163e2e;
+    background: #163e2e;
+    color: #ffffff;
+}
+
+
+/* Responsive */
+
+@media (max-width: 767px) {
+
+    .encabezado-pagina-perfil {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .contenido-perfil-principal {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .foto-perfil-grande {
+        margin-top: -72px;
+    }
+
+    .apiario-perfil-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .estado-apiario-perfil {
+        margin-left: 58px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .contenido-perfil-principal {
+        padding: 0 20px 23px;
+    }
+
+    .foto-perfil-grande,
+    .foto-perfil-grande img,
+    .foto-perfil-grande-vacia {
+        width: 120px;
+        min-width: 120px;
+        height: 120px;
+    }
+
+    .fondo-perfil-apicultor {
+        height: 105px;
+    }
+
+}
+
+/* =========================================================
+CONTROL LABORAL DEL APICULTOR PEFIL.HTML
+========================================================= */
+
+.seccion-control-laboral {
+    padding: 25px;
+    border: 1px solid #e1ebe5;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 8px 25px rgba(33, 79, 59, 0.07);
+}
+
+.encabezado-control-laboral {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #edf1ef;
+}
+
+.etiqueta-control-laboral {
+    display: inline-flex;
+    padding: 5px 10px;
+    margin-bottom: 8px;
+    border-radius: 50px;
+    background: #fff1b5;
+    color: #735a00;
+    font-size: 0.66rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.encabezado-control-laboral h4 {
+    margin-bottom: 5px;
+    color: var(--verde-oscuro);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.encabezado-control-laboral p {
+    margin: 0;
+    color: #829087;
+    font-size: 0.76rem;
+}
+
+.resumen-antiguedad-laboral {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 230px;
+    padding: 14px 17px;
+    border-radius: 15px;
+    background: linear-gradient(
+        135deg,
+        var(--verde-oscuro),
+        var(--verde-medio)
+    );
+    color: #ffffff;
+}
+
+.resumen-antiguedad-laboral > i {
+    font-size: 1.5rem;
+}
+
+.resumen-antiguedad-laboral div {
+    display: flex;
+    flex-direction: column;
+}
+
+.resumen-antiguedad-laboral small {
+    font-size: 0.65rem;
+    opacity: 0.82;
+}
+
+.resumen-antiguedad-laboral strong {
+    margin-top: 3px;
+    font-size: 0.8rem;
+}
+
+.tarjeta-control-laboral {
+    height: 100%;
+    padding: 21px;
+    border: 1px solid #e2ebe6;
+    border-radius: 17px;
+    background: #fbfdfc;
+}
+
+.titulo-control-laboral {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 21px;
+}
+
+.titulo-control-laboral > span {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #e7f4eb;
+    color: var(--verde-medio);
+}
+
+.titulo-control-laboral h5 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-size: 0.91rem;
+    font-weight: 750;
+}
+
+.titulo-control-laboral small {
+    color: #87958d;
+    font-size: 0.67rem;
+}
+
+.label-control-laboral {
+    color: #4c6257;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.selector-dias-laborales {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.selector-dias-laborales label {
+    position: relative;
+    cursor: pointer;
+}
+
+.selector-dias-laborales input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.selector-dias-laborales span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 37px;
+    padding: 7px;
+    border: 1px solid #dce6e0;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #68786f;
+    font-size: 0.68rem;
+    font-weight: 650;
+    transition: 0.2s ease;
+}
+
+.selector-dias-laborales input:checked + span {
+    border-color: var(--verde-medio);
+    background: #dff2e5;
+    color: var(--verde-oscuro);
+}
+
+.dato-actual-laboral {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    background: #eef6f1;
+    color: var(--verde-medio);
+}
+
+.dato-actual-laboral div {
+    display: flex;
+    flex-direction: column;
+}
+
+.dato-actual-laboral small {
+    color: #829087;
+    font-size: 0.63rem;
+}
+
+.dato-actual-laboral strong {
+    margin-top: 2px;
+    color: var(--verde-oscuro);
+    font-size: 0.72rem;
+}
+
+.alerta-registro-mensual {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 11px;
+    margin: 17px 0;
+    border: 1px solid #dae7df;
+    border-radius: 11px;
+    background: #f0f7f3;
+    color: #668074;
+    font-size: 0.67rem;
+    line-height: 1.45;
+}
+
+.btn-guardar-control-laboral {
+    min-height: 42px;
+    border: none;
+    border-radius: 11px;
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.btn-guardar-control-laboral:hover {
+    background: #173e2e;
+    color: #ffffff;
+}
+
+
+/* Historial */
+
+.tarjeta-historial-laboral {
+    overflow: hidden;
+    border: 1px solid #e1ebe5;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 8px 25px rgba(33, 79, 59, 0.06);
+}
+
+.titulo-historial-laboral {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 23px;
+    border-bottom: 1px solid #e8eeea;
+}
+
+.titulo-historial-laboral h5 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-size: 0.92rem;
+    font-weight: 750;
+}
+
+.titulo-historial-laboral small {
+    color: #89968f;
+    font-size: 0.66rem;
+}
+
+.titulo-historial-laboral > span {
+    padding: 6px 11px;
+    border-radius: 50px;
+    background: #e6f3ea;
+    color: #34754d;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.tabla-historial-laboral thead th {
+    padding: 13px 16px;
+    border-bottom: 1px solid #dfe8e3;
+    background: #f3f8f5;
+    color: #5e7067;
+    font-size: 0.67rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.tabla-historial-laboral tbody td {
+    padding: 14px 16px;
+    color: #67766e;
+    font-size: 0.71rem;
+    vertical-align: middle;
+}
+
+.tabla-historial-laboral tbody strong {
+    color: var(--verde-oscuro);
+}
+
+.sin-registros-laborales {
+    padding: 30px;
+    text-align: center;
+}
+
+.sin-registros-laborales > i {
+    color: #95a49c;
+    font-size: 1.7rem;
+}
+
+.sin-registros-laborales h6 {
+    margin: 10px 0 4px;
+    color: var(--verde-oscuro);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.sin-registros-laborales p {
+    margin: 0;
+    color: #8a9790;
+    font-size: 0.67rem;
+}
+
+@media (max-width: 767px) {
+
+    .encabezado-control-laboral {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .resumen-antiguedad-laboral {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .selector-dias-laborales {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+/* =========================================================
+   BOTONES DE REPORTE PDF
+========================================================= */
+
+.acciones-perfil-apicultor {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-reporte-pdf-apicultor {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border: 1px solid #b83f4c;
+    border-radius: 50px;
+    background: #b83f4c;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-reporte-pdf-apicultor:hover {
+    transform: translateY(-2px);
+    border-color: #96313c;
+    background: #96313c;
+    color: #ffffff;
+    box-shadow: 0 7px 16px rgba(184, 63, 76, 0.22);
+}
+
+.btn-pdf-mes {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border: 1px solid #e1c2c6;
+    border-radius: 9px;
+    background: #fff4f5;
+    color: #a83d49;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-pdf-mes:hover {
+    border-color: #b83f4c;
+    background: #b83f4c;
+    color: #ffffff;
+}
+
+@media (max-width: 767px) {
+
+    .acciones-perfil-apicultor {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .acciones-perfil-apicultor .btn {
+        width: 100%;
+    }
+
+}

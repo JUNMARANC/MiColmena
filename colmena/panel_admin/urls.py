@@ -26,12 +26,21 @@ urlpatterns = [
     path('mantenimientos/editar/<int:id>/', views.editar_mantenimiento, name='editar_mantenimiento'),
     path('mantenimientos/eliminar/<int:id>/', views.eliminar_mantenimiento, name='eliminar_mantenimiento'),
 
-
     # Incidencias
     path('incidencias/', views.incidencias_admin, name='incidencias_admin'),
+    path("incidencias/crear/",views.crear_incidencia,name="crear_incidencia"),
+    path("incidencias/editar/<int:id_incidencia>/",views.editar_incidencia,name="editar_incidencia"),
+    path("incidencias/eliminar/<int:id_incidencia>/",views.eliminar_incidencia,name="eliminar_incidencia"),
 
     # Apicultores
     path('apicultores/', views.apicultores_admin, name='apicultores_admin'),
+    path("apicultores/crear/",views.crear_apicultor,name="crear_apicultor"),
+    path("apicultores/editar/<int:id_apicultor>/",views.editar_apicultor,name="editar_apicultor"),
+    path("apicultores/eliminar/<int:id_apicultor>/",views.eliminar_apicultor,name="eliminar_apicultor"),
+    path("apicultores/<int:id_apicultor>/perfil/",views.perfil_apicultor,name="perfil_apicultor"),
+    path("apicultores/<int:id_apicultor>/vinculacion/guardar/",views.guardar_vinculacion_apicultor,name="guardar_vinculacion_apicultor"),
+    path("apicultores/<int:id_apicultor>/registro-laboral/guardar/",views.guardar_registro_laboral_mensual,name="guardar_registro_laboral_mensual"),
+    path("apicultores/<int:id_apicultor>/reporte-pdf/",views.reporte_apicultor_pdf,name="reporte_apicultor_pdf"),
 
     # Exportar
     path('exportar/', views.exportar_admin, name='exportar_admin'),

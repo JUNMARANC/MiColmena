@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from calendar import monthrange
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 
 class Rol(models.Model):
     id_rol = models.AutoField(db_column='Id_Rol', primary_key=True)  # Field name made lowercase.
@@ -43,7 +45,7 @@ class Administrador(models.Model):
 
 class Apiario(models.Model):
     id_apiario = models.AutoField(db_column='Id_Apiario', primary_key=True)  # Field name made lowercase.
-    id_apicultor = models.ForeignKey('Apicultor', models.DO_NOTHING, db_column='Id_Apicultor')  # Field name made lowercase.
+    id_apicultor = models.ForeignKey('Apicultor',models.DO_NOTHING,db_column='Id_Apicultor',related_name='apiarios')  # Field name made lowercase.
     nombreapiario = models.CharField(db_column='NombreApiario', max_length=100, blank=True, null=True)  # Field name made lowercase.
     cantidadcolmenas = models.IntegerField(db_column='CantidadColmenas', blank=True, null=True)  # Field name made lowercase.
     estadoapiario = models.CharField(db_column='EstadoApiario', max_length=50, blank=True, null=True)  # Field name made lowercase.
@@ -61,6 +63,7 @@ class Apicultor(models.Model):
     id_apicultor = models.AutoField(db_column='Id_Apicultor',primary_key=True)
     user = models.OneToOneField(User,models.CASCADE,db_column='user_id',blank=True,null=True)
     id_rol = models.ForeignKey('Rol',models.DO_NOTHING,db_column='Id_Rol',blank=True,null=True)
+    identificacion = models.CharField(db_column="Identificacion",max_length=30,unique=True)
     telefono = models.CharField(db_column='Telefono',max_length=20,blank=True,null=True)
     zona_trabajo = models.CharField(db_column='Zona_Trabajo',max_length=100,blank=True,null=True)
     experienciaanios = models.IntegerField(db_column='ExperienciaAnios',blank=True,null=True)
@@ -129,18 +132,23 @@ class Exportacion(models.Model):
 
 
 class Incidencia(models.Model):
-    id_incidencia = models.AutoField(db_column='Id_Incidencia', primary_key=True)  # Field name made lowercase.
-    id_colmena = models.ForeignKey(Colmena, models.DO_NOTHING, db_column='Id_Colmena')  # Field name made lowercase.
-    titulo = models.CharField(db_column='Titulo', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    prioridad = models.CharField(db_column='Prioridad', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    fechadeteccion = models.DateField(db_column='FechaDeteccion', blank=True, null=True)  # Field name made lowercase.
-    estado = models.CharField(db_column='Estado', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    observaciones = models.CharField(db_column='Observaciones', max_length=255, blank=True, null=True)  # Field name made lowercase.
+
+    id_incidencia = models.AutoField(db_column='Id_Incidencia',primary_key=True)
+    id_apicultor = models.ForeignKey(Apicultor,models.DO_NOTHING,db_column='Id_Apicultor',blank=True,null=True)
+    id_apiario = models.ForeignKey(Apiario,models.DO_NOTHING,db_column='Id_Apiario',blank=True,null=True)
+    id_colmena = models.ForeignKey(Colmena,models.DO_NOTHING,db_column='Id_Colmena',blank=True,null=True)
+    entidadincidencia = models.CharField(db_column='EntidadIncidencia',max_length=30)
+    titulo = models.CharField(db_column='Titulo',max_length=100)
+    prioridad = models.CharField(db_column='Prioridad',max_length=50)
+    fechadeteccion = models.DateField(db_column='FechaDeteccion')
+    estado = models.CharField(db_column='Estado',max_length=50)
+    observaciones = models.CharField(db_column='Observaciones',max_length=255,blank=True,null=True)
+    imagen = models.ImageField(db_column='Imagen',upload_to='incidencias/',blank=True,null=True)
+    responsable = models.CharField(db_column='Responsable',max_length=150,blank=True,null=True)
 
     class Meta:
         managed = False
         db_table = 'incidencia'
-
 
 class Mantenimiento(models.Model):
     id_mantenimiento = models.AutoField(db_column='Id_Mantenimiento', primary_key=True)
@@ -186,3 +194,220 @@ class Seguimientoapicola(models.Model):
     class Meta:
         managed = False
         db_table = 'seguimientoapicola'
+
+
+class VinculacionApicultor(models.Model):
+
+    id_vinculacion = models.AutoField(
+        db_column="Id_Vinculacion",
+        primary_key=True
+    )
+
+    apicultor = models.OneToOneField(
+        "Apicultor",
+        on_delete=models.CASCADE,
+        db_column="Id_Apicultor",
+        related_name="vinculacion_laboral"
+    )
+
+    fecha_ingreso = models.DateField(
+        db_column="FechaIngreso"
+    )
+
+    lunes = models.BooleanField(
+        db_column="Lunes",
+        default=False
+    )
+
+    martes = models.BooleanField(
+        db_column="Martes",
+        default=False
+    )
+
+    miercoles = models.BooleanField(
+        db_column="Miercoles",
+        default=False
+    )
+
+    jueves = models.BooleanField(
+        db_column="Jueves",
+        default=False
+    )
+
+    viernes = models.BooleanField(
+        db_column="Viernes",
+        default=False
+    )
+
+    sabado = models.BooleanField(
+        db_column="Sabado",
+        default=False
+    )
+
+    domingo = models.BooleanField(
+        db_column="Domingo",
+        default=False
+    )
+
+    fecha_actualizacion = models.DateTimeField(
+        db_column="FechaActualizacion",
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = "vinculacion_apicultor"
+        verbose_name = "Vinculación del apicultor"
+        verbose_name_plural = "Vinculaciones de apicultores"
+
+    def __str__(self):
+        return f"Vinculación de {self.apicultor.nombre_completo()}"
+
+    def dias_semana_lista(self):
+
+        dias = [
+            ("lunes", "Lunes"),
+            ("martes", "Martes"),
+            ("miercoles", "Miércoles"),
+            ("jueves", "Jueves"),
+            ("viernes", "Viernes"),
+            ("sabado", "Sábado"),
+            ("domingo", "Domingo"),
+        ]
+
+        return [
+            nombre
+            for campo, nombre in dias
+            if getattr(self, campo)
+        ]
+
+    def dias_semana_texto(self):
+
+        dias = self.dias_semana_lista()
+
+        if not dias:
+            return "Sin días registrados"
+
+        if len(dias) == 1:
+            return dias[0]
+
+        return ", ".join(dias[:-1]) + " y " + dias[-1]
+
+class RegistroLaboralMensual(models.Model):
+
+    id_registro_laboral = models.AutoField(
+        db_column="Id_RegistroLaboral",
+        primary_key=True
+    )
+
+    apicultor = models.ForeignKey(
+        "Apicultor",
+        on_delete=models.CASCADE,
+        db_column="Id_Apicultor",
+        related_name="registros_laborales"
+    )
+
+    mes_reporte = models.DateField(
+        db_column="MesReporte",
+        help_text="Se almacenará el primer día del mes."
+    )
+
+    dias_trabajados_mes = models.PositiveSmallIntegerField(
+        db_column="DiasTrabajadosMes",
+        default=0,
+        validators=[
+            MaxValueValidator(31)
+        ]
+    )
+
+    horas_trabajadas_mes = models.DecimalField(
+        db_column="HorasTrabajadasMes",
+        max_digits=7,
+        decimal_places=2,
+        default=0
+    )
+
+    observaciones = models.TextField(
+        db_column="Observaciones",
+        blank=True
+    )
+
+    fecha_registro = models.DateTimeField(
+        db_column="FechaRegistro",
+        auto_now_add=True
+    )
+
+    fecha_actualizacion = models.DateTimeField(
+        db_column="FechaActualizacion",
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = "registro_laboral_mensual"
+
+        ordering = [
+            "-mes_reporte"
+        ]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "apicultor",
+                    "mes_reporte"
+                ],
+                name="uq_apicultor_mes_laboral"
+            )
+        ]
+
+        verbose_name = "Registro laboral mensual"
+        verbose_name_plural = "Registros laborales mensuales"
+
+    def __str__(self):
+
+        return (
+            f"{self.apicultor.nombre_completo()} - "
+            f"{self.mes_reporte:%m/%Y}"
+        )
+
+    def clean(self):
+
+        super().clean()
+
+        if not self.mes_reporte:
+            return
+
+        ultimo_dia_mes = monthrange(
+            self.mes_reporte.year,
+            self.mes_reporte.month
+        )[1]
+
+        if self.dias_trabajados_mes > ultimo_dia_mes:
+
+            raise ValidationError({
+                "dias_trabajados_mes": (
+                    f"El mes seleccionado solamente tiene "
+                    f"{ultimo_dia_mes} días."
+                )
+            })
+
+        horas_maximas = self.dias_trabajados_mes * 24
+
+        if self.horas_trabajadas_mes > horas_maximas:
+
+            raise ValidationError({
+                "horas_trabajadas_mes": (
+                    "Las horas trabajadas no pueden superar "
+                    "24 horas por cada día trabajado."
+                )
+            })
+
+    def save(self, *args, **kwargs):
+
+        if self.mes_reporte:
+
+            self.mes_reporte = (
+                self.mes_reporte.replace(day=1)
+            )
+
+        self.full_clean()
+
+        super().save(*args, **kwargs)

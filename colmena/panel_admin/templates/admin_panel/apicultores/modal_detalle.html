@@ -1,0 +1,471 @@
+<div
+    class="modal fade"
+    id="modalDetalleApicultor"
+    tabindex="-1"
+    aria-labelledby="modalDetalleApicultorLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+        <div class="modal-content modal-detalle-apicultor border-0">
+
+            <!-- =====================================================
+                 ENCABEZADO
+            ====================================================== -->
+            <div class="modal-header modal-header-detalle-apicultor">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="icono-header-detalle-apicultor">
+                        <i class="bi bi-person-vcard-fill"></i>
+                    </div>
+
+                    <div>
+                        <h4
+                            class="modal-title fw-bold mb-1"
+                            id="modalDetalleApicultorLabel"
+                        >
+                            Información del apicultor
+                        </h4>
+
+                        <p class="mb-0">
+                            Consulta los datos personales y laborales registrados.
+                        </p>
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+            <!-- =====================================================
+                 CONTENIDO
+            ====================================================== -->
+            <div class="modal-body p-0">
+
+                <!-- PERFIL PRINCIPAL -->
+                <section class="encabezado-perfil-apicultor">
+
+                    <div class="foto-detalle-apicultor">
+
+                        <img
+                            src=""
+                            alt="Foto del apicultor"
+                            id="detalleFotoApicultor"
+                            class="d-none"
+                        >
+
+                        <div
+                            class="foto-detalle-sin-imagen"
+                            id="detalleFotoSinImagen"
+                        >
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+
+                        <span
+                            class="estado-detalle-apicultor"
+                            id="detalleIndicadorEstado"
+                            title="Estado del usuario"
+                        ></span>
+
+                    </div>
+
+                    <div class="informacion-principal-detalle">
+
+                        <h3 id="detalleNombreApicultor">
+                            Sin nombre
+                        </h3>
+
+                        <div class="usuario-detalle-apicultor">
+
+                            <i class="bi bi-at"></i>
+
+                            <span id="detalleUsernameApicultor">
+                                Sin usuario
+                            </span>
+
+                        </div>
+
+                        <div class="badges-detalle-apicultor">
+
+                            <span class="badge-rol-detalle">
+
+                                <i class="bi bi-award-fill"></i>
+
+                                <span id="detalleRolApicultor">
+                                    Apicultor
+                                </span>
+
+                            </span>
+
+                            <span
+                                class="badge-estado-detalle"
+                                id="detalleEstadoApicultor"
+                            >
+                                Estado desconocido
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="resumen-apiarios-detalle boton-apiarios-detalle"
+                        id="btnMostrarApiariosDetalle"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#panelApiariosDetalle"
+                        aria-expanded="false"
+                        aria-controls="panelApiariosDetalle"
+                        title="Mostrar apiarios asignados"
+                    >
+
+                        <div class="icono-resumen-apiarios">
+                            <i class="bi bi-house-door-fill"></i>
+                        </div>
+
+                        <div class="contenido-contador-apiarios">
+
+                            <strong id="detalleCantidadApiarios">
+                                0
+                            </strong>
+
+                            <span id="detalleTextoApiarios">
+                                Apiarios
+                            </span>
+
+                        </div>
+
+                        <i class="bi bi-chevron-down icono-desplegar-apiarios"></i>
+
+                    </button>
+
+                </section>
+
+                <!-- =====================================================
+                    APIARIOS ASIGNADOS AL APICULTOR
+                ====================================================== -->
+                <div
+                    class="collapse"
+                    id="panelApiariosDetalle"
+                >
+
+                    <section class="panel-apiarios-detalle">
+
+                        <div class="encabezado-panel-apiarios">
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div class="icono-panel-apiarios">
+                                    <i class="bi bi-diagram-3-fill"></i>
+                                </div>
+
+                                <div>
+                                    <h6 class="mb-0">
+                                        Apiarios asignados
+                                    </h6>
+
+                                    <small>
+                                        Apiarios que dependen de este apicultor
+                                    </small>
+                                </div>
+
+                            </div>
+
+                            <span
+                                class="contador-panel-apiarios"
+                                id="contadorPanelApiarios"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                        <div
+                            class="lista-apiarios-detalle"
+                            id="listaApiariosDetalle"
+                        >
+                            <!-- JavaScript insertará aquí los apiarios -->
+                        </div>
+
+                    </section>
+
+                </div>
+
+                <!-- INFORMACIÓN DETALLADA -->
+                <div class="contenido-detalle-apicultor">
+
+                    <div class="row g-4">
+
+                        <!-- INFORMACIÓN PERSONAL -->
+                        <div class="col-md-6">
+
+                            <section class="tarjeta-informacion-detalle">
+
+                                <div class="titulo-tarjeta-detalle">
+
+                                    <div class="icono-tarjeta-detalle">
+                                        <i class="bi bi-person-vcard-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6>Información personal</h6>
+
+                                        <small>
+                                            Datos de identificación
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="lista-informacion-detalle">
+
+                                    <div class="fila-informacion-detalle">
+
+                                        <div class="icono-dato-detalle">
+                                            <i class="bi bi-hash"></i>
+                                        </div>
+
+                                        <div>
+                                            <small>ID del registro</small>
+
+                                            <strong id="detalleIdApicultor">
+                                                —
+                                            </strong>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="fila-informacion-detalle">
+
+                                        <div class="icono-dato-detalle">
+                                            <i class="bi bi-person-badge-fill"></i>
+                                        </div>
+
+                                        <div>
+                                            <small>Identificación</small>
+
+                                            <strong id="detalleIdentificacionApicultor">
+                                                Sin registrar
+                                            </strong>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="fila-informacion-detalle">
+
+                                        <div class="icono-dato-detalle">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+
+                                        <div>
+                                            <small>Nombres</small>
+
+                                            <strong id="detalleNombresApicultor">
+                                                Sin registrar
+                                            </strong>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="fila-informacion-detalle">
+
+                                        <div class="icono-dato-detalle">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+
+                                        <div>
+                                            <small>Apellidos</small>
+
+                                            <strong id="detalleApellidosApicultor">
+                                                Sin registrar
+                                            </strong>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                        <!-- INFORMACIÓN DE CONTACTO -->
+                        <div class="col-md-6">
+
+                            <section class="tarjeta-informacion-detalle">
+
+                                <div class="titulo-tarjeta-detalle">
+
+                                    <div class="icono-tarjeta-detalle">
+                                        <i class="bi bi-chat-dots-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6>Información de contacto</h6>
+
+                                        <small>
+                                            Medios para comunicarse
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="lista-informacion-detalle">
+
+                                    <div class="fila-informacion-detalle">
+
+                                        <div class="icono-dato-detalle">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </div>
+
+                                        <div>
+                                            <small>Correo electrónico</small>
+
+                                            <a
+                                                href="#"
+                                                id="detalleCorreoApicultor"
+                                            >
+                                                Sin registrar
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="fila-informacion-detalle">
+
+                                        <div class="icono-dato-detalle">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </div>
+
+                                        <div>
+                                            <small>Teléfono</small>
+
+                                            <a
+                                                href="#"
+                                                id="detalleTelefonoApicultor"
+                                            >
+                                                Sin registrar
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                        <!-- INFORMACIÓN LABORAL -->
+                        <div class="col-12">
+
+                            <section class="tarjeta-informacion-detalle">
+
+                                <div class="titulo-tarjeta-detalle">
+
+                                    <div class="icono-tarjeta-detalle">
+                                        <i class="bi bi-briefcase-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6>Información laboral</h6>
+
+                                        <small>
+                                            Zona de trabajo y experiencia
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="row g-3 mt-1">
+
+                                    <div class="col-md-6">
+
+                                        <div class="dato-laboral-detalle">
+
+                                            <div class="icono-laboral-detalle icono-zona-detalle">
+                                                <i class="bi bi-geo-alt-fill"></i>
+                                            </div>
+
+                                            <div>
+                                                <small>Zona de trabajo</small>
+
+                                                <strong id="detalleZonaApicultor">
+                                                    Sin registrar
+                                                </strong>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-6">
+
+                                        <div class="dato-laboral-detalle">
+
+                                            <div class="icono-laboral-detalle">
+                                                <i class="bi bi-calendar-check-fill"></i>
+                                            </div>
+
+                                            <div>
+                                                <small>Experiencia</small>
+
+                                                <strong id="detalleExperienciaApicultor">
+                                                    Sin registrar
+                                                </strong>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =====================================================
+                PIE
+            ====================================================== -->
+            <div class="modal-footer modal-footer-detalle-apicultor">
+
+                <a
+                    href="#"
+                    class="btn btn-perfil-completo-apicultor"
+                    id="btnPerfilCompletoApicultor"
+                >
+                    <i class="bi bi-person-lines-fill me-2"></i>
+
+                    Ver perfil completo
+                </a>
+
+                <button
+                    type="button"
+                    class="btn btn-cerrar-detalle-apicultor"
+                    data-bs-dismiss="modal"
+                >
+                    <i class="bi bi-x-lg me-1"></i>
+
+                    Cerrar
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

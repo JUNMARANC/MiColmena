@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Reporte de {{ nombre_apicultor }}
+    </title>
+
+    <style>
+
+        @page {
+            size: A4;
+            margin: 14mm 12mm 16mm 12mm;
+
+            @bottom-left {
+                content: "Mi Colmena - Reporte de apicultor";
+                color: #738078;
+                font-size: 9px;
+            }
+
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                color: #738078;
+                font-size: 9px;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #263b31;
+            background: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        p {
+            margin: 0;
+        }
+
+        .encabezado {
+            width: 100%;
+            margin-bottom: 18px;
+            padding: 16px 18px;
+            border-radius: 14px;
+            background: #214f3b;
+            color: #ffffff;
+        }
+
+        .tabla-encabezado {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla-encabezado td {
+            border: none;
+            vertical-align: middle;
+        }
+
+        .marca {
+            width: 65%;
+        }
+
+        .icono-marca {
+            display: inline-block;
+            width: 38px;
+            height: 38px;
+            margin-right: 10px;
+            border: 2px solid #f6de87;
+            border-radius: 11px;
+            color: #f6de87;
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 34px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .nombre-marca {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .nombre-marca strong {
+            display: block;
+            font-size: 18px;
+            letter-spacing: 0.3px;
+        }
+
+        .nombre-marca span {
+            display: block;
+            margin-top: 2px;
+            color: #dcebe3;
+            font-size: 8px;
+        }
+
+        .datos-reporte {
+            width: 35%;
+            color: #dcebe3;
+            font-size: 8px;
+            text-align: right;
+        }
+
+        .datos-reporte strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #ffffff;
+            font-size: 10px;
+        }
+
+        .titulo-reporte {
+            margin-bottom: 14px;
+        }
+
+        .titulo-reporte h1 {
+            color: #214f3b;
+            font-size: 20px;
+        }
+
+        .titulo-reporte p {
+            margin-top: 4px;
+            color: #78867e;
+            font-size: 9px;
+        }
+
+        .tarjeta-perfil {
+            margin-bottom: 16px;
+            padding: 14px;
+            border: 1px solid #dce7e1;
+            border-radius: 13px;
+            background: #f9fcfa;
+        }
+
+        .tabla-perfil {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla-perfil td {
+            border: none;
+            vertical-align: middle;
+        }
+
+        .columna-foto {
+            width: 92px;
+        }
+
+        .foto {
+            width: 76px;
+            height: 76px;
+            border: 4px solid #ffffff;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 3px 10px rgba(33, 79, 59, 0.18);
+        }
+
+        .foto-vacia {
+            width: 76px;
+            height: 76px;
+            border: 4px solid #ffffff;
+            border-radius: 50%;
+            background: #dff0e4;
+            color: #5f9781;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 68px;
+            text-align: center;
+        }
+
+        .datos-principales h2 {
+            color: #214f3b;
+            font-size: 16px;
+        }
+
+        .datos-principales .usuario {
+            margin-top: 3px;
+            color: #6f7e76;
+            font-size: 9px;
+        }
+
+        .estado {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 9px;
+            border-radius: 20px;
+            font-size: 8px;
+            font-weight: bold;
+        }
+
+        .estado-activo {
+            background: #ddf4e4;
+            color: #287844;
+        }
+
+        .estado-inactivo {
+            background: #f2e3e5;
+            color: #a23e4a;
+        }
+
+        .rol {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 4px 9px;
+            border-radius: 20px;
+            background: #fff2bb;
+            color: #735a00;
+            font-size: 8px;
+            font-weight: bold;
+        }
+
+        .seccion {
+            margin-bottom: 16px;
+            page-break-inside: avoid;
+        }
+
+        .titulo-seccion {
+            margin-bottom: 9px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #dce9e2;
+            color: #214f3b;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .titulo-seccion span {
+            color: #5f9781;
+        }
+
+        .tabla-datos {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 7px;
+            margin: -7px;
+        }
+
+        .tabla-datos td {
+            width: 50%;
+            padding: 9px 10px;
+            border: 1px solid #e1eae5;
+            border-radius: 9px;
+            background: #fbfdfc;
+            vertical-align: top;
+        }
+
+        .tabla-datos small {
+            display: block;
+            margin-bottom: 3px;
+            color: #829087;
+            font-size: 7px;
+            text-transform: uppercase;
+        }
+
+        .tabla-datos strong {
+            color: #2f463a;
+            font-size: 9px;
+        }
+
+        .resumen-mensual {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 7px;
+            margin: -7px;
+        }
+
+        .resumen-mensual td {
+            width: 25%;
+            padding: 12px 8px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .resumen-mensual small {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 7px;
+            text-transform: uppercase;
+        }
+
+        .resumen-mensual strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .resumen-verde {
+            background: #e4f3e9;
+            color: #286943;
+        }
+
+        .resumen-amarillo {
+            background: #fff1bd;
+            color: #705700;
+        }
+
+        .resumen-azul {
+            background: #e6f1fb;
+            color: #356b9c;
+        }
+
+        .resumen-gris {
+            background: #eef2f0;
+            color: #53635b;
+        }
+
+        .sin-registro {
+            padding: 15px;
+            border: 1px dashed #cdd9d2;
+            border-radius: 10px;
+            background: #fafcfb;
+            color: #78867e;
+            text-align: center;
+        }
+
+        .observaciones {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-left: 4px solid #f0c94f;
+            border-radius: 6px;
+            background: #fffaf0;
+        }
+
+        .observaciones small {
+            display: block;
+            margin-bottom: 4px;
+            color: #8b721f;
+            font-size: 7px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .tabla-listado {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+        }
+
+        .tabla-listado thead th {
+            padding: 7px;
+            border: 1px solid #d7e2dc;
+            background: #214f3b;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .tabla-listado tbody td {
+            padding: 7px;
+            border: 1px solid #e0e8e4;
+            color: #47584f;
+            vertical-align: top;
+        }
+
+        .tabla-listado tbody tr:nth-child(even) {
+            background: #f7faf8;
+        }
+
+        .texto-centro {
+            text-align: center;
+        }
+
+        .badge-apiario {
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 15px;
+            background: #e4f3e9;
+            color: #34754d;
+            font-size: 7px;
+            font-weight: bold;
+        }
+
+        .firmas {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: separate;
+            border-spacing: 25px 0;
+        }
+
+        .firmas td {
+            width: 50%;
+            padding-top: 35px;
+            border-top: 1px solid #67766e;
+            color: #5e6e65;
+            font-size: 8px;
+            text-align: center;
+        }
+
+        .firmas strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #263b31;
+            font-size: 9px;
+        }
+
+        /* =========================================================
+        AJUSTES DE LEGIBILIDAD DEL PDF
+        ========================================================= */
+
+        body {
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        /* Encabezado */
+
+        .nombre-marca strong {
+            font-size: 21px;
+        }
+
+        .nombre-marca span {
+            font-size: 10px;
+        }
+
+        .datos-reporte {
+            font-size: 10px;
+        }
+
+        .datos-reporte strong {
+            font-size: 12px;
+        }
+
+        /* Título principal */
+
+        .titulo-reporte h1 {
+            font-size: 23px;
+        }
+
+        .titulo-reporte p {
+            font-size: 11px;
+        }
+
+        /* Información principal */
+
+        .datos-principales h2 {
+            font-size: 19px;
+        }
+
+        .datos-principales .usuario {
+            font-size: 11px;
+        }
+
+        .estado,
+        .rol {
+            font-size: 9.5px;
+        }
+
+        /* Títulos de las secciones */
+
+        .titulo-seccion {
+            margin-bottom: 11px;
+            padding-bottom: 7px;
+            font-size: 14px;
+        }
+
+        /* Tarjetas de información */
+
+        .tabla-datos td {
+            padding: 11px 12px;
+        }
+
+        .tabla-datos small {
+            margin-bottom: 4px;
+            font-size: 8.5px;
+        }
+
+        .tabla-datos strong {
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        /* Tiempo trabajado en el mes */
+
+        .resumen-mensual td {
+            padding: 14px 9px;
+        }
+
+        .resumen-mensual small {
+            font-size: 8.5px;
+        }
+
+        .resumen-mensual strong {
+            font-size: 17px;
+        }
+
+        .observaciones {
+            padding: 12px 14px;
+            font-size: 11px;
+        }
+
+        .observaciones small {
+            font-size: 8.5px;
+        }
+
+        /* Tablas de apiarios e historial */
+
+        .tabla-listado {
+            font-size: 10px;
+        }
+
+        .tabla-listado thead th {
+            padding: 9px 8px;
+            font-size: 9px;
+        }
+
+        .tabla-listado tbody td {
+            padding: 9px 8px;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .badge-apiario {
+            padding: 4px 8px;
+            font-size: 8.5px;
+        }
+
+        /* Firmas */
+
+        .firmas td {
+            font-size: 9.5px;
+        }
+
+        .firmas strong {
+            font-size: 11px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+    <header class="encabezado">
+
+        <table class="tabla-encabezado">
+
+            <tr>
+
+                <td class="marca">
+
+                    <span class="icono-marca">
+                        ⬡
+                    </span>
+
+                    <span class="nombre-marca">
+
+                        <strong>
+                            Mi Colmena
+                        </strong>
+
+                        <span>
+                            Gestión y seguimiento de apicultores
+                        </span>
+
+                    </span>
+
+                </td>
+
+                <td class="datos-reporte">
+
+                    <strong>
+                        Reporte individual
+                    </strong>
+
+                    Generado:
+                    {{ fecha_generacion|date:"d/m/Y H:i" }}
+
+                    <br>
+
+                    Responsable:
+                    {{ generado_por }}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </header>
+
+    <!-- =====================================================
+         TÍTULO
+    ====================================================== -->
+    <section class="titulo-reporte">
+
+        <h1>
+            Reporte del apicultor
+        </h1>
+
+        <p>
+            Información personal, laboral y apiarios asignados.
+            Periodo: {{ mes_reporte_texto }}.
+        </p>
+
+    </section>
+
+    <!-- =====================================================
+         PERFIL
+    ====================================================== -->
+    <section class="tarjeta-perfil">
+
+        <table class="tabla-perfil">
+
+            <tr>
+
+                <td class="columna-foto">
+
+                    {% if foto_uri %}
+
+                        <img
+                            src="{{ foto_uri }}"
+                            class="foto"
+                            alt="Foto del apicultor"
+                        >
+
+                    {% else %}
+
+                        <div class="foto-vacia">
+                            {{ nombre_apicultor|first|upper }}
+                        </div>
+
+                    {% endif %}
+
+                </td>
+
+                <td class="datos-principales">
+
+                    <h2>
+                        {{ nombre_apicultor }}
+                    </h2>
+
+                    <div class="usuario">
+
+                        Usuario:
+
+                        {% if apicultor.user %}
+
+                            {{ apicultor.user.username }}
+
+                        {% else %}
+
+                            Sin usuario asociado
+
+                        {% endif %}
+
+                    </div>
+
+                    {% if apicultor.user and apicultor.user.is_active %}
+
+                        <span class="estado estado-activo">
+                            Usuario activo
+                        </span>
+
+                    {% else %}
+
+                        <span class="estado estado-inactivo">
+                            Usuario inactivo
+                        </span>
+
+                    {% endif %}
+
+                    <span class="rol">
+
+                        {% if apicultor.id_rol %}
+
+                            {{ apicultor.id_rol.nombrerol }}
+
+                        {% else %}
+
+                            Apicultor
+
+                        {% endif %}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+    <!-- =====================================================
+         INFORMACIÓN PERSONAL
+    ====================================================== -->
+    <section class="seccion">
+
+        <div class="titulo-seccion">
+            <span>01.</span>
+            Información personal
+        </div>
+
+        <table class="tabla-datos">
+
+            <tr>
+
+                <td>
+
+                    <small>Identificación</small>
+
+                    <strong>
+                        {{ apicultor.identificacion|default:"Sin registrar" }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>Correo electrónico</small>
+
+                    <strong>
+
+                        {% if apicultor.user %}
+
+                            {{ apicultor.user.email|default:"Sin registrar" }}
+
+                        {% else %}
+
+                            Sin registrar
+
+                        {% endif %}
+
+                    </strong>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+
+                    <small>Teléfono</small>
+
+                    <strong>
+                        {{ apicultor.telefono|default:"Sin registrar" }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>Zona de trabajo</small>
+
+                    <strong>
+                        {{ apicultor.zona_trabajo|default:"Sin registrar" }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+
+                    <small>Experiencia declarada</small>
+
+                    <strong>
+
+                        {% if apicultor.experienciaanios is not None %}
+
+                            {{ apicultor.experienciaanios }}
+                            año{{ apicultor.experienciaanios|pluralize:"s" }}
+
+                        {% else %}
+
+                            Sin registrar
+
+                        {% endif %}
+
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>Total de apiarios y colmenas</small>
+
+                    <strong>
+                        {{ total_apiarios }}
+                        apiario{{ total_apiarios|pluralize:"s" }}
+                        /
+                        {{ total_colmenas }}
+                        colmena{{ total_colmenas|pluralize:"s" }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+    <!-- =====================================================
+         VINCULACIÓN LABORAL
+    ====================================================== -->
+    <section class="seccion">
+
+        <div class="titulo-seccion">
+            <span>02.</span>
+            Vinculación y antigüedad
+        </div>
+
+        <table class="tabla-datos">
+
+            <tr>
+
+                <td>
+
+                    <small>Fecha de ingreso</small>
+
+                    <strong>
+
+                        {% if vinculacion %}
+
+                            {{ vinculacion.fecha_ingreso|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin registrar
+
+                        {% endif %}
+
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>Tiempo trabajado</small>
+
+                    <strong>
+                        {{ antiguedad.texto }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+
+                    <small>Antigüedad calculada hasta</small>
+
+                    <strong>
+                        {{ fecha_corte|date:"d/m/Y" }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>Días habituales de trabajo</small>
+
+                    <strong>
+                        {{ dias_habituales }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+    <!-- =====================================================
+         TIEMPO TRABAJADO EN EL MES
+    ====================================================== -->
+    <section class="seccion">
+
+        <div class="titulo-seccion">
+            <span>03.</span>
+            Tiempo trabajado en el mes
+        </div>
+
+        {% if registro_laboral %}
+
+            <table class="resumen-mensual">
+
+                <tr>
+
+                    <td class="resumen-verde">
+
+                        <small>Periodo</small>
+
+                        <strong style="font-size: 10px;">
+                            {{ mes_reporte_texto }}
+                        </strong>
+
+                    </td>
+
+                    <td class="resumen-amarillo">
+
+                        <small>Días trabajados</small>
+
+                        <strong>
+                            {{ registro_laboral.dias_trabajados_mes }}
+                        </strong>
+
+                    </td>
+
+                    <td class="resumen-azul">
+
+                        <small>Horas trabajadas</small>
+
+                        <strong>
+                            {{ registro_laboral.horas_trabajadas_mes }}
+                        </strong>
+
+                    </td>
+
+                    <td class="resumen-gris">
+
+                        <small>Promedio por día</small>
+
+                        <strong>
+                            {{ promedio_horas_diarias }}
+                        </strong>
+
+                        <small>horas/día</small>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+            <div class="observaciones">
+
+                <small>
+                    Observaciones del periodo
+                </small>
+
+                {{ registro_laboral.observaciones|default:"Sin observaciones registradas." }}
+
+            </div>
+
+        {% else %}
+
+            <div class="sin-registro">
+
+                El apicultor todavía no tiene registros
+                laborales mensuales.
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- =====================================================
+         APIARIOS
+    ====================================================== -->
+    <section class="seccion">
+
+        <div class="titulo-seccion">
+            <span>04.</span>
+            Apiarios asignados
+        </div>
+
+        <table class="tabla-listado">
+
+            <thead>
+
+                <tr>
+                    <th>Apiario</th>
+                    <th>Ubicación</th>
+                    <th class="texto-centro">Colmenas</th>
+                    <th class="texto-centro">Estado</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for apiario in apiarios %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ apiario.nombreapiario|default:"Sin nombre" }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ apiario.ubicacion|default:"Sin ubicación" }}
+                        </td>
+
+                        <td class="texto-centro">
+                            {{ apiario.cantidadcolmenas|default:0 }}
+                        </td>
+
+                        <td class="texto-centro">
+
+                            <span class="badge-apiario">
+                                {{ apiario.estadoapiario|default:"Sin estado" }}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="texto-centro"
+                        >
+                            El apicultor no tiene apiarios asignados.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+    <!-- =====================================================
+         HISTORIAL RECIENTE
+    ====================================================== -->
+    <section class="seccion">
+
+        <div class="titulo-seccion">
+            <span>05.</span>
+            Historial laboral reciente
+        </div>
+
+        <table class="tabla-listado">
+
+            <thead>
+
+                <tr>
+                    <th>Mes</th>
+                    <th class="texto-centro">Días</th>
+                    <th class="texto-centro">Horas</th>
+                    <th>Observaciones</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for registro in historial_laboral %}
+
+                    <tr>
+
+                        <td>
+                            {{ registro.mes_reporte|date:"m/Y" }}
+                        </td>
+
+                        <td class="texto-centro">
+                            {{ registro.dias_trabajados_mes }}
+                        </td>
+
+                        <td class="texto-centro">
+                            {{ registro.horas_trabajadas_mes }}
+                        </td>
+
+                        <td>
+                            {{ registro.observaciones|default:"Sin observaciones" }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="texto-centro"
+                        >
+                            No existen registros laborales.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+    <!-- =====================================================
+         FIRMAS
+    ====================================================== -->
+    <table class="firmas">
+
+        <tr>
+
+            <td>
+
+                <strong>
+                    {{ nombre_apicultor }}
+                </strong>
+
+                Firma del apicultor
+
+            </td>
+
+            <td>
+
+                <strong>
+                    {{ generado_por }}
+                </strong>
+
+                Responsable del reporte
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</body>
+
+</html>
