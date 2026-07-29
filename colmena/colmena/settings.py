@@ -13,6 +13,20 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+WEASYPRINT_DLL_HANDLE = None
+
+if os.name == "nt":
+
+    ruta_dll_weasyprint = Path(
+        r"C:\msys64\ucrt64\bin"
+    )
+
+    if ruta_dll_weasyprint.exists():
+
+        WEASYPRINT_DLL_HANDLE = os.add_dll_directory(
+            str(ruta_dll_weasyprint)
+        )
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dbmicolmena',
         'USER' : 'root',
-        'PASSWORD' : 'juan',
+        'PASSWORD' : 'admin',
         'HOST' : 'localhost',
         'PORT' : '3306'
     }

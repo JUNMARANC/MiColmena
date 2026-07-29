@@ -1,0 +1,67 @@
+<div
+    class="modal fade"
+    id="modalEliminarEvento"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content modal-evento-agenda">
+
+            <form
+                method="POST"
+                action=""
+                id="formEliminarEvento"
+            >
+
+                {% csrf_token %}
+
+                <div class="modal-body text-center p-4">
+
+                    <div class="icono-eliminar-evento">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+
+                    <h5>
+                        ¿Seguro que deseas eliminar este evento?
+                    </h5>
+
+                    <p>
+                        Se eliminará:
+
+                        <strong id="nombreEventoEliminar">
+                            Evento
+                        </strong>
+                    </p>
+
+                    <small>
+                        Esta acción no se puede deshacer.
+                    </small>
+
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                    >
+                        Eliminar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>

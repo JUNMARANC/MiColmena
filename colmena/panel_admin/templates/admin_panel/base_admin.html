@@ -69,11 +69,6 @@
                 <span>Apicultores</span>
             </a>
 
-            <a href="{% url 'exportar_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'exportar_admin' %}active{% endif %}">
-                <i class="bi bi-database-down"></i>
-                <span>Exportar Base de Datos</span>
-            </a>
-
             <a href="{% url 'agenda_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}">
                 <i class="bi bi-calendar-event"></i>
                 <span>Agenda</span>

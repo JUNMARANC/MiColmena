@@ -1,0 +1,237 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid pagina-reportes">
+
+    <div class="encabezado-reportes">
+
+        <div>
+            <h2>Reportes del sistema</h2>
+
+            <p>
+                Genera reportes detallados en PDF con tablas,
+                indicadores, gráficos y conclusiones.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="grid-reportes">
+
+        {% for reporte in tipos_reportes %}
+
+            <article
+                class="
+                    tarjeta-tipo-reporte
+                    {{ reporte.clase }}
+                    {% if not reporte.disponible %}
+                        reporte-no-disponible
+                    {% endif %}
+                "
+            >
+
+                <div class="icono-tipo-reporte">
+                    <i class="bi {{ reporte.icono }}"></i>
+                </div>
+
+                <div class="contenido-tipo-reporte">
+
+                    <h5>
+                        {{ reporte.nombre }}
+                    </h5>
+
+                    <p>
+                        {{ reporte.descripcion }}
+                    </p>
+
+                </div>
+
+                {% if reporte.disponible %}
+                    
+                    <button
+                        type="button"
+                        class="btn btn-configurar-reporte"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalConfigurarReporte"
+                        data-tipo="{{ reporte.clave }}"
+                        data-nombre="{{ reporte.nombre }}"
+                        onclick="
+                            document.getElementById('tipoReporteSeleccionado').value =
+                                '{{ reporte.clave|escapejs }}';
+
+                            document.getElementById('tituloModalReporte').textContent =
+                                '{{ reporte.nombre|escapejs }}';
+                        "
+                    >
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                        Generar PDF
+                    </button>
+
+                {% else %}
+
+                    <span class="etiqueta-proximamente">
+                        Próximamente
+                    </span>
+
+                {% endif %}
+
+            </article>
+
+        {% endfor %}
+
+    </div>
+
+    <section class="historial-reportes mt-4">
+
+        <div class="encabezado-historial-reportes">
+
+            <div>
+                <h5>
+                    <i class="bi bi-clock-history me-2"></i>
+                    Reportes recientes
+                </h5>
+
+                <small>
+                    Últimos documentos generados desde el sistema
+                </small>
+            </div>
+
+            <span>
+                {{ historial|length }}
+                reporte{{ historial|length|pluralize:"s" }}
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table tabla-reportes mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo de reporte</th>
+                        <th>Periodo</th>
+                        <th>Registros</th>
+                        <th>Tamaño</th>
+                        <th>Generado por</th>
+                        <th>Archivo</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for reporte in historial %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ reporte.fecha_generacion|date:"d/m/Y" }}
+                                </strong>
+
+                                <small>
+                                    {{ reporte.fecha_generacion|date:"H:i" }}
+                                </small>
+                            </td>
+
+                            <td>
+                                {{ reporte.get_tipo_reporte_display }}
+                            </td>
+
+                            <td>
+
+                                {% if reporte.fecha_desde or reporte.fecha_hasta %}
+
+                                    {{ reporte.fecha_desde|date:"d/m/Y"|default:"Inicio" }}
+                                    —
+                                    {{ reporte.fecha_hasta|date:"d/m/Y"|default:"Actualidad" }}
+
+                                {% else %}
+
+                                    Todos los registros
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ reporte.total_registros }}
+                            </td>
+
+                            <td>
+                                {{ reporte.tamano_legible }}
+                            </td>
+
+                            <td>
+
+                                {% if reporte.usuario %}
+
+                                    {{ reporte.usuario.get_full_name|default:reporte.usuario.username }}
+
+                                {% else %}
+
+                                    Usuario eliminado
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'abrir_reporte_sistema' reporte.id_reporte %}"
+                                    class="btn-abrir-reporte"
+                                    target="_blank"
+                                    title="Abrir reporte"
+                                >
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="7">
+
+                                <div class="sin-reportes">
+
+                                    <i class="bi bi-file-earmark-x-fill"></i>
+
+                                    <h6>
+                                        No hay reportes generados
+                                    </h6>
+
+                                    <p>
+                                        Los documentos aparecerán aquí
+                                        después de generar el primero.
+                                    </p>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% include "admin_panel/reportes/modal_configurar.html" %}
+
+<script src="{% static 'panel_admin/js/reportes.js' %}?v=2"></script>
+
+{% endblock %}

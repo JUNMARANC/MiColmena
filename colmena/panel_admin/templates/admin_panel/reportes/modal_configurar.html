@@ -1,0 +1,403 @@
+<div
+    class="modal fade"
+    id="modalConfigurarReporte"
+    tabindex="-1"
+    aria-labelledby="tituloModalReporte"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content modal-configurar-reporte">
+
+            <form
+                method="POST"
+                action="{% url 'generar_reporte_sistema' %}"
+                id="formGenerarReporte"
+                target="_blank"
+            >
+
+                {% csrf_token %}
+
+                <!-- Tipo de reporte seleccionado -->
+                <input
+                    type="hidden"
+                    name="tipo_reporte"
+                    id="tipoReporteSeleccionado"
+                >
+
+                <!-- =====================================================
+                     ENCABEZADO
+                ====================================================== -->
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="etiqueta-modal-reporte">
+                            Configuración del reporte
+                        </span>
+
+                        <h5
+                            class="modal-title"
+                            id="tituloModalReporte"
+                        >
+                            Generar reporte
+                        </h5>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Cerrar"
+                    ></button>
+
+                </div>
+
+                <!-- =====================================================
+                     CUERPO
+                ====================================================== -->
+                <div class="modal-body">
+
+                    <div class="row g-3">
+
+                        <!-- FECHA INICIAL -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="fechaDesdeReporte"
+                                class="form-label"
+                            >
+                                Fecha inicial
+                            </label>
+
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="fechaDesdeReporte"
+                                name="fecha_desde"
+                            >
+
+                        </div>
+
+                        <!-- FECHA FINAL -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="fechaHastaReporte"
+                                class="form-label"
+                            >
+                                Fecha final
+                            </label>
+
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="fechaHastaReporte"
+                                name="fecha_hasta"
+                            >
+
+                        </div>
+
+                        <!-- APIARIO -->
+                        <div class="col-12">
+
+                            <label
+                                for="apiarioReporte"
+                                class="form-label"
+                            >
+                                Selecciona un apiario
+                            </label>
+
+                            <select
+                                class="form-select"
+                                id="apiarioReporte"
+                                name="apiario"
+                            >
+
+                                <option value="">
+                                    Todos los apiarios
+                                </option>
+
+                                {% for apiario in apiarios %}
+
+                                    <option
+                                        value="{{ apiario.id_apiario }}"
+                                    >
+                                        {{ apiario.nombreapiario }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <!-- =================================================
+                             CAMPOS EXCLUSIVOS DEL REPORTE DE INCIDENCIAS
+                        ================================================== -->
+
+                        <!-- PRIORIDAD -->
+                        <div
+                            class="col-md-6 d-none"
+                            id="campoPrioridadIncidencia"
+                        >
+
+                            <label
+                                for="prioridadIncidenciaReporte"
+                                class="form-label"
+                            >
+                                Prioridad
+                            </label>
+
+                            <select
+                                class="form-select"
+                                id="prioridadIncidenciaReporte"
+                                name="prioridad_incidencia"
+                            >
+
+                                <option value="">
+                                    Todas las prioridades
+                                </option>
+
+                                {% for prioridad in prioridades_incidencia %}
+
+                                    <option value="{{ prioridad }}">
+                                        {{ prioridad }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <!-- ESTADO -->
+                        <div
+                            class="col-md-6 d-none"
+                            id="campoEstadoIncidencia"
+                        >
+
+                            <label
+                                for="estadoIncidenciaReporte"
+                                class="form-label"
+                            >
+                                Estado de la incidencia
+                            </label>
+
+                            <select
+                                class="form-select"
+                                id="estadoIncidenciaReporte"
+                                name="estado_incidencia"
+                            >
+
+                                <option value="">
+                                    Todos los estados
+                                </option>
+
+                                {% for estado in estados_incidencia %}
+
+                                    <option value="{{ estado }}">
+                                        {{ estado }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <!-- =====================================================
+                         OPCIONES DEL REPORTE
+                    ====================================================== -->
+                    <div class="opciones-reporte mt-4">
+
+                        <h6>
+                            Contenido que deseas incluir
+                        </h6>
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                name="incluir_graficos"
+                                value="1"
+                                checked
+                            >
+
+                            <span>
+                                Incluir gráficos
+                            </span>
+
+                        </label>
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                name="incluir_tabla"
+                                value="1"
+                                checked
+                            >
+
+                            <span>
+                                Incluir tabla detallada
+                            </span>
+
+                        </label>
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                name="incluir_resumen"
+                                value="1"
+                                checked
+                            >
+
+                            <span>
+                                Incluir indicadores y resumen
+                            </span>
+
+                        </label>
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                name="incluir_conclusiones"
+                                value="1"
+                                checked
+                            >
+
+                            <span>
+                                Incluir conclusiones
+                            </span>
+
+                        </label>
+
+                        <label id="opcionSoloColmenas">
+
+                            <input
+                                type="checkbox"
+                                name="solo_activas"
+                                value="1"
+                            >
+
+                            <span>
+                                Solo colmenas activas
+                            </span>
+
+                        </label>
+
+                        <label
+                            id="opcionSoloIncidencias"
+                            class="d-none"
+                        >
+
+                            <input
+                                type="checkbox"
+                                name="solo_abiertas"
+                                value="1"
+                            >
+
+                            <span>
+                                Solo incidencias abiertas
+                            </span>
+
+                        </label>
+
+                        <label
+                            id="opcionCompararPeriodo"
+                            class="d-none"
+                        >
+
+                            <input
+                                type="checkbox"
+                                name="comparar_periodo_anterior"
+                                value="1"
+                            >
+
+                            <span>
+                                Comparar con el periodo anterior
+                            </span>
+
+                        </label>
+
+                        <!-- Solo aparece para Incidencias -->
+                        <label
+                            class="d-none"
+                            id="opcionCompararPeriodo"
+                        >
+
+                            <input
+                                type="checkbox"
+                                name="comparar_periodo"
+                                value="1"
+                            >
+
+                            <span>
+                                Comparar con el periodo anterior
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                    <!-- =====================================================
+                         INFORMACIÓN DEL FORMATO
+                    ====================================================== -->
+                    <div class="formato-principal-reporte">
+
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                        <div>
+
+                            <strong>
+                                Formato PDF
+                            </strong>
+
+                            <span>
+                                El reporte se abrirá en una nueva
+                                pestaña del navegador.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- =====================================================
+                     PIE DEL MODAL
+                ====================================================== -->
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-cancelar-reporte"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-generar-reporte"
+                        id="btnGenerarReporte"
+                    >
+                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>
+
+                        Generar reporte
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
