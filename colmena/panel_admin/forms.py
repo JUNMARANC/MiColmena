@@ -6,6 +6,10 @@ from django.utils import timezone
 from dbmicolmena.models import (
     VinculacionApicultor,
     RegistroLaboralMensual,
+    Apiario,
+    Apicultor,
+    Colmena,
+    EventoAgenda,
 )
 
 class VinculacionApicultorForm(forms.ModelForm):
@@ -210,3 +214,121 @@ class RegistroLaboralMensualForm(forms.ModelForm):
             )
 
         return datos
+
+
+class EventoAgendaForm(forms.ModelForm):
+
+    class Meta:
+        model = EventoAgenda
+
+        fields = [
+            "titulo",
+            "tipo_evento",
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "fecha",
+            "hora",
+            "descripcion",
+            "estado",
+        ]
+
+        widgets = {
+            "titulo": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "maxlength": "150",
+                    "placeholder": "Título del evento",
+                }
+            ),
+
+            "tipo_evento": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "id_apiario": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "id_colmena": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "responsable": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "fecha": forms.DateInput(
+                attrs={
+                    "class": "form-control",
+                    "type": "date",
+                }
+            ),
+
+            "hora": forms.TimeInput(
+                attrs={
+                    "class": "form-control",
+                    "type": "time",
+                }
+            ),
+
+            "descripcion": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": "4",
+                    "maxlength": "500",
+                    "placeholder": "Descripción del evento",
+                }
+            ),
+
+            "estado": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.fields["id_apiario"].queryset = (
+            Apiario.objects.all()
+            .order_by("nombreapiario")
+        )
+
+        self.fields["id_colmena"].queryset = (
+            Colmena.objects.select_related("id_apiario")
+            .all()
+            .order_by("codigocolmena")
+        )
+
+        self.fields["responsable"].queryset = (
+            Apicultor.objects.select_related("user")
+            .all()
+            .order_by("user__first_name", "user__last_name")
+        )
+
+        self.fields["id_colmena"].required = False
+        self.fields["responsable"].required = False
+        self.fields["descripcion"].required = False
+
+        self.fields["id_apiario"].empty_label = (
+            "Selecciona un apiario"
+        )
+
+        self.fields["id_colmena"].empty_label = (
+            "Sin colmena específica"
+        )
+
+        self.fields["responsable"].empty_label = (
+            "Sin responsable"
+        )

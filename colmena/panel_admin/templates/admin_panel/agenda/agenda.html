@@ -1,0 +1,224 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid pagina-agenda">
+
+    <div class="encabezado-agenda">
+
+        <div>
+            <h2>Agenda</h2>
+
+            <p>
+                Programa y consulta las actividades de los apiarios.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-agregar-evento"
+            data-bs-toggle="modal"
+            data-bs-target="#modalCrearEvento"
+        >
+            <i class="bi bi-plus-lg me-2"></i>
+            Agregar evento
+        </button>
+
+    </div>
+
+    <form
+        method="GET"
+        class="filtros-agenda"
+    >
+
+        <input
+            type="hidden"
+            name="mes"
+            value="{{ mes_valor }}"
+        >
+
+        <select
+            name="tipo"
+            class="form-select"
+        >
+            <option value="">Todos los tipos</option>
+
+            {% for valor, nombre in tipos_evento %}
+
+                <option
+                    value="{{ valor }}"
+                    {% if filtro_tipo == valor %}selected{% endif %}
+                >
+                    {{ nombre }}
+                </option>
+
+            {% endfor %}
+        </select>
+
+        <select
+            name="apiario"
+            class="form-select"
+        >
+            <option value="">Todos los apiarios</option>
+
+            {% for apiario in apiarios %}
+
+                <option
+                    value="{{ apiario.id_apiario }}"
+                    {% if filtro_apiario == apiario.id_apiario|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ apiario.nombreapiario }}
+                </option>
+
+            {% endfor %}
+        </select>
+
+        <div class="buscador-agenda">
+
+            <i class="bi bi-search"></i>
+
+            <input
+                type="search"
+                name="buscar"
+                value="{{ busqueda }}"
+                placeholder="Buscar evento"
+            >
+
+        </div>
+
+        <button
+            type="submit"
+            class="btn btn-buscar-agenda"
+        >
+            Buscar
+        </button>
+
+    </form>
+
+    <section class="tarjeta-calendario">
+
+        <div class="navegacion-calendario">
+
+            <a
+                href="?mes={{ mes_anterior }}&tipo={{ filtro_tipo }}&apiario={{ filtro_apiario }}&buscar={{ busqueda|urlencode }}"
+                class="btn-navegar-mes"
+            >
+                <i class="bi bi-chevron-left"></i>
+            </a>
+
+            <h3>
+                {{ nombre_mes }}
+            </h3>
+
+            <a
+                href="?mes={{ mes_siguiente }}&tipo={{ filtro_tipo }}&apiario={{ filtro_apiario }}&buscar={{ busqueda|urlencode }}"
+                class="btn-navegar-mes"
+            >
+                <i class="bi bi-chevron-right"></i>
+            </a>
+
+        </div>
+
+        <div class="calendario-agenda">
+
+            <div class="dia-semana">Lun</div>
+            <div class="dia-semana">Mar</div>
+            <div class="dia-semana">Mié</div>
+            <div class="dia-semana">Jue</div>
+            <div class="dia-semana">Vie</div>
+            <div class="dia-semana">Sáb</div>
+            <div class="dia-semana">Dom</div>
+
+            {% for semana in semanas_calendario %}
+
+                {% for dia in semana %}
+
+                    <div
+                        class="
+                            celda-calendario
+                            {% if not dia.es_mes_actual %}
+                                dia-otro-mes
+                            {% endif %}
+                            {% if dia.es_hoy %}
+                                dia-hoy
+                            {% endif %}
+                        "
+                    >
+
+                        <div class="numero-dia">
+                            {{ dia.fecha.day }}
+                        </div>
+
+                        <div class="eventos-del-dia">
+
+                            {% for evento in dia.eventos %}
+
+                                <button
+                                    type="button"
+                                    class="
+                                        evento-calendario
+                                        evento-{{ evento.tipo_evento }}
+                                    "
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalleEvento"
+
+                                    data-id="{{ evento.id_evento }}"
+                                    data-titulo="{{ evento.titulo|escape }}"
+                                    data-tipo="{{ evento.tipo_evento }}"
+                                    data-tipo-texto="{{ evento.get_tipo_evento_display|escape }}"
+
+                                    data-apiario-id="{{ evento.id_apiario_id }}"
+                                    data-apiario="{{ evento.id_apiario.nombreapiario|escape }}"
+
+                                    data-colmena-id="{{ evento.id_colmena_id|default:'' }}"
+                                    data-colmena="{{ evento.id_colmena.codigocolmena|default:'Sin colmena específica'|escape }}"
+
+                                    data-responsable-id="{{ evento.responsable_id|default:'' }}"
+                                    data-responsable="{% if evento.responsable %}{{ evento.responsable.nombre_completo|escape }}{% else %}Sin responsable{% endif %}"
+
+                                    data-fecha="{{ evento.fecha|date:'Y-m-d' }}"
+                                    data-fecha-texto="{{ evento.fecha|date:'d/m/Y' }}"
+                                    data-hora="{{ evento.hora|time:'H:i' }}"
+
+                                    data-descripcion="{{ evento.descripcion|default:'Sin descripción'|escape }}"
+                                    data-estado="{{ evento.estado }}"
+                                    data-estado-texto="{{ evento.get_estado_display|escape }}"
+
+                                    data-editar-url="{% url 'editar_evento_agenda' evento.id_evento %}"
+                                    data-eliminar-url="{% url 'eliminar_evento_agenda' evento.id_evento %}"
+                                >
+
+                                    <span></span>
+
+                                    {{ evento.titulo }}
+
+                                </button>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+{% include "admin_panel/agenda/modal_detalle.html" %}
+{% include "admin_panel/agenda/modal_crear.html" %}
+{% include "admin_panel/agenda/modal_editar.html" %}
+{% include "admin_panel/agenda/modal_eliminar.html" %}
+
+<script src="{% static 'panel_admin/js/agenda.js' %}?v=1"></script>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from calendar import monthrange
 from django.core.exceptions import ValidationError
@@ -411,3 +412,268 @@ class RegistroLaboralMensual(models.Model):
         self.full_clean()
 
         super().save(*args, **kwargs)
+
+
+class EventoAgenda(models.Model):
+
+    class TipoEvento(models.TextChoices):
+        MANTENIMIENTO = "mantenimiento", "Mantenimiento"
+        REVISION = "revision", "Revisión"
+        INCIDENCIA = "incidencia", "Incidencia"
+        EVENTO = "evento", "Evento general"
+
+    class EstadoEvento(models.TextChoices):
+        PROGRAMADO = "programado", "Programado"
+        COMPLETADO = "completado", "Completado"
+        CANCELADO = "cancelado", "Cancelado"
+
+    id_evento = models.AutoField(
+        db_column="Id_Evento",
+        primary_key=True
+    )
+
+    titulo = models.CharField(
+        db_column="Titulo",
+        max_length=150
+    )
+
+    tipo_evento = models.CharField(
+        db_column="TipoEvento",
+        max_length=20,
+        choices=TipoEvento.choices,
+        default=TipoEvento.EVENTO
+    )
+
+    id_apiario = models.ForeignKey(
+        "Apiario",
+        on_delete=models.PROTECT,
+        db_column="Id_Apiario",
+        related_name="eventos_agenda"
+    )
+
+    id_colmena = models.ForeignKey(
+        "Colmena",
+        on_delete=models.PROTECT,
+        db_column="Id_Colmena",
+        related_name="eventos_agenda",
+        null=True,
+        blank=True
+    )
+
+    responsable = models.ForeignKey(
+        "Apicultor",
+        on_delete=models.PROTECT,
+        db_column="Id_Responsable",
+        related_name="eventos_asignados",
+        null=True,
+        blank=True
+    )
+
+    fecha = models.DateField(
+        db_column="Fecha"
+    )
+
+    hora = models.TimeField(
+        db_column="Hora"
+    )
+
+    descripcion = models.TextField(
+        db_column="Descripcion",
+        max_length=500,
+        blank=True
+    )
+
+    estado = models.CharField(
+        db_column="Estado",
+        max_length=20,
+        choices=EstadoEvento.choices,
+        default=EstadoEvento.PROGRAMADO
+    )
+
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        db_column="CreadoPor",
+        related_name="eventos_agenda_creados",
+        null=True,
+        blank=True
+    )
+
+    fecha_creacion = models.DateTimeField(
+        db_column="FechaCreacion",
+        auto_now_add=True
+    )
+
+    fecha_actualizacion = models.DateTimeField(
+        db_column="FechaActualizacion",
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = "evento_agenda"
+        ordering = ["fecha", "hora"]
+        verbose_name = "Evento de agenda"
+        verbose_name_plural = "Eventos de agenda"
+
+    def __str__(self):
+        return f"{self.titulo} - {self.fecha:%d/%m/%Y}"
+
+    def clean(self):
+
+        super().clean()
+
+        if (
+            self.id_colmena_id
+            and self.id_apiario_id
+            and self.id_colmena.id_apiario_id != self.id_apiario_id
+        ):
+            raise ValidationError({
+                "id_colmena": (
+                    "La colmena seleccionada no pertenece "
+                    "al apiario indicado."
+                )
+            })
+
+    def save(self, *args, **kwargs):
+
+        self.full_clean()
+
+        super().save(*args, **kwargs)
+
+
+class HistorialReporte(models.Model):
+
+    class TipoReporte(models.TextChoices):
+        ESTADO_COLMENAS = (
+            "estado_colmenas",
+            "Estado de colmenas"
+        )
+
+        INCIDENCIAS = (
+            "incidencias",
+            "Incidencias"
+        )
+
+        MANTENIMIENTOS = (
+            "mantenimientos",
+            "Mantenimientos"
+        )
+
+        ACTIVIDAD_APICULTORES = (
+            "actividad_apicultores",
+            "Actividad de apicultores"
+        )
+
+        ACTIVIDAD_MENSUAL = (
+            "actividad_mensual",
+            "Actividad mensual"
+        )
+
+        COMPARATIVO = (
+            "comparativo",
+            "Reporte comparativo"
+        )
+
+    class FormatoReporte(models.TextChoices):
+        PDF = "pdf", "PDF"
+        EXCEL = "xlsx", "Excel"
+
+    id_reporte = models.AutoField(
+        db_column="Id_Reporte",
+        primary_key=True
+    )
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        db_column="UsuarioId",
+        null=True,
+        blank=True,
+        related_name="reportes_generados"
+    )
+
+    tipo_reporte = models.CharField(
+        db_column="TipoReporte",
+        max_length=40,
+        choices=TipoReporte.choices
+    )
+
+    titulo = models.CharField(
+        db_column="Titulo",
+        max_length=150
+    )
+
+    formato = models.CharField(
+        db_column="Formato",
+        max_length=10,
+        choices=FormatoReporte.choices,
+        default=FormatoReporte.PDF
+    )
+
+    fecha_desde = models.DateField(
+        db_column="FechaDesde",
+        null=True,
+        blank=True
+    )
+
+    fecha_hasta = models.DateField(
+        db_column="FechaHasta",
+        null=True,
+        blank=True
+    )
+
+    filtros_aplicados = models.TextField(
+        db_column="FiltrosAplicados",
+        blank=True
+    )
+
+    total_registros = models.PositiveIntegerField(
+        db_column="TotalRegistros",
+        default=0
+    )
+
+    nombre_archivo = models.CharField(
+        db_column="NombreArchivo",
+        max_length=255
+    )
+
+    archivo = models.FileField(
+        db_column="Archivo",
+        upload_to="reportes/%Y/%m/"
+    )
+
+    tamano_bytes = models.PositiveBigIntegerField(
+        db_column="TamanoBytes",
+        default=0
+    )
+
+    fecha_generacion = models.DateTimeField(
+        db_column="FechaGeneracion",
+        auto_now_add=True
+    )
+
+    class Meta:
+        db_table = "historial_reporte"
+        ordering = ["-fecha_generacion"]
+        verbose_name = "Historial de reporte"
+        verbose_name_plural = "Historial de reportes"
+
+    def __str__(self):
+
+        return (
+            f"{self.get_tipo_reporte_display()} - "
+            f"{self.fecha_generacion:%d/%m/%Y}"
+        )
+
+    @property
+    def tamano_legible(self):
+
+        tamano = self.tamano_bytes
+
+        if tamano < 1024:
+            return f"{tamano} B"
+
+        if tamano < 1024 * 1024:
+            return f"{tamano / 1024:.1f} KB"
+
+        return f"{tamano / (1024 * 1024):.1f} MB"

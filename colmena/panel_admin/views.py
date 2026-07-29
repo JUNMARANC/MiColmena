@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento, Incidencia, Administrador, Rol
+from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento, Incidencia, Administrador, Rol,  EventoAgenda, HistorialReporte
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.db.models import Q, Count, Sum
@@ -16,9 +16,22 @@ from dbmicolmena.models import (VinculacionApicultor,RegistroLaboralMensual,)
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from datetime import datetime, date
+from collections import defaultdict
+from calendar import Calendar
+from panel_admin.forms import EventoAgendaForm
 from pathlib import Path
+from django.urls import reverse
+from django.core.files.base import ContentFile
+from panel_admin.reportes.estado_colmenas import (
+    generar_reporte_estado_colmenas_pdf,
+)
+from panel_admin.reportes.incidencias import (
+    generar_reporte_incidencias_pdf,
+)
+
+
 
 def administrador_requerido(vista):
     @wraps(vista)
@@ -48,18 +61,6 @@ def dashboard_admin(request):
         "admin_panel/dashboard.html"
     )
 
-
-@administrador_requerido
-def exportar_admin(request):
-    return render(request, 'admin_panel/exportar_base_datos.html')
-
-@administrador_requerido
-def agenda_admin(request):
-    return render(request, 'admin_panel/agenda.html')
-
-@administrador_requerido
-def reportes_admin(request):
-    return render(request, 'admin_panel/reportes.html')
 
 @administrador_requerido
 def usuarios_roles_admin(request):
@@ -2341,3 +2342,831 @@ def reporte_apicultor_pdf(
     )
 
     return response
+
+#LOGICA DE LA AGENDA
+
+MESES_ESPANOL = [
+    "",
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+]
+
+
+def obtener_mes_agenda(valor=None):
+
+    if valor:
+
+        try:
+            return datetime.strptime(
+                valor,
+                "%Y-%m"
+            ).date().replace(day=1)
+
+        except ValueError:
+            pass
+
+    return timezone.localdate().replace(day=1)
+
+
+def desplazar_mes(fecha, cantidad):
+
+    numero_mes = fecha.month - 1 + cantidad
+
+    anio = fecha.year + numero_mes // 12
+    mes = numero_mes % 12 + 1
+
+    return date(anio, mes, 1)
+
+
+def agregar_errores_formulario(request, formulario):
+
+    for campo, errores in formulario.errors.items():
+
+        for error in errores:
+
+            if campo == "__all__":
+                messages.error(request, error)
+            else:
+                etiqueta = (
+                    formulario.fields[campo].label
+                    if campo in formulario.fields
+                    else campo
+                )
+
+                messages.error(
+                    request,
+                    f"{etiqueta}: {error}"
+                )
+
+@administrador_requerido
+def agenda_admin(request):
+
+    mes_actual = obtener_mes_agenda(
+        request.GET.get("mes")
+    )
+
+    mes_siguiente = desplazar_mes(
+        mes_actual,
+        1
+    )
+
+    mes_anterior = desplazar_mes(
+        mes_actual,
+        -1
+    )
+
+    filtro_tipo = request.GET.get(
+        "tipo",
+        ""
+    ).strip()
+
+    filtro_apiario = request.GET.get(
+        "apiario",
+        ""
+    ).strip()
+
+    busqueda = request.GET.get(
+        "buscar",
+        ""
+    ).strip()
+
+    eventos = (
+        EventoAgenda.objects
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "responsable__user",
+        )
+        .filter(
+            fecha__gte=mes_actual,
+            fecha__lt=mes_siguiente
+        )
+    )
+
+    if filtro_tipo:
+
+        eventos = eventos.filter(
+            tipo_evento=filtro_tipo
+        )
+
+    if filtro_apiario.isdigit():
+
+        eventos = eventos.filter(
+            id_apiario_id=int(filtro_apiario)
+        )
+
+    if busqueda:
+
+        eventos = eventos.filter(
+            Q(titulo__icontains=busqueda)
+            | Q(descripcion__icontains=busqueda)
+            | Q(id_apiario__nombreapiario__icontains=busqueda)
+            | Q(id_colmena__codigocolmena__icontains=busqueda)
+            | Q(responsable__user__first_name__icontains=busqueda)
+            | Q(responsable__user__last_name__icontains=busqueda)
+        )
+
+    eventos = eventos.order_by(
+        "fecha",
+        "hora"
+    )
+
+    eventos_por_fecha = defaultdict(list)
+
+    for evento in eventos:
+        eventos_por_fecha[evento.fecha].append(evento)
+
+    calendario = Calendar(
+        firstweekday=0
+    )
+
+    semanas_calendario = []
+
+    for semana in calendario.monthdatescalendar(
+        mes_actual.year,
+        mes_actual.month
+    ):
+
+        dias_semana = []
+
+        for fecha_dia in semana:
+
+            dias_semana.append({
+                "fecha": fecha_dia,
+                "es_mes_actual": (
+                    fecha_dia.month == mes_actual.month
+                ),
+                "es_hoy": (
+                    fecha_dia == timezone.localdate()
+                ),
+                "eventos": eventos_por_fecha.get(
+                    fecha_dia,
+                    []
+                ),
+            })
+
+        semanas_calendario.append(
+            dias_semana
+        )
+
+    apiarios = (
+        Apiario.objects.all()
+        .order_by("nombreapiario")
+    )
+
+    colmenas = (
+        Colmena.objects.select_related("id_apiario")
+        .all()
+        .order_by("codigocolmena")
+    )
+
+    responsables = (
+        Apicultor.objects.select_related("user")
+        .all()
+        .order_by("user__first_name", "user__last_name")
+    )
+
+    return render(
+        request,
+        "admin_panel/agenda/agenda.html",
+        {
+            "semanas_calendario": semanas_calendario,
+            "mes_actual": mes_actual,
+            "mes_valor": mes_actual.strftime("%Y-%m"),
+            "mes_anterior": mes_anterior.strftime("%Y-%m"),
+            "mes_siguiente": mes_siguiente.strftime("%Y-%m"),
+            "nombre_mes": (
+                f"{MESES_ESPANOL[mes_actual.month]} "
+                f"{mes_actual.year}"
+            ),
+
+            "apiarios": apiarios,
+            "colmenas": colmenas,
+            "responsables": responsables,
+
+            "tipos_evento": EventoAgenda.TipoEvento.choices,
+            "estados_evento": EventoAgenda.EstadoEvento.choices,
+
+            "filtro_tipo": filtro_tipo,
+            "filtro_apiario": filtro_apiario,
+            "busqueda": busqueda,
+        }
+    )
+
+@administrador_requerido
+@require_POST
+def crear_evento_agenda(request):
+
+    formulario = EventoAgendaForm(
+        request.POST
+    )
+
+    if formulario.is_valid():
+
+        evento = formulario.save(
+            commit=False
+        )
+
+        evento.creado_por = request.user
+        evento.save()
+
+        messages.success(
+            request,
+            "El evento fue creado correctamente."
+        )
+
+        mes = evento.fecha.strftime("%Y-%m")
+
+    else:
+
+        agregar_errores_formulario(
+            request,
+            formulario
+        )
+
+        mes = request.POST.get(
+            "mes_retorno",
+            ""
+        )
+
+    return redirect(
+        f"{reverse('agenda_admin')}?mes={mes}"
+    )
+
+@administrador_requerido
+@require_POST
+def editar_evento_agenda(
+    request,
+    id_evento
+):
+
+    evento = get_object_or_404(
+        EventoAgenda,
+        pk=id_evento
+    )
+
+    formulario = EventoAgendaForm(
+        request.POST,
+        instance=evento
+    )
+
+    if formulario.is_valid():
+
+        evento = formulario.save()
+
+        messages.success(
+            request,
+            "El evento fue actualizado correctamente."
+        )
+
+        mes = evento.fecha.strftime("%Y-%m")
+
+    else:
+
+        agregar_errores_formulario(
+            request,
+            formulario
+        )
+
+        mes = request.POST.get(
+            "mes_retorno",
+            evento.fecha.strftime("%Y-%m")
+        )
+
+    return redirect(
+        f"{reverse('agenda_admin')}?mes={mes}"
+    )
+
+@administrador_requerido
+@require_POST
+def eliminar_evento_agenda(
+    request,
+    id_evento
+):
+
+    evento = get_object_or_404(
+        EventoAgenda,
+        pk=id_evento
+    )
+
+    mes = evento.fecha.strftime("%Y-%m")
+    titulo = evento.titulo
+
+    evento.delete()
+
+    messages.success(
+        request,
+        f'El evento "{titulo}" fue eliminado correctamente.'
+    )
+
+    return redirect(
+        f"{reverse('agenda_admin')}?mes={mes}"
+    )
+
+#LOGICA DE LOS REPORTES
+
+@administrador_requerido
+def reportes_admin(request):
+
+    apiarios = (
+        Apiario.objects
+        .all()
+        .order_by("nombreapiario")
+    )
+
+    historial = (
+        HistorialReporte.objects
+        .select_related("usuario")
+        .order_by("-fecha_generacion")[:20]
+    )
+
+    tipos_reportes = [
+        {
+            "clave": "estado_colmenas",
+            "nombre": "Estado de colmenas",
+            "descripcion": (
+                "Distribución, estado actual y colmenas "
+                "que requieren seguimiento."
+            ),
+            "icono": "bi-hexagon-half",
+            "clase": "reporte-colmenas",
+            "disponible": True,
+        },
+        {
+            "clave": "incidencias",
+            "nombre": "Incidencias",
+            "descripcion": (
+                "Incidencias por tipo, prioridad, estado "
+                "y tendencia histórica."
+            ),
+            "icono": "bi-exclamation-triangle-fill",
+            "clase": "reporte-incidencias",
+            "disponible": True,
+        },
+        {
+            "clave": "mantenimientos",
+            "nombre": "Mantenimientos",
+            "descripcion": (
+                "Actividades programadas, realizadas, "
+                "vencidas y responsables."
+            ),
+            "icono": "bi-wrench-adjustable",
+            "clase": "reporte-mantenimientos",
+            "disponible": False,
+        },
+        {
+            "clave": "actividad_apicultores",
+            "nombre": "Actividad de apicultores",
+            "descripcion": (
+                "Carga de trabajo, apiarios asignados "
+                "y actividades realizadas."
+            ),
+            "icono": "bi-people-fill",
+            "clase": "reporte-apicultores",
+            "disponible": False,
+        },
+        {
+            "clave": "actividad_mensual",
+            "nombre": "Actividad mensual",
+            "descripcion": (
+                "Resumen general de las actividades "
+                "registradas durante el mes."
+            ),
+            "icono": "bi-graph-up-arrow",
+            "clase": "reporte-mensual",
+            "disponible": False,
+        },
+        {
+            "clave": "comparativo",
+            "nombre": "Reporte comparativo",
+            "descripcion": (
+                "Comparación entre meses, apiarios "
+                "y principales indicadores."
+            ),
+            "icono": "bi-layout-text-window-reverse",
+            "clase": "reporte-comparativo",
+            "disponible": False,
+        },
+    ]
+
+    prioridades_incidencia = (
+        Incidencia.objects
+        .exclude(prioridad__isnull=True)
+        .exclude(prioridad="")
+        .values_list(
+            "prioridad",
+            flat=True
+        )
+        .distinct()
+        .order_by("prioridad")
+    )
+
+    estados_incidencia = (
+        Incidencia.objects
+        .exclude(estado__isnull=True)
+        .exclude(estado="")
+        .values_list(
+            "estado",
+            flat=True
+        )
+        .distinct()
+        .order_by("estado")
+    )
+
+    return render(
+        request,
+        "admin_panel/reportes/reportes.html",
+        {
+            "apiarios": apiarios,
+            "historial": historial,
+            "tipos_reportes": tipos_reportes,
+            "prioridades_incidencia": prioridades_incidencia,
+            "estados_incidencia": estados_incidencia,
+        }
+    )
+
+@administrador_requerido
+@require_POST
+def generar_reporte_sistema(request):
+
+    tipo_reporte = request.POST.get(
+        "tipo_reporte",
+        ""
+    ).strip()
+
+    fecha_desde_texto = request.POST.get(
+        "fecha_desde",
+        ""
+    ).strip()
+
+    fecha_hasta_texto = request.POST.get(
+        "fecha_hasta",
+        ""
+    ).strip()
+
+    apiario_texto = request.POST.get(
+        "apiario",
+        ""
+    ).strip()
+
+    incluir_graficos = (
+        request.POST.get(
+            "incluir_graficos"
+        ) == "1"
+    )
+
+    incluir_tabla = (
+        request.POST.get(
+            "incluir_tabla"
+        ) == "1"
+    )
+
+    incluir_resumen = (
+        request.POST.get(
+            "incluir_resumen"
+        ) == "1"
+    )
+
+    incluir_conclusiones = (
+        request.POST.get(
+            "incluir_conclusiones"
+        ) == "1"
+    )
+
+    solo_activas = (
+        request.POST.get(
+            "solo_activas"
+        ) == "1"
+    )
+
+    solo_abiertas = (
+        request.POST.get(
+            "solo_abiertas"
+        ) == "1"
+    )
+
+    comparar_periodo_anterior = (
+        request.POST.get(
+            "comparar_periodo_anterior"
+        ) == "1"
+    )
+
+    # =========================================================
+    # VALIDAR FECHAS
+    # =========================================================
+
+    try:
+
+        fecha_desde = (
+            datetime.strptime(
+                fecha_desde_texto,
+                "%Y-%m-%d"
+            ).date()
+            if fecha_desde_texto
+            else None
+        )
+
+        fecha_hasta = (
+            datetime.strptime(
+                fecha_hasta_texto,
+                "%Y-%m-%d"
+            ).date()
+            if fecha_hasta_texto
+            else None
+        )
+
+    except ValueError:
+
+        messages.error(
+            request,
+            "Las fechas seleccionadas no son válidas."
+        )
+
+        return redirect(
+            "reportes_admin"
+        )
+
+    if (
+        fecha_desde
+        and fecha_hasta
+        and fecha_desde > fecha_hasta
+    ):
+
+        messages.error(
+            request,
+            (
+                "La fecha inicial no puede ser "
+                "posterior a la fecha final."
+            )
+        )
+
+        return redirect(
+            "reportes_admin"
+        )
+
+    # =========================================================
+    # VALIDAR APIARIO
+    # =========================================================
+
+    apiario_id = None
+    apiario = None
+
+    if apiario_texto:
+
+        if not apiario_texto.isdigit():
+
+            messages.error(
+                request,
+                "El apiario seleccionado no es válido."
+            )
+
+            return redirect(
+                "reportes_admin"
+            )
+
+        apiario_id = int(
+            apiario_texto
+        )
+
+        apiario = Apiario.objects.filter(
+            pk=apiario_id
+        ).first()
+
+        if not apiario:
+
+            messages.error(
+                request,
+                "El apiario seleccionado no existe."
+            )
+
+            return redirect(
+                "reportes_admin"
+            )
+
+    # =========================================================
+    # GENERAR REPORTE SEGÚN EL TIPO
+    # =========================================================
+
+    try:
+
+        if tipo_reporte == "estado_colmenas":
+
+            resultado = (
+                generar_reporte_estado_colmenas_pdf(
+                    request=request,
+                    fecha_desde=fecha_desde,
+                    fecha_hasta=fecha_hasta,
+                    apiario_id=apiario_id,
+                    incluir_graficos=incluir_graficos,
+                    incluir_tabla=incluir_tabla,
+                    incluir_resumen=incluir_resumen,
+                    incluir_conclusiones=(
+                        incluir_conclusiones
+                    ),
+                    solo_activas=solo_activas
+                )
+            )
+
+        elif tipo_reporte == "incidencias":
+
+            resultado = (
+                generar_reporte_incidencias_pdf(
+                    request=request,
+                    fecha_desde=fecha_desde,
+                    fecha_hasta=fecha_hasta,
+                    apiario_id=apiario_id,
+                    incluir_graficos=incluir_graficos,
+                    incluir_tabla=incluir_tabla,
+                    incluir_resumen=incluir_resumen,
+                    incluir_conclusiones=(
+                        incluir_conclusiones
+                    ),
+                    solo_abiertas=solo_abiertas,
+                    comparar_periodo_anterior=(
+                        comparar_periodo_anterior
+                    )
+                )
+            )
+
+        else:
+
+            messages.warning(
+                request,
+                "Este reporte todavía no está habilitado."
+            )
+
+            return redirect(
+                "reportes_admin"
+            )
+
+        pdf = resultado["pdf"]
+
+        # =====================================================
+        # NOMBRE DEL ARCHIVO
+        # =====================================================
+
+        marca_tiempo = (
+            timezone.localtime()
+            .strftime("%Y%m%d-%H%M%S")
+        )
+
+        nombre_tipo_archivo = (
+            tipo_reporte.replace(
+                "_",
+                "-"
+            )
+        )
+
+        nombre_archivo = (
+            f"reporte-{nombre_tipo_archivo}-"
+            f"{marca_tiempo}.pdf"
+        )
+
+        # =====================================================
+        # FILTROS APLICADOS
+        # =====================================================
+
+        filtros = []
+
+        if fecha_desde:
+
+            filtros.append(
+                f"Desde: {fecha_desde:%d/%m/%Y}"
+            )
+
+        if fecha_hasta:
+
+            filtros.append(
+                f"Hasta: {fecha_hasta:%d/%m/%Y}"
+            )
+
+        if apiario:
+
+            filtros.append(
+                f"Apiario: {apiario.nombreapiario}"
+            )
+
+        if (
+            tipo_reporte == "estado_colmenas"
+            and solo_activas
+        ):
+
+            filtros.append(
+                "Solo colmenas activas"
+            )
+
+        if (
+            tipo_reporte == "incidencias"
+            and solo_abiertas
+        ):
+
+            filtros.append(
+                "Solo incidencias abiertas"
+            )
+
+        if comparar_periodo_anterior:
+
+            filtros.append(
+                "Comparado con el periodo anterior"
+            )
+
+        # =====================================================
+        # GUARDAR EN HISTORIAL
+        # =====================================================
+
+        historial = HistorialReporte(
+            usuario=request.user,
+            tipo_reporte=tipo_reporte,
+            titulo=resultado["titulo"],
+            formato="pdf",
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
+            filtros_aplicados=" | ".join(
+                filtros
+            ),
+            total_registros=(
+                resultado["total_registros"]
+            ),
+            nombre_archivo=nombre_archivo,
+            tamano_bytes=len(pdf),
+        )
+
+        historial.archivo.save(
+            nombre_archivo,
+            ContentFile(pdf),
+            save=False
+        )
+
+        historial.save()
+
+        # =====================================================
+        # ABRIR PDF EN EL NAVEGADOR
+        # =====================================================
+
+        response = HttpResponse(
+            pdf,
+            content_type="application/pdf"
+        )
+
+        response["Content-Disposition"] = (
+            f'inline; filename="{nombre_archivo}"'
+        )
+
+        return response
+
+    except Exception as error:
+
+        print(
+            "Error generando reporte:",
+            type(error).__name__,
+            error
+        )
+
+        messages.error(
+            request,
+            "No fue posible generar el reporte."
+        )
+
+        return redirect(
+            "reportes_admin"
+        )
+    
+
+@administrador_requerido
+def abrir_reporte_sistema(
+    request,
+    id_reporte
+):
+
+    reporte = get_object_or_404(
+        HistorialReporte,
+        pk=id_reporte
+    )
+
+    if not reporte.archivo:
+
+        messages.error(
+            request,
+            "El archivo del reporte ya no está disponible."
+        )
+
+        return redirect("reportes_admin")
+
+    return FileResponse(
+        reporte.archivo.open("rb"),
+        as_attachment=False,
+        filename=reporte.nombre_archivo,
+        content_type="application/pdf"
+    )
+

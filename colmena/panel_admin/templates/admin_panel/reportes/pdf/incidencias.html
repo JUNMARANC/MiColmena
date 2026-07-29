@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>{{ titulo_reporte }}</title>
+
+    <style>
+
+        @page {
+            size: A4;
+            margin: 13mm 11mm 16mm;
+
+            @bottom-left {
+                content: "Sistema Mi Colmena - Reporte de incidencias";
+                color: #758279;
+                font-size: 9px;
+            }
+
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                color: #758279;
+                font-size: 9px;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #30443a;
+            background: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5px;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        p {
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        /* Encabezado */
+
+        .encabezado {
+            padding: 17px 19px;
+            margin-bottom: 17px;
+            border: 1px solid #e8d798;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff8dc,
+                    #fffdf4
+                );
+        }
+
+        .tabla-encabezado {
+            width: 100%;
+        }
+
+        .tabla-encabezado td {
+            border: 0;
+            vertical-align: middle;
+        }
+
+        .logo-reporte {
+            width: 58px;
+        }
+
+        .logo-circular {
+            width: 46px;
+            height: 46px;
+            border: 2px solid #d9aa26;
+            border-radius: 50%;
+            background: #fff3b3;
+            color: #214f3b;
+            font-size: 23px;
+            font-weight: bold;
+            line-height: 42px;
+            text-align: center;
+        }
+
+        .titulo-reporte h1 {
+            color: #214f3b;
+            font-size: 21px;
+        }
+
+        .titulo-reporte p {
+            margin-top: 4px;
+            color: #6f7c74;
+            font-size: 9.5px;
+        }
+
+        .datos-generacion {
+            width: 31%;
+            color: #5d6c64;
+            font-size: 8.5px;
+            line-height: 1.55;
+            text-align: right;
+        }
+
+        /* Indicadores */
+
+        .indicadores {
+            width: 100%;
+            margin-bottom: 17px;
+            border-collapse: separate;
+            border-spacing: 6px;
+        }
+
+        .indicadores td {
+            width: 20%;
+            padding: 11px 6px;
+            border: 1px solid #efdfa4;
+            border-radius: 9px;
+            background: #fff8d9;
+            text-align: center;
+        }
+
+        .indicadores small {
+            display: block;
+            margin-bottom: 5px;
+            color: #786c42;
+            font-size: 7.3px;
+            line-height: 1.25;
+            text-transform: uppercase;
+        }
+
+        .indicadores strong {
+            display: block;
+            color: #214f3b;
+            font-size: 19px;
+        }
+
+        .indicador-abiertas {
+            background: #fff1bd !important;
+        }
+
+        .indicador-cerradas {
+            background: #e2f2e7 !important;
+        }
+
+        .indicador-altas {
+            background: #f8dfdc !important;
+        }
+
+        .indicador-apiarios {
+            background: #e6f0e9 !important;
+        }
+
+        /* Comparación */
+
+        .comparacion {
+            display: flex;
+            margin-bottom: 16px;
+            padding: 11px 13px;
+            border: 1px solid #dfe8e3;
+            border-radius: 10px;
+            background: #f5f9f7;
+        }
+
+        .comparacion strong {
+            color: #214f3b;
+        }
+
+        .variacion-positiva {
+            color: #b2484f;
+            font-weight: bold;
+        }
+
+        .variacion-negativa {
+            color: #2f794a;
+            font-weight: bold;
+        }
+
+        /* Secciones */
+
+        .seccion {
+            margin-bottom: 18px;
+        }
+
+        .titulo-seccion {
+            margin-bottom: 9px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e7daa6;
+            color: #214f3b;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* Gráficos */
+
+        .tabla-graficos {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 7px;
+        }
+
+        .tabla-graficos td {
+            width: 50%;
+            padding: 7px;
+            border: 1px solid #e0e8e3;
+            border-radius: 10px;
+            background: #ffffff;
+            vertical-align: middle;
+        }
+
+        .tabla-graficos img {
+            width: 100%;
+            max-height: 235px;
+            object-fit: contain;
+        }
+
+        .grafico-completo {
+            margin-top: 8px;
+            padding: 8px;
+            border: 1px solid #e0e8e3;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .grafico-completo img {
+            width: 85%;
+            max-height: 235px;
+            object-fit: contain;
+        }
+
+        /* Tabla */
+
+        .tabla-incidencias {
+            width: 100%;
+            font-size: 8.3px;
+        }
+
+        .tabla-incidencias th {
+            padding: 7px 5px;
+            border: 1px solid #d4dfd9;
+            background: #214f3b;
+            color: #ffffff;
+            font-size: 7.7px;
+            text-align: left;
+        }
+
+        .tabla-incidencias td {
+            padding: 7px 5px;
+            border: 1px solid #dee7e2;
+            color: #46574e;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+
+        .tabla-incidencias tr:nth-child(even) {
+            background: #f7faf8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 15px;
+            font-size: 7px;
+            font-weight: bold;
+        }
+
+        .badge-prioridad {
+            background: #fff0bc;
+            color: #775a00;
+        }
+
+        .badge-prioridad-alta {
+            background: #f8d9d8;
+            color: #9d383f;
+        }
+
+        .badge-abierta {
+            background: #fff0bc;
+            color: #775a00;
+        }
+
+        .badge-cerrada {
+            background: #dff1e4;
+            color: #2f7048;
+        }
+
+        /* Conclusiones */
+
+        .conclusion {
+            padding: 13px 15px;
+            border-left: 5px solid #e3bb3f;
+            border-radius: 8px;
+            background: #fff9e7;
+            color: #554d32;
+        }
+
+        .recomendaciones {
+            margin-top: 10px;
+            padding: 12px 15px;
+            border-left: 5px solid #5f9781;
+            border-radius: 8px;
+            background: #eef7f1;
+        }
+
+        .recomendaciones strong {
+            display: block;
+            margin-bottom: 7px;
+            color: #214f3b;
+        }
+
+        .recomendaciones ul {
+            margin: 0;
+            padding-left: 17px;
+        }
+
+        .recomendaciones li {
+            margin-bottom: 5px;
+        }
+
+        .sin-datos {
+            padding: 18px;
+            border: 1px dashed #cad7d0;
+            border-radius: 10px;
+            color: #75837b;
+            text-align: center;
+        }
+
+        .tipo-incidencia-tabla {
+            display: block;
+            color: #30483c;
+            font-size: 8px;
+            font-weight: bold;
+        }
+
+        .titulo-incidencia-tabla {
+            display: block;
+            margin-top: 3px;
+            color: #7a887f;
+            font-size: 7px;
+            line-height: 1.35;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ENCABEZADO -->
+    <header class="encabezado">
+
+        <table class="tabla-encabezado">
+
+            <tr>
+
+                <td class="logo-reporte">
+
+                    <div class="logo-circular">
+                        ⚠
+                    </div>
+
+                </td>
+
+                <td class="titulo-reporte">
+
+                    <h1>
+                        {{ titulo_reporte }}
+                    </h1>
+
+                    <p>
+                        Análisis de incidencias por tipo,
+                        prioridad, estado y periodo.
+                    </p>
+
+                </td>
+
+                <td class="datos-generacion">
+
+                    Generado:
+                    {{ fecha_generacion|date:"d/m/Y H:i" }}
+
+                    <br>
+
+                    Responsable:
+                    {{ generado_por }}
+
+                    <br>
+
+                    Periodo:
+                    {{ fecha_desde|date:"d/m/Y"|default:"Inicio" }}
+                    —
+                    {{ fecha_hasta|date:"d/m/Y"|default:"Actualidad" }}
+
+                    {% if solo_abiertas %}
+                        <br>
+                        Filtro: solo incidencias abiertas
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </header>
+
+    <!-- INDICADORES -->
+    {% if incluir_resumen %}
+
+        <table class="indicadores">
+
+            <tr>
+
+                <td>
+
+                    <small>Total de incidencias</small>
+
+                    <strong>
+                        {{ total_incidencias }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-abiertas">
+
+                    <small>Incidencias abiertas</small>
+
+                    <strong>
+                        {{ incidencias_abiertas }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-cerradas">
+
+                    <small>Incidencias cerradas</small>
+
+                    <strong>
+                        {{ incidencias_cerradas }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-altas">
+
+                    <small>Prioridad alta o crítica</small>
+
+                    <strong>
+                        {{ prioridades_altas }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-apiarios">
+
+                    <small>Apiarios afectados</small>
+
+                    <strong>
+                        {{ apiarios_afectados }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    {% endif %}
+
+    <!-- COMPARACIÓN -->
+    {% if comparar_periodo_anterior and total_periodo_anterior is not None %}
+
+        <div class="comparacion">
+
+            <div>
+
+                <strong>
+                    Comparación con el periodo anterior:
+                </strong>
+
+                {{ periodo_anterior_desde|date:"d/m/Y" }}
+                —
+                {{ periodo_anterior_hasta|date:"d/m/Y" }}.
+
+                Se registraron
+                {{ total_periodo_anterior }}
+                incidencias.
+
+                {% if variacion_periodo > 0 %}
+
+                    <span class="variacion-positiva">
+                        Aumento del {{ variacion_periodo }}%.
+                    </span>
+
+                {% elif variacion_periodo < 0 %}
+
+                    <span class="variacion-negativa">
+                        Reducción del {{ variacion_periodo_absoluta }}%.
+                    </span>
+
+                {% else %}
+
+                    Sin variación.
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <!-- GRÁFICOS -->
+    {% if incluir_graficos %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Distribución de incidencias
+            </div>
+
+            {% if grafico_tipos or grafico_prioridades %}
+
+                <table class="tabla-graficos">
+
+                    <tr>
+
+                        <td>
+
+                            {% if grafico_tipos %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_tipos }}"
+                                    alt="Incidencias por tipo"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if grafico_prioridades %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_prioridades }}"
+                                    alt="Incidencias por prioridad"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            {% endif %}
+
+            {% if grafico_tendencia %}
+
+                <div class="grafico-completo">
+
+                    <img
+                        src="data:image/png;base64,{{ grafico_tendencia }}"
+                        alt="Tendencia de incidencias"
+                    >
+
+                </div>
+
+            {% endif %}
+
+            {% if not grafico_tipos and not grafico_prioridades and not grafico_tendencia %}
+
+                <div class="sin-datos">
+                    No hay información suficiente para generar gráficos.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    <!-- TABLA -->
+    {% if incluir_tabla %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Detalle de incidencias
+            </div>
+
+            {% if incidencias %}
+
+                <table class="tabla-incidencias">
+
+                    <thead>
+
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Apiario</th>
+                            <th>Colmena</th>
+                            <th>Tipo</th>
+                            <th>Prioridad</th>
+                            <th>Estado</th>
+                            <th>Responsable</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for incidencia in incidencias %}
+
+                            <tr>
+
+                                <td>
+                                    {{ incidencia.fecha|date:"d/m/Y"|default:"Sin fecha" }}
+                                </td>
+
+                                <td>
+                                    {{ incidencia.apiario }}
+                                </td>
+
+                                <td>
+                                    {{ incidencia.colmena }}
+                                </td>
+
+                                <td>
+
+                                    <strong class="tipo-incidencia-tabla">
+                                        {{ incidencia.tipo }}
+                                    </strong>
+
+                                    {% if incidencia.titulo and incidencia.titulo != "Sin título" %}
+
+                                        <small class="titulo-incidencia-tabla">
+                                            {{ incidencia.titulo }}
+                                        </small>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            badge
+                                            {% if incidencia.es_prioridad_alta %}
+                                                badge-prioridad-alta
+                                            {% else %}
+                                                badge-prioridad
+                                            {% endif %}
+                                        "
+                                    >
+                                        {{ incidencia.prioridad }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            badge
+                                            {% if incidencia.esta_cerrada %}
+                                                badge-cerrada
+                                            {% else %}
+                                                badge-abierta
+                                            {% endif %}
+                                        "
+                                    >
+                                        {{ incidencia.estado }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {{ incidencia.responsable }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="sin-datos">
+                    No existen incidencias para los filtros seleccionados.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    <!-- CONCLUSIÓN -->
+    {% if incluir_conclusiones %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Conclusión y recomendaciones
+            </div>
+
+            <div class="conclusion">
+                {{ conclusion }}
+            </div>
+
+            <div class="recomendaciones">
+
+                <strong>
+                    Recomendaciones
+                </strong>
+
+                <ul>
+
+                    {% for recomendacion in recomendaciones %}
+
+                        <li>
+                            {{ recomendacion }}
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+</body>
+
+</html>

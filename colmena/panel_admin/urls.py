@@ -42,14 +42,16 @@ urlpatterns = [
     path("apicultores/<int:id_apicultor>/registro-laboral/guardar/",views.guardar_registro_laboral_mensual,name="guardar_registro_laboral_mensual"),
     path("apicultores/<int:id_apicultor>/reporte-pdf/",views.reporte_apicultor_pdf,name="reporte_apicultor_pdf"),
 
-    # Exportar
-    path('exportar/', views.exportar_admin, name='exportar_admin'),
-
     # Agenda
     path('agenda/', views.agenda_admin, name='agenda_admin'),
+    path("agenda/crear/",views.crear_evento_agenda,name="crear_evento_agenda"),
+    path("agenda/<int:id_evento>/editar/",views.editar_evento_agenda,name="editar_evento_agenda"),
+    path("agenda/<int:id_evento>/eliminar/",views.eliminar_evento_agenda,name="eliminar_evento_agenda"),
 
     # Reportes
     path('reportes/', views.reportes_admin, name='reportes_admin'),
+    path("reportes/generar/",views.generar_reporte_sistema,name="generar_reporte_sistema"),
+    path("reportes/<int:id_reporte>/abrir/",views.abrir_reporte_sistema,name="abrir_reporte_sistema"),
 
     # Usuarios
     path('usuarios-roles/', views.usuarios_roles_admin, name='usuarios_roles_admin'),
