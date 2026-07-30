@@ -13,6 +13,20 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+WEASYPRINT_DLL_HANDLE = None
+
+if os.name == "nt":
+
+    ruta_dll_weasyprint = Path(
+        r"C:\msys64\ucrt64\bin"
+    )
+
+    if ruta_dll_weasyprint.exists():
+
+        WEASYPRINT_DLL_HANDLE = os.add_dll_directory(
+            str(ruta_dll_weasyprint)
+        )
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,6 +55,7 @@ INSTALLED_APPS = [
     'home',
     'panel_admin',
     'dbmicolmena',
+    'usuarios',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'usuarios.context_processors.perfil_usuario',
             ],
         },
     },
@@ -125,7 +141,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 #ejecutaremos las configuraciones del SMTP de GMAIL para el envio de correos
 
@@ -135,3 +151,16 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "micolmena690@gmail.com"
 EMAIL_HOST_PASSWORD = "thwbzoouzgbvpnqs"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard_admin"
+LOGOUT_REDIRECT_URL = "login"
+
+# La sesión termina al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# 30 minutos
+SESSION_COOKIE_AGE = 1800
+
+# Reinicia el contador en cada petición
+SESSION_SAVE_EVERY_REQUEST = True

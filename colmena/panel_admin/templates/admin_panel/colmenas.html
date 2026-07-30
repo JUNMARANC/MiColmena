@@ -1,0 +1,695 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load static %}
+
+{% block title %}Colmenas | Panel Administrador{% endblock %}
+{% block page_title %}Colmenas{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="titulo-panel mb-0">Gestión de Colmenas</h2>
+
+    <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
+        <i class="bi bi-plus-circle me-2"></i>
+        Agregar
+    </button>
+</div>
+
+<div class="card-admin mb-4">
+
+    <form method="GET">
+
+        <div class="row g-3 align-items-end">
+
+            <div class="col-md-4">
+
+                <label class="form-label">
+                    Buscar por código
+                </label>
+
+                <input
+                    type="text"
+                    name="codigo"
+                    class="form-control"
+                    placeholder="CM00000001"
+                    value="{{ request.GET.codigo }}">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    Apiario
+                </label>
+
+                <select name="apiario" class="form-select">
+
+                    <option value="">
+                        Todos
+                    </option>
+
+                    {% for apiario in apiarios %}
+
+                    <option
+                        value="{{ apiario.id_apiario }}"
+                        {% if request.GET.apiario == apiario.id_apiario|stringformat:"s" %}
+                        selected
+                        {% endif %}
+                    >
+
+                        {{ apiario.nombreapiario }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    Estado
+                </label>
+
+                <select name="estado" class="form-select">
+
+                    <option value="">Todos</option>
+
+                    <option value="Activa"
+                    {% if request.GET.estado == "Activa" %}selected{% endif %}>
+                        Activa
+                    </option>
+
+                    <option value="Riesgo"
+                    {% if request.GET.estado == "Riesgo" %}selected{% endif %}>
+                        Riesgo
+                    </option>
+
+                    <option value="Inactiva"
+                    {% if request.GET.estado == "Inactiva" %}selected{% endif %}>
+                        Inactiva
+                    </option>
+
+                    <option value="Revisión"
+                    {% if request.GET.estado == "Revisión" %}selected{% endif %}>
+                        Revisión
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2 d-grid">
+
+                <button class="btn btn-success">
+                    <i class="bi bi-search me-2"></i>
+                    Filtrar
+                </button>
+
+            </div>
+
+            <div class="col-md-2 d-grid">
+
+                <a href="{% url 'colmenas_admin' %}" class="btn btn-outline-secondary">
+
+                    Limpiar
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<div class="card-admin">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Código</th>
+                    <th>Apiario</th>
+                    <th>Estado</th>
+                    <th>Fecha Registro</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for colmena in colmenas %}
+                <tr>
+                    <td>
+                        {% if colmena.imagen %}
+                            <img src="{{ colmena.imagen.url }}"
+                                 alt="Imagen de la colmena"
+                                 style="width:55px;height:55px;object-fit:cover;border-radius:12px;">
+                        {% else %}
+                            <div style="width:55px;height:55px;border-radius:12px;background:#E8F7E9;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-image text-success"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ colmena.codigocolmena }}</td>
+
+                    <td>
+                        {% if colmena.id_apiario %}
+                            {{ colmena.id_apiario.nombreapiario }}
+                        {% else %}
+                            Sin apiario
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if colmena.estadocolmena == "Activa" %}
+                            <span class="badge-estado badge-bueno">Activa</span>
+                        {% elif colmena.estadocolmena == "Riesgo" %}
+                            <span class="badge-estado badge-precaucion">Riesgo</span>
+                        {% elif colmena.estadocolmena == "Inactiva" %}
+                            <span class="badge-estado badge-deficiente">Inactiva</span>
+                        {% else %}
+                            <span class="badge-estado badge-precaucion">{{ colmena.estadocolmena }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ colmena.fecharegistro }}</td>
+
+                    <td>
+                        <div class="acciones">
+                            <button type="button"
+                                    class="btn-accion btn-ver"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalleColmena{{ colmena.id_colmena }}">
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <button type="button"
+                                    class="btn-accion btn-editar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarColmena{{ colmena.id_colmena }}">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+
+                            <button type="button"
+                                    class="btn-accion btn-borrar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEliminarColmena{{ colmena.id_colmena }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- MODAL DETALLE -->
+                <div class="modal fade" id="modalDetalleColmena{{ colmena.id_colmena }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content border-0 shadow rounded-4">
+
+                            <div class="modal-header border-0" style="background:#E8F7E9;">
+                                <div>
+                                    <h4 class="fw-bold mb-1" style="color:#234F39;">
+                                        <i class="bi bi-eye-fill me-2"></i>
+                                        Detalles de la Colmena
+                                    </h4>
+                                    <p class="text-muted mb-0">
+                                        Información completa de la colmena seleccionada.
+                                    </p>
+                                </div>
+
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="row g-3">
+
+                                    <div class="col-12">
+                                        <div class="modal-info-box text-center">
+                                            {% if colmena.imagen %}
+                                                <img src="{{ colmena.imagen.url }}"
+                                                     alt="Imagen de la colmena"
+                                                     style="width:100%;max-height:260px;object-fit:cover;border-radius:18px;">
+                                            {% else %}
+                                                <div style="height:180px;border-radius:18px;background:#E8F7E9;display:flex;align-items:center;justify-content:center;">
+                                                    <span class="text-muted">
+                                                        <i class="bi bi-image me-2"></i>
+                                                        Sin imagen registrada
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="modal-info-box verde">
+                                            <small>
+                                                <i class="bi bi-upc-scan me-1"></i>
+                                                Código de Colmena
+                                            </small>
+                                            <h5>{{ colmena.codigocolmena }}</h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="modal-info-box">
+                                            <small>
+                                                <i class="bi bi-geo-alt-fill me-1"></i>
+                                                Apiario
+                                            </small>
+                                            <h5>
+                                                {% if colmena.id_apiario %}
+                                                    {{ colmena.id_apiario.nombreapiario }}
+                                                {% else %}
+                                                    Sin apiario
+                                                {% endif %}
+                                            </h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="modal-info-box">
+                                            <small>
+                                                <i class="bi bi-shield-check me-1"></i>
+                                                Estado
+                                            </small>
+                                            <h5>{{ colmena.estadocolmena }}</h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="modal-info-box">
+                                            <small>
+                                                <i class="bi bi-calendar-event me-1"></i>
+                                                Fecha de Registro
+                                            </small>
+                                            <h5>{{ colmena.fecharegistro }}</h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="modal-info-box">
+                                            <small>
+                                                <i class="bi bi-card-text me-1"></i>
+                                                Descripción
+                                            </small>
+
+                                            <p class="mb-0">
+                                                {% if colmena.descripcion %}
+                                                    {{ colmena.descripcion }}
+                                                {% else %}
+                                                    Sin descripción registrada.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Cerrar
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL EDITAR -->
+                <div class="modal fade" id="modalEditarColmena{{ colmena.id_colmena }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content border-0 shadow rounded-4">
+
+                            <form method="POST" action="{% url 'editar_colmena' colmena.id_colmena %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <div class="modal-header border-0" style="background:#E8F7E9;">
+                                    <div>
+                                        <h4 class="fw-bold mb-1" style="color:#234F39;">
+                                            <i class="bi bi-pencil-square me-2"></i>
+                                            Editar Colmena
+                                        </h4>
+                                        <p class="text-muted mb-0">
+                                            Modifique la información de la colmena.
+                                        </p>
+                                    </div>
+
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="row g-3">
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Código de Colmena</label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   value="{{ colmena.codigocolmena }}"
+                                                   readonly>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Apiario</label>
+                                            <select name="id_apiario" class="form-select" required>
+                                                {% for apiario in apiarios %}
+                                                    <option value="{{ apiario.id_apiario }}"
+                                                        {% if colmena.id_apiario and apiario.id_apiario == colmena.id_apiario.id_apiario %}
+                                                            selected
+                                                        {% endif %}>
+                                                        {{ apiario.nombreapiario }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Estado</label>
+                                            <select name="estado_colmena" class="form-select" required>
+                                                <option value="Activa" {% if colmena.estadocolmena == "Activa" %}selected{% endif %}>Activa</option>
+                                                <option value="Riesgo" {% if colmena.estadocolmena == "Riesgo" %}selected{% endif %}>Riesgo</option>
+                                                <option value="Inactiva" {% if colmena.estadocolmena == "Inactiva" %}selected{% endif %}>Inactiva</option>
+                                                <option value="Revisión" {% if colmena.estadocolmena == "Revisión" %}selected{% endif %}>Revisión</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Fecha de Registro</label>
+                                            <input type="date"
+                                                   name="fecha_registro"
+                                                   class="form-control"
+                                                   value="{{ colmena.fecharegistro|date:'Y-m-d' }}"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Descripción</label>
+                                            <textarea name="descripcion"
+                                                      class="form-control"
+                                                      rows="4">{{ colmena.descripcion }}</textarea>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Imagen de la Colmena</label>
+
+                                            {% if colmena.imagen %}
+                                                <div class="mb-2">
+                                                    <img src="{{ colmena.imagen.url }}"
+                                                         alt="Imagen actual"
+                                                         style="width:130px;height:95px;object-fit:cover;border-radius:14px;">
+                                                </div>
+                                            {% endif %}
+
+                                            <input type="file"
+                                                   name="imagen"
+                                                   class="form-control"
+                                                   accept="image/*">
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-save me-2"></i>
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL ELIMINAR -->
+                <div class="modal fade" id="modalEliminarColmena{{ colmena.id_colmena }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content border-0 shadow rounded-4">
+
+                            <form method="POST" action="{% url 'eliminar_colmena' colmena.id_colmena %}">
+                                {% csrf_token %}
+
+                                <div class="modal-header border-0 modal-delete-header">
+                                    <div>
+                                        <h4 class="fw-bold text-danger mb-1">
+                                            <i class="bi bi-trash-fill me-2"></i>
+                                            Eliminar Colmena
+                                        </h4>
+                                        <p class="text-muted mb-0">
+                                            Esta acción no se puede deshacer.
+                                        </p>
+                                    </div>
+
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div class="alerta-eliminar mb-3">
+                                        <strong>Advertencia:</strong>
+                                        al eliminar esta colmena, se eliminará el registro seleccionado.
+                                    </div>
+
+                                    <div class="row g-3">
+
+                                        <div class="col-md-6">
+                                            <div class="modal-info-box verde">
+                                                <small>Código de Colmena</small>
+                                                <h5>{{ colmena.codigocolmena }}</h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="modal-info-box">
+                                                <small>Estado</small>
+                                                <h5>{{ colmena.estadocolmena }}</h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="modal-info-box">
+                                                <small>Fecha Registro</small>
+                                                <h5>{{ colmena.fecharegistro }}</h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="modal-info-box">
+                                                <small>Apiario</small>
+                                                <h5>
+                                                    {% if colmena.id_apiario %}
+                                                        {{ colmena.id_apiario.nombreapiario }}
+                                                    {% else %}
+                                                        Sin apiario
+                                                    {% endif %}
+                                                </h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="modal-info-box text-center">
+                                                {% if colmena.imagen %}
+                                                    <img src="{{ colmena.imagen.url }}"
+                                                         alt="Imagen de la colmena"
+                                                         style="width:100%;max-height:180px;object-fit:cover;border-radius:18px;">
+                                                {% else %}
+                                                    <span class="text-muted">Sin imagen registrada</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash me-2"></i>
+                                        Sí, eliminar
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        No hay colmenas registradas.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if colmenas.has_other_pages %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center align-items-center">
+
+        {% if colmenas.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ colmenas.previous_page_number }}&codigo={{ request.GET.codigo }}&apiario={{ request.GET.apiario }}&estado={{ request.GET.estado }}">
+                    Anterior
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+        {% endif %}
+
+        {% for num in colmenas.paginator.page_range %}
+            {% if colmenas.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ num }}&codigo={{ request.GET.codigo }}&apiario={{ request.GET.apiario }}&estado={{ request.GET.estado }}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if colmenas.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ colmenas.next_page_number }}&codigo={{ request.GET.codigo }}&apiario={{ request.GET.apiario }}&estado={{ request.GET.estado }}">
+                    Siguiente
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Siguiente</span>
+            </li>
+        {% endif %}
+
+    </ul>
+</nav>
+{% endif %}
+
+<!-- MODAL AGREGAR COLMENA -->
+<div class="modal fade" id="modalAgregarColmena" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+
+            <form method="POST" action="{% url 'crear_colmena' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="modal-header border-0" style="background:#E8F7E9;">
+                    <div>
+                        <h4 class="fw-bold mb-1" style="color:#234F39;">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Agregar Colmena
+                        </h4>
+                        <p class="text-muted mb-0">
+                            Registra una nueva colmena en el sistema.
+                        </p>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <div class="modal-info-box verde h-100">
+                                <small>
+                                    <i class="bi bi-upc-scan me-1"></i>
+                                    Código de Colmena
+                                </small>
+                                <h5>Se generará automáticamente</h5>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Apiario</label>
+                            <select name="id_apiario" class="form-select" required>
+                                <option value="">Seleccione un apiario</option>
+
+                                {% for apiario in apiarios %}
+                                    <option value="{{ apiario.id_apiario }}">
+                                        {{ apiario.nombreapiario }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Estado</label>
+                            <select name="estado_colmena" class="form-select" required>
+                                <option value="Activa">Activa</option>
+                                <option value="Riesgo">Riesgo</option>
+                                <option value="Inactiva">Inactiva</option>
+                                <option value="Revisión">Revisión</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Registro</label>
+                            <input type="date"
+                                   name="fecha_registro"
+                                   class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            <textarea name="descripcion"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Describe la colmena..."></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Imagen de la Colmena</label>
+                            <input type="file"
+                                   name="imagen"
+                                   class="form-control"
+                                   accept="image/*">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save me-2"></i>
+                        Guardar Colmena
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

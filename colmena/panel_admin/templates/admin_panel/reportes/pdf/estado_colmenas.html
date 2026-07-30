@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>{{ titulo_reporte }}</title>
+
+    <style>
+
+        @page {
+            size: A4;
+            margin: 14mm 12mm 16mm;
+
+            @bottom-left {
+                content: "Mi Colmena - Estado de colmenas";
+                color: #738078;
+                font-size: 9px;
+            }
+
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                color: #738078;
+                font-size: 9px;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #2d4237;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        .encabezado {
+            padding: 17px 20px;
+            margin-bottom: 18px;
+            border-radius: 14px;
+            background: #214f3b;
+            color: #ffffff;
+        }
+
+        .encabezado table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .encabezado td {
+            border: 0;
+        }
+
+        .encabezado h1 {
+            font-size: 21px;
+        }
+
+        .encabezado p {
+            margin-top: 4px;
+            color: #d9e8e0;
+            font-size: 10px;
+        }
+
+        .datos-generacion {
+            font-size: 9px;
+            text-align: right;
+        }
+
+        .resumen {
+            width: 100%;
+            margin-bottom: 18px;
+            border-collapse: separate;
+            border-spacing: 7px;
+        }
+
+        .resumen td {
+            width: 25%;
+            padding: 13px 8px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .resumen small {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 8px;
+            text-transform: uppercase;
+        }
+
+        .resumen strong {
+            display: block;
+            font-size: 20px;
+        }
+
+        .verde {
+            background: #e2f2e7;
+            color: #2d7047;
+        }
+
+        .amarillo {
+            background: #fff1bd;
+            color: #725a00;
+        }
+
+        .rojo {
+            background: #f9dfdf;
+            color: #9d3c42;
+        }
+
+        .gris {
+            background: #edf2ef;
+            color: #53645a;
+        }
+
+        .seccion {
+            margin-bottom: 20px;
+        }
+
+        .titulo-seccion {
+            padding-bottom: 7px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #dce8e1;
+            color: #214f3b;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .graficos {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 8px;
+        }
+
+        .graficos td {
+            width: 50%;
+            padding: 8px;
+            border: 1px solid #dfe8e3;
+            border-radius: 10px;
+            vertical-align: middle;
+        }
+
+        .graficos img {
+            width: 100%;
+            max-height: 260px;
+            object-fit: contain;
+        }
+
+        .tabla-datos {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .tabla-datos th {
+            padding: 8px 7px;
+            border: 1px solid #d4dfd9;
+            background: #214f3b;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .tabla-datos td {
+            padding: 8px 7px;
+            border: 1px solid #dee7e2;
+            color: #46584e;
+        }
+
+        .tabla-datos tr:nth-child(even) {
+            background: #f6faf7;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: #e3f1e7;
+            color: #34744d;
+            font-size: 8px;
+            font-weight: bold;
+        }
+
+        .conclusion {
+            padding: 13px 15px;
+            border-left: 5px solid #f6de87;
+            border-radius: 8px;
+            background: #fff9e8;
+            color: #594e2c;
+        }
+
+        .sin-datos {
+            padding: 18px;
+            border: 1px dashed #cad7d0;
+            border-radius: 10px;
+            color: #75837b;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <header class="encabezado">
+
+        <table>
+            <tr>
+
+                <td>
+                    <h1>
+                        {{ titulo_reporte }}
+                    </h1>
+
+                    <p>
+                        Análisis general del estado actual de las colmenas.
+                    </p>
+                </td>
+
+                <td class="datos-generacion">
+                    Generado: {{ fecha_generacion|date:"d/m/Y H:i" }}
+
+                    <br>
+
+                    Responsable: {{ generado_por }}
+
+                    <br>
+
+                    Periodo:
+                    {{ fecha_desde|date:"d/m/Y"|default:"Inicio" }}
+                    —
+                    {{ fecha_hasta|date:"d/m/Y"|default:"Actualidad" }}
+                </td>
+
+            </tr>
+        </table>
+
+    </header>
+
+    {% if incluir_resumen %}
+
+        <table class="resumen">
+
+            <tr>
+
+                <td class="gris">
+                    <small>Total de colmenas</small>
+                    <strong>{{ total_colmenas }}</strong>
+                </td>
+
+                <td class="verde">
+                    <small>Saludables o activas</small>
+                    <strong>{{ colmenas_saludables }}</strong>
+                </td>
+
+                <td class="rojo">
+                    <small>Requieren atención</small>
+                    <strong>{{ colmenas_atencion }}</strong>
+                </td>
+
+                <td class="amarillo">
+                    <small>Sin estado</small>
+                    <strong>{{ colmenas_sin_estado }}</strong>
+                </td>
+
+            </tr>
+
+        </table>
+
+    {% endif %}
+
+    {% if incluir_graficos %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Distribución de colmenas
+            </div>
+
+            {% if grafico_estados or grafico_apiarios %}
+
+                <table class="graficos">
+
+                    <tr>
+
+                        <td>
+
+                            {% if grafico_estados %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_estados }}"
+                                    alt="Distribución por estado"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if grafico_apiarios %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_apiarios }}"
+                                    alt="Colmenas por apiario"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            {% else %}
+
+                <div class="sin-datos">
+                    No existen datos para generar gráficos.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    {% if incluir_tabla %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Detalle de colmenas
+            </div>
+
+            {% if colmenas %}
+
+                <table class="tabla-datos">
+
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Apiario</th>
+                            <th>Estado</th>
+                            <th>Fecha de registro</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for colmena in colmenas %}
+
+                            <tr>
+
+                                <td>
+                                    {{ colmena.codigocolmena|default:"Sin código" }}
+                                </td>
+
+                                <td>
+                                    {{ colmena.id_apiario.nombreapiario|default:"Sin apiario" }}
+                                </td>
+
+                                <td>
+                                    <span class="estado">
+                                        {{ colmena.estadocolmena|default:"Sin estado" }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ colmena.fecharegistro|date:"d/m/Y"|default:"Sin registrar" }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="sin-datos">
+                    No existen colmenas para los filtros seleccionados.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    {% if incluir_conclusiones %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Conclusión
+            </div>
+
+            <div class="conclusion">
+                {{ conclusion }}
+            </div>
+
+        </section>
+
+    {% endif %}
+
+</body>
+
+</html>

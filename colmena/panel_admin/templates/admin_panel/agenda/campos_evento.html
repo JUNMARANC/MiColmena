@@ -1,0 +1,207 @@
+<div class="row g-3">
+
+    <div class="col-12">
+
+        <label class="form-label">
+            Título
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="{{ prefijo }}TituloEvento"
+            name="titulo"
+            maxlength="150"
+            required
+        >
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Tipo de evento
+        </label>
+
+        <select
+            class="form-select"
+            id="{{ prefijo }}TipoEvento"
+            name="tipo_evento"
+            required
+        >
+
+            {% for valor, nombre in tipos_evento %}
+
+                <option value="{{ valor }}">
+                    {{ nombre }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Estado
+        </label>
+
+        <select
+            class="form-select"
+            id="{{ prefijo }}EstadoEvento"
+            name="estado"
+            required
+        >
+
+            {% for valor, nombre in estados_evento %}
+
+                <option value="{{ valor }}">
+                    {{ nombre }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Apiario
+        </label>
+
+        <select
+            class="form-select selector-apiario-evento"
+            id="{{ prefijo }}ApiarioEvento"
+            name="id_apiario"
+            data-colmena-target="{{ prefijo }}ColmenaEvento"
+            required
+        >
+
+            <option value="">
+                Selecciona un apiario
+            </option>
+
+            {% for apiario in apiarios %}
+
+                <option value="{{ apiario.id_apiario }}">
+                    {{ apiario.nombreapiario }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Colmena
+        </label>
+
+        <select
+            class="form-select"
+            id="{{ prefijo }}ColmenaEvento"
+            name="id_colmena"
+        >
+
+            <option value="">
+                Sin colmena específica
+            </option>
+
+            {% for colmena in colmenas %}
+
+                <option
+                    value="{{ colmena.id_colmena }}"
+                    data-apiario="{{ colmena.id_apiario_id }}"
+                >
+                    {{ colmena.codigocolmena }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-12">
+
+        <label class="form-label">
+            Responsable
+        </label>
+
+        <select
+            class="form-select"
+            id="{{ prefijo }}ResponsableEvento"
+            name="responsable"
+        >
+
+            <option value="">
+                Sin responsable
+            </option>
+
+            {% for responsable in responsables %}
+
+                <option value="{{ responsable.id_apicultor }}">
+                    {{ responsable.nombre_completo }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Fecha
+        </label>
+
+        <input
+            type="date"
+            class="form-control"
+            id="{{ prefijo }}FechaEvento"
+            name="fecha"
+            required
+        >
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Hora
+        </label>
+
+        <input
+            type="time"
+            class="form-control"
+            id="{{ prefijo }}HoraEvento"
+            name="hora"
+            required
+        >
+
+    </div>
+
+    <div class="col-12">
+
+        <label class="form-label">
+            Descripción
+        </label>
+
+        <textarea
+            class="form-control"
+            id="{{ prefijo }}DescripcionEvento"
+            name="descripcion"
+            rows="4"
+            maxlength="500"
+        ></textarea>
+
+    </div>
+
+</div>

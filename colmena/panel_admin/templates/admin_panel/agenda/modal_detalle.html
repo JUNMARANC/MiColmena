@@ -1,0 +1,108 @@
+<div
+    class="modal fade"
+    id="modalDetalleEvento"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content modal-evento-agenda">
+
+            <div class="modal-header">
+
+                <div class="encabezado-detalle-evento">
+
+                    <span
+                        class="badge-tipo-evento"
+                        id="detalleTipoEvento"
+                    >
+                        Evento
+                    </span>
+
+                    <h5 id="detalleTituloEvento">
+                        Detalle del evento
+                    </h5>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                ></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="lista-detalle-evento">
+
+                    <div>
+                        <strong>Apiario</strong>
+                        <span id="detalleApiarioEvento">—</span>
+                    </div>
+
+                    <div>
+                        <strong>Colmena</strong>
+                        <span id="detalleColmenaEvento">—</span>
+                    </div>
+
+                    <div>
+                        <strong>Responsable</strong>
+                        <span id="detalleResponsableEvento">—</span>
+                    </div>
+
+                    <div>
+                        <strong>Fecha y hora</strong>
+                        <span id="detalleFechaEvento">—</span>
+                    </div>
+
+                    <div>
+                        <strong>Estado</strong>
+                        <span id="detalleEstadoEvento">—</span>
+                    </div>
+
+                    <div>
+                        <strong>Descripción</strong>
+                        <span id="detalleDescripcionEvento">—</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer footer-detalle-evento">
+
+                <button
+                    type="button"
+                    class="btn btn-editar-evento"
+                    id="btnEditarEventoDetalle"
+                >
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Editar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-eliminar-evento"
+                    id="btnEliminarEventoDetalle"
+                >
+                    <i class="bi bi-trash3 me-2"></i>
+                    Eliminar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-cerrar-evento"
+                    data-bs-dismiss="modal"
+                >
+                    <i class="bi bi-x-lg me-2"></i>
+                    Cerrar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

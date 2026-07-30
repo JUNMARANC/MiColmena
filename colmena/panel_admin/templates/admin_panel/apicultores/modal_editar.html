@@ -1,0 +1,721 @@
+<div
+    class="modal fade"
+    id="modalEditarApicultor"
+    tabindex="-1"
+    aria-labelledby="modalEditarApicultorLabel"
+    aria-hidden="true"
+>
+    <div
+        class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-dialog-editar-apicultor"
+    >
+
+        <div class="modal-content modal-apicultor border-0">
+
+            <!-- =====================================================
+                ENCABEZADO
+            ====================================================== -->
+            <div class="modal-header modal-header-apicultor">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="modal-icono-apicultor">
+                        <i class="bi bi-person-gear"></i>
+                    </div>
+
+                    <div>
+                        <h4
+                            class="modal-title fw-bold mb-1"
+                            id="modalEditarApicultorLabel"
+                        >
+                            Editar apicultor
+                        </h4>
+
+                        <p class="mb-0">
+                            Actualiza la información personal, laboral y de acceso.
+                        </p>
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+            <!-- =====================================================
+                FORMULARIO
+            ====================================================== -->
+            <form
+                method="POST"
+                action=""
+                enctype="multipart/form-data"
+                id="formEditarApicultor"
+                class="form-editar-apicultor"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="eliminar_foto"
+                    id="eliminarFotoEditar"
+                    value="0"
+                >
+
+                <div class="modal-body p-4 p-lg-5">
+
+                    <div class="row g-4">
+
+                        <!-- =================================================
+                            FOTO DEL APICULTOR
+                        ================================================== -->
+                        <div class="col-lg-3">
+
+                            <section class="seccion-foto-apicultor">
+
+                                <div class="titulo-seccion-modal mb-4">
+
+                                    <div class="icono-seccion-modal">
+                                        <i class="bi bi-camera-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6 class="mb-0">
+                                            Foto de perfil
+                                        </h6>
+
+                                        <small>
+                                            Imagen actual del apicultor
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="contenedor-preview-apicultor">
+
+                                    <div class="preview-foto-apicultor">
+
+                                        <img
+                                            src=""
+                                            alt="Foto del apicultor"
+                                            id="imagenPreviewEditar"
+                                            class="d-none"
+                                        >
+
+                                        <i
+                                            class="bi bi-person-fill"
+                                            id="iconoPreviewEditar"
+                                        ></i>
+
+                                    </div>
+
+                                    <label
+                                        for="fotoperfilEditar"
+                                        class="btn-seleccionar-foto"
+                                    >
+                                        <i class="bi bi-image-fill"></i>
+                                        
+                                        <span>
+                                            Cambiar imagen
+                                        </span>
+
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        class="d-none"
+                                        id="fotoperfilEditar"
+                                        name="fotoperfil"
+                                        accept="image/jpeg,image/png,image/webp"
+                                    >
+
+                                    <small class="texto-ayuda-foto">
+                                        Formatos permitidos: JPG, PNG o WEBP.
+                                        Tamaño máximo: 5 MB.
+                                    </small>
+
+                                    <button
+                                        type="button"
+                                        class="btn-quitar-foto d-none"
+                                        id="btnQuitarFotoEditar"
+                                    >
+                                        <i class="bi bi-trash3-fill me-1"></i>
+
+                                        Quitar fotografía
+                                    </button>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                        <!-- =================================================
+                            INFORMACIÓN DEL APICULTOR
+                        ================================================== -->
+                        <div class="col-lg-9">
+
+                            <!-- =============================================
+                                INFORMACIÓN PERSONAL
+                            ============================================== -->
+                            <section class="seccion-formulario-apicultor">
+
+                                <div class="titulo-seccion-modal">
+
+                                    <div class="icono-seccion-modal">
+                                        <i class="bi bi-person-vcard-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6 class="mb-0">
+                                            Información personal
+                                        </h6>
+
+                                        <small>
+                                            Datos personales y medios de contacto
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="row g-3 mt-1">
+
+                                    <!-- Nombres -->
+                                    <div class="col-md-6">
+
+                                        <label
+                                            for="nombresEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Nombres
+                                            <span class="campo-obligatorio">*</span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-person-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="nombresEditar"
+                                                name="nombres"
+                                                maxlength="150"
+                                                placeholder="Nombres del apicultor"
+                                                autocomplete="given-name"
+                                                required
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Apellidos -->
+                                    <div class="col-md-6">
+
+                                        <label
+                                            for="apellidosEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Apellidos
+                                            <span class="campo-obligatorio">*</span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-person"></i>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="apellidosEditar"
+                                                name="apellidos"
+                                                maxlength="150"
+                                                placeholder="Apellidos del apicultor"
+                                                autocomplete="family-name"
+                                                required
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Identificación -->
+                                    <div class="col-md-6">
+
+                                        <label
+                                            for="identificacionEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Identificación
+                                            <span class="campo-obligatorio">*</span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-person-badge-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="identificacionEditar"
+                                                name="identificacion"
+                                                maxlength="30"
+                                                inputmode="numeric"
+                                                pattern="[0-9]+"
+                                                title="Escribe solamente números"
+                                                placeholder="Número de identificación"
+                                                required
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Teléfono -->
+                                    <div class="col-md-6">
+
+                                        <label
+                                            for="telefonoEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Teléfono
+
+                                            <span class="texto-opcional">
+                                                Opcional
+                                            </span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-telephone-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="tel"
+                                                class="form-control"
+                                                id="telefonoEditar"
+                                                name="telefono"
+                                                maxlength="20"
+                                                inputmode="tel"
+                                                placeholder="Número de teléfono"
+                                                autocomplete="tel"
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Correo -->
+                                    <div class="col-12">
+
+                                        <label
+                                            for="correoEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Correo electrónico
+                                            <span class="campo-obligatorio">*</span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-envelope-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="email"
+                                                class="form-control"
+                                                id="correoEditar"
+                                                name="correo"
+                                                maxlength="254"
+                                                placeholder="correo@ejemplo.com"
+                                                autocomplete="email"
+                                                required
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                            <!-- =============================================
+                                INFORMACIÓN LABORAL
+                            ============================================== -->
+                            <section class="seccion-formulario-apicultor mt-4">
+
+                                <div class="titulo-seccion-modal">
+
+                                    <div class="icono-seccion-modal">
+                                        <i class="bi bi-briefcase-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6 class="mb-0">
+                                            Información laboral
+                                        </h6>
+
+                                        <small>
+                                            Zona de trabajo y experiencia
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="row g-3 mt-1">
+
+                                    <!-- Zona -->
+                                    <div class="col-md-8">
+
+                                        <label
+                                            for="zonaTrabajoEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Zona de trabajo
+
+                                            <span class="texto-opcional">
+                                                Opcional
+                                            </span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-geo-alt-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="zonaTrabajoEditar"
+                                                name="zona_trabajo"
+                                                maxlength="100"
+                                                placeholder="Ejemplo: Urrao, Antioquia"
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Experiencia -->
+                                    <div class="col-md-4">
+
+                                        <label
+                                            for="experienciaEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Años de experiencia
+
+                                            <span class="texto-opcional">
+                                                Opcional
+                                            </span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar-check-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="number"
+                                                class="form-control"
+                                                id="experienciaEditar"
+                                                name="experiencia"
+                                                min="0"
+                                                max="80"
+                                                step="1"
+                                                placeholder="Ejemplo: 5"
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                            <!-- =============================================
+                                CREDENCIALES
+                            ============================================== -->
+                            <section class="seccion-formulario-apicultor mt-4">
+
+                                <div class="titulo-seccion-modal">
+
+                                    <div class="icono-seccion-modal">
+                                        <i class="bi bi-shield-lock-fill"></i>
+                                    </div>
+
+                                    <div>
+                                        <h6 class="mb-0">
+                                            Credenciales de acceso
+                                        </h6>
+
+                                        <small>
+                                            Usuario, contraseña y estado de la cuenta
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="alerta-credenciales mt-3">
+
+                                    <i class="bi bi-info-circle-fill"></i>
+
+                                    <span>
+                                        Deja los campos de contraseña vacíos para
+                                        conservar la contraseña actual.
+                                    </span>
+
+                                </div>
+
+                                <div class="row g-3 mt-1">
+
+                                    <!-- Username -->
+                                    <div class="col-12">
+
+                                        <label
+                                            for="usernameEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Nombre de usuario
+                                            <span class="campo-obligatorio">*</span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-at"></i>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="usernameEditar"
+                                                name="username"
+                                                maxlength="150"
+                                                pattern="[A-Za-z0-9_@.+-]+"
+                                                title="Puede contener letras, números y @ . + - _"
+                                                placeholder="Nombre de usuario"
+                                                autocomplete="username"
+                                                required
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Nueva contraseña -->
+                                    <div class="col-md-6">
+
+                                        <label
+                                            for="passwordEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Nueva contraseña
+
+                                            <span class="texto-opcional">
+                                                Opcional
+                                            </span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-key-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="password"
+                                                class="form-control"
+                                                id="passwordEditar"
+                                                name="password"
+                                                minlength="8"
+                                                placeholder="Mínimo 8 caracteres"
+                                                autocomplete="new-password"
+                                            >
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-mostrar-password"
+                                                data-password-target="passwordEditar"
+                                                title="Mostrar contraseña"
+                                                aria-label="Mostrar contraseña"
+                                            >
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Confirmar contraseña -->
+                                    <div class="col-md-6">
+
+                                        <label
+                                            for="confirmarPasswordEditar"
+                                            class="form-label label-apicultor"
+                                        >
+                                            Confirmar contraseña
+
+                                            <span class="texto-opcional">
+                                                Opcional
+                                            </span>
+                                        </label>
+
+                                        <div class="input-group input-group-apicultor">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-key-fill"></i>
+                                            </span>
+
+                                            <input
+                                                type="password"
+                                                class="form-control"
+                                                id="confirmarPasswordEditar"
+                                                name="confirmar_password"
+                                                minlength="8"
+                                                placeholder="Repite la nueva contraseña"
+                                                autocomplete="new-password"
+                                            >
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-mostrar-password"
+                                                data-password-target="confirmarPasswordEditar"
+                                                title="Mostrar contraseña"
+                                                aria-label="Mostrar contraseña"
+                                            >
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+
+                                        </div>
+
+                                        <div
+                                            class="mensaje-password-no-coincide d-none"
+                                            id="mensajePasswordEditarNoCoincide"
+                                        >
+                                            <i class="bi bi-exclamation-circle-fill"></i>
+
+                                            Las contraseñas no coinciden.
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Estado del usuario -->
+                                    <div class="col-12">
+
+                                        <div class="estado-cuenta-editar">
+
+                                            <div class="d-flex align-items-center gap-3">
+
+                                                <div class="icono-estado-cuenta">
+                                                    <i class="bi bi-person-check-fill"></i>
+                                                </div>
+
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        Estado de la cuenta
+                                                    </h6>
+
+                                                    <small>
+                                                        Un usuario inactivo no podrá
+                                                        iniciar sesión.
+                                                    </small>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="form-check form-switch">
+
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    id="usuarioActivoEditar"
+                                                    name="is_active"
+                                                    value="1"
+                                                >
+
+                                                <label
+                                                    class="form-check-label"
+                                                    for="usuarioActivoEditar"
+                                                    id="textoEstadoUsuarioEditar"
+                                                >
+                                                    Usuario activo
+                                                </label>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- =====================================================
+                    PIE DEL MODAL
+                ====================================================== -->
+                <div class="modal-footer modal-footer-apicultor">
+
+                    <div class="texto-campos-obligatorios">
+                        <span>*</span>
+                        Campos obligatorios
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="button"
+                            class="btn btn-cancelar-apicultor"
+                            data-bs-dismiss="modal"
+                        >
+                            <i class="bi bi-x-lg me-1"></i>
+
+                            Cancelar
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-guardar-apicultor"
+                            id="btnGuardarEdicionApicultor"
+                        >
+                            <i class="bi bi-floppy-fill me-2"></i>
+
+                            Guardar cambios
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

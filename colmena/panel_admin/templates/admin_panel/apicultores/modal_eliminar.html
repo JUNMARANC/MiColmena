@@ -1,0 +1,152 @@
+<div
+    class="modal fade"
+    id="modalEliminarApicultor"
+    tabindex="-1"
+    aria-labelledby="modalEliminarApicultorLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content modal-eliminar-apicultor border-0">
+
+            <!-- ENCABEZADO -->
+            <div class="modal-header modal-header-eliminar-apicultor">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="icono-header-eliminar">
+                        <i class="bi bi-person-x-fill"></i>
+                    </div>
+
+                    <div>
+                        <h5
+                            class="modal-title fw-bold mb-1"
+                            id="modalEliminarApicultorLabel"
+                        >
+                            Eliminar apicultor
+                        </h5>
+
+                        <p class="mb-0">
+                            Esta acción puede ser irreversible.
+                        </p>
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+            <!-- FORMULARIO -->
+            <form
+                method="POST"
+                action=""
+                id="formEliminarApicultor"
+            >
+
+                {% csrf_token %}
+
+                <div class="modal-body p-4">
+
+                    <div class="contenido-eliminar-apicultor">
+
+                        <div class="icono-advertencia-eliminar">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+
+                        <h5>
+                            ¿Deseas eliminar este apicultor?
+                        </h5>
+
+                        <p>
+                            Estás a punto de eliminar a:
+                        </p>
+
+                        <div class="nombre-apicultor-eliminar">
+
+                            <i class="bi bi-person-fill"></i>
+
+                            <strong id="nombreApicultorEliminar">
+                                Apicultor
+                            </strong>
+
+                        </div>
+
+                        <!-- PERMITIDO -->
+                        <div
+                            class="alerta-eliminacion-permitida"
+                            id="alertaEliminacionPermitida"
+                        >
+                            <i class="bi bi-info-circle-fill"></i>
+
+                            <div>
+                                <strong>
+                                    Se eliminarán sus credenciales
+                                </strong>
+
+                                <span>
+                                    También se borrará el usuario asociado
+                                    en auth_user.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- BLOQUEADO -->
+                        <div
+                            class="alerta-eliminacion-bloqueada d-none"
+                            id="alertaEliminacionBloqueada"
+                        >
+                            <i class="bi bi-shield-exclamation"></i>
+
+                            <div>
+                                <strong>
+                                    No se puede eliminar
+                                </strong>
+
+                                <span id="mensajeApiariosEliminar">
+                                    Este apicultor tiene apiarios asignados.
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PIE -->
+                <div class="modal-footer modal-footer-eliminar-apicultor">
+
+                    <button
+                        type="button"
+                        class="btn btn-cancelar-eliminacion"
+                        data-bs-dismiss="modal"
+                    >
+                        <i class="bi bi-arrow-left me-1"></i>
+
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-confirmar-eliminacion"
+                        id="btnConfirmarEliminarApicultor"
+                    >
+                        <i class="bi bi-trash3-fill me-2"></i>
+
+                        Eliminar definitivamente
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

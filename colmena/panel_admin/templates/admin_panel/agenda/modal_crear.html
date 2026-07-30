@@ -1,0 +1,70 @@
+<div
+    class="modal fade"
+    id="modalCrearEvento"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content modal-evento-agenda">
+
+            <form
+                method="POST"
+                action="{% url 'crear_evento_agenda' %}"
+                id="formCrearEvento"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="mes_retorno"
+                    value="{{ mes_valor }}"
+                >
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        <i class="bi bi-calendar-plus me-2"></i>
+                        Nuevo evento
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    {% include "admin_panel/agenda/campos_evento.html" with prefijo="crear" %}
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-guardar-evento"
+                    >
+                        Crear evento
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>

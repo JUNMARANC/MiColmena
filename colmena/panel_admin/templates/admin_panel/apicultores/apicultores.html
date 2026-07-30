@@ -1,0 +1,180 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Gestión de Apicultores
+            </h2>
+
+            <p class="text-muted mb-0">
+                Registro y administración de los apicultores del sistema.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#modalAgregarApicultor"
+        >
+            <i class="bi bi-person-plus-fill me-1"></i>
+            Agregar apicultor
+        </button>
+
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                role="alert"
+            >
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar"
+                ></button>
+            </div>
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-3">
+
+                        <label
+                            for="tipoFiltro"
+                            class="form-label fw-semibold"
+                        >
+                            Filtrar por
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="tipoFiltro"
+                            name="tipo_filtro"
+                        >
+                            <option value="">
+                                Todos los campos
+                            </option>
+
+                            <option
+                                value="nombre"
+                                {% if tipo_filtro == "nombre" %}selected{% endif %}
+                            >
+                                Nombre
+                            </option>
+
+                            <option
+                                value="identificacion"
+                                {% if tipo_filtro == "identificacion" %}selected{% endif %}
+                            >
+                                Identificación
+                            </option>
+
+                            <option
+                                value="telefono"
+                                {% if tipo_filtro == "telefono" %}selected{% endif %}
+                            >
+                                Teléfono
+                            </option>
+
+                            <option
+                                value="correo"
+                                {% if tipo_filtro == "correo" %}selected{% endif %}
+                            >
+                                Correo
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label
+                            for="busqueda"
+                            class="form-label fw-semibold"
+                        >
+                            Buscar
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="busqueda"
+                            name="busqueda"
+                            value="{{ busqueda }}"
+                            placeholder="Escribe el dato que deseas buscar"
+                        >
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success flex-grow-1"
+                            >
+                                <i class="bi bi-search me-1"></i>
+                                Buscar
+                            </button>
+
+                            <a
+                                href="{% url 'apicultores_admin' %}"
+                                class="btn btn-outline-secondary"
+                                title="Limpiar filtros"
+                            >
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% include "admin_panel/apicultores/tabla.html" %}
+
+    {% include "admin_panel/apicultores/modal_agregar.html" %}
+
+    {% include "admin_panel/apicultores/modal_detalle.html" %}
+
+    {% include "admin_panel/apicultores/modal_editar.html" %}
+
+    {% include "admin_panel/apicultores/modal_eliminar.html" %}
+
+</div>
+
+{% block scripts %}
+
+<script src="{% static 'panel_admin/js/apicultor.js' %}"></script>
+
+{% endblock %}
+
+{% endblock %}
