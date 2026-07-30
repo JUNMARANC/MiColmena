@@ -24,11 +24,16 @@ from panel_admin.forms import EventoAgendaForm
 from pathlib import Path
 from django.urls import reverse
 from django.core.files.base import ContentFile
+
 from panel_admin.reportes.estado_colmenas import (
     generar_reporte_estado_colmenas_pdf,
 )
 from panel_admin.reportes.incidencias import (
     generar_reporte_incidencias_pdf,
+)
+
+from panel_admin.reportes.mantenimientos import (
+    generar_reporte_mantenimientos_pdf,
 )
 
 
@@ -237,70 +242,129 @@ def eliminar_colmena(request, id):
 #LOGICA DE MATENIMIENTOS
 @administrador_requerido
 def mantenimientos_admin(request):
-    apicultores = Apicultor.objects.select_related("user").all()
-    apiarios = Apiario.objects.all()
-    colmenas = Colmena.objects.select_related("id_apiario").all()
 
-    mantenimientos_lista = Mantenimiento.objects.select_related(
-        "id_apiario",
-        "id_colmena",
-        "id_colmena__id_apiario"
-    ).all().order_by("id_mantenimiento")
+    apicultores = (
+        Apicultor.objects
+        .select_related("user")
+        .all()
+    )
+
+    apiarios = Apiario.objects.all()
+
+    colmenas = (
+        Colmena.objects
+        .select_related("id_apiario")
+        .all()
+    )
+
+    mantenimientos_lista = (
+        Mantenimiento.objects
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "id_colmena__id_apiario"
+        )
+        .all()
+        .order_by("id_mantenimiento")
+    )
 
     apiario_id = request.GET.get("apiario")
     colmena_id = request.GET.get("colmena")
     estado = request.GET.get("estado")
 
     if apiario_id:
-        mantenimientos_lista = mantenimientos_lista.filter(
-            id_apiario_id=apiario_id
+        mantenimientos_lista = (
+            mantenimientos_lista.filter(
+                id_apiario_id=apiario_id
+            )
         )
 
     if colmena_id:
-        mantenimientos_lista = mantenimientos_lista.filter(
-            id_colmena_id=colmena_id
+        mantenimientos_lista = (
+            mantenimientos_lista.filter(
+                id_colmena_id=colmena_id
+            )
         )
 
     if estado:
-        mantenimientos_lista = mantenimientos_lista.filter(
-            estado=estado
+        mantenimientos_lista = (
+            mantenimientos_lista.filter(
+                estado=estado
+            )
         )
 
-    paginator = Paginator(mantenimientos_lista, 5)
-    page_number = request.GET.get("page")
-    mantenimientos = paginator.get_page(page_number)
+    paginator = Paginator(
+        mantenimientos_lista,
+        5
+    )
 
-    return render(request, "admin_panel/mantenimientos.html", {
-        "mantenimientos": mantenimientos,
-        "apicultores": apicultores,
-        "apiarios": apiarios,
-        "colmenas": colmenas,
-    })
+    page_number = request.GET.get("page")
+
+    mantenimientos = paginator.get_page(
+        page_number
+    )
+
+    return render(
+        request,
+        "admin_panel/mantenimientos.html",
+        {
+            "mantenimientos": mantenimientos,
+            "apicultores": apicultores,
+            "apiarios": apiarios,
+            "colmenas": colmenas,
+        }
+    )
 
 @administrador_requerido
 def crear_mantenimiento(request):
+
     if request.method == "POST":
-        entidad = request.POST.get("entidad_mantenimiento")
+
+        entidad = request.POST.get(
+            "entidad_mantenimiento"
+        )
 
         id_apiario = None
         id_colmena = None
 
         if entidad == "Apiario":
-            id_apiario = request.POST.get("id_apiario")
+            id_apiario = request.POST.get(
+                "id_apiario"
+            )
 
-        if entidad == "Colmena":
-            id_colmena = request.POST.get("id_colmena")
+        elif entidad == "Colmena":
+            id_colmena = request.POST.get(
+                "id_colmena"
+            )
+
+            colmena = Colmena.objects.filter(
+                id_colmena=id_colmena
+            ).first()
+
+            if colmena and colmena.id_apiario:
+                id_apiario = colmena.id_apiario_id
 
         Mantenimiento.objects.create(
             entidadmantenimiento=entidad,
             id_apiario_id=id_apiario,
             id_colmena_id=id_colmena,
             tipo=request.POST.get("tipo"),
-            fechaejecucion=request.POST.get("fecha_ejecucion"),
+            fechaejecucion=request.POST.get(
+                "fecha_ejecucion"
+            ),
             estado=request.POST.get("estado"),
             prioridad=request.POST.get("prioridad"),
-            observaciones=request.POST.get("observaciones"),
-            responsable=request.POST.get("responsable")
+            observaciones=request.POST.get(
+                "observaciones"
+            ),
+            responsable=request.POST.get(
+                "responsable"
+            )
+        )
+
+        messages.success(
+            request,
+            "Mantenimiento creado correctamente."
         )
 
     return redirect("mantenimientos_admin")
@@ -322,11 +386,20 @@ def editar_mantenimiento(request, id):
     return redirect("mantenimientos_admin")
 
 @administrador_requerido
+@require_POST
 def eliminar_mantenimiento(request, id):
-    mantenimiento = get_object_or_404(Mantenimiento, id_mantenimiento=id)
 
-    if request.method == "POST":
-        mantenimiento.delete()
+    mantenimiento = get_object_or_404(
+        Mantenimiento,
+        id_mantenimiento=id
+    )
+
+    mantenimiento.delete()
+
+    messages.success(
+        request,
+        "Mantenimiento eliminado correctamente."
+    )
 
     return redirect("mantenimientos_admin")
 
@@ -2723,7 +2796,7 @@ def reportes_admin(request):
             ),
             "icono": "bi-wrench-adjustable",
             "clase": "reporte-mantenimientos",
-            "disponible": False,
+            "disponible": True,
         },
         {
             "clave": "actividad_apicultores",
@@ -2859,6 +2932,12 @@ def generar_reporte_sistema(request):
     comparar_periodo_anterior = (
         request.POST.get(
             "comparar_periodo_anterior"
+        ) == "1"
+    )
+
+    solo_pendientes = (
+        request.POST.get(
+            "solo_pendientes"
         ) == "1"
     )
 
@@ -2999,6 +3078,22 @@ def generar_reporte_sistema(request):
                 )
             )
 
+        elif tipo_reporte == "mantenimientos":
+                resultado = generar_reporte_mantenimientos_pdf(
+                    request=request,
+                    fecha_desde=fecha_desde,
+                    fecha_hasta=fecha_hasta,
+                    apiario_id=apiario_id,
+                    incluir_graficos=incluir_graficos,
+                    incluir_tabla=incluir_tabla,
+                    incluir_resumen=incluir_resumen,
+                    incluir_conclusiones=incluir_conclusiones,
+                    solo_pendientes=solo_pendientes,
+                    comparar_periodo_anterior=(
+                        comparar_periodo_anterior
+                    )
+                )
+
         else:
 
             messages.warning(
@@ -3079,6 +3174,14 @@ def generar_reporte_sistema(request):
 
             filtros.append(
                 "Comparado con el periodo anterior"
+            )
+
+        if (
+            tipo_reporte == "mantenimientos"
+            and solo_pendientes
+        ):
+            filtros.append(
+                "Solo mantenimientos pendientes"
             )
 
         # =====================================================

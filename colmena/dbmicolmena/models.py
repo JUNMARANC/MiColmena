@@ -107,17 +107,6 @@ class Colmena(models.Model):
         db_table = 'colmena'
 
 
-class Costos(models.Model):
-    id_costo = models.AutoField(db_column='Id_Costo', primary_key=True)  # Field name made lowercase.
-    id_mantenimiento = models.ForeignKey('Mantenimiento', models.DO_NOTHING, db_column='Id_Mantenimiento')  # Field name made lowercase.
-    costoestimado = models.DecimalField(db_column='CostoEstimado', max_digits=10, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
-    costoreal = models.DecimalField(db_column='CostoReal', max_digits=10, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'costos'
-
-
 class Exportacion(models.Model):
     id_exportacion = models.AutoField(db_column='Id_Exportacion', primary_key=True)  # Field name made lowercase.
     id_administrador = models.ForeignKey(Administrador, models.DO_NOTHING, db_column='Id_Administrador')  # Field name made lowercase.
