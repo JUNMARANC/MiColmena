@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 def inicio(request):
     return render(request,'inicio.html')
@@ -20,18 +21,29 @@ def correo(request):
 
         nombre = request.POST.get("nombre")
         correo = request.POST.get("correo")
+        telefono = request.POST.get("telefono")
+        asunto = request.POST.get("asunto")
         mensaje = request.POST.get("mensaje")
+        fecha = timezone.now().strftime("%d %b %Y, %I:%M %p")
 
         texto = f"""
         Nombre: {nombre}
         Correo: {correo}
-        Mensaje: {mensaje}
+        Teléfono: {telefono or '-'}
+        Interesado en: {asunto or '-'}
+        Fecha: {fecha}
+
+        Mensaje:
+        {mensaje}
         """
 
         html = render_to_string("correos/contacto_correo.html", {
             "nombre": nombre,
             "correo": correo,
+            "telefono": telefono,
+            "asunto": asunto,
             "mensaje": mensaje,
+            "fecha": fecha,
         })
 
         email = EmailMultiAlternatives(

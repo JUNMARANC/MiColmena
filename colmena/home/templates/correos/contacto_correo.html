@@ -1,51 +1,134 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
-    <body style="margin:0; padding:0; background:#edf6f0; font-family:Arial, sans-serif;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuevo mensaje · Mi Colmena</title>
+</head>
+<body style="margin:0; padding:0; background:#F3EEE3; font-family:Arial, Helvetica, sans-serif;">
 
-    <div style="max-width:680px; margin:35px auto; background:white; border-radius:28px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,.15);">
+  <!--
+    TEXTO DE VISTA PREVIA (preheader): es lo que se alcanza a leer en la
+    bandeja de entrada junto al asunto, antes de abrir el correo. Está
+    oculto visualmente pero lo leen los clientes de correo.
+  -->
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; opacity:0;">
+    {{ mensaje|truncatewords:15 }}
+  </div>
 
-        <div style="background:#d8f8e6; padding:35px 25px; text-align:center;">
-        <img src="home/static/home/img/logoo.png" alt="Mi Colmena" style="width:120px; margin-bottom:15px;">
-        <h1 style="margin:0; color:#1f4d2f; font-size:32px;">Nuevo mensaje recibido</h1>
-        <p style="margin:10px 0 0; color:#000; font-size:16px;">
-            Formulario de contacto · Mi Colmena
-        </p>
-        </div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3EEE3;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
 
-        <div style="padding:35px 30px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:24px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,.12);">
 
-        <div style="background:#f7fbf8; border:1px solid #dff0e4; border-radius:18px; padding:22px; margin-bottom:22px;">
-            <p style="margin:0 0 12px; color:#1f4d2f; font-size:18px; font-weight:bold;">Información del usuario</p>
+          <!-- Barra de marca -->
+          <tr>
+            <td style="background:#F0A000; height:6px; line-height:6px; font-size:0;">&nbsp;</td>
+          </tr>
 
-            <p><strong style="color:#2f7d46;"> Nombre:</strong> {{ nombre }}</p>
-            <p><strong style="color:#2f7d46;"> Correo:</strong> {{ correo }}</p>
-            <p><strong style="color:#2f7d46;"> Teléfono:</strong> {{ telefono }}</p>
-            <p><strong style="color:#2f7d46;"> Asunto:</strong> {{ asunto }}</p>
-        </div>
+          <!-- Encabezado -->
+          <tr>
+            <td align="center" style="background:#F6DE87; padding:34px 25px 28px;">
+              
+              <img src="{% static 'home/img/logoo.png' %}" alt="Mi Colmena" width="80" style="display:block; margin:0 auto 16px; border:0;">
 
-        <div style="background:#edf6f0; border-left:7px solid #2f7d46; border-radius:18px; padding:24px;">
-            <h2 style="margin:0 0 12px; color:#1f4d2f; font-size:22px;"> Mensaje</h2>
-            <p style="margin:0; color:#333; line-height:1.8; font-size:16px;">
-            {{ mensaje }}
-            </p>
-        </div>
+              <span style="display:inline-block; background:#2B1704; color:#F6DE87; font-size:11px; font-weight:bold; letter-spacing:.6px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:12px;">Nuevo mensaje</span>
 
-        <div style="text-align:center; margin-top:30px;">
-            <a href="mailto:{{ correo }}" style="background:#c2f7d9; color:#000; text-decoration:none; padding:14px 28px; border-radius:40px; font-weight:bold;">
-            Responder ahora
-            </a>
-        </div>
+              <h1 style="margin:6px 0 0; color:#2B1704; font-size:24px; font-family:Arial, Helvetica, sans-serif;">Alguien te escribió por el sitio</h1>
+              <p style="margin:8px 0 0; color:#6B4A12; font-size:13px;">
+                Formulario de contacto · Mi Colmena{% if fecha %} · {{ fecha }}{% endif %}
+              </p>
+            </td>
+          </tr>
 
-        </div>
+          <!-- Cuerpo -->
+          <tr>
+            <td style="padding:30px 30px 6px;">
 
-        <div style="background:#d8f8e6; padding:25px; text-align:center;">
-            <p style="margin:0; color:#000; font-weight:bold;">Mi Colmena</p>
-        <p style="margin:8px 0 0; color:#000; font-size:14px;">
-            Sistema de gestión apícola
-        </p>
-        </div>
+              <!-- Datos del usuario -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF6EA; border:1px solid #F0E1B8; border-radius:16px;">
+                <tr>
+                  <td style="padding:22px 24px;">
+                    <p style="margin:0 0 14px; color:#2B1704; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">Información del contacto</p>
 
-    </div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; width:85px; vertical-align:top;">Nombre</td>
+                        <td style="padding:6px 0; color:#2B1704; font-size:14px;">{{ nombre }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">Correo</td>
+                        <td style="padding:6px 0; color:#2B1704; font-size:14px;">
+                          <a href="mailto:{{ correo }}" style="color:#2B1704; text-decoration:underline;">{{ correo }}</a>
+                        </td>
+                      </tr>
+                      {% if telefono %}
+                      <tr>
+                        <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">Teléfono</td>
+                        <td style="padding:6px 0; color:#2B1704; font-size:14px;">
+                          <a href="tel:{{ telefono }}" style="color:#2B1704; text-decoration:underline;">{{ telefono }}</a>
+                        </td>
+                      </tr>
+                      {% endif %}
+                      {% if asunto %}
+                      <tr>
+                        <td style="padding:8px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">Interesado en</td>
+                        <td style="padding:6px 0; vertical-align:top;">
+                          <span style="display:inline-block; background:#F0A000; color:#2B1704; font-size:12px; font-weight:bold; padding:5px 13px; border-radius:20px;">{{ asunto }}</span>
+                        </td>
+                      </tr>
+                      {% endif %}
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
-    </body>
+              <!-- Mensaje -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9EC; border-left:5px solid #F0A000; border-radius:14px; margin-top:20px;">
+                <tr>
+                  <td style="padding:22px 24px;">
+                    <p style="margin:0 0 10px; color:#2B1704; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">Mensaje</p>
+                    <p style="margin:0; color:#3A2A12; font-size:15px; line-height:1.7;">{{ mensaje|linebreaksbr }}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Botones de acción -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:26px;">
+                <tr>
+                  <td align="center" style="padding:0 6px 6px;">
+                    <a href="mailto:{{ correo }}" style="display:inline-block; background:#F0A000; color:#2B1704; text-decoration:none; padding:14px 30px; border-radius:40px; font-weight:bold; font-size:14px; font-family:Arial, Helvetica, sans-serif;">
+                      Responder por correo
+                    </a>
+                    {% if telefono %}
+                    <a href="tel:{{ telefono }}" style="display:inline-block; background:#FFFFFF; border:2px solid #F0A000; color:#2B1704; text-decoration:none; padding:12px 26px; border-radius:40px; font-weight:bold; font-size:14px; font-family:Arial, Helvetica, sans-serif; margin-left:8px;">
+                      Llamar
+                    </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Pie -->
+          <tr>
+            <td align="center" style="background:#F6DE87; padding:22px;">
+              <p style="margin:0; color:#2B1704; font-weight:bold; font-size:14px; font-family:Arial, Helvetica, sans-serif;">Mi Colmena</p>
+              <p style="margin:6px 0 0; color:#6B4A12; font-size:12px; font-family:Arial, Helvetica, sans-serif;">© {% now "Y" %} · Sistema de gestión apícola</p>
+              <!-- Reemplaza este href por el dominio real cuando esté en producción -->
+              <p style="margin:10px 0 0;"><a href="https://tudominio.com" style="color:#8C4A12; font-size:12px; text-decoration:underline;">Visitar el sitio</a></p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
 </html>

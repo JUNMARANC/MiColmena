@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Página no encontrada
+{% endblock %}
+
+{% block content %}
+
+    <section class="enviado-section">
+
+        <div class="contenedor-enviado contenedor-404">
+
+            <span class="colmena-techo colmena-techo-404" aria-hidden="true"></span>
+
+            <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja" class="abeja-enviada abeja-404">
+
+            <h1>Esta colmena está vacía</h1>
+
+            <p>
+                La página que buscas no existe o fue movida.
+                Puede que el enlace esté roto, o que las abejas
+                la hayan trasladado a otro panal.
+            </p>
+
+            <a href="{% url 'Inicio' %}" class="btn-volver">Volver al inicio</a>
+
+        </div>
+
+    </section>
+
+{% endblock %}

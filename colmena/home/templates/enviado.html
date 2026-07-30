@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block titulo %}
+{% block title %}
     Mensaje Enviado
 {% endblock %}
 
@@ -10,6 +10,13 @@
     <section class="enviado-section">
 
         <div class="contenedor-enviado">
+
+            <div class="marca-exito" aria-hidden="true">
+                <svg viewBox="0 0 80 80" class="svg-check">
+                    <circle class="circulo-check" cx="40" cy="40" r="36" fill="none" stroke="#2f7d46" stroke-width="4"/>
+                    <path class="trazo-check" d="M24 42 L36 54 L58 28" fill="none" stroke="#2f7d46" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
 
             <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja" class="abeja-enviada">
 

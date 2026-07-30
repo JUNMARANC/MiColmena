@@ -31,7 +31,7 @@
 
                         <img src="{% static 'home/img/cartel_contactanos.png' %}" class="cartel-contacto" alt="contactanos">
 
-                        <div class="texto-contacto">
+                        <div class="texto-contacto" data-reveal="abajo">
                             <h2>
                                 Hablemos sobre <br>
                                 apicultura juntos
@@ -63,18 +63,21 @@
 
                             <div class="tags-contacto">
 
-                                <span>Monitoreo de colmenas</span>
-                                <span>Asesorías</span>
-                                <span>Instalación apiarios</span>
-                                <span>Otro</span>
+                                <button type="button" class="tag-opcion" data-valor="Monitoreo de colmenas">Monitoreo de colmenas</button>
+                                <button type="button" class="tag-opcion" data-valor="Asesorías">Asesorías</button>
+                                <button type="button" class="tag-opcion" data-valor="Instalación apiarios">Instalación apiarios</button>
+                                <button type="button" class="tag-opcion" data-valor="Otro">Otro</button>
 
                             </div>
+
+                            <input type="hidden" name="asunto" class="asunto-seleccionado">
 
                             <input type="text" name="nombre" placeholder="Tu nombre" required>
 
                             <input type="email" name="correo" placeholder="Tu correo electrónico" required>
 
-                            <textarea name="mensaje" rows="4" placeholder="Tu mensaje" required></textarea>
+                            <textarea name="mensaje" rows="4" maxlength="500" placeholder="Tu mensaje" required></textarea>
+                            <div class="contador-mensaje"><span class="contador-actual">0</span>/500</div>
 
                             <button type="submit"> <i class="bi bi-send"></i> Enviar mensaje </button>
 

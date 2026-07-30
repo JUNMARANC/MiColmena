@@ -8,18 +8,96 @@
 {% block content %}
 
     <section class="hero-inicio">
-        <div class="hero-texto">
-            <h1>
-                Cuidamos y fortalecemos tus <span>colmenas</span>
-            </h1>
 
-            <p>
-                Servicios de manejo, traslado, evaluación y fortalecimiento apícola.
-            </p>
+        <div class="hero-carrusel" aria-label="Galería del encabezado">
 
-            <a href="{% url 'Contactanos' %}" class="btn-hero">
-                Contáctanos
-            </a>
+            <div class="hero-slide activa" data-tipo="video"
+                 data-titulo-prefijo="Cuidamos y fortalecemos tus"
+                 data-titulo-acento="colmenas"
+                 data-titulo-sufijo=""
+                 data-texto="Servicios de manejo, traslado, evaluación y fortalecimiento apícola."
+                 data-cta-texto="Contáctanos"
+                 data-cta-href="{% url 'Contactanos' %}">
+                <video class="hero-video" muted loop playsinline
+                       poster="{% static 'home/img/1.jpg' %}"
+                       style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;"
+                       aria-hidden="true">
+                    <source src="https://videos.pexels.com/video-files/18358802/18358802-hd_1920_1080_30fps.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="hero-slide" data-tipo="imagen"
+                 data-titulo-prefijo="Cuidamos la"
+                 data-titulo-acento="salud"
+                 data-titulo-sufijo="de cada colmena"
+                 data-texto="Diagnóstico, monitoreo y acompañamiento técnico para que tus abejas prosperen."
+                 data-cta-texto="Ver servicios"
+                 data-cta-href="{% url 'Servicios' %}"
+                 style="background-image:url('https://images.pexels.com/photos/5247965/pexels-photo-5247965.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600');"></div>
+
+            <div class="hero-slide" data-tipo="imagen"
+                 data-titulo-prefijo="Cosechamos con"
+                 data-titulo-acento="cuidado"
+                 data-titulo-sufijo="cada colmena"
+                 data-texto="Manejo responsable en cada cosecha, protegiendo a las abejas y maximizando tu producción."
+                 data-cta-texto="Conócenos"
+                 data-cta-href="{% url 'Quienes' %}"
+                 style="background-image:url('https://images.pexels.com/photos/5247943/pexels-photo-5247943.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600');"></div>
+
+            <button type="button" class="hero-flecha hero-flecha-izq" aria-label="Imagen anterior">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <button type="button" class="hero-flecha hero-flecha-der" aria-label="Siguiente imagen">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <div class="hero-puntos" aria-label="Seleccionar imagen del encabezado">
+                <button type="button" class="hero-punto activo" aria-label="Ver video"></button>
+                <button type="button" class="hero-punto" aria-label="Ver imagen 2"></button>
+                <button type="button" class="hero-punto" aria-label="Ver imagen 3"></button>
+            </div>
+
+        </div>
+
+        <div class="hero-texto-flotante">
+            <div class="hero-texto" data-reveal="difuminado">
+
+                <span class="colmena-techo" aria-hidden="true"></span>
+
+                <span class="insignia-panal" aria-hidden="true">
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="">
+                </span>
+
+                <span class="colmena-entrada" aria-hidden="true"></span>
+
+                <span class="abeja-orbita abeja-orbita-1" aria-hidden="true">
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="">
+                </span>
+                <span class="abeja-orbita abeja-orbita-2" aria-hidden="true">
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="">
+                </span>
+
+                <div class="hero-texto-contenido">
+                    <h1>
+                        Cuidamos y fortalecemos tus <span>colmenas</span>
+                    </h1>
+
+                    <p data-reveal="abajo" data-reveal-demora="250">
+                        Servicios de manejo, traslado, evaluación y fortalecimiento apícola.
+                    </p>
+
+                    <a href="{% url 'Contactanos' %}" class="btn-hero" data-reveal="abajo" data-reveal-demora="450">
+                        Contáctanos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="indicador-scroll" data-reveal="abajo" data-reveal-demora="700" aria-hidden="true">
+            <span class="indicador-marco">
+                <span class="indicador-gota"></span>
+            </span>
+            <small>Desliza</small>
         </div>
     </section>
 
@@ -35,7 +113,7 @@
             <div class="row align-items-center g-5">
 
                 <!-- Imagen izquierda -->
-                <div class="col-12 col-lg-5 text-center contenedor-foto">
+                <div class="col-12 col-lg-5 text-center contenedor-foto" data-reveal="izquierda">
 
                     <img src="{% static 'home/img/abeja_larga.png' %}" 
                         class="abeja-larga" 
@@ -48,7 +126,7 @@
                 </div>
 
                 <!-- Contenido derecho -->
-                <div class="col-12 col-lg-7 text-center">
+                <div class="col-12 col-lg-7 text-center" data-reveal="derecha" data-reveal-demora="150">
 
                     <h6 class="titulo-pequeno">QUIENES SOMOS?</h6>
 
@@ -81,7 +159,7 @@
             <!-- Iconos inferiores -->
             <div class="row mt-5 g-4">
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" data-reveal="abajo" data-reveal-demora="0">
                     <div class="item-info">
                         <div class="icono-circulo">
                             <img src="{% static 'home/img/icono_izquierda.png' %}" alt="Icono">
@@ -94,7 +172,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" data-reveal="abajo" data-reveal-demora="150">
                     <div class="item-info">
                         <div class="icono-circulo">
                             <img src="{% static 'home/img/icono_centro.png' %}" alt="Icono">
@@ -103,7 +181,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" data-reveal="abajo" data-reveal-demora="300">
                     <div class="item-info">
                         <div class="icono-circulo">
                             <img src="{% static 'home/img/icono_derecha.png' %}" alt="Icono">
@@ -131,7 +209,16 @@
         <div class="container">
 
             <div class="text-center servicios-titulo">
-                <h2>Servicios apícolas <br> para tu crecimiento</h2>
+                <span class="kicker-servicios">Lo que hacemos</span>
+
+                <h2>Servicios apícolas <br> <span class="acento-miel">para tu crecimiento</span></h2>
+
+                <div class="separador-abeja separador-servicios">
+                    <span></span>
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja">
+                    <span></span>
+                </div>
+
                 <p>
                     Soluciones integrales que abarcan <br>
                     todos los aspectos de la apicultura
@@ -143,70 +230,91 @@
                 <div class="servicios-grid">
 
                     <!-- TARJETA 1 -->
-                    <div class="servicio-card card-uno">
-                        <img src="{% static 'home/img/casita_de_abeja_targeta.png' %}" 
-                            class="servicio-icono" 
-                            alt="Icono">
-
-                        <h3>Manejo y fortalecimiento de colmenas</h3>
-
-                        <p>
-                            Revisión completa de salud, diagnóstico y recomendaciones
-                            para mejorar la productividad.
-                        </p>
-
-                        <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalManejo">
-                            más información
-                        </button>
+                    <div class="servicio-card card-uno" tabindex="0">
+                        <div class="servicio-card-interior">
+                            <div class="cara cara-frente">
+                                <img src="{% static 'home/img/casita_de_abeja_targeta.png' %}" 
+                                    class="servicio-icono" 
+                                    alt="Icono">
+                                <h3>Manejo y fortalecimiento de colmenas</h3>
+                                <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
+                            </div>
+                            <div class="cara cara-atras">
+                                <p>
+                                    Revisión completa de salud, diagnóstico y recomendaciones
+                                    para mejorar la productividad.
+                                </p>
+                                <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalManejo">
+                                    más información
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- TARJETA 2 -->
-                    <div class="servicio-card card-dos">
-                        <img src="{% static 'home/img/icono_targeta2.png' %}" 
-                            class="servicio-icono" 
-                            alt="Icono">
-
-                        <h3>Traslado seguro de colmenas</h3>
-
-                        <p>
-                            Revisión completa de salud, diagnóstico y recomendaciones
-                            para mejorar.
-                        </p>
-
-                        <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalTraslado">
-                            más información
-                        </button>
+                    <div class="servicio-card card-dos" tabindex="0">
+                        <div class="servicio-card-interior">
+                            <div class="cara cara-frente">
+                                <img src="{% static 'home/img/icono_targeta2.png' %}" 
+                                    class="servicio-icono" 
+                                    alt="Icono">
+                                <h3>Traslado seguro de colmenas</h3>
+                                <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
+                            </div>
+                            <div class="cara cara-atras">
+                                <p>
+                                    Revisión completa de salud, diagnóstico y recomendaciones
+                                    para mejorar.
+                                </p>
+                                <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalTraslado">
+                                    más información
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- TARJETA 3 -->
-                    <div class="servicio-card card-tres">
-                        <img src="{% static 'home/img/cono_targeta3.png' %}" 
-                            class="servicio-icono" 
-                            alt="Icono">
-
-                        <h3>Instalación de apiarios y asesoría técnica</h3>
-
-                        <p>
-                            Montaje profesional de apiarios, ubicación estratégica
-                            y guía técnica.
-                        </p>
-
-                        <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalInstalacion">
-                            más información
-                        </button>
+                    <div class="servicio-card card-tres" tabindex="0">
+                        <div class="servicio-card-interior">
+                            <div class="cara cara-frente">
+                                <img src="{% static 'home/img/cono_targeta3.png' %}" 
+                                    class="servicio-icono" 
+                                    alt="Icono">
+                                <h3>Instalación de apiarios y asesoría técnica</h3>
+                                <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
+                            </div>
+                            <div class="cara cara-atras">
+                                <p>
+                                    Montaje profesional de apiarios, ubicación estratégica
+                                    y guía técnica.
+                                </p>
+                                <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalInstalacion">
+                                    más información
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- TARJETA 4 -->
-                    <div class="servicio-card card-cuatro">
-                        <img src="{% static 'home/img/icono_targeta4.png' %}" 
-                            class="servicio-icono" 
-                            alt="Icono">
-
-                        <h3>Evaluación sanitaria apícola</h3>
-
-                        <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalEvaluacion">
-                            más información
-                        </button>
+                    <div class="servicio-card card-cuatro" tabindex="0">
+                        <div class="servicio-card-interior">
+                            <div class="cara cara-frente">
+                                <img src="{% static 'home/img/icono_targeta4.png' %}" 
+                                    class="servicio-icono" 
+                                    alt="Icono">
+                                <h3>Evaluación sanitaria apícola</h3>
+                                <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
+                            </div>
+                            <div class="cara cara-atras">
+                                <p>
+                                    Revisamos el estado sanitario para prevenir
+                                    enfermedades y recomendar acciones de manejo.
+                                </p>
+                                <button class="btn-servicio" data-bs-toggle="modal" data-bs-target="#modalEvaluacion">
+                                    más información
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -215,6 +323,26 @@
                     class="apiarios-img" 
                     alt="Abejas con apiarios">
 
+            </div>
+
+            <div class="pasos-servicio">
+                <div class="paso-servicio" data-reveal="abajo" data-reveal-demora="0">
+                    <span class="paso-numero">1</span>
+                    <h4>Contáctanos</h4>
+                    <p>Cuéntanos qué necesita tu apiario, sin compromiso.</p>
+                </div>
+                <span class="paso-conector" aria-hidden="true"></span>
+                <div class="paso-servicio" data-reveal="abajo" data-reveal-demora="150">
+                    <span class="paso-numero">2</span>
+                    <h4>Diagnóstico</h4>
+                    <p>Evaluamos tus colmenas y definimos el plan de acción.</p>
+                </div>
+                <span class="paso-conector" aria-hidden="true"></span>
+                <div class="paso-servicio" data-reveal="abajo" data-reveal-demora="300">
+                    <span class="paso-numero">3</span>
+                    <h4>Acompañamiento</h4>
+                    <p>Seguimiento continuo para que tu apiario siga creciendo.</p>
+                </div>
             </div>
 
         </div>
@@ -339,7 +467,7 @@
 
                         <img src="{% static 'home/img/cartel_contactanos.png' %}" class="cartel-contacto" alt="contactanos">
 
-                        <div class="texto-contacto">
+                        <div class="texto-contacto" data-reveal="abajo">
                             <h2>
                                 Hablemos sobre <br>
                                 apicultura juntos
@@ -371,18 +499,21 @@
 
                             <div class="tags-contacto">
 
-                                <span>Monitoreo de colmenas</span>
-                                <span>Asesorías</span>
-                                <span>Instalación apiarios</span>
-                                <span>Otro</span>
+                                <button type="button" class="tag-opcion" data-valor="Monitoreo de colmenas">Monitoreo de colmenas</button>
+                                <button type="button" class="tag-opcion" data-valor="Asesorías">Asesorías</button>
+                                <button type="button" class="tag-opcion" data-valor="Instalación apiarios">Instalación apiarios</button>
+                                <button type="button" class="tag-opcion" data-valor="Otro">Otro</button>
 
                             </div>
+
+                            <input type="hidden" name="asunto" class="asunto-seleccionado">
 
                             <input type="text" name="nombre" placeholder="Tu nombre" required>
 
                             <input type="email" name="correo" placeholder="Tu correo electrónico" required>
 
-                            <textarea name="mensaje" rows="4" placeholder="Tu mensaje" required></textarea>
+                            <textarea name="mensaje" rows="4" maxlength="500" placeholder="Tu mensaje" required></textarea>
+                            <div class="contador-mensaje"><span class="contador-actual">0</span>/500</div>
 
                             <button type="submit"> <i class="bi bi-send"></i> Enviar mensaje </button>
 
