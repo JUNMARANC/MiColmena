@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>{{ titulo_reporte }}</title>
+
+    <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 12mm 10mm 15mm;
+
+            @bottom-left {
+                content: "Sistema Mi Colmena - Reporte de mantenimientos";
+                color: #758279;
+                font-size: 8px;
+            }
+
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                color: #758279;
+                font-size: 8px;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #30443a;
+            background: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9.5px;
+            line-height: 1.45;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        .encabezado {
+            margin-bottom: 14px;
+            padding: 15px 18px;
+            border: 1px solid #d6e5db;
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #eaf7ed,
+                    #fffdf3
+                );
+        }
+
+        .tabla-encabezado {
+            width: 100%;
+        }
+
+        .tabla-encabezado td {
+            border: 0;
+            vertical-align: middle;
+        }
+
+        .columna-icono {
+            width: 58px;
+        }
+
+        .icono-reporte {
+            width: 46px;
+            height: 46px;
+            border: 2px solid #5f9781;
+            border-radius: 50%;
+            background: #dff1e4;
+            color: #214f3b;
+            font-size: 23px;
+            font-weight: bold;
+            line-height: 42px;
+            text-align: center;
+        }
+
+        .titulo-reporte h1 {
+            color: #214f3b;
+            font-size: 21px;
+        }
+
+        .titulo-reporte p {
+            margin-top: 4px;
+            color: #65756c;
+            font-size: 9px;
+        }
+
+        .datos-generacion {
+            width: 30%;
+            color: #5d6c64;
+            font-size: 8.3px;
+            line-height: 1.6;
+            text-align: right;
+        }
+
+        .indicadores {
+            width: 100%;
+            margin-bottom: 14px;
+            border-collapse: separate;
+            border-spacing: 5px;
+        }
+
+        .indicadores td {
+            width: 12.5%;
+            padding: 9px 5px;
+            border: 1px solid #dbe6df;
+            border-radius: 9px;
+            background: #f5faf7;
+            text-align: center;
+        }
+
+        .indicadores small {
+            display: block;
+            min-height: 19px;
+            margin-bottom: 4px;
+            color: #6a796f;
+            font-size: 6.8px;
+            line-height: 1.25;
+            text-transform: uppercase;
+        }
+
+        .indicadores strong {
+            display: block;
+            color: #214f3b;
+            font-size: 17px;
+        }
+
+        .indicador-completado {
+            background: #e1f2e5 !important;
+        }
+
+        .indicador-pendiente {
+            background: #fff3c9 !important;
+        }
+
+        .indicador-proceso {
+            background: #e6eff8 !important;
+        }
+
+        .indicador-alta {
+            background: #f8dedd !important;
+        }
+
+        .indicador-atrasado {
+            background: #f7e5df !important;
+        }
+
+        .comparacion {
+            margin-bottom: 14px;
+            padding: 10px 13px;
+            border: 1px solid #dce7e1;
+            border-radius: 9px;
+            background: #f5f9f7;
+        }
+
+        .comparacion strong {
+            color: #214f3b;
+        }
+
+        .variacion-positiva {
+            color: #ad4046;
+            font-weight: bold;
+        }
+
+        .variacion-negativa {
+            color: #2e7548;
+            font-weight: bold;
+        }
+
+        .seccion {
+            margin-bottom: 16px;
+        }
+
+        .titulo-seccion {
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #cfe2d5;
+            color: #214f3b;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tabla-graficos {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px;
+        }
+
+        .tabla-graficos td {
+            width: 50%;
+            padding: 6px;
+            border: 1px solid #dfe8e3;
+            border-radius: 9px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .tabla-graficos img {
+            width: 100%;
+            max-height: 220px;
+            object-fit: contain;
+        }
+
+        .detalle-mantenimientos {
+            page-break-before: always;
+        }
+
+        .tabla-mantenimientos {
+            width: 100%;
+            table-layout: fixed;
+            font-size: 7px;
+        }
+
+        .tabla-mantenimientos th {
+            padding: 6px 4px;
+            border: 1px solid #cad9d0;
+            background: #214f3b;
+            color: #ffffff;
+            font-size: 6.7px;
+            text-align: left;
+        }
+
+        .tabla-mantenimientos td {
+            padding: 6px 4px;
+            border: 1px solid #dce6e0;
+            color: #44564c;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+
+        .tabla-mantenimientos tr:nth-child(even) {
+            background: #f7faf8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 12px;
+            font-size: 6.3px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .badge-completado {
+            background: #dff1e4;
+            color: #2e7047;
+        }
+
+        .badge-proceso {
+            background: #dfeaf6;
+            color: #315f82;
+        }
+
+        .badge-pendiente {
+            background: #fff0bd;
+            color: #775d0c;
+        }
+
+        .badge-alta {
+            background: #f7d9d8;
+            color: #9c3940;
+        }
+
+        .badge-normal {
+            background: #edf3ef;
+            color: #53665b;
+        }
+
+        .texto-atrasado {
+            display: block;
+            margin-top: 3px;
+            color: #b34449;
+            font-size: 6px;
+            font-weight: bold;
+        }
+
+        .conclusion {
+            padding: 12px 14px;
+            border-left: 5px solid #e1bb3e;
+            border-radius: 8px;
+            background: #fff9e6;
+            color: #554e34;
+        }
+
+        .recomendaciones {
+            margin-top: 9px;
+            padding: 11px 14px;
+            border-left: 5px solid #5f9781;
+            border-radius: 8px;
+            background: #edf7f0;
+        }
+
+        .recomendaciones strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #214f3b;
+        }
+
+        .recomendaciones ul {
+            margin: 0;
+            padding-left: 17px;
+        }
+
+        .recomendaciones li {
+            margin-bottom: 4px;
+        }
+
+        .sin-datos {
+            padding: 17px;
+            border: 1px dashed #cbd8d1;
+            border-radius: 9px;
+            color: #75837b;
+            text-align: center;
+        }
+
+        .grafico-completo {
+            margin-top: 8px;
+            padding: 7px;
+            border: 1px solid #dfe8e3;
+            border-radius: 9px;
+            text-align: center;
+        }
+
+        .grafico-completo img {
+            width: 75%;
+            max-height: 220px;
+            object-fit: contain;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ENCABEZADO -->
+
+    <header class="encabezado">
+
+        <table class="tabla-encabezado">
+
+            <tr>
+
+                <td class="columna-icono">
+
+                    <div class="icono-reporte">
+                        🔧
+                    </div>
+
+                </td>
+
+                <td class="titulo-reporte">
+
+                    <h1>
+                        {{ titulo_reporte }}
+                    </h1>
+
+                    <p>
+                        Seguimiento operativo, ejecución,
+                        prioridades y costos de mantenimiento.
+                    </p>
+
+                </td>
+
+                <td class="datos-generacion">
+
+                    Generado:
+                    {{ fecha_generacion|date:"d/m/Y H:i" }}
+
+                    <br>
+
+                    Responsable:
+                    {{ generado_por }}
+
+                    <br>
+
+                    Periodo:
+                    {{ fecha_desde|date:"d/m/Y"|default:"Inicio" }}
+                    —
+                    {{ fecha_hasta|date:"d/m/Y"|default:"Actualidad" }}
+
+                    {% if solo_pendientes %}
+                        <br>
+                        Filtro: solo mantenimientos pendientes
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </header>
+
+    <!-- INDICADORES -->
+
+    {% if incluir_resumen %}
+
+        <table class="indicadores">
+
+            <tr>
+
+                <td>
+                    <small>Total</small>
+                    <strong>{{ total_mantenimientos }}</strong>
+                </td>
+
+                <td class="indicador-completado">
+                    <small>Completados</small>
+                    <strong>{{ mantenimientos_completados }}</strong>
+                </td>
+
+                <td class="indicador-pendiente">
+                    <small>Pendientes</small>
+                    <strong>{{ mantenimientos_pendientes }}</strong>
+                </td>
+
+                <td class="indicador-proceso">
+                    <small>En proceso</small>
+                    <strong>{{ mantenimientos_en_proceso }}</strong>
+                </td>
+
+                <td class="indicador-alta">
+                    <small>Prioridad alta</small>
+                    <strong>{{ prioridades_altas }}</strong>
+                </td>
+
+                <td class="indicador-atrasado">
+                    <small>Atrasados</small>
+                    <strong>{{ mantenimientos_atrasados }}</strong>
+                </td>
+
+                <td>
+                    <small>Apiarios atendidos</small>
+                    <strong>{{ apiarios_atendidos }}</strong>
+                </td>
+
+                <td>
+                    <small>Colmenas atendidas</small>
+                    <strong>{{ colmenas_atendidas }}</strong>
+                </td>
+
+            </tr>
+
+        </table>
+
+    {% endif %}
+
+    <!-- COMPARACIÓN -->
+
+    {% if comparar_periodo_anterior and total_periodo_anterior is not None %}
+
+        <div class="comparacion">
+
+            <strong>
+                Comparación con el periodo anterior:
+            </strong>
+
+            {{ periodo_anterior_desde|date:"d/m/Y" }}
+            —
+            {{ periodo_anterior_hasta|date:"d/m/Y" }}.
+
+            Se registraron
+            {{ total_periodo_anterior }}
+            mantenimientos.
+
+            {% if variacion_periodo > 0 %}
+
+                <span class="variacion-positiva">
+                    Aumento del {{ variacion_periodo }}%.
+                </span>
+
+            {% elif variacion_periodo < 0 %}
+
+                <span class="variacion-negativa">
+                    Reducción del
+                    {{ variacion_periodo_absoluta }}%.
+                </span>
+
+            {% else %}
+
+                Sin variación.
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+    <!-- GRÁFICOS -->
+
+    {% if incluir_graficos %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Análisis gráfico
+            </div>
+
+            {% if grafico_tipos or grafico_estados %}
+
+                <table class="tabla-graficos">
+
+                    <tr>
+
+                        <td>
+
+                            {% if grafico_tipos %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_tipos }}"
+                                    alt="Mantenimientos por tipo"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if grafico_estados %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_estados }}"
+                                    alt="Mantenimientos por estado"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            {% endif %}
+
+            {% if grafico_tendencia %}
+
+                <div class="grafico-completo">
+
+                    <img
+                        src="data:image/png;base64,{{ grafico_tendencia }}"
+                        alt="Tendencia de mantenimientos"
+                    >
+
+                </div>
+
+            {% endif %}
+
+            {% if not grafico_tipos and not grafico_estados and not grafico_tendencia and not grafico_costos %}
+
+                <div class="sin-datos">
+                    No existe información suficiente para generar gráficos.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    <!-- TABLA DETALLADA -->
+
+    {% if incluir_tabla %}
+
+        <section class="seccion detalle-mantenimientos">
+
+            <div class="titulo-seccion">
+                Detalle de mantenimientos
+            </div>
+
+            {% if mantenimientos %}
+
+                <table class="tabla-mantenimientos">
+
+                    <thead>
+
+                        <tr>
+                            <th style="width: 7%;">Fecha</th>
+                            <th style="width: 10%;">Apiario</th>
+                            <th style="width: 8%;">Colmena</th>
+                            <th style="width: 10%;">Entidad</th>
+                            <th style="width: 10%;">Tipo</th>
+                            <th style="width: 8%;">Prioridad</th>
+                            <th style="width: 9%;">Estado</th>
+                            <th style="width: 11%;">Responsable</th>
+                            <th style="width: 9%;">Observaciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for mantenimiento in mantenimientos %}
+
+                            <tr>
+
+                                <td>
+
+                                    {{ mantenimiento.fecha|date:"d/m/Y"|default:"Sin fecha" }}
+
+                                    {% if mantenimiento.atrasado %}
+
+                                        <span class="texto-atrasado">
+                                            ATRASADO
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {{ mantenimiento.apiario }}
+                                </td>
+
+                                <td>
+                                    {{ mantenimiento.colmena }}
+                                </td>
+
+                                <td>
+                                    {{ mantenimiento.entidad }}
+                                </td>
+
+                                <td>
+                                    {{ mantenimiento.tipo }}
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            badge
+                                            {% if mantenimiento.prioridad_alta %}
+                                                badge-alta
+                                            {% else %}
+                                                badge-normal
+                                            {% endif %}
+                                        "
+                                    >
+                                        {{ mantenimiento.prioridad }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            badge
+                                            {% if mantenimiento.completado %}
+                                                badge-completado
+                                            {% elif mantenimiento.en_proceso %}
+                                                badge-proceso
+                                            {% else %}
+                                                badge-pendiente
+                                            {% endif %}
+                                        "
+                                    >
+                                        {{ mantenimiento.estado }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {{ mantenimiento.responsable }}
+                                </td>
+
+                                <td>
+                                    {{ mantenimiento.observaciones }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="sin-datos">
+                    No existen mantenimientos para los filtros seleccionados.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    <!-- CONCLUSIONES -->
+
+    {% if incluir_conclusiones %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Conclusión y recomendaciones
+            </div>
+
+            <div class="conclusion">
+                {{ conclusion }}
+            </div>
+
+            <div class="recomendaciones">
+
+                <strong>
+                    Recomendaciones
+                </strong>
+
+                <ul>
+
+                    {% for recomendacion in recomendaciones %}
+
+                        <li>
+                            {{ recomendacion }}
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+</body>
+
+</html>

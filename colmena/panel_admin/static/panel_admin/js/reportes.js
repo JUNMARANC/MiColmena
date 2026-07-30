@@ -24,6 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
         "btnGenerarReporte"
     );
 
+    const opcionSoloMantenimientos = document.getElementById(
+        "opcionSoloMantenimientos"
+    );
+
 
     /* =====================================================
        CAMPOS EXCLUSIVOS DE INCIDENCIAS
@@ -140,11 +144,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+            if (opcionSoloMantenimientos) {
+
+                opcionSoloMantenimientos.classList.toggle(
+                    "d-none",
+                    tipo !== "mantenimientos"
+                );
+
+            }
+
             if (opcionCompararPeriodo) {
+
+                const permiteComparacion = [
+                    "incidencias",
+                    "mantenimientos"
+                ].includes(tipo);
 
                 opcionCompararPeriodo.classList.toggle(
                     "d-none",
-                    tipo !== "incidencias"
+                    !permiteComparacion
                 );
 
             }
