@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from functools import wraps
 import traceback
+import json
 from calendar import monthrange
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -16,7 +17,7 @@ from dbmicolmena.models import (VinculacionApicultor,RegistroLaboralMensual,)
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET
 from django.template.loader import render_to_string
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 from datetime import datetime, date
 from collections import defaultdict
 from calendar import Calendar
@@ -59,12 +60,184 @@ def administrador_requerido(vista):
 
     return envoltura
 
+# =========================================================
+# LÓGICA DEL DASHBOARD / INICIO
+# =========================================================
+
+def obtener_datos_dashboard():
+    """
+    Reúne los datos "en vivo" del panel administrador:
+    tarjetas de resumen y las 3 notificaciones más recientes
+    (Mantenimientos + Incidencias combinadas y ordenadas por fecha).
+
+    Se usa tanto en la carga normal de la página (dashboard_admin)
+    como en el endpoint de actualización periódica (dashboard_datos_json),
+    para no repetir la lógica.
+    """
+
+    total_apicultores = Apicultor.objects.count()
+    total_apiarios = Apiario.objects.count()
+    total_colmenas = Colmena.objects.count()
+    total_incidencias_activas = (
+        Incidencia.objects.exclude(estado="Resuelta").count()
+    )
+
+    notificaciones = []
+
+    ultimos_mantenimientos = (
+        Mantenimiento.objects
+        .select_related("id_apiario", "id_colmena")
+        .order_by("-fechaejecucion", "-id_mantenimiento")[:5]
+    )
+
+    for m in ultimos_mantenimientos:
+
+        if m.id_apiario:
+            lugar = m.id_apiario.nombreapiario
+        elif m.id_colmena:
+            lugar = m.id_colmena.codigocolmena
+        else:
+            lugar = "N/D"
+
+        notificaciones.append({
+            "id": f"mantenimiento-{m.id_mantenimiento}",
+            "titulo": "Mantenimiento",
+            "descripcion": f'Programado en "{lugar}"',
+            "fecha": m.fechaejecucion.isoformat() if m.fechaejecucion else None,
+            "orden": m.id_mantenimiento,
+            "icono": "bi-tools",
+        })
+
+    ultimas_incidencias = (
+        Incidencia.objects
+        .select_related("id_apiario", "id_colmena")
+        .order_by("-fechadeteccion", "-id_incidencia")[:5]
+    )
+
+    for inc in ultimas_incidencias:
+
+        if inc.id_colmena:
+            descripcion = f'Colmena {inc.id_colmena.codigocolmena} requiere atención'
+        elif inc.id_apiario:
+            descripcion = f'Reportada en "{inc.id_apiario.nombreapiario}"'
+        else:
+            descripcion = inc.titulo
+
+        notificaciones.append({
+            "id": f"incidencia-{inc.id_incidencia}",
+            "titulo": "Nueva incidencia",
+            "descripcion": descripcion,
+            "fecha": inc.fechadeteccion.isoformat() if inc.fechadeteccion else None,
+            "orden": inc.id_incidencia,
+            "icono": "bi-exclamation-triangle-fill",
+        })
+
+    # Se ordenan TODAS por fecha y solo se dejan las 3 más recientes.
+    # Como esta función se vuelve a ejecutar en cada petición (ya sea
+    # la carga normal o el polling), el resultado siempre refleja
+    # el estado actual de la base de datos: al entrar un registro nuevo
+    # al top 3, el más viejo automáticamente deja de calificar.
+    notificaciones.sort(
+        key=lambda n: (n["fecha"] or "", n["orden"]),
+        reverse=True
+    )
+    notificaciones = notificaciones[:3]
+
+    return {
+        "total_apicultores": total_apicultores,
+        "total_apiarios": total_apiarios,
+        "total_colmenas": total_colmenas,
+        "total_incidencias_activas": total_incidencias_activas,
+        "notificaciones": notificaciones,
+    }
+
+
 @administrador_requerido
 def dashboard_admin(request):
+
+    hoy = timezone.localdate()
+
+    datos = obtener_datos_dashboard()
+
+    def rango_mes(fecha_mes):
+        inicio = fecha_mes.replace(day=1)
+        fin = desplazar_mes(inicio, 1)
+        return inicio, fin
+
+    # ---------- GRÁFICA DE ACTIVIDAD (últimos 6 meses, 3 líneas) ----------
+    etiquetas_actividad = []
+    valores_mantenimientos_actividad = []
+    valores_incidencias_actividad = []
+
+    mes_cursor = desplazar_mes(hoy.replace(day=1), -5)
+
+    for _ in range(6):
+        inicio_mes, fin_mes = rango_mes(mes_cursor)
+
+        cantidad_mantenimientos = Mantenimiento.objects.filter(
+            fechaejecucion__gte=inicio_mes,
+            fechaejecucion__lt=fin_mes
+        ).count()
+
+        cantidad_incidencias = Incidencia.objects.filter(
+            fechadeteccion__gte=inicio_mes,
+            fechadeteccion__lt=fin_mes
+        ).count()
+
+        etiquetas_actividad.append(MESES_ESPANOL[inicio_mes.month][:3])
+        valores_mantenimientos_actividad.append(cantidad_mantenimientos)
+        valores_incidencias_actividad.append(cantidad_incidencias)
+
+        mes_cursor = desplazar_mes(mes_cursor, 1)
+
+    # ---------- GRÁFICA DE MANTENIMIENTOS (últimos 3 meses) ----------
+    etiquetas_mantenimientos = []
+    valores_mantenimientos = []
+
+    mes_cursor = desplazar_mes(hoy.replace(day=1), -2)
+
+    for _ in range(3):
+        inicio_mes, fin_mes = rango_mes(mes_cursor)
+
+        cantidad = Mantenimiento.objects.filter(
+            fechaejecucion__gte=inicio_mes,
+            fechaejecucion__lt=fin_mes
+        ).count()
+
+        etiquetas_mantenimientos.append(MESES_ESPANOL[inicio_mes.month][:3])
+        valores_mantenimientos.append(cantidad)
+
+        mes_cursor = desplazar_mes(mes_cursor, 1)
+
+    contexto = {
+        "nombre_usuario": request.user.get_full_name() or request.user.username,
+
+        **datos,
+
+        "etiquetas_actividad_json": json.dumps(etiquetas_actividad),
+        "valores_mantenimientos_actividad_json": json.dumps(valores_mantenimientos_actividad),
+        "valores_incidencias_actividad_json": json.dumps(valores_incidencias_actividad),
+
+        "etiquetas_mantenimientos_json": json.dumps(etiquetas_mantenimientos),
+        "valores_mantenimientos_json": json.dumps(valores_mantenimientos),
+    }
+
     return render(
         request,
-        "admin_panel/dashboard.html"
+        "admin_panel/dashboard.html",
+        contexto
     )
+
+
+@administrador_requerido
+def dashboard_datos_json(request):
+    """
+    Endpoint consultado periódicamente (polling) desde dashboard.js
+    para refrescar las tarjetas y la actividad reciente sin recargar
+    la página.
+    """
+    return JsonResponse(obtener_datos_dashboard())
+
 
 
 @administrador_requerido

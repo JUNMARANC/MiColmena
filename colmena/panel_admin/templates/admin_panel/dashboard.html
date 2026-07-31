@@ -5,36 +5,223 @@
 
 {% block content %}
 
-<div class="row g-4">
+<!-- =======================================================
+BIENVENIDA
+======================================================= -->
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card-admin">
-            <h5>Apiarios</h5>
-            <p class="mb-0">Gestión general de apiarios.</p>
+<div class="mb-4">
+
+    <h2 class="mb-1">
+        Bienvenido, {{ nombre_usuario }}
+    </h2>
+
+    <p class="text-muted mb-0">
+        Administra la información general de Mi Colmena desde este panel.
+    </p>
+
+</div>
+
+
+<!-- =======================================================
+TARJETAS
+======================================================= -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="tarjeta-dashboard">
+
+            <div class="icono-dashboard icono-apicultores">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <h2 data-stat="apicultores">{{ total_apicultores }}</h2>
+
+            <h6>Apicultores</h6>
+
         </div>
+
     </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card-admin">
-            <h5>Colmenas</h5>
-            <p class="mb-0">Control de colmenas registradas.</p>
+    <div class="col-md-6 col-xl-3">
+
+        <div class="tarjeta-dashboard">
+
+            <div class="icono-dashboard icono-apiarios">
+                <i class="bi bi-geo-alt-fill"></i>
+            </div>
+
+            <h2 data-stat="apiarios">{{ total_apiarios }}</h2>
+
+            <h6>Apiarios</h6>
+
         </div>
+
     </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card-admin">
-            <h5>Mantenimientos</h5>
-            <p class="mb-0">Seguimiento de revisiones.</p>
+    <div class="col-md-6 col-xl-3">
+
+        <div class="tarjeta-dashboard">
+
+            <div class="icono-dashboard icono-colmenas">
+                <i class="bi bi-hexagon-fill"></i>
+            </div>
+
+            <h2 data-stat="colmenas">{{ total_colmenas }}</h2>
+
+            <h6>Colmenas</h6>
+
         </div>
+
     </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card-admin">
-            <h5>Reportes</h5>
-            <p class="mb-0">Estadísticas del sistema.</p>
+    <div class="col-md-6 col-xl-3">
+
+        <div class="tarjeta-dashboard">
+
+            <div class="icono-dashboard icono-incidencias">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+
+            <h2 data-stat="incidencias">{{ total_incidencias_activas }}</h2>
+
+            <h6>Incidencias activas</h6>
+
         </div>
+
     </div>
 
 </div>
+
+
+<!-- =======================================================
+ACTIVIDAD + ACTIVIDAD RECIENTE
+======================================================= -->
+
+<div class="row g-4 align-items-stretch">
+
+    <!-- GRÁFICA -->
+
+    <div class="col-lg-8">
+
+        <div class="dashboard-card h-100 d-flex flex-column">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h5 class="dashboard-title mb-0">
+                    Actividad del sistema
+                </h5>
+
+                <small class="dashboard-subtitle">
+                    Últimos 6 meses
+                </small>
+
+            </div>
+
+            <div class="dashboard-chart flex-grow-1">
+
+                <canvas id="graficaActividad"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTIVIDAD RECIENTE -->
+
+    <div class="col-lg-4">
+
+        <div class="dashboard-card h-100">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h5 class="dashboard-title mb-0">
+
+                    Actividad reciente
+
+                </h5>
+
+                <small class="dashboard-subtitle">
+
+                    Últimos registros
+
+                </small>
+
+            </div>
+
+            <div class="dashboard-activity-list">
+
+                {% for noti in notificaciones %}
+
+                <div class="dashboard-activity-item" data-id="{{ noti.id }}">
+
+                    <div class="dashboard-activity-icon
+                        {% if 'Incidencia' in noti.titulo %}
+                            dashboard-activity-incidencia
+                        {% else %}
+                            dashboard-activity-mantenimiento
+                        {% endif %}">
+
+                        <i class="bi {{ noti.icono }}"></i>
+
+                    </div>
+
+                    <div class="dashboard-activity-content">
+
+                        <h6>{{ noti.titulo }}</h6>
+
+                        <p>{{ noti.descripcion }}</p>
+
+                        <span>{{ noti.fecha|date:"d M Y" }}</span>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="dashboard-empty">
+
+                    Todavía no hay actividad registrada.
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% load static %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const etiquetasActividad = {{ etiquetas_actividad_json|safe }};
+    const valoresMantenimientosActividad = {{ valores_mantenimientos_actividad_json|safe }};
+    const valoresIncidenciasActividad = {{ valores_incidencias_actividad_json|safe }};
+
+    const etiquetasMantenimientos = {{ etiquetas_mantenimientos_json|safe }};
+    const valoresMantenimientos = {{ valores_mantenimientos_json|safe }};
+
+    // URL del endpoint que devuelve los datos "en vivo" del dashboard
+    // (tarjetas + actividad reciente) para el polling cada pocos segundos.
+    const URL_DATOS_DASHBOARD = "{% url 'dashboard_datos_json' %}";
+
+</script>
+
+<script src="{% static 'panel_admin/js/dashboard.js' %}"></script>
 
 {% endblock %}

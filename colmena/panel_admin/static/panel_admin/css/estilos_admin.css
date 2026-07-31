@@ -4798,3 +4798,446 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     }
 
 }
+
+/* =========================================================
+   DASHBOARD ADMIN (ESTO MODIFICO Y AGREGO JAIME HASTA 
+   LA LINEA 5244)
+========================================================= */
+
+/* Fondo del contenido */
+
+.main-content{
+
+    background:#F6FAF8;
+
+}
+
+
+/* =========================================================
+   TARJETAS RESUMEN
+========================================================= */
+
+.tarjeta-dashboard{
+
+    background:#FFFFFF;
+
+    border:1px solid #E6EEE9;
+
+    border-radius:16px;
+
+    padding:20px 18px;
+
+    min-height:130px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    box-shadow:0 5px 14px rgba(33,79,59,.05);
+
+    transition:all .25s ease;
+
+}
+
+.tarjeta-dashboard:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 12px 22px rgba(33,79,59,.10);
+
+    border-color:#D4E8DB;
+
+}
+
+
+/* =========================================================
+   ICONO
+========================================================= */
+
+.icono-dashboard{
+
+    width:54px;
+
+    height:54px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin-bottom:12px;
+
+}
+
+.icono-dashboard i{
+
+    font-size:1.25rem;
+
+}
+
+
+/* =========================================================
+   COLORES ICONOS
+========================================================= */
+
+.icono-apicultores{
+
+    background:#EAF6ED;
+
+    color:#2F7D4F;
+
+}
+
+.icono-apiarios{
+
+    background:#EAF6ED;
+
+    color:#2F7D4F;
+
+}
+
+.icono-colmenas{
+
+    background:#EDF8F1;
+
+    color:#2F7D4F;
+
+}
+
+.icono-incidencias{
+
+    background:#EAF6ED;
+
+    color:#2F7D4F;
+
+}
+
+
+/* =========================================================
+   TEXTO TARJETAS
+========================================================= */
+
+.tarjeta-dashboard h2{
+
+    margin:0;
+
+    font-size:2.7rem;
+
+    font-weight:700;
+
+    color:#214F3B;
+
+    line-height:1;
+
+}
+
+.tarjeta-dashboard h6{
+
+    margin-top:8px;
+
+    margin-bottom:0;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    color:#505050;
+
+}
+
+
+/* =========================================================
+   DASHBOARD - TARJETAS GRANDES
+========================================================= */
+
+.dashboard-card{
+
+    background:#FFFFFF;
+
+    border:1px solid #E8EFEA;
+
+    border-radius:18px;
+
+    padding:18px 20px;
+
+    box-shadow:0 5px 16px rgba(33,79,59,.05);
+
+}
+
+
+/* =========================================================
+   DASHBOARD - TITULOS
+========================================================= */
+
+.dashboard-title{
+
+    color:#214F3B;
+
+    font-size:1.05rem;
+
+    font-weight:700;
+
+    margin:0;
+
+}
+
+.dashboard-subtitle{
+
+    color:#7C8A82;
+
+    font-size:.80rem;
+
+}
+
+
+/* =========================================================
+   DASHBOARD - ACTIVIDAD RECIENTE
+========================================================= */
+
+.dashboard-activity-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.dashboard-activity-item{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:16px;
+
+    padding:16px 0;
+
+    border-bottom:1px solid #EDF2EE;
+
+}
+
+.dashboard-activity-item:last-child{
+
+    border-bottom:none;
+
+    padding-bottom:0;
+
+}
+
+.dashboard-activity-icon{
+
+    width:48px;
+
+    height:48px;
+
+    min-width:48px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.dashboard-activity-icon i{
+
+    font-size:1.15rem;
+
+}
+
+
+/* ---------- Mantenimiento ---------- */
+
+.dashboard-activity-mantenimiento{
+
+    background:#EAF6ED;
+
+    color:#2F7D4F;
+
+}
+
+
+/* ---------- Incidencia ---------- */
+
+.dashboard-activity-incidencia{
+
+    background:#FFE8E5;
+
+    color:#C44134;
+
+}
+
+
+/* ---------- Contenido ---------- */
+
+.dashboard-activity-content{
+
+    flex:1;
+
+}
+
+.dashboard-activity-content h6{
+
+    margin:0;
+
+    font-size:.95rem;
+
+    font-weight:700;
+
+    color:#214F3B;
+
+}
+
+.dashboard-activity-content p{
+
+    margin:4px 0 8px;
+
+    color:#5F6662;
+
+    font-size:.88rem;
+
+    line-height:1.45;
+
+}
+
+.dashboard-activity-content span{
+
+    font-size:.78rem;
+
+    color:#909A95;
+
+}
+
+.dashboard-empty{
+
+    text-align:center;
+
+    padding:2rem 0;
+
+    color:#909A95;
+
+}
+
+
+/* =========================================================
+   DASHBOARD - CONTENEDOR DE LA GRÁFICA
+========================================================= */
+
+.dashboard-chart{
+
+    position:relative;
+
+    width:100%;
+
+    height:240px;
+
+}
+
+.dashboard-card.h-100 .dashboard-chart {
+    height: auto;
+    min-height: 240px;
+    flex: 1 1 auto;
+    position: relative;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:992px){
+
+    .tarjeta-dashboard{
+
+        min-height:120px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .tarjeta-dashboard{
+
+        min-height:115px;
+
+        padding:18px 14px;
+
+    }
+
+    .icono-dashboard{
+
+        width:48px;
+
+        height:48px;
+
+    }
+
+    .icono-dashboard i{
+
+        font-size:1.1rem;
+
+    }
+
+    .tarjeta-dashboard h2{
+
+        font-size:1.7rem;
+
+    }
+
+    .tarjeta-dashboard h6{
+
+        font-size:.90rem;
+
+    }
+
+    .dashboard-chart{
+
+        height:220px;
+
+    }
+
+}
+
+/* =========================================================
+   (ajuste de altura de la gráfica + animación de notificaciones nuevas)
+========================================================= */
+
+/* Hace que el canvas de Chart.js llene la altura disponible
+   cuando la tarjeta usa flexbox (h-100 d-flex flex-column) */
+.dashboard-card.h-100 .dashboard-chart {
+    height: auto;
+    min-height: 240px;
+    flex: 1 1 auto;
+    position: relative;
+}
+
+/* Animación de entrada para la notificación más reciente
+   en la actualización en vivo (polling) */
+@keyframes entradaActividad {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-activity-nueva {
+    animation: entradaActividad .45s ease;
+    background: #F3FBF6;
+    border-radius: 12px;
+}
