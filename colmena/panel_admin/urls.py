@@ -7,6 +7,7 @@ urlpatterns = [
 
     # Dashboard
     path('panel/', views.dashboard_admin, name='dashboard_admin'),
+    path("dashboard/datos/", views.dashboard_datos_json, name="dashboard_datos_json"),
 
     # Apiarios
     path('apiarios/', views.apiarios_admin, name='apiarios_admin'),
