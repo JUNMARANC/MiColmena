@@ -119,6 +119,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    // ===========================
+    // GRÁFICA INCIDENCIAS POR PRIORIDAD
+    // ===========================
+
+    const ctxIncidenciasPrioridad = document.getElementById("graficaIncidenciasPrioridad");
+
+    if (ctxIncidenciasPrioridad) {
+
+        new Chart(ctxIncidenciasPrioridad, {
+
+            type: "doughnut",
+
+            data: {
+                labels: etiquetasPrioridadIncidencias,
+                datasets: [{
+                    data: valoresPrioridadIncidencias,
+                    backgroundColor: ["#6FCF97", "#F2C14E", "#F2994A", "#EB5757"],
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "68%",
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            padding: 14,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: "#214F3B",
+                        titleColor: "#FFFFFF",
+                        bodyColor: "#FFFFFF",
+                        padding: 12,
+                        cornerRadius: 10
+                    }
+                }
+            }
+
+        });
+
+    }
+
 
     // ===========================
     // GRÁFICA MANTENIMIENTOS

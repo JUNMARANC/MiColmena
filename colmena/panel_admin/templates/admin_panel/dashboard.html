@@ -96,104 +96,95 @@ TARJETAS
 
 
 <!-- =======================================================
-ACTIVIDAD + ACTIVIDAD RECIENTE
+GRÁFICAS: ACTIVIDAD + PRIORIDAD DE INCIDENCIAS
 ======================================================= -->
 
-<div class="row g-4 align-items-stretch">
+<div class="row g-4 mb-4 align-items-stretch">
 
-    <!-- GRÁFICA -->
+    <!-- ACTIVIDAD DEL SISTEMA -->
 
-    <div class="col-lg-8">
+    <div class="col-lg-7">
 
         <div class="dashboard-card h-100 d-flex flex-column">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-
-                <h5 class="dashboard-title mb-0">
-                    Actividad del sistema
-                </h5>
-
-                <small class="dashboard-subtitle">
-                    Últimos 6 meses
-                </small>
-
+                <h5 class="dashboard-title mb-0">Actividad del sistema</h5>
+                <small class="dashboard-subtitle">Últimos 6 meses</small>
             </div>
 
             <div class="dashboard-chart flex-grow-1">
-
                 <canvas id="graficaActividad"></canvas>
-
             </div>
 
         </div>
 
     </div>
 
+    <!-- INCIDENCIAS POR PRIORIDAD -->
 
-    <!-- ACTIVIDAD RECIENTE -->
+    <div class="col-lg-5">
 
-    <div class="col-lg-4">
+        <div class="dashboard-card h-100 d-flex flex-column">
 
-        <div class="dashboard-card h-100">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-
-                <h5 class="dashboard-title mb-0">
-
-                    Actividad reciente
-
-                </h5>
-
-                <small class="dashboard-subtitle">
-
-                    Últimos registros
-
-                </small>
-
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="dashboard-title mb-0">Incidencias por prioridad</h5>
+                <small class="dashboard-subtitle">Activas actualmente</small>
             </div>
 
-            <div class="dashboard-activity-list">
-
-                {% for noti in notificaciones %}
-
-                <div class="dashboard-activity-item" data-id="{{ noti.id }}">
-
-                    <div class="dashboard-activity-icon
-                        {% if 'Incidencia' in noti.titulo %}
-                            dashboard-activity-incidencia
-                        {% else %}
-                            dashboard-activity-mantenimiento
-                        {% endif %}">
-
-                        <i class="bi {{ noti.icono }}"></i>
-
-                    </div>
-
-                    <div class="dashboard-activity-content">
-
-                        <h6>{{ noti.titulo }}</h6>
-
-                        <p>{{ noti.descripcion }}</p>
-
-                        <span>{{ noti.fecha|date:"d M Y" }}</span>
-
-                    </div>
-
-                </div>
-
-                {% empty %}
-
-                <div class="dashboard-empty">
-
-                    Todavía no hay actividad registrada.
-
-                </div>
-
-                {% endfor %}
-
+            <div class="dashboard-chart flex-grow-1">
+                <canvas id="graficaIncidenciasPrioridad"></canvas>
             </div>
 
         </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+ACTIVIDAD RECIENTE (distribuida horizontalmente)
+======================================================= -->
+
+<div class="dashboard-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="dashboard-title mb-0">Actividad reciente</h5>
+        <small class="dashboard-subtitle">Últimos registros</small>
+    </div>
+
+    <div class="dashboard-activity-list dashboard-activity-list-horizontal">
+
+        {% for noti in notificaciones %}
+
+        <div class="dashboard-activity-item" data-id="{{ noti.id }}">
+
+            <div class="dashboard-activity-icon
+                {% if 'Incidencia' in noti.titulo %}
+                    dashboard-activity-incidencia
+                {% else %}
+                    dashboard-activity-mantenimiento
+                {% endif %}">
+
+                <i class="bi {{ noti.icono }}"></i>
+
+            </div>
+
+            <div class="dashboard-activity-content">
+                <h6>{{ noti.titulo }}</h6>
+                <p>{{ noti.descripcion }}</p>
+                <span>{{ noti.fecha|date:"d M Y" }}</span>
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="dashboard-empty">
+            Todavía no hay actividad registrada.
+        </div>
+
+        {% endfor %}
 
     </div>
 
@@ -212,6 +203,8 @@ ACTIVIDAD + ACTIVIDAD RECIENTE
     const etiquetasActividad = {{ etiquetas_actividad_json|safe }};
     const valoresMantenimientosActividad = {{ valores_mantenimientos_actividad_json|safe }};
     const valoresIncidenciasActividad = {{ valores_incidencias_actividad_json|safe }};
+    const etiquetasPrioridadIncidencias = {{ etiquetas_prioridad_incidencias_json|safe }};
+    const valoresPrioridadIncidencias = {{ valores_prioridad_incidencias_json|safe }};
 
     const etiquetasMantenimientos = {{ etiquetas_mantenimientos_json|safe }};
     const valoresMantenimientos = {{ valores_mantenimientos_json|safe }};

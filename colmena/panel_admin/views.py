@@ -190,6 +190,27 @@ def dashboard_admin(request):
 
         mes_cursor = desplazar_mes(mes_cursor, 1)
 
+    # ---------- INCIDENCIAS POR PRIORIDAD (estado actual) ----------
+    prioridades_orden = ["Baja", "Media", "Alta", "Crítica"]
+
+    conteo_prioridad = (
+        Incidencia.objects
+        .exclude(estado="Resuelta")
+        .values("prioridad")
+        .annotate(total=Count("id_incidencia"))
+    )
+
+    mapa_conteo_prioridad = {
+        item["prioridad"]: item["total"]
+        for item in conteo_prioridad
+    }
+
+    valores_prioridad_incidencias = [
+        mapa_conteo_prioridad.get(p, 0)
+        for p in prioridades_orden
+    ]
+
+
     # ---------- GRÁFICA DE MANTENIMIENTOS (últimos 3 meses) ----------
     etiquetas_mantenimientos = []
     valores_mantenimientos = []
@@ -217,6 +238,8 @@ def dashboard_admin(request):
         "etiquetas_actividad_json": json.dumps(etiquetas_actividad),
         "valores_mantenimientos_actividad_json": json.dumps(valores_mantenimientos_actividad),
         "valores_incidencias_actividad_json": json.dumps(valores_incidencias_actividad),
+        "etiquetas_prioridad_incidencias_json": json.dumps(prioridades_orden),
+        "valores_prioridad_incidencias_json": json.dumps(valores_prioridad_incidencias),
 
         "etiquetas_mantenimientos_json": json.dumps(etiquetas_mantenimientos),
         "valores_mantenimientos_json": json.dumps(valores_mantenimientos),
@@ -227,7 +250,6 @@ def dashboard_admin(request):
         "admin_panel/dashboard.html",
         contexto
     )
-
 
 @administrador_requerido
 def dashboard_datos_json(request):
