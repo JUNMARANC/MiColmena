@@ -9,34 +9,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{% static 'usuarios/css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'usuarios/css/login.css' %}?v=11">
 </head>
 
 <body>
 
 <div class="login-page">
 
+    <a href="{% url 'Inicio' %}" class="back-link back-link-esquina">
+        <span class="signo-volver">-</span> Volver
+    </a>
+
     <section class="login-welcome">
-        <div class="brand">
-            <i class="bi bi-bug-fill"></i>
-            <span>Mi Colmena</span>
+        <span class="hex-flotante hex-flotante-1" aria-hidden="true"></span>
+        <span class="hex-flotante hex-flotante-2" aria-hidden="true"></span>
+        <span class="hex-flotante hex-flotante-3" aria-hidden="true"></span>
+
+        <div class="esquina-bienvenida anim-abajo" style="--demora:0s">
+            <div class="brand">
+                <i class="bi bi-hexagon-fill"></i>
+                <span>Mi Colmena</span>
+            </div>
         </div>
 
         <div class="welcome-content">
-            <h1>¡Bienvenido!</h1>
-            <div class="bee-icon">
-                <i class="bi bi-bug-fill"></i>
+            <h1 class="anim-abajo" style="--demora:.1s">¡Bienvenido!</h1>
+
+            <div class="bee-icon anim-abajo" style="--demora:.2s">
+                <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja">
             </div>
-            <p>Gestiona tus apiarios, colmenas y mantenimientos en un solo lugar.</p>
+
+            <p class="anim-abajo" style="--demora:.3s">Gestiona tus apiarios, colmenas y mantenimientos en un solo lugar.</p>
         </div>
     </section>
 
-    <section class="login-card">
+    <div class="login-panel-derecho">
 
-        <a href="{% url 'Inicio' %}" class="back-link">
-            <i class="bi bi-arrow-left"></i>
-            Volver
-        </a>
+        <video class="login-video-fondo" autoplay muted loop playsinline
+               poster="https://images.pexels.com/videos/5463647/4k-video-glass-products-honey-oriental-food-5463647.jpeg?auto=compress&amp;w=1260&amp;h=750&amp;dpr=1"
+               aria-hidden="true">
+            <source src="https://videos.pexels.com/video-files/5463647/5463647-uhd_1440_2560_25fps.mp4" type="video/mp4">
+        </video>
+
+        <section class="login-card anim-derecha">
 
         <div class="login-header">
             <h2>Login</h2>
@@ -50,7 +65,7 @@
             </div>
         {% endif %}
 
-        <form method="POST" action="{% url 'login' %}">
+        <form method="POST" action="{% url 'login' %}" class="form-login">
             {% csrf_token %}
 
             <div class="form-group">
@@ -66,7 +81,7 @@
                 <div class="input-icon">
                     <i class="bi bi-lock"></i>
                     <input type="password" name="password" id="passwordInput" placeholder="Contraseña" required>
-                    <button type="button" class="btn-eye" id="btnPassword">
+                    <button type="button" class="btn-eye" id="btnPassword" aria-label="Mostrar contraseña" aria-pressed="false">
                         <i class="bi bi-eye"></i>
                     </button>
                 </div>
@@ -79,12 +94,18 @@
             <button type="submit" class="btn-login">
                 Ingresar
             </button>
+
+            <p class="login-tagline">
+                <i class="bi bi-hexagon-fill"></i> Cuidamos cada colmena
+            </p>
         </form>
 
-    </section>
+        </section>
+
+    </div>
 
 </div>
 
-<script src="{% static 'usuarios/js/login.js' %}"></script>
+<script src="{% static 'usuarios/js/login.js' %}?v=3"></script>
 </body>
 </html>
