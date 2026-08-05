@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        {{ titulo_reporte }} - {{ mes_nombre }}
+    </title>
+
+    <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 10mm 9mm 14mm;
+
+            @bottom-left {
+                content: "Sistema Mi Colmena - Actividad mensual";
+                color: #738078;
+                font-size: 8px;
+            }
+
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                color: #738078;
+                font-size: 8px;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #ffffff;
+            color: #30443a;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        /* =====================================================
+           ENCABEZADO
+        ====================================================== */
+
+        .encabezado {
+            margin-bottom: 12px;
+            padding: 14px 17px;
+            border: 1px solid #d8e5dc;
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #eaf7ee,
+                    #fff8dc
+                );
+        }
+
+        .tabla-encabezado {
+            width: 100%;
+        }
+
+        .tabla-encabezado td {
+            border: 0;
+            vertical-align: middle;
+        }
+
+        .columna-icono {
+            width: 56px;
+        }
+
+        .icono-reporte {
+            width: 44px;
+            height: 44px;
+            border: 2px solid #5f9781;
+            border-radius: 50%;
+            background: #dff1e4;
+            color: #214f3b;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 40px;
+            text-align: center;
+        }
+
+        .titulo-reporte h1 {
+            color: #214f3b;
+            font-size: 20px;
+        }
+
+        .titulo-reporte p {
+            margin-top: 4px;
+            color: #66766d;
+            font-size: 9px;
+        }
+
+        .datos-generacion {
+            width: 31%;
+            color: #5f6f66;
+            font-size: 8px;
+            line-height: 1.6;
+            text-align: right;
+        }
+
+        /* =====================================================
+           INDICADORES
+        ====================================================== */
+
+        .indicadores {
+            width: 100%;
+            margin-bottom: 11px;
+            border-collapse: separate;
+            border-spacing: 4px;
+        }
+
+        .indicadores td {
+            width: 12.5%;
+            padding: 8px 4px;
+            border: 1px solid #dce7e0;
+            border-radius: 8px;
+            background: #f4faf6;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .indicadores small {
+            display: block;
+            min-height: 17px;
+            margin-bottom: 3px;
+            color: #697970;
+            font-size: 6.4px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .indicadores strong {
+            display: block;
+            color: #214f3b;
+            font-size: 15px;
+        }
+
+        .indicador-amarillo {
+            background: #fff3c8 !important;
+        }
+
+        .indicador-verde {
+            background: #e2f1e7 !important;
+        }
+
+        .indicador-rojo {
+            background: #f8dfdc !important;
+        }
+
+        .indicador-azul {
+            background: #e3eef8 !important;
+        }
+
+        .indicador-pendiente strong {
+            color: #a33f45;
+        }
+
+        /* =====================================================
+           COMPARACIÓN
+        ====================================================== */
+
+        .comparacion {
+            margin-bottom: 12px;
+            padding: 9px 12px;
+            border: 1px solid #dce7e1;
+            border-radius: 8px;
+            background: #f5f9f7;
+            color: #56675e;
+        }
+
+        .comparacion strong {
+            color: #214f3b;
+        }
+
+        .variacion-positiva {
+            color: #2c7547;
+            font-weight: bold;
+        }
+
+        .variacion-negativa {
+            color: #a33f45;
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           SECCIONES
+        ====================================================== */
+
+        .seccion {
+            margin-bottom: 15px;
+        }
+
+        .titulo-seccion {
+            margin-bottom: 7px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #cfe2d5;
+            color: #214f3b;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .salto-pagina {
+            page-break-before: always;
+        }
+
+        /* =====================================================
+           GRÁFICOS
+        ====================================================== */
+
+        .tabla-graficos {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 5px;
+        }
+
+        .tabla-graficos td {
+            width: 50%;
+            padding: 5px;
+            border: 1px solid #dfe8e3;
+            border-radius: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .tabla-graficos img {
+            width: 100%;
+            max-height: 205px;
+            object-fit: contain;
+        }
+
+        /* =====================================================
+           TABLAS
+        ====================================================== */
+
+        .tabla-detalle {
+            width: 100%;
+            table-layout: fixed;
+            font-size: 7px;
+        }
+
+        .tabla-detalle th {
+            padding: 5px 4px;
+            border: 1px solid #cad9d0;
+            background: #214f3b;
+            color: #ffffff;
+            font-size: 6.5px;
+            line-height: 1.3;
+            text-align: left;
+        }
+
+        .tabla-detalle td {
+            padding: 5px 4px;
+            border: 1px solid #dde7e1;
+            color: #44564c;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+
+        .tabla-detalle tr:nth-child(even) {
+            background: #f7faf8;
+        }
+
+        .numero {
+            color: #214f3b;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .pendiente {
+            color: #a33f45;
+            font-weight: bold;
+        }
+
+        .dato-principal {
+            display: block;
+            color: #214f3b;
+            font-weight: bold;
+        }
+
+        .dato-secundario {
+            display: block;
+            margin-top: 2px;
+            color: #78867e;
+            font-size: 6px;
+            line-height: 1.3;
+        }
+
+        .detalle-cierre {
+            color: #607067;
+            font-size: 6px;
+            line-height: 1.45;
+        }
+
+        .leyenda-tabla {
+            margin-bottom: 7px;
+            padding: 7px 10px;
+            border-radius: 7px;
+            background: #f5f9f7;
+            color: #65756c;
+            font-size: 7px;
+        }
+
+        /* =====================================================
+           SIN DATOS
+        ====================================================== */
+
+        .sin-datos {
+            padding: 16px;
+            border: 1px dashed #cbd8d1;
+            border-radius: 8px;
+            color: #75837b;
+            text-align: center;
+        }
+
+        /* =====================================================
+           CONCLUSIÓN Y RECOMENDACIONES
+        ====================================================== */
+
+        .conclusion {
+            padding: 11px 13px;
+            border-left: 5px solid #e1bb3e;
+            border-radius: 8px;
+            background: #fff9e6;
+            color: #554e34;
+        }
+
+        .recomendaciones {
+            margin-top: 8px;
+            padding: 10px 13px;
+            border-left: 5px solid #5f9781;
+            border-radius: 8px;
+            background: #edf7f0;
+        }
+
+        .recomendaciones strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #214f3b;
+        }
+
+        .recomendaciones ul {
+            margin: 0;
+            padding-left: 17px;
+        }
+
+        .recomendaciones li {
+            margin-bottom: 3px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <header class="encabezado">
+
+        <table class="tabla-encabezado">
+
+            <tr>
+
+                <td class="columna-icono">
+
+                    <div class="icono-reporte">
+                        AM
+                    </div>
+
+                </td>
+
+                <td class="titulo-reporte">
+
+                    <h1>
+                        {{ titulo_reporte }}
+                    </h1>
+
+                    <p>
+                        Resumen consolidado de la actividad
+                        registrada durante {{ mes_nombre }}.
+                    </p>
+
+                </td>
+
+                <td class="datos-generacion">
+
+                    Generado:
+                    {{ fecha_generacion|date:"d/m/Y H:i" }}
+
+                    <br>
+
+                    Responsable:
+                    {{ generado_por }}
+
+                    <br>
+
+                    Apiario:
+                    {{ apiario_nombre }}
+
+                    <br>
+
+                    Periodo:
+                    {{ fecha_desde|date:"d/m/Y" }}
+                    —
+                    {{ fecha_hasta|date:"d/m/Y" }}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </header>
+
+    <!-- =====================================================
+         INDICADORES GENERALES
+    ====================================================== -->
+
+    {% if incluir_resumen %}
+
+        <table class="indicadores">
+
+            <tr>
+
+                <td class="indicador-amarillo">
+
+                    <small>
+                        Actividad total
+                    </small>
+
+                    <strong>
+                        {{ total_actividad }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-verde">
+
+                    <small>
+                        Mantenimientos
+                    </small>
+
+                    <strong>
+                        {{ total_mantenimientos }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-rojo">
+
+                    <small>
+                        Incidencias
+                    </small>
+
+                    <strong>
+                        {{ total_incidencias }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-azul">
+
+                    <small>
+                        Eventos
+                    </small>
+
+                    <strong>
+                        {{ total_eventos }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>
+                        Apicultores activos
+                    </small>
+
+                    <strong>
+                        {{ total_apicultores }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>
+                        Apiarios atendidos
+                    </small>
+
+                    <strong>
+                        {{ total_apiarios }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>
+                        Colmenas atendidas
+                    </small>
+
+                    <strong>
+                        {{ total_colmenas }}
+                    </strong>
+
+                </td>
+
+                <td class="indicador-amarillo indicador-pendiente">
+
+                    <small>
+                        Pendientes
+                    </small>
+
+                    <strong>
+                        {{ total_pendientes }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <table class="indicadores">
+
+            <tr>
+
+                <td>
+
+                    <small>
+                        Actividades cerradas
+                    </small>
+
+                    <strong>
+                        {{ actividades_completadas }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>
+                        Porcentaje de cierre
+                    </small>
+
+                    <strong>
+                        {{ porcentaje_cierre }}%
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>
+                        Días trabajados
+                    </small>
+
+                    <strong>
+                        {{ total_dias }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <small>
+                        Horas trabajadas
+                    </small>
+
+                    <strong>
+                        {{ total_horas|floatformat:1 }}
+                    </strong>
+
+                </td>
+
+                <td colspan="4">
+
+                    <small>
+                        Mes analizado
+                    </small>
+
+                    <strong>
+                        {{ mes_nombre }}
+                    </strong>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    {% endif %}
+
+    <!-- =====================================================
+         COMPARACIÓN CON EL MES ANTERIOR
+    ====================================================== -->
+
+    {% if comparar_periodo_anterior and total_periodo_anterior != None %}
+
+        <div class="comparacion">
+
+            <strong>
+                Comparación con el mes anterior:
+            </strong>
+
+            {{ periodo_anterior_desde|date:"d/m/Y" }}
+            —
+            {{ periodo_anterior_hasta|date:"d/m/Y" }}.
+
+            Durante ese periodo se registraron
+
+            <strong>
+                {{ total_periodo_anterior }}
+            </strong>
+
+            actividades.
+
+            {% if variacion_periodo > 0 %}
+
+                <span class="variacion-positiva">
+                    Aumento del
+                    {{ variacion_periodo }}%.
+                </span>
+
+            {% elif variacion_periodo < 0 %}
+
+                <span class="variacion-negativa">
+                    Reducción del
+                    {{ variacion_periodo_absoluta }}%.
+                </span>
+
+            {% else %}
+
+                <strong>
+                    Sin variación.
+                </strong>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+    <!-- =====================================================
+         GRÁFICOS
+    ====================================================== -->
+
+    {% if incluir_graficos %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Análisis gráfico
+            </div>
+
+            {% if grafico_distribucion or grafico_tendencia %}
+
+                <table class="tabla-graficos">
+
+                    <tr>
+
+                        <td>
+
+                            {% if grafico_distribucion %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_distribucion }}"
+                                    alt="Distribución de la actividad mensual"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if grafico_tendencia %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_tendencia }}"
+                                    alt="Actividad diaria del mes"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            {% endif %}
+
+            {% if grafico_apicultores or grafico_horas %}
+
+                <table class="tabla-graficos">
+
+                    <tr>
+
+                        <td>
+
+                            {% if grafico_apicultores %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_apicultores }}"
+                                    alt="Actividad por apicultor"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if grafico_horas %}
+
+                                <img
+                                    src="data:image/png;base64,{{ grafico_horas }}"
+                                    alt="Horas trabajadas por apicultor"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            {% endif %}
+
+            {% if not grafico_distribucion and not grafico_tendencia and not grafico_apicultores and not grafico_horas %}
+
+                <div class="sin-datos">
+
+                    No existe información suficiente
+                    para generar gráficos durante
+                    {{ mes_nombre }}.
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    <!-- =====================================================
+         ACTIVIDAD DIARIA
+    ====================================================== -->
+
+    {% if incluir_tabla %}
+
+        <section class="seccion salto-pagina">
+
+            <div class="titulo-seccion">
+                Actividad diaria de {{ mes_nombre }}
+            </div>
+
+            <div class="leyenda-tabla">
+
+                La tabla muestra la cantidad de mantenimientos,
+                incidencias y eventos registrados en cada día
+                del mes seleccionado.
+
+            </div>
+
+            {% if dias_mes %}
+
+                <table class="tabla-detalle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th style="width: 20%;">
+                                Fecha
+                            </th>
+
+                            <th style="width: 20%;">
+                                Mantenimientos
+                            </th>
+
+                            <th style="width: 20%;">
+                                Incidencias
+                            </th>
+
+                            <th style="width: 20%;">
+                                Eventos
+                            </th>
+
+                            <th style="width: 20%;">
+                                Total
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for dia in dias_mes %}
+
+                            <tr>
+
+                                <td>
+                                    {{ dia.fecha|date:"d/m/Y" }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ dia.mantenimientos }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ dia.incidencias }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ dia.eventos }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ dia.total }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="sin-datos">
+
+                    No existen actividades diarias
+                    registradas durante el mes.
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- =================================================
+             ACTIVIDAD POR APICULTOR
+        ================================================== -->
+
+        <section class="seccion salto-pagina">
+
+            <div class="titulo-seccion">
+                Actividad por apicultor
+            </div>
+
+            <div class="leyenda-tabla">
+
+                El detalle agrupa mantenimientos,
+                incidencias, eventos, pendientes,
+                días y horas trabajadas por cada apicultor.
+
+            </div>
+
+            {% if detalles_apicultores %}
+
+                <table class="tabla-detalle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th style="width: 17%;">
+                                Apicultor
+                            </th>
+
+                            <th style="width: 10%;">
+                                Zona
+                            </th>
+
+                            <th style="width: 8%;">
+                                Mantenimientos
+                            </th>
+
+                            <th style="width: 8%;">
+                                Incidencias
+                            </th>
+
+                            <th style="width: 8%;">
+                                Eventos
+                            </th>
+
+                            <th style="width: 8%;">
+                                Actividad
+                            </th>
+
+                            <th style="width: 8%;">
+                                Pendientes
+                            </th>
+
+                            <th style="width: 7%;">
+                                Días
+                            </th>
+
+                            <th style="width: 7%;">
+                                Horas
+                            </th>
+
+                            <th style="width: 19%;">
+                                Detalle de cierre
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for apicultor in detalles_apicultores %}
+
+                            <tr>
+
+                                <td>
+
+                                    <span class="dato-principal">
+                                        {{ apicultor.nombre }}
+                                    </span>
+
+                                    <span class="dato-secundario">
+                                        Identificación:
+                                        {{ apicultor.identificacion }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {{ apicultor.zona_trabajo }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ apicultor.mantenimientos }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ apicultor.incidencias }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ apicultor.eventos }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ apicultor.actividad_total }}
+                                </td>
+
+                                <td
+                                    class="
+                                        numero
+                                        {% if apicultor.pendientes_total > 0 %}
+                                            pendiente
+                                        {% endif %}
+                                    "
+                                >
+                                    {{ apicultor.pendientes_total }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ apicultor.dias_trabajados }}
+                                </td>
+
+                                <td class="numero">
+                                    {{ apicultor.horas_trabajadas|floatformat:1 }}
+                                </td>
+
+                                <td class="detalle-cierre">
+
+                                    <strong>
+                                        Mantenimientos:
+                                    </strong>
+
+                                    {{ apicultor.mantenimientos_completados }}
+                                    completados /
+
+                                    {{ apicultor.mantenimientos_pendientes }}
+                                    pendientes
+
+                                    <br>
+
+                                    <strong>
+                                        Incidencias:
+                                    </strong>
+
+                                    {{ apicultor.incidencias_cerradas }}
+                                    cerradas /
+
+                                    {{ apicultor.incidencias_abiertas }}
+                                    abiertas
+
+                                    <br>
+
+                                    <strong>
+                                        Eventos:
+                                    </strong>
+
+                                    {{ apicultor.eventos_completados }}
+                                    completados /
+
+                                    {{ apicultor.eventos_pendientes }}
+                                    pendientes
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="sin-datos">
+
+                    No hay actividad asociada a
+                    apicultores durante {{ mes_nombre }}.
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+    <!-- =====================================================
+         CONCLUSIONES
+    ====================================================== -->
+
+    {% if incluir_conclusiones %}
+
+        <section class="seccion">
+
+            <div class="titulo-seccion">
+                Conclusión y recomendaciones
+            </div>
+
+            <div class="conclusion">
+                {{ conclusion }}
+            </div>
+
+            <div class="recomendaciones">
+
+                <strong>
+                    Recomendaciones
+                </strong>
+
+                <ul>
+
+                    {% for recomendacion in recomendaciones %}
+
+                        <li>
+                            {{ recomendacion }}
+                        </li>
+
+                    {% empty %}
+
+                        <li>
+                            No se generaron recomendaciones
+                            para este periodo.
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+</body>
+
+</html>

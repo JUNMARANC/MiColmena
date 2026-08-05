@@ -62,8 +62,8 @@
                     <div class="row g-3">
 
                         <!-- FECHA INICIAL -->
-                        <div class="col-md-6">
-
+                        <div class="col-md-6"
+                            id="campoFechaDesdeReporte">
                             <label
                                 for="fechaDesdeReporte"
                                 class="form-label"
@@ -81,7 +81,8 @@
                         </div>
 
                         <!-- FECHA FINAL -->
-                        <div class="col-md-6">
+                        <div class="col-md-6"
+                            id="campoFechaHastaReporte">
 
                             <label
                                 for="fechaHastaReporte"
@@ -96,6 +97,32 @@
                                 id="fechaHastaReporte"
                                 name="fecha_hasta"
                             >
+
+                        </div>
+
+                        <!-- MES PARA ACTIVIDAD MENSUAL -->
+                        <div
+                            class="col-12 d-none"
+                            id="campoMesActividad"
+                        >
+
+                            <label
+                                for="mesActividadReporte"
+                                class="form-label"
+                            >
+                                Mes que deseas consultar
+                            </label>
+
+                            <input
+                                type="month"
+                                class="form-control"
+                                id="mesActividadReporte"
+                                name="mes_actividad"
+                            >
+
+                            <div class="form-text">
+                                El reporte incluirá todas las actividades registradas durante el mes.
+                            </div>
 
                         </div>
 
@@ -132,7 +159,63 @@
                             </select>
 
                         </div>
+                        
+                                                <!-- APICULTOR -->
+                        <div
+                            class="col-12 d-none"
+                            id="contenedorFiltroApicultor"
+                        >
 
+                            <label
+                                for="filtroApicultor"
+                                class="form-label"
+                            >
+                                Selecciona un apicultor
+                            </label>
+
+                            <select
+                                name="apicultor"
+                                id="filtroApicultor"
+                                class="form-select"
+                            >
+
+                                <option value="">
+                                    Todos los apicultores
+                                </option>
+
+                                {% for apicultor in apicultores %}
+
+                                    <option
+                                        value="{{ apicultor.id_apicultor }}"
+                                    >
+
+                                        {% if apicultor.user %}
+
+                                            {% if apicultor.user.get_full_name %}
+
+                                                {{ apicultor.user.get_full_name }}
+
+                                            {% else %}
+
+                                                {{ apicultor.user.username }}
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            Apicultor {{ apicultor.id_apicultor }}
+
+                                        {% endif %}
+
+                                        — {{ apicultor.identificacion }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
                         <!-- =================================================
                              CAMPOS EXCLUSIVOS DEL REPORTE DE INCIDENCIAS
                         ================================================== -->
@@ -334,24 +417,6 @@
                             <input
                                 type="checkbox"
                                 name="comparar_periodo_anterior"
-                                value="1"
-                            >
-
-                            <span>
-                                Comparar con el periodo anterior
-                            </span>
-
-                        </label>
-
-                        <!-- Solo aparece para Incidencias -->
-                        <label
-                            class="d-none"
-                            id="opcionCompararPeriodo"
-                        >
-
-                            <input
-                                type="checkbox"
-                                name="comparar_periodo"
                                 value="1"
                             >
 

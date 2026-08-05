@@ -58,13 +58,6 @@
                         data-bs-target="#modalConfigurarReporte"
                         data-tipo="{{ reporte.clave }}"
                         data-nombre="{{ reporte.nombre }}"
-                        onclick="
-                            document.getElementById('tipoReporteSeleccionado').value =
-                                '{{ reporte.clave|escapejs }}';
-
-                            document.getElementById('tituloModalReporte').textContent =
-                                '{{ reporte.nombre|escapejs }}';
-                        "
                     >
                         <i class="bi bi-file-earmark-pdf-fill"></i>
                         Generar PDF
@@ -232,6 +225,6 @@
 
 {% include "admin_panel/reportes/modal_configurar.html" %}
 
-<script src="{% static 'panel_admin/js/reportes.js' %}?v=2"></script>
+<script src="{% static 'panel_admin/js/reportes.js' %}?v=21"></script>
 
 {% endblock %}

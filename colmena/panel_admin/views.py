@@ -37,7 +37,17 @@ from panel_admin.reportes.mantenimientos import (
     generar_reporte_mantenimientos_pdf,
 )
 
+from panel_admin.reportes.actividad_apicultores import (
+    generar_reporte_actividad_apicultores_pdf,
+)
 
+from panel_admin.reportes.actividad_mensual import (
+    generar_reporte_actividad_mensual_pdf,
+)
+
+from panel_admin.reportes.reporte_corporativo import (
+    generar_reporte_corporativo_pdf,
+)
 
 def administrador_requerido(vista):
     @wraps(vista)
@@ -2956,7 +2966,7 @@ def reportes_admin(request):
     historial = (
         HistorialReporte.objects
         .select_related("usuario")
-        .order_by("-fecha_generacion")[:20]
+        .order_by("-fecha_generacion")[:6]
     )
 
     tipos_reportes = [
@@ -3002,7 +3012,7 @@ def reportes_admin(request):
             ),
             "icono": "bi-people-fill",
             "clase": "reporte-apicultores",
-            "disponible": False,
+            "disponible": True,
         },
         {
             "clave": "actividad_mensual",
@@ -3013,7 +3023,7 @@ def reportes_admin(request):
             ),
             "icono": "bi-graph-up-arrow",
             "clase": "reporte-mensual",
-            "disponible": False,
+            "disponible": True,
         },
         {
             "clave": "comparativo",
@@ -3024,7 +3034,7 @@ def reportes_admin(request):
             ),
             "icono": "bi-layout-text-window-reverse",
             "clase": "reporte-comparativo",
-            "disponible": False,
+            "disponible": True,
         },
     ]
 
@@ -3052,11 +3062,23 @@ def reportes_admin(request):
         .order_by("estado")
     )
 
+    apicultores = (
+        Apicultor.objects
+        .select_related("user")
+        .all()
+        .order_by(
+            "user__first_name",
+            "user__last_name",
+            "id_apicultor"
+        )
+    )
+
     return render(
         request,
         "admin_panel/reportes/reportes.html",
         {
             "apiarios": apiarios,
+            "apicultores": apicultores,
             "historial": historial,
             "tipos_reportes": tipos_reportes,
             "prioridades_incidencia": prioridades_incidencia,
@@ -3070,6 +3092,11 @@ def generar_reporte_sistema(request):
 
     tipo_reporte = request.POST.get(
         "tipo_reporte",
+        ""
+    ).strip()
+
+    mes_actividad_texto = request.POST.get(
+        "mes_actividad",
         ""
     ).strip()
 
@@ -3135,6 +3162,11 @@ def generar_reporte_sistema(request):
             "solo_pendientes"
         ) == "1"
     )
+
+    apicultor_texto = request.POST.get(
+        "apicultor",
+        ""
+    ).strip()
 
     # =========================================================
     # VALIDAR FECHAS
@@ -3229,6 +3261,42 @@ def generar_reporte_sistema(request):
             )
 
     # =========================================================
+    # VALIDAR APIcultor
+    # =========================================================
+
+    apicultor_id = None
+    apicultor = None
+
+    if apicultor_texto:
+
+        if not apicultor_texto.isdigit():
+
+            messages.error(
+                request,
+                "El apicultor seleccionado no es válido."
+            )
+
+            return redirect("reportes_admin")
+
+        apicultor_id = int(apicultor_texto)
+
+        apicultor = (
+            Apicultor.objects
+            .select_related("user")
+            .filter(pk=apicultor_id)
+            .first()
+        )
+
+        if not apicultor:
+
+            messages.error(
+                request,
+                "El apicultor seleccionado no existe."
+            )
+
+            return redirect("reportes_admin")
+
+    # =========================================================
     # GENERAR REPORTE SEGÚN EL TIPO
     # =========================================================
 
@@ -3288,6 +3356,107 @@ def generar_reporte_sistema(request):
                         comparar_periodo_anterior
                     )
                 )
+
+        elif tipo_reporte == "actividad_apicultores":
+
+            resultado = (
+                generar_reporte_actividad_apicultores_pdf(
+                    request=request,
+                    fecha_desde=fecha_desde,
+                    fecha_hasta=fecha_hasta,
+                    apiario_id=apiario_id,
+                    apicultor_id=apicultor_id,
+                    incluir_graficos=incluir_graficos,
+                    incluir_tabla=incluir_tabla,
+                    incluir_resumen=incluir_resumen,
+                    incluir_conclusiones=(
+                        incluir_conclusiones
+                    ),
+                    comparar_periodo_anterior=(
+                        comparar_periodo_anterior
+                    )
+                )
+            )
+
+        elif tipo_reporte == "actividad_mensual":
+
+            if not mes_actividad_texto:
+
+                messages.error(
+                    request,
+                    "Debes seleccionar el mes del reporte."
+                )
+
+                return redirect("reportes_admin")
+
+            try:
+
+                anio_texto, mes_texto = (
+                    mes_actividad_texto.split("-")
+                )
+
+                anio = int(anio_texto)
+                mes = int(mes_texto)
+
+                if mes < 1 or mes > 12:
+                    raise ValueError
+
+                ultimo_dia = monthrange(
+                    anio,
+                    mes
+                )[1]
+
+                fecha_desde = date(
+                    anio,
+                    mes,
+                    1
+                )
+
+                fecha_hasta = date(
+                    anio,
+                    mes,
+                    ultimo_dia
+                )
+
+            except (ValueError, TypeError):
+
+                messages.error(
+                    request,
+                    "El mes seleccionado no es válido."
+                )
+
+                return redirect("reportes_admin")
+
+
+            resultado = generar_reporte_actividad_mensual_pdf(
+                request=request,
+                fecha_desde=fecha_desde,
+                fecha_hasta=fecha_hasta,
+                apiario_id=apiario_id,
+                incluir_graficos=incluir_graficos,
+                incluir_tabla=incluir_tabla,
+                incluir_resumen=incluir_resumen,
+                incluir_conclusiones=incluir_conclusiones,
+                comparar_periodo_anterior=(
+                    comparar_periodo_anterior
+                )
+            )
+
+        elif tipo_reporte == "comparativo":
+
+            resultado = generar_reporte_corporativo_pdf(
+                request=request,
+                fecha_desde=fecha_desde,
+                fecha_hasta=fecha_hasta,
+                apiario_id=apiario_id,
+                incluir_graficos=incluir_graficos,
+                incluir_tabla=incluir_tabla,
+                incluir_resumen=incluir_resumen,
+                incluir_conclusiones=incluir_conclusiones,
+                comparar_periodo_anterior=(
+                    comparar_periodo_anterior
+                )
+            )
 
         else:
 
@@ -3379,9 +3548,31 @@ def generar_reporte_sistema(request):
                 "Solo mantenimientos pendientes"
             )
 
+        if (
+            tipo_reporte == "actividad_apicultores"
+            and apicultor
+        ):
+            nombre_apicultor = (
+                apicultor.user.get_full_name().strip()
+                if apicultor.user
+                else ""
+            )
+
+            if not nombre_apicultor:
+                nombre_apicultor = (
+                    apicultor.user.username
+                    if apicultor.user
+                    else f"Apicultor {apicultor.pk}"
+                )
+
+            filtros.append(
+                f"Apicultor: {nombre_apicultor}"
+            )
+
         # =====================================================
         # GUARDAR EN HISTORIAL
         # =====================================================
+
 
         historial = HistorialReporte(
             usuario=request.user,
@@ -3408,6 +3599,7 @@ def generar_reporte_sistema(request):
 
         historial.save()
 
+
         # =====================================================
         # ABRIR PDF EN EL NAVEGADOR
         # =====================================================
@@ -3425,21 +3617,23 @@ def generar_reporte_sistema(request):
 
     except Exception as error:
 
-        print(
-            "Error generando reporte:",
-            type(error).__name__,
-            error
-        )
+        import traceback
 
-        messages.error(
-            request,
-            "No fue posible generar el reporte."
-        )
+        print("\n" + "=" * 80)
+        print("ERROR COMPLETO AL GENERAR EL REPORTE")
+        print("Tipo de reporte:", tipo_reporte)
+        print("Mes recibido:", mes_actividad_texto)
+        print("POST recibido:", request.POST.dict())
+        print("Tipo de error:", type(error).__name__)
+        print("Mensaje:", str(error))
 
-        return redirect(
-            "reportes_admin"
-        )
-    
+        traceback.print_exc()
+
+        print("=" * 80 + "\n")
+
+        # Durante la depuración dejamos que Django muestre
+        # la pantalla completa del error.
+        raise
 
 @administrador_requerido
 def abrir_reporte_sistema(
@@ -3467,4 +3661,3 @@ def abrir_reporte_sistema(
         filename=reporte.nombre_archivo,
         content_type="application/pdf"
     )
-
