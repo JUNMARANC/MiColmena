@@ -34,15 +34,34 @@
                 </p>
             </div>
 
-            <button
-                type="button"
-                class="btn btn-agregar-incidencia"
-                data-bs-toggle="modal"
-                data-bs-target="#modalAgregarIncidencia">
+            <div class="d-flex align-items-center gap-3">
 
-                <i class="bi bi-plus-lg me-1"></i>
-                Agregar incidencia
-            </button>
+                <div class="selector-vista" role="group" aria-label="Modo de visualización">
+                    <button type="button"
+                            id="btnVistaTabla"
+                            class="selector-vista-btn activo"
+                            title="Ver en tabla">
+                        <i class="bi bi-table"></i>
+                    </button>
+
+                    <button type="button"
+                            id="btnVistaTarjetas"
+                            class="selector-vista-btn"
+                            title="Ver en tarjetas">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-agregar-incidencia"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalAgregarIncidencia">
+
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Agregar incidencia
+                </button>
+            </div>
         </div>
 
         <!-- FILTROS -->
@@ -237,7 +256,7 @@
         </form>
 
         <!-- TABLA -->
-        <div class="tabla-incidencias">
+        <div class="tabla-incidencias" id="vistaTablaIncidencias">
 
             <table class="table table-hover align-middle mb-0">
 
@@ -400,6 +419,102 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <!-- VISTA EN TARJETAS -->
+        <div class="grid-tarjetas-incidencias" id="vistaTarjetasIncidencias" style="display:none;">
+
+            {% for incidencia in incidencias %}
+            <div class="tarjeta-incidencia">
+
+                <div class="tarjeta-incidencia-encabezado">
+                    {% if incidencia.entidadincidencia == "Apicultor" %}
+                        <span class="entidad-badge entidad-apicultor">
+                            <i class="bi bi-person"></i> Apicultor
+                        </span>
+                    {% elif incidencia.entidadincidencia == "Apiario" %}
+                        <span class="entidad-badge entidad-apiario">
+                            <i class="bi bi-geo-alt"></i> Apiario
+                        </span>
+                    {% else %}
+                        <span class="entidad-badge entidad-colmena">
+                            <i class="bi bi-box-seam"></i> Colmena
+                        </span>
+                    {% endif %}
+
+                    {% if incidencia.estado == "Pendiente" %}
+                        <span class="badge-estado estado-pendiente">Pendiente</span>
+                    {% elif incidencia.estado == "En proceso" %}
+                        <span class="badge-estado estado-proceso">En proceso</span>
+                    {% else %}
+                        <span class="badge-estado estado-resuelta">Resuelta</span>
+                    {% endif %}
+                </div>
+
+                <h5>{{ incidencia.titulo }}</h5>
+
+                <div class="tarjeta-incidencia-dato">
+                    <i class="bi bi-bullseye"></i>
+                    <span>
+                        {% if incidencia.entidadincidencia == "Apicultor" %}
+                            {% if incidencia.id_apicultor.user.get_full_name %}
+                                {{ incidencia.id_apicultor.user.get_full_name }}
+                            {% else %}
+                                {{ incidencia.id_apicultor.user.username|default:"Sin apicultor" }}
+                            {% endif %}
+                        {% elif incidencia.entidadincidencia == "Apiario" %}
+                            {{ incidencia.id_apiario.nombreapiario|default:"Sin apiario" }}
+                        {% else %}
+                            {{ incidencia.id_colmena.codigocolmena|default:"Sin colmena" }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="tarjeta-incidencia-dato">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>{{ incidencia.fechadeteccion|date:"d/m/Y" }}</span>
+                </div>
+
+                <div class="tarjeta-incidencia-dato">
+                    <i class="bi bi-person-badge"></i>
+                    <span>{{ incidencia.responsable|default:"Sin asignar" }}</span>
+                </div>
+
+                {% if incidencia.prioridad == "Baja" %}
+                    <span class="badge-prioridad prioridad-baja">Prioridad Baja</span>
+                {% elif incidencia.prioridad == "Media" %}
+                    <span class="badge-prioridad prioridad-media">Prioridad Media</span>
+                {% elif incidencia.prioridad == "Alta" %}
+                    <span class="badge-prioridad prioridad-alta">Prioridad Alta</span>
+                {% else %}
+                    <span class="badge-prioridad prioridad-critica">Prioridad Crítica</span>
+                {% endif %}
+
+                <div class="acciones-incidencia mt-3">
+                    <button type="button" class="btn-accion btn-ver" title="Ver detalle"
+                            data-bs-toggle="modal" data-bs-target="#modalDetalle{{ incidencia.pk }}">
+                        <i class="bi bi-eye"></i>
+                    </button>
+
+                    <button type="button" class="btn-accion btn-editar" title="Editar"
+                            data-bs-toggle="modal" data-bs-target="#modalEditar{{ incidencia.pk }}">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button type="button" class="btn-accion btn-eliminar" title="Eliminar"
+                            data-bs-toggle="modal" data-bs-target="#modalEliminar{{ incidencia.pk }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+
+            </div>
+            {% empty %}
+            <div class="text-center py-5 w-100">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <p class="text-muted mt-2 mb-0">No se encontraron incidencias.</p>
+            </div>
+            {% endfor %}
+
         </div>
 
         <!-- PAGINACIÓN -->

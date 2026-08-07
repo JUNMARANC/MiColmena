@@ -6,13 +6,33 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <h2 class="titulo-panel mb-0">Gestión de Colmenas</h2>
 
-    <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
-        <i class="bi bi-plus-circle me-2"></i>
-        Agregar
-    </button>
+    <div class="d-flex align-items-center gap-3">
+
+        <div class="selector-vista" role="group" aria-label="Modo de visualización">
+            <button type="button"
+                    id="btnVistaTabla"
+                    class="selector-vista-btn activo"
+                    title="Ver en tabla">
+                <i class="bi bi-table"></i>
+            </button>
+
+            <button type="button"
+                    id="btnVistaTarjetas"
+                    class="selector-vista-btn"
+                    title="Ver en tarjetas">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </button>
+        </div>
+
+        <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
+            <i class="bi bi-plus-circle me-2"></i>
+            Agregar
+        </button>
+
+    </div>
 </div>
 
 <div class="card-admin mb-4">
@@ -126,7 +146,7 @@
 
 </div>
 
-<div class="card-admin">
+<div class="card-admin" id="vistaTablaColmenas">
     <div class="table-responsive">
         <table class="table align-middle mb-0">
             <thead>
@@ -541,6 +561,82 @@
     </div>
 </div>
 
+<!-- VISTA EN TARJETAS -->
+<div class="grid-tarjetas-colmenas" id="vistaTarjetasColmenas" style="display:none;">
+
+    {% for colmena in colmenas %}
+    <div class="tarjeta-colmena">
+
+        <div class="tarjeta-colmena-imagen">
+            {% if colmena.imagen %}
+                <img src="{{ colmena.imagen.url }}" alt="Imagen de la colmena"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            {% else %}
+                <div class="tarjeta-colmena-sin-imagen">
+                    <i class="bi bi-image"></i>
+                </div>
+            {% endif %}
+
+            {% if colmena.estadocolmena == "Activa" %}
+                <span class="badge-estado badge-bueno tarjeta-colmena-badge">Activa</span>
+            {% elif colmena.estadocolmena == "Riesgo" %}
+                <span class="badge-estado badge-precaucion tarjeta-colmena-badge">Riesgo</span>
+            {% elif colmena.estadocolmena == "Inactiva" %}
+                <span class="badge-estado badge-deficiente tarjeta-colmena-badge">Inactiva</span>
+            {% else %}
+                <span class="badge-estado badge-precaucion tarjeta-colmena-badge">{{ colmena.estadocolmena }}</span>
+            {% endif %}
+        </div>
+
+        <div class="tarjeta-colmena-cuerpo">
+
+            <h5>{{ colmena.codigocolmena }}</h5>
+
+            <div class="tarjeta-colmena-dato">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>
+                    {% if colmena.id_apiario %}
+                        {{ colmena.id_apiario.nombreapiario }}
+                    {% else %}
+                        Sin apiario
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="tarjeta-colmena-dato">
+                <i class="bi bi-calendar-event"></i>
+                <span>{{ colmena.fecharegistro }}</span>
+            </div>
+
+            <div class="acciones mt-3">
+                <button type="button" class="btn-accion btn-ver"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalDetalleColmena{{ colmena.id_colmena }}">
+                    <i class="bi bi-eye"></i>
+                </button>
+
+                <button type="button" class="btn-accion btn-editar"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditarColmena{{ colmena.id_colmena }}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+
+                <button type="button" class="btn-accion btn-borrar"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEliminarColmena{{ colmena.id_colmena }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+    {% empty %}
+    <p class="text-center text-muted py-4 w-100">No hay colmenas registradas.</p>
+    {% endfor %}
+
+</div>
+
 {% if colmenas.has_other_pages %}
 <nav class="mt-4">
     <ul class="pagination justify-content-center align-items-center">
@@ -692,4 +788,8 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'panel_admin/js/colmenas_vista.js' %}"></script>
 {% endblock %}
