@@ -5261,3 +5261,384 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   SELECTOR DE VISTA (Tabla / Tarjetas) + VISTA EN TARJETAS
+   Módulo: Apiarios (reutilizable para otros módulos también)
+========================================================= */
+
+/* ---------- SELECTOR DE VISTA ---------- */
+
+.selector-vista {
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid #e1ebe5;
+    border-radius: 14px;
+    background: #f3f8f5;
+}
+
+.selector-vista-btn {
+    width: 40px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #6f8378;
+    font-size: 1rem;
+    transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+
+.selector-vista-btn:hover {
+    color: var(--verde-oscuro);
+}
+
+.selector-vista-btn.activo {
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(33, 79, 59, .25);
+}
+
+/* ---------- ANIMACIÓN AL CAMBIAR DE VISTA ---------- */
+
+@keyframes vistaApareciendo {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes vistaDesapareciendo {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.vista-entrando {
+    animation: vistaApareciendo .32s ease forwards;
+}
+
+.vista-saliendo {
+    animation: vistaDesapareciendo .18s ease forwards;
+}
+
+/* ---------- GRID DE TARJETAS DE APIARIOS ---------- */
+
+.grid-tarjetas-apiarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-apiario {
+    overflow: hidden;
+    border: 1px solid #e6eee9;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: var(--sombra);
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.tarjeta-apiario:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+.tarjeta-apiario-imagen {
+    position: relative;
+    width: 100%;
+    height: 150px;
+}
+
+.tarjeta-apiario-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.tarjeta-apiario-sin-imagen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf6ed;
+    color: #2f7d4f;
+    font-size: 2rem;
+}
+
+.tarjeta-apiario-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.tarjeta-apiario-cuerpo {
+    padding: 18px;
+}
+
+.tarjeta-apiario-cuerpo h5 {
+    margin: 0 0 10px;
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.tarjeta-apiario-dato {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: var(--gris-texto);
+    font-size: .85rem;
+}
+
+.tarjeta-apiario-dato i {
+    color: var(--verde-medio);
+}
+
+.tarjeta-apiario-imagen {
+    overflow: hidden; /* evita que un ícono de imagen rota se salga de la tarjeta */
+}
+
+@media (max-width: 576px) {
+    .grid-tarjetas-apiarios {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- GRID DE TARJETAS DE COLMENAS ---------- */
+
+.grid-tarjetas-colmenas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-colmena {
+    overflow: hidden;
+    border: 1px solid #e6eee9;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: var(--sombra);
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.tarjeta-colmena:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+.tarjeta-colmena-imagen {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+}
+
+.tarjeta-colmena-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.tarjeta-colmena-sin-imagen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf6ed;
+    color: #2f7d4f;
+    font-size: 2rem;
+}
+
+.tarjeta-colmena-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.tarjeta-colmena-cuerpo {
+    padding: 18px;
+}
+
+.tarjeta-colmena-cuerpo h5 {
+    margin: 0 0 10px;
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.tarjeta-colmena-dato {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: var(--gris-texto);
+    font-size: .85rem;
+}
+
+.tarjeta-colmena-dato i {
+    color: var(--verde-medio);
+}
+
+@media (max-width: 576px) {
+    .grid-tarjetas-colmenas {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- GRID DE TARJETAS DE MANTENIMIENTOS ---------- */
+
+.grid-tarjetas-mantenimientos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-mantenimiento {
+    border: 1px solid #e6eee9;
+    border-left: 5px solid #c8d4ce;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: var(--sombra);
+    padding: 18px;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.tarjeta-mantenimiento:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+.tarjeta-mantenimiento.prioridad-alta {
+    border-left-color: #e05656;
+}
+
+.tarjeta-mantenimiento.prioridad-media {
+    border-left-color: #e0a856;
+}
+
+.tarjeta-mantenimiento.prioridad-baja {
+    border-left-color: #56b17a;
+}
+
+.tarjeta-mantenimiento-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.tarjeta-mantenimiento-encabezado h5 {
+    margin: 0;
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.tarjeta-mantenimiento-dato {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--gris-texto);
+    font-size: .85rem;
+}
+
+.tarjeta-mantenimiento-dato i {
+    color: var(--verde-medio);
+    min-width: 16px;
+}
+
+.tarjeta-mantenimiento-prioridad {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #8a7350;
+    background: #fbf3e6;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+@media (max-width: 576px) {
+    .grid-tarjetas-mantenimientos {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- GRID DE TARJETAS DE INCIDENCIAS ---------- */
+
+.grid-tarjetas-incidencias {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-incidencia {
+    border: 1px solid #e6eee9;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: var(--sombra);
+    padding: 18px;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.tarjeta-incidencia:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+.tarjeta-incidencia-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.tarjeta-incidencia h5 {
+    margin: 0 0 12px;
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.tarjeta-incidencia-dato {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--gris-texto);
+    font-size: .85rem;
+}
+
+.tarjeta-incidencia-dato i {
+    color: var(--verde-medio);
+    min-width: 16px;
+}
+
+@media (max-width: 576px) {
+    .grid-tarjetas-incidencias {
+        grid-template-columns: 1fr;
+    }
+}

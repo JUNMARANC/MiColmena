@@ -97,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dbmicolmena',
         'USER' : 'root',
-        'PASSWORD' : '252512',
+        'PASSWORD' : '123456',
         'HOST' : 'localhost',
         'PORT' : '3306'
     }
@@ -128,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "America/Bogota"
 
 USE_I18N = True
 

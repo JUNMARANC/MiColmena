@@ -583,7 +583,7 @@ class HistorialReporte(models.Model):
 
     tipo_reporte = models.CharField(
         db_column="TipoReporte",
-        max_length=40,
+        max_length=50,
         choices=TipoReporte.choices
     )
 

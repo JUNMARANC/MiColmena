@@ -156,7 +156,170 @@ document.addEventListener("DOMContentLoaded", function () {
     filtrarColmenasPorApiario();
 });
 
+/* Selector de vista Tabla/Tarjetas — Mantenimientos */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Igual que en apiarios/colmenas: los modales quedan anidados
+    // dentro de la vista de tabla por cómo el navegador corrige el
+    // HTML, así que se reubican como hijos directos de <body>.
+    document
+        .querySelectorAll("#vistaTablaMantenimientos .modal, #vistaTarjetasMantenimientos .modal")
+        .forEach(function (modal) {
+            document.body.appendChild(modal);
+        });
+
+    const CLAVE_LOCALSTORAGE = "vistaMantenimientos";
+
+    const btnVistaTabla = document.getElementById("btnVistaTabla");
+    const btnVistaTarjetas = document.getElementById("btnVistaTarjetas");
+
+    const vistaTabla = document.getElementById("vistaTablaMantenimientos");
+    const vistaTarjetas = document.getElementById("vistaTarjetasMantenimientos");
+
+    if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
+        return;
+    }
+
+    function activarBoton(botonActivo, botonInactivo) {
+        botonActivo.classList.add("activo");
+        botonInactivo.classList.remove("activo");
+    }
+
+    function mostrarVista(elementoAMostrar, elementoAOcultar) {
+        elementoAOcultar.classList.add("vista-saliendo");
+
+        window.setTimeout(function () {
+            elementoAOcultar.style.display = "none";
+            elementoAOcultar.classList.remove("vista-saliendo");
+
+            elementoAMostrar.style.display =
+                elementoAMostrar.id === "vistaTarjetasMantenimientos" ? "grid" : "block";
+
+            elementoAMostrar.classList.add("vista-entrando");
+
+            window.setTimeout(function () {
+                elementoAMostrar.classList.remove("vista-entrando");
+            }, 340);
+        }, 180);
+    }
+
+    function irAVistaTabla() {
+        if (vistaTabla.style.display !== "none" && !btnVistaTarjetas.classList.contains("activo")) {
+            return;
+        }
+        mostrarVista(vistaTabla, vistaTarjetas);
+        activarBoton(btnVistaTabla, btnVistaTarjetas);
+        localStorage.setItem(CLAVE_LOCALSTORAGE, "tabla");
+    }
+
+    function irAVistaTarjetas() {
+        if (vistaTarjetas.style.display !== "none" && btnVistaTarjetas.classList.contains("activo")) {
+            return;
+        }
+        mostrarVista(vistaTarjetas, vistaTabla);
+        activarBoton(btnVistaTarjetas, btnVistaTabla);
+        localStorage.setItem(CLAVE_LOCALSTORAGE, "tarjetas");
+    }
+
+    btnVistaTabla.addEventListener("click", irAVistaTabla);
+    btnVistaTarjetas.addEventListener("click", irAVistaTarjetas);
+
+    const vistaGuardada = localStorage.getItem(CLAVE_LOCALSTORAGE);
+
+    if (vistaGuardada === "tarjetas") {
+        vistaTabla.style.display = "none";
+        vistaTarjetas.style.display = "grid";
+        activarBoton(btnVistaTarjetas, btnVistaTabla);
+    } else {
+        vistaTabla.style.display = "block";
+        vistaTarjetas.style.display = "none";
+        activarBoton(btnVistaTabla, btnVistaTarjetas);
+    }
+
+});
+
 /* JS DE INCIDENCIAS */
+
+/* Selector de vista Tabla/Tarjetas — Incidencias */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document
+        .querySelectorAll("#vistaTablaIncidencias .modal, #vistaTarjetasIncidencias .modal")
+        .forEach(function (modal) {
+            document.body.appendChild(modal);
+        });
+
+    const CLAVE_LOCALSTORAGE = "vistaIncidencias";
+
+    const btnVistaTabla = document.getElementById("btnVistaTabla");
+    const btnVistaTarjetas = document.getElementById("btnVistaTarjetas");
+
+    const vistaTabla = document.getElementById("vistaTablaIncidencias");
+    const vistaTarjetas = document.getElementById("vistaTarjetasIncidencias");
+
+    if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
+        return;
+    }
+
+    function activarBoton(botonActivo, botonInactivo) {
+        botonActivo.classList.add("activo");
+        botonInactivo.classList.remove("activo");
+    }
+
+    function mostrarVista(elementoAMostrar, elementoAOcultar) {
+        elementoAOcultar.classList.add("vista-saliendo");
+
+        window.setTimeout(function () {
+            elementoAOcultar.style.display = "none";
+            elementoAOcultar.classList.remove("vista-saliendo");
+
+            elementoAMostrar.style.display =
+                elementoAMostrar.id === "vistaTarjetasIncidencias" ? "grid" : "block";
+
+            elementoAMostrar.classList.add("vista-entrando");
+
+            window.setTimeout(function () {
+                elementoAMostrar.classList.remove("vista-entrando");
+            }, 340);
+        }, 180);
+    }
+
+    function irAVistaTabla() {
+        if (vistaTabla.style.display !== "none" && !btnVistaTarjetas.classList.contains("activo")) {
+            return;
+        }
+        mostrarVista(vistaTabla, vistaTarjetas);
+        activarBoton(btnVistaTabla, btnVistaTarjetas);
+        localStorage.setItem(CLAVE_LOCALSTORAGE, "tabla");
+    }
+
+    function irAVistaTarjetas() {
+        if (vistaTarjetas.style.display !== "none" && btnVistaTarjetas.classList.contains("activo")) {
+            return;
+        }
+        mostrarVista(vistaTarjetas, vistaTabla);
+        activarBoton(btnVistaTarjetas, btnVistaTabla);
+        localStorage.setItem(CLAVE_LOCALSTORAGE, "tarjetas");
+    }
+
+    btnVistaTabla.addEventListener("click", irAVistaTabla);
+    btnVistaTarjetas.addEventListener("click", irAVistaTarjetas);
+
+    const vistaGuardada = localStorage.getItem(CLAVE_LOCALSTORAGE);
+
+    if (vistaGuardada === "tarjetas") {
+        vistaTabla.style.display = "none";
+        vistaTarjetas.style.display = "grid";
+        activarBoton(btnVistaTarjetas, btnVistaTabla);
+    } else {
+        vistaTabla.style.display = "block";
+        vistaTarjetas.style.display = "none";
+        activarBoton(btnVistaTabla, btnVistaTarjetas);
+    }
+
+});
 
 document.addEventListener("DOMContentLoaded", function () {
 

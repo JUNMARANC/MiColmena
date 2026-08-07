@@ -6,13 +6,33 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <h2 class="titulo-panel mb-0">Gestión de Mantenimientos</h2>
 
-    <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
-        <i class="bi bi-plus-circle me-2"></i>
-        Agregar
-    </button>
+    <div class="d-flex align-items-center gap-3">
+
+        <div class="selector-vista" role="group" aria-label="Modo de visualización">
+            <button type="button"
+                    id="btnVistaTabla"
+                    class="selector-vista-btn activo"
+                    title="Ver en tabla">
+                <i class="bi bi-table"></i>
+            </button>
+
+            <button type="button"
+                    id="btnVistaTarjetas"
+                    class="selector-vista-btn"
+                    title="Ver en tarjetas">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </button>
+        </div>
+
+        <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
+            <i class="bi bi-plus-circle me-2"></i>
+            Agregar
+        </button>
+
+    </div>
 </div>
 
 <div class="card-admin mb-4">
@@ -90,7 +110,7 @@
 
 </div>
 
-<div class="card-admin">
+<div class="card-admin" id="vistaTablaMantenimientos">
     <div class="table-responsive">
         <table class="table align-middle mb-0">
             <thead>
@@ -489,6 +509,80 @@
                     </td>
                 </tr>
                 {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- VISTA EN TARJETAS -->
+<div class="grid-tarjetas-mantenimientos" id="vistaTarjetasMantenimientos" style="display:none;">
+
+    {% for mantenimiento in mantenimientos %}
+    <div class="tarjeta-mantenimiento prioridad-{{ mantenimiento.prioridad|lower }}">
+
+        <div class="tarjeta-mantenimiento-encabezado">
+            <h5>{{ mantenimiento.tipo }}</h5>
+
+            {% if mantenimiento.estado == "Pendiente" %}
+                <span class="badge-estado badge-precaucion">Pendiente</span>
+            {% elif mantenimiento.estado == "Completado" %}
+                <span class="badge-estado badge-bueno">Completado</span>
+            {% else %}
+                <span class="badge-estado badge-deficiente">{{ mantenimiento.estado }}</span>
+            {% endif %}
+        </div>
+
+        <div class="tarjeta-mantenimiento-cuerpo">
+
+            <div class="tarjeta-mantenimiento-dato">
+                <i class="bi bi-diagram-3-fill"></i>
+                <span>
+                    {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+                        {{ mantenimiento.id_apiario.nombreapiario }} <small>(apiario completo)</small>
+                    {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
+                        {{ mantenimiento.id_colmena.codigocolmena }} - {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
+                    {% else %}
+                        Sin asignar
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="tarjeta-mantenimiento-dato">
+                <i class="bi bi-person-badge-fill"></i>
+                <span>{{ mantenimiento.responsable }}</span>
+            </div>
+
+            <div class="tarjeta-mantenimiento-dato">
+                <i class="bi bi-calendar-event"></i>
+                <span>{{ mantenimiento.fechaejecucion }}</span>
+            </div>
+
+            <span class="tarjeta-mantenimiento-prioridad">
+                <i class="bi bi-flag-fill"></i> Prioridad {{ mantenimiento.prioridad }}
+            </span>
+
+            <div class="acciones mt-3">
+                <button type="button" class="btn-accion btn-ver" data-bs-toggle="modal" data-bs-target="#modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}">
+                    <i class="bi bi-eye"></i>
+                </button>
+
+                <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+
+                <button type="button" class="btn-accion btn-borrar" data-bs-toggle="modal" data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+    {% empty %}
+    <p class="text-center text-muted py-4 w-100">No hay mantenimientos registrados.</p>
+    {% endfor %}
+
+</div>
 
 <!-- MODAL AGREGAR -->
 <div class="modal fade" id="modalAgregarMantenimiento" tabindex="-1">
