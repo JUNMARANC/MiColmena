@@ -427,6 +427,18 @@
             {% for incidencia in incidencias %}
             <div class="tarjeta-incidencia">
 
+                <div class="tarjeta-incidencia-imagen">
+                    {% if incidencia.imagen %}
+                        <img src="{{ incidencia.imagen.url }}"
+                            alt="{{ incidencia.titulo }}"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    {% endif %}
+
+                    <div class="tarjeta-incidencia-sin-imagen" {% if incidencia.imagen %}style="display:none;"{% endif %}>
+                        <i class="bi bi-image"></i>
+                    </div>
+                </div>
+
                 <div class="tarjeta-incidencia-encabezado">
                     {% if incidencia.entidadincidencia == "Apicultor" %}
                         <span class="entidad-badge entidad-apicultor">

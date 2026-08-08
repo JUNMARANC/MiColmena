@@ -27,15 +27,29 @@
 
             </div>
 
-            <div class="contador-apicultores">
+            <div class="d-flex align-items-center gap-3">
 
-                <i class="bi bi-person-check-fill me-1"></i>
+                <div class="selector-vista" role="group" aria-label="Modo de visualización">
+                    <button type="button" id="btnVistaTablaApicultores" class="selector-vista-btn activo" title="Ver en tabla">
+                        <i class="bi bi-table"></i>
+                    </button>
 
-                <span>
-                    {{ apicultores.paginator.count }}
-                </span>
+                    <button type="button" id="btnVistaTarjetasApicultores" class="selector-vista-btn" title="Ver en tarjetas">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                </div>
 
-                registrado{{ apicultores.paginator.count|pluralize:"s" }}
+                <div class="contador-apicultores">
+
+                    <i class="bi bi-person-check-fill me-1"></i>
+
+                    <span>
+                        {{ apicultores.paginator.count }}
+                    </span>
+
+                    registrado{{ apicultores.paginator.count|pluralize:"s" }}
+
+                </div>
 
             </div>
 
@@ -46,7 +60,7 @@
     <!-- =====================================================
          CONTENIDO DE LA TABLA
     ====================================================== -->
-    <div class="card-body p-0">
+    <div class="card-body p-0" id="vistaTablaApicultores">
 
         <div class="table-responsive">
 
@@ -591,6 +605,157 @@
             </table>
 
         </div>
+
+    </div>
+
+    <!-- VISTA EN TARJETAS -->
+    <div class="grid-tarjetas-apicultores p-4" id="vistaTarjetasApicultores" style="display:none;">
+
+        {% for apicultor in apicultores %}
+        <div class="tarjeta-apicultor-card">
+
+            <div class="tarjeta-apicultor-card-header">
+
+                <div class="contenedor-foto-apicultor">
+
+                    {% if apicultor.fotoperfil %}
+                        <img src="{{ apicultor.fotoperfil.url }}"
+                            alt="Foto de {{ apicultor.nombre_completo }}"
+                            class="foto-apicultor">
+                    {% else %}
+                        <div class="foto-apicultor-sin-imagen">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    {% endif %}
+
+                    {% if apicultor.user.is_active %}
+                        <span class="estado-usuario estado-activo" title="Usuario activo"></span>
+                    {% else %}
+                        <span class="estado-usuario estado-inactivo" title="Usuario inactivo"></span>
+                    {% endif %}
+
+                </div>
+
+                <div class="tarjeta-apicultor-card-nombre">
+                    <div class="nombre-apicultor">{{ apicultor.nombre_completo }}</div>
+
+                    {% if apicultor.user %}
+                        <div class="usuario-apicultor"><i class="bi bi-at"></i>{{ apicultor.user.username }}</div>
+                    {% endif %}
+
+                    <span class="rol-apicultor">
+                        <i class="bi bi-award-fill me-1"></i>
+                        {{ apicultor.id_rol.nombrerol|default:"Apicultor" }}
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="tarjeta-apicultor-card-datos">
+
+                <div class="dato-contacto">
+                    <span class="icono-contacto"><i class="bi bi-telephone-fill"></i></span>
+                    <div>
+                        <small>Teléfono</small>
+                        <span>{{ apicultor.telefono|default:"Sin registrar" }}</span>
+                    </div>
+                </div>
+
+                <div class="dato-contacto">
+                    <span class="icono-contacto"><i class="bi bi-envelope-fill"></i></span>
+                    <div>
+                        <small>Correo</small>
+                        <span class="correo-apicultor">{{ apicultor.user.email|default:"Sin registrar" }}</span>
+                    </div>
+                </div>
+
+                {% if apicultor.zona_trabajo %}
+                <div class="dato-contacto">
+                    <span class="icono-contacto"><i class="bi bi-geo-alt-fill"></i></span>
+                    <div>
+                        <small>Zona</small>
+                        <span>{{ apicultor.zona_trabajo }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="tarjeta-apicultor-card-footer">
+
+                <div class="experiencia-apicultor">
+                    <i class="bi bi-briefcase-fill"></i>
+                    <strong>{{ apicultor.experienciaanios|default:"0" }}</strong>
+                    <span>años</span>
+                </div>
+
+                <div class="cantidad-apiarios">
+                    <div class="icono-apiarios"><i class="bi-house-fill"></i></div>
+                    <div>
+                        <strong>{{ apicultor.apiarios.count }}</strong>
+                        <span>Apiario{{ apicultor.apiarios.count|pluralize:"s" }}</span>
+                    </div>
+                </div>
+
+                <div class="acciones-apicultor">
+
+                    <button type="button" class="btn-accion-apicultor btn-ver-apicultor"
+                        title="Ver información"
+                        data-bs-toggle="modal" data-bs-target="#modalDetalleApicultor"
+                        data-id="{{ apicultor.id_apicultor }}"
+                        data-perfil-url="{% url 'perfil_apicultor' apicultor.id_apicultor %}"
+                        data-nombre="{{ apicultor.nombre_completo|escape }}"
+                        data-nombres="{{ apicultor.user.first_name|default:''|escape }}"
+                        data-apellidos="{{ apicultor.user.last_name|default:''|escape }}"
+                        data-username="{{ apicultor.user.username|default:''|escape }}"
+                        data-identificacion="{{ apicultor.identificacion|default:''|escape }}"
+                        data-correo="{{ apicultor.user.email|default:''|escape }}"
+                        data-telefono="{{ apicultor.telefono|default:''|escape }}"
+                        data-zona="{{ apicultor.zona_trabajo|default:''|escape }}"
+                        data-experiencia="{{ apicultor.experienciaanios|default_if_none:'' }}"
+                        data-rol="{{ apicultor.id_rol.nombrerol|default:'Apicultor'|escape }}"
+                        data-apiarios="{{ apicultor.apiarios.count }}"
+                        data-activo="{% if apicultor.user.is_active %}Sí{% else %}No{% endif %}"
+                        {% if apicultor.fotoperfil %}data-foto="{{ apicultor.fotoperfil.url }}"{% else %}data-foto=""{% endif %}>
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+
+                    <button type="button" class="btn-accion-apicultor btn-editar-apicultor"
+                        title="Editar apicultor"
+                        data-bs-toggle="modal" data-bs-target="#modalEditarApicultor"
+                        data-id="{{ apicultor.id_apicultor }}"
+                        data-url="{% url 'editar_apicultor' apicultor.id_apicultor %}"
+                        data-nombres="{{ apicultor.user.first_name|default:''|escape }}"
+                        data-apellidos="{{ apicultor.user.last_name|default:''|escape }}"
+                        data-username="{{ apicultor.user.username|default:''|escape }}"
+                        data-identificacion="{{ apicultor.identificacion|default:''|escape }}"
+                        data-correo="{{ apicultor.user.email|default:''|escape }}"
+                        data-telefono="{{ apicultor.telefono|default:''|escape }}"
+                        data-zona="{{ apicultor.zona_trabajo|default:''|escape }}"
+                        data-experiencia="{{ apicultor.experienciaanios|default_if_none:'' }}"
+                        data-activo="{% if apicultor.user and apicultor.user.is_active %}1{% else %}0{% endif %}"
+                        {% if apicultor.fotoperfil %}data-foto="{{ apicultor.fotoperfil.url }}"{% else %}data-foto=""{% endif %}>
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+
+                    <button type="button" class="btn-accion-apicultor btn-eliminar-apicultor"
+                        title="Eliminar apicultor"
+                        data-bs-toggle="modal" data-bs-target="#modalEliminarApicultor"
+                        data-id="{{ apicultor.id_apicultor }}"
+                        data-nombre="{{ apicultor.nombre_completo|escape }}"
+                        data-url="{% url 'eliminar_apicultor' apicultor.id_apicultor %}"
+                        data-apiarios="{{ apicultor.apiarios.count }}">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+        {% empty %}
+        <p class="text-center text-muted py-4 w-100">No hay apicultores registrados.</p>
+        {% endfor %}
 
     </div>
 
