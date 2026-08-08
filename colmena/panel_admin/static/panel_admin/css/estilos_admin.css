@@ -5637,8 +5637,113 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     min-width: 16px;
 }
 
+
+.tarjeta-incidencia-imagen {
+    position: relative;
+    width: calc(100% + 36px);
+    height: 140px;
+    margin: -18px -18px 14px -18px; /* contrarresta el padding de .tarjeta-incidencia */
+    overflow: hidden;
+    border-radius: 16px 16px 0 0; /* mismo radio que la tarjeta, solo arriba */
+}
+
+.tarjeta-incidencia-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.tarjeta-incidencia-sin-imagen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f8f3;
+    color: #789085;
+    font-size: 1.8rem;
+}
+
+.tarjeta-incidencia {
+    overflow: hidden;
+}
+
 @media (max-width: 576px) {
     .grid-tarjetas-incidencias {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   VISTA EN TARJETAS - Módulo Apicultores
+   (usa las mismas clases .selector-vista / .vista-entrando /
+   .vista-saliendo ya agregadas para Apiarios, no se repiten)
+========================================================= */
+
+.grid-tarjetas-apicultores {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.tarjeta-apicultor-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e6eee9;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.tarjeta-apicultor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+.tarjeta-apicultor-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #edf1ef;
+}
+
+.tarjeta-apicultor-card-nombre {
+    min-width: 0;
+    flex: 1;
+}
+
+.tarjeta-apicultor-card-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 18px;
+}
+
+.tarjeta-apicultor-card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 18px 18px;
+    margin-top: auto;
+    border-top: 1px solid #edf1ef;
+    background: #fbfdfc;
+}
+
+.tarjeta-apicultor-card-footer .cantidad-apiarios,
+.tarjeta-apicultor-card-footer .experiencia-apicultor {
+    width: 100%;
+}
+
+.tarjeta-apicultor-card-footer .acciones-apicultor {
+    justify-content: center;
+}
+
+@media (max-width: 576px) {
+    .grid-tarjetas-apicultores {
         grid-template-columns: 1fr;
     }
 }
