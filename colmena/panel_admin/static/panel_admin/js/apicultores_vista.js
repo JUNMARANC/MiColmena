@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-
+ 
     // =========================================================
     // SELECTOR DE VISTA: TABLA / TARJETAS (módulo Apicultores)
     // =========================================================
@@ -14,70 +14,96 @@ document.addEventListener("DOMContentLoaded", function () {
     // data-* que los botones de la tabla, así que apicultor.js
     // (que ya sabe leerlos para llenar los modales) funciona igual
     // sin que haya que tocarlo.
-
+ 
+    // NUEVO: entrada escalonada de filas/tarjetas
+    function aplicarEntradaEscalonadaApicultores(contenedor, selectorHijos, retraso) {
+ 
+        if (!contenedor) {
+            return;
+        }
+ 
+        contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
+            hijo.classList.remove("anim-entrada-lista");
+            void hijo.offsetWidth; // fuerza reflow para poder re-disparar
+            hijo.style.animationDelay = (indice * retraso) + "ms";
+            hijo.classList.add("anim-entrada-lista");
+        });
+    }
+ 
     const CLAVE_LOCALSTORAGE = "vistaApicultores";
-
+ 
     const btnVistaTabla = document.getElementById("btnVistaTablaApicultores");
     const btnVistaTarjetas = document.getElementById("btnVistaTarjetasApicultores");
-
+ 
     const vistaTabla = document.getElementById("vistaTablaApicultores");
     const vistaTarjetas = document.getElementById("vistaTarjetasApicultores");
-
+ 
     if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
         return;
     }
-
+ 
+    // NUEVO: entrada escalonada al cargar la página
+    aplicarEntradaEscalonadaApicultores(vistaTabla, "tbody tr", 45);
+    aplicarEntradaEscalonadaApicultores(vistaTarjetas, ".tarjeta-apicultor-card", 70);
+ 
     function activarBoton(botonActivo, botonInactivo) {
         botonActivo.classList.add("activo");
         botonInactivo.classList.remove("activo");
     }
-
+ 
     function mostrarVista(elementoAMostrar, elementoAOcultar) {
-
+ 
         elementoAOcultar.classList.add("vista-saliendo");
-
+ 
         window.setTimeout(function () {
-
+ 
             elementoAOcultar.style.display = "none";
             elementoAOcultar.classList.remove("vista-saliendo");
-
+ 
             elementoAMostrar.style.display =
                 elementoAMostrar.id === "vistaTarjetasApicultores" ? "grid" : "block";
-
+ 
             elementoAMostrar.classList.add("vista-entrando");
-
+ 
+            // NUEVO: entrada escalonada al cambiar de vista
+            if (elementoAMostrar.id === "vistaTarjetasApicultores") {
+                aplicarEntradaEscalonadaApicultores(elementoAMostrar, ".tarjeta-apicultor-card", 70);
+            } else {
+                aplicarEntradaEscalonadaApicultores(elementoAMostrar, "tbody tr", 45);
+            }
+ 
             window.setTimeout(function () {
                 elementoAMostrar.classList.remove("vista-entrando");
             }, 340);
-
+ 
         }, 180);
     }
-
+ 
     function irAVistaTabla() {
         if (vistaTabla.style.display !== "none" && !btnVistaTarjetas.classList.contains("activo")) {
             return;
         }
-
+ 
         mostrarVista(vistaTabla, vistaTarjetas);
         activarBoton(btnVistaTabla, btnVistaTarjetas);
         localStorage.setItem(CLAVE_LOCALSTORAGE, "tabla");
     }
-
+ 
     function irAVistaTarjetas() {
         if (vistaTarjetas.style.display !== "none" && btnVistaTarjetas.classList.contains("activo")) {
             return;
         }
-
+ 
         mostrarVista(vistaTarjetas, vistaTabla);
         activarBoton(btnVistaTarjetas, btnVistaTabla);
         localStorage.setItem(CLAVE_LOCALSTORAGE, "tarjetas");
     }
-
+ 
     btnVistaTabla.addEventListener("click", irAVistaTabla);
     btnVistaTarjetas.addEventListener("click", irAVistaTarjetas);
-
+ 
     const vistaGuardada = localStorage.getItem(CLAVE_LOCALSTORAGE);
-
+ 
     if (vistaGuardada === "tarjetas") {
         vistaTabla.style.display = "none";
         vistaTarjetas.style.display = "grid";
@@ -87,5 +113,5 @@ document.addEventListener("DOMContentLoaded", function () {
         vistaTarjetas.style.display = "none";
         activarBoton(btnVistaTabla, btnVistaTarjetas);
     }
-
+ 
 });

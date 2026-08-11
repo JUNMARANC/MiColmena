@@ -517,6 +517,7 @@ document.addEventListener(
             }
 
             botonGenerar.disabled = true;
+            botonGenerar.classList.add("btn-generando-reporte");
 
             botonGenerar.innerHTML = `
                 <span
@@ -530,6 +531,7 @@ document.addEventListener(
                 function () {
 
                     botonGenerar.disabled = false;
+                    botonGenerar.classList.remove("btn-generando-reporte");
 
                     botonGenerar.innerHTML = `
                         <i class="bi bi-file-earmark-pdf-fill me-2"></i>
@@ -579,3 +581,29 @@ document.addEventListener(
         configurarReporte("");
     }
 );
+
+/* =========================================================
+   ANIMACIÓN DE ENTRADA: TARJETAS DE TIPO DE REPORTE + HISTORIAL
+========================================================= */
+//
+// Bloque independiente: no depende de los elementos del modal,
+// así que funciona aunque cambie el resto de la lógica de arriba.
+ 
+document.addEventListener("DOMContentLoaded", function () {
+ 
+    function aplicarEntradaEscalonadaReportes(selector, retraso) {
+ 
+        document.querySelectorAll(selector).forEach(function (elemento, indice) {
+ 
+            elemento.classList.remove("anim-entrada-lista");
+            void elemento.offsetWidth;
+ 
+            elemento.style.animationDelay = (indice * retraso) + "ms";
+            elemento.classList.add("anim-entrada-lista");
+        });
+    }
+ 
+    aplicarEntradaEscalonadaReportes(".tarjeta-tipo-reporte", 80);
+    aplicarEntradaEscalonadaReportes(".tabla-reportes tbody tr", 45);
+ 
+});

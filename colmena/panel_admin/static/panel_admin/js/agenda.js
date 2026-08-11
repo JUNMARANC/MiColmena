@@ -334,3 +334,53 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+/* =========================================================
+   ANIMACIONES DE ENTRADA DEL CALENDARIO
+========================================================= */
+//
+// Bloque independiente del resto de agenda.js: si por algún
+// motivo faltara algún modal en la página, esto sigue
+// funcionando igual (no depende de esas validaciones).
+ 
+document.addEventListener("DOMContentLoaded", function () {
+ 
+    // ---------- Entrada escalonada de las celdas, tipo "ola" ----------
+    //
+    // Como el calendario se genera semana por semana (7 columnas),
+    // usamos fila y columna para que la animación se sienta como
+    // una ola diagonal en vez de una simple lista de arriba a abajo.
+ 
+    const celdas = document.querySelectorAll(".celda-calendario");
+ 
+    celdas.forEach(function (celda, indice) {
+ 
+        const fila = Math.floor(indice / 7);
+        const columna = indice % 7;
+ 
+        celda.classList.remove("anim-entrada-lista");
+        void celda.offsetWidth;
+ 
+        celda.style.animationDelay = ((fila + columna) * 18) + "ms";
+        celda.classList.add("anim-entrada-lista");
+    });
+ 
+    // ---------- Entrada escalonada de los eventos dentro de cada celda ----------
+ 
+    celdas.forEach(function (celda) {
+ 
+        const eventos = celda.querySelectorAll(".evento-calendario");
+ 
+        eventos.forEach(function (evento, indice) {
+ 
+            evento.classList.remove("anim-entrada-lista");
+            void evento.offsetWidth;
+ 
+            // Arrancan un poco después de que su celda ya haya aparecido
+            const retrasoCelda = parseInt(celda.style.animationDelay, 10) || 0;
+            evento.style.animationDelay = (retrasoCelda + 200 + indice * 60) + "ms";
+            evento.classList.add("anim-entrada-lista");
+        });
+    });
+ 
+});

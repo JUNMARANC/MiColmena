@@ -21,6 +21,42 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     // =========================================================
+    // ENTRADA ESCALONADA (filas de tabla / tarjetas)
+    // =========================================================
+    //
+    // Anima los hijos directos de un contenedor uno tras otro,
+    // en vez de que aparezcan todos de golpe. Se usa tanto al
+    // cargar la página como cada vez que se cambia de vista.
+    // Reutiliza la clase .anim-entrada-lista (ya definida en
+    // estilos_admin.css junto con la de Apiarios).
+
+    function aplicarEntradaEscalonada(contenedor, selectorHijos, retrasoEntreElementos) {
+
+        if (!contenedor) {
+            return;
+        }
+
+        const hijos = contenedor.querySelectorAll(selectorHijos);
+
+        hijos.forEach(function (hijo, indice) {
+
+            hijo.classList.remove("anim-entrada-lista");
+            void hijo.offsetWidth; // fuerza reflow para poder re-disparar
+
+            hijo.style.animationDelay = (indice * retrasoEntreElementos) + "ms";
+            hijo.classList.add("anim-entrada-lista");
+        });
+    }
+
+    const vistaTablaEl = document.getElementById("vistaTablaColmenas");
+    const vistaTarjetasEl = document.getElementById("vistaTarjetasColmenas");
+
+    // Entrada escalonada inicial (la vista visible al cargar la página)
+    aplicarEntradaEscalonada(vistaTablaEl, "tbody tr", 45);
+    aplicarEntradaEscalonada(vistaTarjetasEl, ".tarjeta-colmena", 70);
+
+
+    // =========================================================
     // SELECTOR DE VISTA: TABLA / TARJETAS (módulo Colmenas)
     // =========================================================
     //
@@ -35,8 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnVistaTabla = document.getElementById("btnVistaTabla");
     const btnVistaTarjetas = document.getElementById("btnVistaTarjetas");
 
-    const vistaTabla = document.getElementById("vistaTablaColmenas");
-    const vistaTarjetas = document.getElementById("vistaTarjetasColmenas");
+    const vistaTabla = vistaTablaEl;
+    const vistaTarjetas = vistaTarjetasEl;
 
     if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
         // El módulo actual no tiene el selector de vista, no hacemos nada.
@@ -64,6 +100,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 elementoAMostrar.id === "vistaTarjetasColmenas" ? "grid" : "block";
 
             elementoAMostrar.classList.add("vista-entrando");
+
+            // Además del fundido general del contenedor, cada fila/tarjeta
+            // entra escalonada para que se sienta más dinámico
+            if (elementoAMostrar.id === "vistaTarjetasColmenas") {
+                aplicarEntradaEscalonada(elementoAMostrar, ".tarjeta-colmena", 70);
+            } else {
+                aplicarEntradaEscalonada(elementoAMostrar, "tbody tr", 45);
+            }
 
             window.setTimeout(function () {
                 elementoAMostrar.classList.remove("vista-entrando");
@@ -96,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     btnVistaTarjetas.addEventListener("click", irAVistaTarjetas);
 
     // =========================================================
-    // RECORDAR LA ÚLTIMA VISTA ELEGIDA (sin animación al cargar)
+    // RECORDAR LA ÚLTIMA VISTA ELEGIDA
     // =========================================================
 
     const vistaGuardada = localStorage.getItem(CLAVE_LOCALSTORAGE);

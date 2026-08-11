@@ -1,5 +1,81 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    // ===========================================================
+    // ANIMACIÓN DE ENTRADA ESCALONADA
+    // ===========================================================
+    //
+    // Las 4 tarjetas de resumen, las 2 tarjetas de gráficas y la
+    // tarjeta de actividad reciente aparecen una tras otra al
+    // cargar la página, en vez de aparecer todas de golpe.
+
+    function aplicarEntradaEscalonada(selector, retrasoEntreElementos) {
+        document.querySelectorAll(selector).forEach(function (elemento, indice) {
+            elemento.classList.add("anim-entrada-dashboard");
+            elemento.style.animationDelay = (indice * retrasoEntreElementos) + "ms";
+        });
+    }
+
+    aplicarEntradaEscalonada(".tarjeta-dashboard", 90);
+    aplicarEntradaEscalonada(".dashboard-card", 120);
+
+    // Las notificaciones de "Actividad reciente" que ya vienen
+    // renderizadas desde el servidor también entran escalonadas
+    aplicarEntradaEscalonada(".dashboard-activity-list .dashboard-activity-item", 100);
+
+
+    // ===========================================================
+    // CONTADOR ANIMADO PARA LOS NÚMEROS DE LAS TARJETAS
+    // ===========================================================
+    //
+    // En vez de que el número aparezca de golpe, cuenta desde 0
+    // (o desde el valor anterior, en las actualizaciones en vivo)
+    // hasta el valor final con una curva de desaceleración.
+
+    function animarNumero(elemento, valorFinal, duracion) {
+
+        duracion = duracion || 900;
+
+        const valorInicial = parseInt(elemento.textContent, 10) || 0;
+
+        if (valorInicial === valorFinal) {
+            return;
+        }
+
+        const inicio = performance.now();
+
+        function paso(ahora) {
+
+            const progreso = Math.min((ahora - inicio) / duracion, 1);
+            const suavizado = 1 - Math.pow(1 - progreso, 3); // ease-out cúbico
+
+            const valorActual = Math.round(
+                valorInicial + (valorFinal - valorInicial) * suavizado
+            );
+
+            elemento.textContent = valorActual;
+
+            if (progreso < 1) {
+                requestAnimationFrame(paso);
+            }
+        }
+
+        requestAnimationFrame(paso);
+    }
+
+    // Al cargar la página, cada tarjeta cuenta desde 0 hasta su valor real
+    document.querySelectorAll("[data-stat]").forEach(function (elemento, indice) {
+
+        const valorFinal = parseInt(elemento.textContent, 10) || 0;
+        elemento.textContent = "0";
+
+        // Pequeño retraso para que arranque justo cuando la tarjeta
+        // ya terminó de aparecer con la animación de entrada
+        window.setTimeout(function () {
+            animarNumero(elemento, valorFinal, 900);
+        }, indice * 90 + 250);
+    });
+
+
     // ===========================
     // GRÁFICA ACTIVIDAD
     // ===========================
@@ -29,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         pointBorderColor: "#FFFFFF",
                         pointBorderWidth: 2,
                         pointRadius: 3,
-                        pointHoverRadius: 5
+                        pointHoverRadius: 6
                     },
                     {
                         label: "Incidencias",
@@ -43,9 +119,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         pointBorderColor: "#FFFFFF",
                         pointBorderWidth: 2,
                         pointRadius: 3,
-                        pointHoverRadius: 5
+                        pointHoverRadius: 6
                     },
-                    
+
                 ]
 
             },
@@ -55,6 +131,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 responsive: true,
 
                 maintainAspectRatio: false,
+
+                animation: {
+                    duration: 1100,
+                    easing: "easeOutQuart"
+                },
 
                 plugins: {
 
@@ -137,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: valoresPrioridadIncidencias,
                     backgroundColor: ["#6FCF97", "#F2C14E", "#F2994A", "#EB5757"],
                     borderWidth: 0,
-                    hoverOffset: 6
+                    hoverOffset: 10
                 }]
             },
 
@@ -145,6 +226,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: "68%",
+                animation: {
+                    duration: 1100,
+                    easing: "easeOutQuart"
+                },
                 plugins: {
                     legend: {
                         display: true,
@@ -207,6 +292,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 maintainAspectRatio: false,
 
+                animation: {
+                    duration: 1000,
+                    easing: "easeOutQuart"
+                },
+
                 plugins: {
 
                     legend: {
@@ -267,18 +357,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===========================================================
     // ACTUALIZACIÓN EN VIVO (sin recargar la página)
     // ===========================================================
-    //
-    // Cada X segundos se le pregunta al servidor por los datos
-    // actuales del dashboard (endpoint dashboard_datos_json).
-    // Si algo cambió, se reconstruye SOLO la actividad reciente
-    // y las 4 tarjetas de arriba, con una animación de entrada
-    // para los elementos nuevos.
-    //
-    // Como el backend siempre devuelve únicamente los 3 registros
-    // más recientes (ordenados por fecha), el efecto de "entra el
-    // nuevo, sale el más viejo" ocurre solo porque el más viejo
-    // deja de estar en esa lista de 3 — no se necesita ninguna
-    // lógica adicional de "eliminar" en el frontend.
 
     function iconoActividad(noti) {
         return noti.titulo.indexOf("Incidencia") !== -1
@@ -331,9 +409,18 @@ document.addEventListener("DOMContentLoaded", function () {
         for (const clave in mapa) {
 
             const elemento = mapa[clave];
+            const valorNuevo = datos[clave];
 
-            if (elemento && elemento.textContent !== String(datos[clave])) {
-                elemento.textContent = datos[clave];
+            if (elemento && elemento.textContent !== String(valorNuevo)) {
+
+                // Cuenta suavemente desde el valor anterior hasta el nuevo,
+                // en vez de reemplazar el texto de golpe
+                animarNumero(elemento, valorNuevo, 700);
+
+                elemento.classList.remove("valor-actualizado");
+                // Forzar reflow para poder re-disparar la animación CSS
+                void elemento.offsetWidth;
+                elemento.classList.add("valor-actualizado");
             }
         }
     }
@@ -356,7 +443,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return n.id;
         });
 
-        // Si no cambió nada, no tocamos el DOM (evita parpadeos innecesarios)
         if (JSON.stringify(idsActuales) === JSON.stringify(idsNuevos)) {
             return;
         }
@@ -373,7 +459,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const item = construirItemActividad(noti);
 
-            // La(s) que no estaban antes entran con una animación
             if (idsActuales.indexOf(noti.id) === -1) {
                 item.classList.add("dashboard-activity-nueva");
             }
@@ -398,8 +483,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (typeof URL_DATOS_DASHBOARD !== "undefined") {
-        // Cada 15 segundos. Súbelo a 30000-60000 si prefieres
-        // menos peticiones al servidor.
         setInterval(actualizarDashboardEnVivo, 15000);
     }
 
