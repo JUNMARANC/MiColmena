@@ -5747,3 +5747,302 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   ANIMACIONES DEL DASHBOARD
+========================================================= */
+
+/* ---------- ENTRADA ESCALONADA DE TARJETAS/GRÁFICAS ---------- */
+
+@keyframes entradaTarjetaDashboard {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.anim-entrada-dashboard {
+    opacity: 0;
+    animation: entradaTarjetaDashboard .5s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+/* ---------- HOVER MÁS VIVO EN LOS ÍCONOS DE LAS TARJETAS ---------- */
+
+.tarjeta-dashboard .icono-dashboard {
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.tarjeta-dashboard:hover .icono-dashboard {
+    transform: scale(1.12) rotate(-6deg);
+}
+
+/* ---------- PUNTO "EN VIVO" JUNTO A ACTIVIDAD RECIENTE ---------- */
+
+.pulso-en-vivo {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2F7D4F;
+    flex-shrink: 0;
+}
+
+.pulso-en-vivo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #2F7D4F;
+    animation: latidoEnVivo 1.8s ease-out infinite;
+}
+
+@keyframes latidoEnVivo {
+    0% {
+        transform: scale(1);
+        opacity: .6;
+    }
+    100% {
+        transform: scale(2.6);
+        opacity: 0;
+    }
+}
+
+/* ---------- DESTELLO BREVE CUANDO UNA TARJETA CAMBIA DE VALOR ---------- */
+
+@keyframes destelloValorActualizado {
+    0% {
+        color: #2F7D4F;
+    }
+    100% {
+        color: inherit;
+    }
+}
+
+.valor-actualizado {
+    animation: destelloValorActualizado .8s ease;
+}
+
+/* ---------- RESPETAR PREFERENCIA DE "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .anim-entrada-dashboard,
+    .dashboard-activity-nueva,
+    .valor-actualizado {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    .pulso-en-vivo::after {
+        animation: none !important;
+        opacity: 0;
+    }
+}
+
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   ANIMACIONES DE ENTRADA PARA LISTAS Y TARJETAS
+   (reutilizable en Apiarios, Colmenas, Mantenimientos,
+   Incidencias, Apicultores... cualquier tabla o grid)
+========================================================= */
+
+@keyframes entradaListaItem {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.anim-entrada-lista {
+    animation: entradaListaItem .45s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* ---------- MICRO-INTERACCIÓN EN BOTONES DE ACCIÓN ---------- */
+
+.btn-accion,
+.btn-accion-apicultor {
+    transition:
+        transform .25s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .25s ease,
+        background-color .25s ease;
+}
+
+.btn-accion:hover,
+.btn-accion-apicultor:hover {
+    transform: translateY(-3px) scale(1.08);
+}
+
+.btn-accion:active,
+.btn-accion-apicultor:active {
+    transform: translateY(-1px) scale(.96);
+}
+
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .anim-entrada-lista {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    .btn-accion,
+    .btn-accion-apicultor {
+        transition: none !important;
+    }
+}
+
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   ANIMACIONES DE LA AGENDA
+========================================================= */
+ 
+/* ---------- HOVER EN LAS CELDAS DEL CALENDARIO ---------- */
+ 
+.celda-calendario {
+    transition: background-color .25s ease;
+}
+ 
+.celda-calendario:hover {
+    background: #fbfdfc;
+}
+ 
+/* ---------- HOVER EN LOS EVENTOS ---------- */
+ 
+.evento-calendario {
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .2s ease;
+}
+ 
+.evento-calendario:hover {
+    transform: translateX(2px) scale(1.03);
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .12);
+}
+ 
+/* ---------- BOTONES DE NAVEGACIÓN DE MES ---------- */
+ 
+.btn-navegar-mes {
+    transition:
+        transform .25s cubic-bezier(.34, 1.56, .64, 1),
+        background-color .25s ease;
+}
+ 
+.btn-navegar-mes:hover {
+    background: var(--verde-medio);
+    color: #ffffff;
+    transform: scale(1.12);
+}
+ 
+/* ---------- RESALTADO PULSANTE DEL DÍA DE HOY ---------- */
+ 
+.dia-hoy .numero-dia {
+    position: relative;
+}
+ 
+.dia-hoy .numero-dia::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--verde-oscuro);
+    border-radius: 50%;
+    animation: latidoDiaHoy 2.2s ease-out infinite;
+}
+ 
+@keyframes latidoDiaHoy {
+    0% {
+        transform: scale(1);
+        opacity: .7;
+    }
+    100% {
+        transform: scale(1.35);
+        opacity: 0;
+    }
+}
+ 
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+ 
+@media (prefers-reduced-motion: reduce) {
+    .dia-hoy .numero-dia::after {
+        animation: none !important;
+        opacity: 0;
+    }
+ 
+    .evento-calendario,
+    .btn-navegar-mes,
+    .celda-calendario {
+        transition: none !important;
+    }
+}
+
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   ANIMACIONES DEL MÓDULO REPORTES
+========================================================= */
+ 
+/* ---------- HOVER EN LAS TARJETAS DE TIPO DE REPORTE ---------- */
+ 
+.tarjeta-tipo-reporte {
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+ 
+.tarjeta-tipo-reporte:not(.reporte-no-disponible):hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 30px rgba(33, 79, 59, .12);
+}
+ 
+.tarjeta-tipo-reporte .icono-tipo-reporte {
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+ 
+.tarjeta-tipo-reporte:not(.reporte-no-disponible):hover .icono-tipo-reporte {
+    transform: scale(1.12) rotate(-4deg);
+}
+ 
+/* ---------- BOTÓN "ABRIR REPORTE" DEL HISTORIAL ---------- */
+ 
+.btn-abrir-reporte {
+    transition:
+        transform .25s cubic-bezier(.34, 1.56, .64, 1),
+        background-color .25s ease;
+}
+ 
+.btn-abrir-reporte:hover {
+    transform: translateY(-3px) scale(1.08);
+}
+ 
+/* ---------- PULSO MIENTRAS SE GENERA EL PDF ---------- */
+ 
+@keyframes pulsoGenerandoReporte {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(47, 125, 79, .35);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(47, 125, 79, 0);
+    }
+}
+ 
+.btn-generando-reporte {
+    animation: pulsoGenerandoReporte 1.4s ease-in-out infinite;
+}
+ 
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+ 
+@media (prefers-reduced-motion: reduce) {
+    .tarjeta-tipo-reporte,
+    .tarjeta-tipo-reporte .icono-tipo-reporte,
+    .btn-abrir-reporte {
+        transition: none !important;
+    }
+ 
+    .btn-generando-reporte {
+        animation: none !important;
+    }
+}

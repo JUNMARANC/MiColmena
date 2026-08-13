@@ -169,6 +169,18 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.appendChild(modal);
         });
 
+    // NUEVO: entrada escalonada de filas/tarjetas
+    function aplicarEntradaEscalonadaMantenimientos(contenedor, selectorHijos, retraso) {
+        if (!contenedor) return;
+
+        contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
+            hijo.classList.remove("anim-entrada-lista");
+            void hijo.offsetWidth;
+            hijo.style.animationDelay = (indice * retraso) + "ms";
+            hijo.classList.add("anim-entrada-lista");
+        });
+    }
+
     const CLAVE_LOCALSTORAGE = "vistaMantenimientos";
 
     const btnVistaTabla = document.getElementById("btnVistaTabla");
@@ -180,6 +192,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
         return;
     }
+
+    // NUEVO: entrada escalonada al cargar la página
+    aplicarEntradaEscalonadaMantenimientos(vistaTabla, "tbody tr", 45);
+    aplicarEntradaEscalonadaMantenimientos(vistaTarjetas, ".tarjeta-mantenimiento", 70);
 
     function activarBoton(botonActivo, botonInactivo) {
         botonActivo.classList.add("activo");
@@ -197,6 +213,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 elementoAMostrar.id === "vistaTarjetasMantenimientos" ? "grid" : "block";
 
             elementoAMostrar.classList.add("vista-entrando");
+
+            // NUEVO: entrada escalonada al cambiar de vista
+            if (elementoAMostrar.id === "vistaTarjetasMantenimientos") {
+                aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, ".tarjeta-mantenimiento", 70);
+            } else {
+                aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, "tbody tr", 45);
+            }
 
             window.setTimeout(function () {
                 elementoAMostrar.classList.remove("vista-entrando");
@@ -242,50 +265,72 @@ document.addEventListener("DOMContentLoaded", function () {
 /* JS DE INCIDENCIAS */
 
 /* Selector de vista Tabla/Tarjetas — Incidencias */
-
 document.addEventListener("DOMContentLoaded", function () {
-
+ 
     document
         .querySelectorAll("#vistaTablaIncidencias .modal, #vistaTarjetasIncidencias .modal")
         .forEach(function (modal) {
             document.body.appendChild(modal);
         });
-
+ 
+    // NUEVO: entrada escalonada de filas/tarjetas
+    function aplicarEntradaEscalonadaIncidencias(contenedor, selectorHijos, retraso) {
+        if (!contenedor) return;
+ 
+        contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
+            hijo.classList.remove("anim-entrada-lista");
+            void hijo.offsetWidth;
+            hijo.style.animationDelay = (indice * retraso) + "ms";
+            hijo.classList.add("anim-entrada-lista");
+        });
+    }
+ 
     const CLAVE_LOCALSTORAGE = "vistaIncidencias";
-
+ 
     const btnVistaTabla = document.getElementById("btnVistaTabla");
     const btnVistaTarjetas = document.getElementById("btnVistaTarjetas");
-
+ 
     const vistaTabla = document.getElementById("vistaTablaIncidencias");
     const vistaTarjetas = document.getElementById("vistaTarjetasIncidencias");
-
+ 
     if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
         return;
     }
-
+ 
+    // NUEVO: entrada escalonada al cargar la página
+    aplicarEntradaEscalonadaIncidencias(vistaTabla, "tbody tr", 45);
+    aplicarEntradaEscalonadaIncidencias(vistaTarjetas, ".tarjeta-incidencia", 70);
+ 
     function activarBoton(botonActivo, botonInactivo) {
         botonActivo.classList.add("activo");
         botonInactivo.classList.remove("activo");
     }
-
+ 
     function mostrarVista(elementoAMostrar, elementoAOcultar) {
         elementoAOcultar.classList.add("vista-saliendo");
-
+ 
         window.setTimeout(function () {
             elementoAOcultar.style.display = "none";
             elementoAOcultar.classList.remove("vista-saliendo");
-
+ 
             elementoAMostrar.style.display =
                 elementoAMostrar.id === "vistaTarjetasIncidencias" ? "grid" : "block";
-
+ 
             elementoAMostrar.classList.add("vista-entrando");
-
+ 
+            // NUEVO: entrada escalonada al cambiar de vista
+            if (elementoAMostrar.id === "vistaTarjetasIncidencias") {
+                aplicarEntradaEscalonadaIncidencias(elementoAMostrar, ".tarjeta-incidencia", 70);
+            } else {
+                aplicarEntradaEscalonadaIncidencias(elementoAMostrar, "tbody tr", 45);
+            }
+ 
             window.setTimeout(function () {
                 elementoAMostrar.classList.remove("vista-entrando");
             }, 340);
         }, 180);
     }
-
+ 
     function irAVistaTabla() {
         if (vistaTabla.style.display !== "none" && !btnVistaTarjetas.classList.contains("activo")) {
             return;
@@ -294,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
         activarBoton(btnVistaTabla, btnVistaTarjetas);
         localStorage.setItem(CLAVE_LOCALSTORAGE, "tabla");
     }
-
+ 
     function irAVistaTarjetas() {
         if (vistaTarjetas.style.display !== "none" && btnVistaTarjetas.classList.contains("activo")) {
             return;
@@ -303,12 +348,12 @@ document.addEventListener("DOMContentLoaded", function () {
         activarBoton(btnVistaTarjetas, btnVistaTabla);
         localStorage.setItem(CLAVE_LOCALSTORAGE, "tarjetas");
     }
-
+ 
     btnVistaTabla.addEventListener("click", irAVistaTabla);
     btnVistaTarjetas.addEventListener("click", irAVistaTarjetas);
-
+ 
     const vistaGuardada = localStorage.getItem(CLAVE_LOCALSTORAGE);
-
+ 
     if (vistaGuardada === "tarjetas") {
         vistaTabla.style.display = "none";
         vistaTarjetas.style.display = "grid";
@@ -318,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
         vistaTarjetas.style.display = "none";
         activarBoton(btnVistaTabla, btnVistaTarjetas);
     }
-
+ 
 });
 
 document.addEventListener("DOMContentLoaded", function () {
