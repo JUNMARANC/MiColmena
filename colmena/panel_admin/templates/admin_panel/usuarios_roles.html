@@ -119,7 +119,25 @@
             role="tabpanel"
         >
 
-            <div class="card tabla-usuarios-card">
+            <div class="d-flex justify-content-end mb-3">
+                <div class="selector-vista" role="group" aria-label="Modo de visualización">
+                    <button type="button"
+                            id="btnVistaTablaUsuarios"
+                            class="selector-vista-btn activo"
+                            title="Ver en tabla">
+                        <i class="bi bi-table"></i>
+                    </button>
+
+                    <button type="button"
+                            id="btnVistaTarjetasUsuarios"
+                            class="selector-vista-btn"
+                            title="Ver en tarjetas">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card tabla-usuarios-card" id="vistaTablaUsuarios">
 
                 <div class="table-responsive">
 
@@ -541,7 +559,156 @@
 
             </div>
 
+            <!-- VISTA EN TARJETAS -->
+        <div class="grid-tarjetas-usuarios" id="vistaTarjetasUsuarios" style="display:none;">
+
+            {% for usuario in usuarios %}
+            <div class="tarjeta-usuario-card">
+
+                <div class="tarjeta-usuario-header">
+
+                    <div class="avatar-usuario">
+                        {{ usuario.nombre|first|upper }}
+                    </div>
+
+                    <div class="tarjeta-usuario-nombre">
+                        <strong>{{ usuario.nombre }}</strong>
+                        <small>{{ usuario.username }}</small>
+                    </div>
+
+                </div>
+
+                <div class="tarjeta-usuario-datos">
+
+                    <div class="tarjeta-usuario-dato">
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>{{ usuario.correo }}</span>
+                    </div>
+
+                    <div class="tarjeta-usuario-dato">
+                        <i class="bi bi-clock-history"></i>
+                        <span>
+                            {% if usuario.ultimo_acceso %}
+                                {{ usuario.ultimo_acceso|date:"d/m/Y H:i" }}
+                            {% else %}
+                                Sin accesos registrados
+                            {% endif %}
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="tarjeta-usuario-footer">
+
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                        {% if usuario.tipo_perfil == "administrador" %}
+                            <span class="badge-rol badge-admin">Administrador</span>
+                        {% elif usuario.tipo_perfil == "apicultor" %}
+                            <span class="badge-rol badge-apicultor">Apicultor</span>
+                        {% else %}
+                            <span class="badge-rol badge-sin-rol">{{ usuario.rol }}</span>
+                        {% endif %}
+
+                        {% if usuario.activo %}
+                            <span class="estado-usuario estado-activo">
+                                <span class="punto-estado"></span>
+                                Activo
+                            </span>
+                        {% else %}
+                            <span class="estado-usuario estado-inactivo">
+                                <span class="punto-estado"></span>
+                                Inactivo
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        {% if usuario.tipo_perfil == "administrador" %}
+
+                            {% if usuario.puede_editar_administrador %}
+
+                                <button type="button" class="btn-accion-usuario btn-editar-administrador"
+                                    title="Editar administrador"
+                                    data-bs-toggle="modal" data-bs-target="#modalEditarAdministrador"
+                                    data-url="{% url 'editar_administrador' usuario.id %}"
+                                    data-id="{{ usuario.id }}"
+                                    data-nombres="{{ usuario.nombres|escape }}"
+                                    data-apellidos="{{ usuario.apellidos|escape }}"
+                                    data-username="{{ usuario.username|escape }}"
+                                    data-correo="{{ usuario.correo_editar|escape }}"
+                                    data-celular="{{ usuario.celular|escape }}"
+                                    data-nivel-acceso="{{ usuario.nivel_acceso|escape }}"
+                                    data-activo="{% if usuario.activo %}1{% else %}0{% endif %}"
+                                    data-foto="{{ usuario.foto }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                {% if usuario.id == request.user.id %}
+                                    <button type="button" class="btn-accion-usuario btn-accion-bloqueada"
+                                        title="No puedes cambiar el estado de tu propia cuenta" disabled>
+                                        {% if usuario.activo %}<i class="bi bi-lock-fill"></i>{% else %}<i class="bi bi-unlock-fill"></i>{% endif %}
+                                    </button>
+                                {% else %}
+                                    <button type="button"
+                                        class="btn-accion-usuario btn-estado-administrador {% if usuario.activo %}btn-desactivar-usuario{% else %}btn-activar-usuario{% endif %}"
+                                        title="{% if usuario.activo %}Desactivar administrador{% else %}Activar administrador{% endif %}"
+                                        data-bs-toggle="modal" data-bs-target="#modalEstadoAdministrador"
+                                        data-url="{% url 'cambiar_estado_administrador' usuario.id %}"
+                                        data-nombre="{{ usuario.nombre|escape }}"
+                                        data-activo="{% if usuario.activo %}1{% else %}0{% endif %}">
+                                        {% if usuario.activo %}<i class="bi bi-lock-fill"></i>{% else %}<i class="bi bi-unlock-fill"></i>{% endif %}
+                                    </button>
+                                {% endif %}
+
+                                {% if usuario.id == request.user.id %}
+                                    <button type="button" class="btn-accion-usuario btn-accion-bloqueada"
+                                        title="No puedes eliminar tu propia cuenta" disabled>
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="btn-accion-usuario btn-eliminar-administrador"
+                                        title="Eliminar administrador"
+                                        data-bs-toggle="modal" data-bs-target="#modalEliminarAdministrador"
+                                        data-url="{% url 'eliminar_administrador' usuario.id %}"
+                                        data-nombre="{{ usuario.nombre|escape }}"
+                                        data-username="{{ usuario.username|escape }}">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                {% endif %}
+
+                            {% else %}
+                                <button type="button" class="btn-accion-usuario btn-accion-bloqueada"
+                                    title="Este usuario no tiene perfil Administrador" disabled>
+                                    <i class="bi bi-shield-exclamation"></i>
+                                </button>
+                            {% endif %}
+
+                        {% elif usuario.tipo_perfil == "apicultor" %}
+                            <span class="text-muted small" title="La gestión del Apicultor se realiza desde su módulo">
+                                <i class="bi bi-person-badge me-1"></i>
+                                Gestionar en Apicultores
+                            </span>
+
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+            
+            {% empty %}
+            <p class="text-center text-muted py-4 w-100">No hay usuarios registrados.</p>
+            {% endfor %}
+
         </div>
+
+    </div>
 
 
         <!-- =================================================
@@ -2239,9 +2406,8 @@
 
 {% block extra_js %}
 
-<script
-    src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=12"
-></script>
+<script src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=12"></script>
+<script src="{% static 'panel_admin/js/usuarios_roles_vista.js' %}"></script>
 
 {% endblock %}
 

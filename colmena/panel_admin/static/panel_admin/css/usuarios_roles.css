@@ -637,3 +637,91 @@ ACCIONES
 
     border: 1px solid #e3ebe6;
 }
+
+/* =========================================================
+   AGREGAR AL FINAL de usuarios_roles.css
+   VISTA EN TARJETAS - Módulo Usuarios y Roles
+   (usa las mismas clases .selector-vista / .vista-entrando /
+   .vista-saliendo / .anim-entrada-lista ya definidas)
+========================================================= */
+ 
+.grid-tarjetas-usuarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+ 
+.tarjeta-usuario-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #d8e6dd;
+    border-radius: 13px;
+    background: #ffffff;
+    box-shadow: 0 4px 18px rgba(33, 79, 59, 0.05);
+    overflow: hidden;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+ 
+.tarjeta-usuario-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+ 
+.tarjeta-usuario-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #edf1ef;
+}
+ 
+.tarjeta-usuario-nombre {
+    min-width: 0;
+}
+ 
+.tarjeta-usuario-nombre strong {
+    display: block;
+    color: #163324;
+}
+ 
+.tarjeta-usuario-nombre small {
+    display: block;
+    margin-top: 2px;
+    color: #7a8881;
+}
+ 
+.tarjeta-usuario-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 18px;
+}
+ 
+.tarjeta-usuario-dato {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #34483f;
+    font-size: .85rem;
+}
+ 
+.tarjeta-usuario-dato i {
+    color: #5f9781;
+    min-width: 16px;
+}
+ 
+.tarjeta-usuario-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 18px 18px;
+    margin-top: auto;
+    border-top: 1px solid #edf1ef;
+    background: #fbfdfc;
+}
+ 
+@media (max-width: 576px) {
+    .grid-tarjetas-usuarios {
+        grid-template-columns: 1fr;
+    }
+}
