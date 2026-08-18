@@ -1,0 +1,1325 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+
+{% block title %}
+    Mi perfil | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Mi perfil
+{% endblock %}
+
+
+{% block content %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=2"
+>
+
+
+<!-- =========================================================
+     PÁGINA MI PERFIL
+========================================================== -->
+
+<div class="pagina-mi-perfil">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="perfil-encabezado">
+
+        <div>
+
+            <span class="perfil-etiqueta">
+
+                <i class="bi bi-person-circle"></i>
+
+                MI CUENTA
+
+            </span>
+
+
+            <h2>
+                Información de mi perfil
+            </h2>
+
+
+            <p>
+                Consulta y actualiza tu información personal,
+                fotografía y credenciales de acceso.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         GRID PRINCIPAL
+    ====================================================== -->
+
+    <div class="perfil-grid">
+
+
+        <!-- =================================================
+             COLUMNA IZQUIERDA
+             TARJETA DEL USUARIO
+        ================================================== -->
+
+        <aside class="perfil-columna-lateral">
+
+
+            <!-- =============================================
+                 TARJETA PRINCIPAL
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-identidad">
+
+
+                <!-- FOTO -->
+
+                <div class="perfil-avatar-principal">
+
+                    {% if foto %}
+
+                        <img
+                            src="{{ foto }}"
+                            alt="Foto de perfil de {{ usuario.get_full_name|default:usuario.username }}"
+                            id="fotoPerfilPrincipal"
+                        >
+
+                        <div
+                            class="perfil-avatar-sin-foto d-none"
+                            id="iconoPerfilPrincipal"
+                        >
+
+                            <i class="bi bi-person-fill"></i>
+
+                        </div>
+
+                    {% else %}
+
+                        <img
+                            src=""
+                            alt="Vista previa de foto"
+                            id="fotoPerfilPrincipal"
+                            class="d-none"
+                        >
+
+                        <div
+                            class="perfil-avatar-sin-foto"
+                            id="iconoPerfilPrincipal"
+                        >
+
+                            <i class="bi bi-person-fill"></i>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- NOMBRE -->
+
+                <div class="perfil-identidad">
+
+                    <h3>
+                        {{ usuario.get_full_name|default:usuario.username }}
+                    </h3>
+
+
+                    <span
+                        class="
+                            perfil-badge-rol
+
+                            {% if tipo_perfil == 'administrador' %}
+                                perfil-badge-admin
+                            {% elif tipo_perfil == 'apicultor' %}
+                                perfil-badge-apicultor
+                            {% endif %}
+                        "
+                    >
+
+                        {% if tipo_perfil == "administrador" %}
+
+                            <i class="bi bi-shield-lock-fill"></i>
+
+                        {% elif tipo_perfil == "apicultor" %}
+
+                            <i class="bi bi-person-badge-fill"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-person-fill"></i>
+
+                        {% endif %}
+
+
+                        {{ rol }}
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     INFORMACIÓN DE CUENTA
+                ========================================== -->
+
+                <div class="perfil-resumen-cuenta">
+
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-person-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Usuario
+                            </span>
+
+                            <strong>
+                                {{ usuario.username }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-envelope-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Correo
+                            </span>
+
+                            <strong>
+                                {{ usuario.email|default:"Sin registrar" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-circle-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Estado
+                            </span>
+
+                            {% if usuario.is_active %}
+
+                                <strong class="perfil-estado-activo">
+
+                                    Activo
+
+                                </strong>
+
+                            {% else %}
+
+                                <strong class="perfil-estado-inactivo">
+
+                                    Inactivo
+
+                                </strong>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-clock-history"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Último acceso
+                            </span>
+
+                            <strong>
+
+                                {% if usuario.last_login %}
+
+                                    {{ usuario.last_login|date:"d/m/Y H:i" }}
+
+                                {% else %}
+
+                                    Nunca
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-calendar-check-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Cuenta creada
+                            </span>
+
+                            <strong>
+                                {{ usuario.date_joined|date:"d/m/Y" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- =============================================
+                 INFORMACIÓN ESPECÍFICA DEL ROL
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-rol">
+
+                <div class="perfil-card-titulo">
+
+                    <div class="perfil-card-icono">
+
+                        {% if tipo_perfil == "administrador" %}
+
+                            <i class="bi bi-shield-check"></i>
+
+                        {% elif tipo_perfil == "apicultor" %}
+
+                            <i class="bi bi-person-vcard-fill"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <h5>
+                            Información del rol
+                        </h5>
+
+                        <p>
+                            Datos asociados a tu perfil.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     ADMINISTRADOR
+                ========================================== -->
+
+                {% if tipo_perfil == "administrador" %}
+
+                    <div class="perfil-dato-rol">
+
+                        <span>
+                            Nivel de acceso
+                        </span>
+
+                        <strong>
+                            {{ datos_extra.nivel_acceso|default:"Sin registrar" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="perfil-dato-rol">
+
+                        <span>
+                            Rol
+                        </span>
+
+                        <strong>
+                            {{ rol }}
+                        </strong>
+
+                    </div>
+
+
+
+                <!-- =========================================
+                     APICULTOR
+                ========================================== -->
+
+                {% elif tipo_perfil == "apicultor" %}
+
+                    <div class="perfil-dato-rol">
+
+                        <span>
+                            Identificación
+                        </span>
+
+                        <strong>
+                            {{ datos_extra.identificacion|default:"Sin registrar" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="perfil-dato-rol">
+
+                        <span>
+                            Zona de trabajo
+                        </span>
+
+                        <strong>
+                            {{ datos_extra.zona_trabajo|default:"Sin registrar" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="perfil-dato-rol">
+
+                        <span>
+                            Experiencia
+                        </span>
+
+                        <strong>
+
+                            {% if datos_extra.experiencia != None %}
+
+                                {{ datos_extra.experiencia }}
+
+                                {% if datos_extra.experiencia == 1 %}
+                                    año
+                                {% else %}
+                                    años
+                                {% endif %}
+
+                            {% else %}
+
+                                Sin registrar
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="perfil-dato-rol">
+
+                        <span>
+                            Rol
+                        </span>
+
+                        <strong>
+                            {{ rol }}
+                        </strong>
+
+                    </div>
+
+
+                {% else %}
+
+                    <div class="perfil-sin-informacion">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        No hay información adicional
+                        asociada a este usuario.
+
+                    </div>
+
+                {% endif %}
+
+            </article>
+
+        </aside>
+
+
+
+        <!-- =================================================
+             COLUMNA DERECHA
+        ================================================== -->
+
+        <div class="perfil-contenido-principal">
+
+
+            <!-- =============================================
+                 INFORMACIÓN PERSONAL
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-formulario">
+
+
+                <!-- ENCABEZADO -->
+
+                <div class="perfil-card-header">
+
+                    <div class="perfil-card-titulo">
+
+                        <div class="perfil-card-icono">
+
+                            <i class="bi bi-person-lines-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h4>
+                                Información personal
+                            </h4>
+
+                            <p>
+                                Actualiza tus datos personales y
+                                tu fotografía de perfil.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FORMULARIO DATOS PERSONALES
+                ========================================== -->
+
+                <form
+                    method="POST"
+                    action="{% url 'actualizar_mi_perfil' %}"
+                    enctype="multipart/form-data"
+                    id="formActualizarPerfil"
+                    novalidate
+                >
+
+                    {% csrf_token %}
+
+
+                    <input
+                        type="hidden"
+                        name="eliminar_foto"
+                        id="eliminarFotoPerfil"
+                        value="0"
+                    >
+
+
+
+                    <!-- =====================================
+                         FOTO
+                    ====================================== -->
+
+                    <div class="perfil-foto-edicion">
+
+
+                        <div class="perfil-foto-preview">
+
+                            {% if foto %}
+
+                                <img
+                                    src="{{ foto }}"
+                                    alt="Foto de perfil"
+                                    id="imagenPreviewPerfil"
+                                >
+
+                                <div
+                                    class="perfil-preview-icono d-none"
+                                    id="iconoPreviewPerfil"
+                                >
+
+                                    <i class="bi bi-person-fill"></i>
+
+                                </div>
+
+                            {% else %}
+
+                                <img
+                                    src=""
+                                    alt="Vista previa"
+                                    id="imagenPreviewPerfil"
+                                    class="d-none"
+                                >
+
+                                <div
+                                    class="perfil-preview-icono"
+                                    id="iconoPreviewPerfil"
+                                >
+
+                                    <i class="bi bi-person-fill"></i>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <div class="perfil-foto-controles">
+
+                            <h6>
+                                Foto de perfil
+                            </h6>
+
+
+                            <p>
+                                JPG, PNG o WEBP.
+                                Máximo 5 MB.
+                            </p>
+
+
+                            <div class="perfil-foto-botones">
+
+                                <label
+                                    for="fotoperfil"
+                                    class="btn btn-outline-success"
+                                >
+
+                                    <i class="bi bi-camera-fill me-2"></i>
+
+                                    Cambiar foto
+
+                                </label>
+
+
+                                <input
+                                    type="file"
+                                    class="d-none"
+                                    id="fotoperfil"
+                                    name="fotoperfil"
+                                    accept="image/jpeg,image/png,image/webp"
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn
+                                        btn-outline-danger
+                                        {% if not foto %}
+                                            d-none
+                                        {% endif %}
+                                    "
+                                    id="btnQuitarFotoPerfil"
+                                >
+
+                                    <i class="bi bi-trash3-fill me-2"></i>
+
+                                    Quitar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <hr class="perfil-separador">
+
+
+
+                    <!-- =====================================
+                         CAMPOS
+                    ====================================== -->
+
+                    <div class="row g-4">
+
+
+                        <!-- NOMBRES -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="nombresPerfil"
+                                class="form-label"
+                            >
+
+                                Nombres
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="nombresPerfil"
+                                name="nombres"
+                                value="{{ usuario.first_name }}"
+                                maxlength="150"
+                                autocomplete="given-name"
+                                required
+                            >
+
+                            <div class="invalid-feedback">
+                                Ingresa tus nombres.
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- APELLIDOS -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="apellidosPerfil"
+                                class="form-label"
+                            >
+
+                                Apellidos
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="apellidosPerfil"
+                                name="apellidos"
+                                value="{{ usuario.last_name }}"
+                                maxlength="150"
+                                autocomplete="family-name"
+                                required
+                            >
+
+                            <div class="invalid-feedback">
+                                Ingresa tus apellidos.
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- CORREO -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="correoPerfil"
+                                class="form-label"
+                            >
+
+                                Correo electrónico
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-envelope"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="correoPerfil"
+                                    name="correo"
+                                    value="{{ usuario.email }}"
+                                    maxlength="254"
+                                    autocomplete="email"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- TELÉFONO -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="telefonoPerfil"
+                                class="form-label"
+                            >
+
+                                {% if tipo_perfil == "administrador" %}
+                                    Celular
+                                {% else %}
+                                    Teléfono
+                                {% endif %}
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-telephone"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="tel"
+                                    class="form-control"
+                                    id="telefonoPerfil"
+                                    name="telefono"
+                                    value="{{ telefono }}"
+                                    maxlength="20"
+                                    inputmode="numeric"
+                                    autocomplete="tel"
+                                    placeholder="Ejemplo: 3101234567"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- USERNAME -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="usernamePerfil"
+                                class="form-label"
+                            >
+
+                                Nombre de usuario
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-person"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="usernamePerfil"
+                                    value="{{ usuario.username }}"
+                                    disabled
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <small class="perfil-ayuda">
+                                El nombre de usuario no se modifica
+                                desde esta sección.
+                            </small>
+
+                        </div>
+
+
+
+                        <!-- ROL -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="rolPerfil"
+                                class="form-label"
+                            >
+
+                                Rol
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-shield-check"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="rolPerfil"
+                                    value="{{ rol }}"
+                                    disabled
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <small class="perfil-ayuda">
+                                Los permisos del rol son administrados
+                                desde Usuarios y Roles.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         BOTÓN GUARDAR
+                    ====================================== -->
+
+                    <div class="perfil-form-footer">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                            id="btnGuardarPerfil"
+                        >
+
+                            <i class="bi bi-floppy-fill me-2"></i>
+
+                            Guardar cambios
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </article>
+
+
+
+            <!-- =================================================
+                 SEGURIDAD / CONTRASEÑA
+            ================================================== -->
+
+            <article class="perfil-card perfil-card-seguridad">
+
+
+                <!-- ENCABEZADO -->
+
+                <div class="perfil-card-header">
+
+                    <div class="perfil-card-titulo">
+
+                        <div class="perfil-card-icono">
+
+                            <i class="bi bi-shield-lock-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h4>
+                                Seguridad
+                            </h4>
+
+                            <p>
+                                Cambia la contraseña de acceso
+                                a tu cuenta.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     AVISO
+                ========================================== -->
+
+                <div class="perfil-aviso-seguridad">
+
+                    <i class="bi bi-info-circle-fill"></i>
+
+                    <p>
+                        Para cambiar tu contraseña debes ingresar
+                        primero la contraseña que utilizas actualmente.
+                    </p>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FORMULARIO CONTRASEÑA
+                ========================================== -->
+
+                <form
+                    method="POST"
+                    action="{% url 'cambiar_password_perfil' %}"
+                    id="formCambiarPasswordPerfil"
+                    novalidate
+                >
+
+                    {% csrf_token %}
+
+
+                    <div class="row g-4">
+
+
+                        <!-- CONTRASEÑA ACTUAL -->
+
+                        <div class="col-12">
+
+                            <label
+                                for="passwordActualPerfil"
+                                class="form-label"
+                            >
+
+                                Contraseña actual
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-key-fill"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="passwordActualPerfil"
+                                    name="password_actual"
+                                    autocomplete="current-password"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn
+                                        btn-outline-secondary
+                                        btn-password-perfil
+                                    "
+                                    data-password-target="passwordActualPerfil"
+                                    aria-label="Mostrar contraseña"
+                                    title="Mostrar contraseña"
+                                >
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- NUEVA CONTRASEÑA -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="passwordNuevoPerfil"
+                                class="form-label"
+                            >
+
+                                Nueva contraseña
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="passwordNuevoPerfil"
+                                    name="password_nuevo"
+                                    minlength="8"
+                                    autocomplete="new-password"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn
+                                        btn-outline-secondary
+                                        btn-password-perfil
+                                    "
+                                    data-password-target="passwordNuevoPerfil"
+                                    aria-label="Mostrar contraseña"
+                                    title="Mostrar contraseña"
+                                >
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </button>
+
+                            </div>
+
+
+                            <small class="perfil-ayuda">
+                                Mínimo 8 caracteres.
+                            </small>
+
+                        </div>
+
+
+
+                        <!-- CONFIRMAR CONTRASEÑA -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="confirmarPasswordPerfil"
+                                class="form-label"
+                            >
+
+                                Confirmar contraseña
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                </span>
+
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="confirmarPasswordPerfil"
+                                    name="confirmar_password"
+                                    minlength="8"
+                                    autocomplete="new-password"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn
+                                        btn-outline-secondary
+                                        btn-password-perfil
+                                    "
+                                    data-password-target="confirmarPasswordPerfil"
+                                    aria-label="Mostrar contraseña"
+                                    title="Mostrar contraseña"
+                                >
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </button>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    perfil-password-error
+                                    d-none
+                                "
+                                id="mensajePasswordPerfil"
+                            >
+
+                                <i class="bi bi-exclamation-circle-fill"></i>
+
+                                Las contraseñas no coinciden.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         INDICADOR DE CONTRASEÑA
+                    ====================================== -->
+
+                    <div
+                        class="perfil-password-validacion d-none"
+                        id="estadoPasswordPerfil"
+                    >
+
+                        <div class="perfil-password-regla">
+
+                            <i
+                                class="bi bi-circle"
+                                id="iconoLongitudPassword"
+                            ></i>
+
+                            <span>
+                                Mínimo 8 caracteres
+                            </span>
+
+                        </div>
+
+
+                        <div class="perfil-password-regla">
+
+                            <i
+                                class="bi bi-circle"
+                                id="iconoCoincidenciaPassword"
+                            ></i>
+
+                            <span>
+                                Las contraseñas coinciden
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         BOTÓN
+                    ====================================== -->
+
+                    <div class="perfil-form-footer">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                            id="btnCambiarPasswordPerfil"
+                        >
+
+                            <i class="bi bi-shield-lock-fill me-2"></i>
+
+                            Actualizar contraseña
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=2"
+></script>
+
+{% endblock %}

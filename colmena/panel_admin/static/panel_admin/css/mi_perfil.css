@@ -1,0 +1,1004 @@
+/* =========================================================
+   MI PERFIL - CONTENEDOR GENERAL
+========================================================= */
+
+.pagina-mi-perfil {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.perfil-encabezado {
+    margin-bottom: 28px;
+}
+
+
+.perfil-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 10px;
+
+    color: #5f9781;
+
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+
+.perfil-encabezado h2 {
+    margin: 0 0 8px;
+
+    color: #163324;
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+
+.perfil-encabezado p {
+    max-width: 700px;
+
+    margin: 0;
+
+    color: #6b7f73;
+
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   GRID PRINCIPAL
+========================================================= */
+
+.perfil-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(270px, 330px)
+        minmax(0, 1fr);
+
+    gap: 24px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   COLUMNA LATERAL
+========================================================= */
+
+.perfil-columna-lateral {
+    display: flex;
+    flex-direction: column;
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   COLUMNA PRINCIPAL
+========================================================= */
+
+.perfil-contenido-principal {
+    display: flex;
+    flex-direction: column;
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   TARJETAS
+========================================================= */
+
+.perfil-card {
+    background: #ffffff;
+
+    border: 1px solid #e3eee7;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 8px 28px rgba(33, 79, 59, 0.06);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TARJETA IDENTIDAD
+========================================================= */
+
+.perfil-card-identidad {
+    padding: 30px 24px;
+}
+
+
+/* =========================================================
+   AVATAR PRINCIPAL
+========================================================= */
+
+.perfil-avatar-principal {
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto 20px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background: #f4faf6;
+
+    border: 4px solid #c0f1ca;
+
+    box-shadow:
+        0 7px 18px rgba(33, 79, 59, 0.10);
+}
+
+
+.perfil-avatar-principal img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.perfil-avatar-sin-foto {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #214f3b;
+
+    font-size: 48px;
+}
+
+
+/* =========================================================
+   IDENTIDAD
+========================================================= */
+
+.perfil-identidad {
+    text-align: center;
+}
+
+
+.perfil-identidad h3 {
+    margin: 0 0 10px;
+
+    color: #163324;
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   BADGE DE ROL
+========================================================= */
+
+.perfil-badge-rol {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 12px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.perfil-badge-admin {
+    background: #e7f4ec;
+
+    color: #214f3b;
+}
+
+
+.perfil-badge-apicultor {
+    background: #fff7d9;
+
+    color: #80680a;
+}
+
+
+/* =========================================================
+   RESUMEN DE CUENTA
+========================================================= */
+
+.perfil-resumen-cuenta {
+    margin-top: 26px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e4eee8;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+.perfil-resumen-item {
+    display: grid;
+
+    grid-template-columns:
+        36px
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.perfil-resumen-icono {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #edf7f0;
+
+    color: #214f3b;
+
+    font-size: 16px;
+}
+
+
+.perfil-resumen-item > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.perfil-resumen-item span {
+    color: #7b8b82;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.perfil-resumen-item strong {
+    overflow: hidden;
+
+    color: #163324;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.perfil-estado-activo {
+    color: #2e7d57 !important;
+}
+
+
+.perfil-estado-inactivo {
+    color: #ba3c3c !important;
+}
+
+
+/* =========================================================
+   TARJETA DE ROL
+========================================================= */
+
+.perfil-card-rol {
+    padding: 24px;
+}
+
+
+.perfil-dato-rol {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #edf2ef;
+}
+
+
+.perfil-dato-rol:last-child {
+    border-bottom: 0;
+}
+
+
+.perfil-dato-rol span {
+    color: #77877d;
+
+    font-size: 13px;
+}
+
+
+.perfil-dato-rol strong {
+    color: #163324;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   SIN INFORMACIÓN
+========================================================= */
+
+.perfil-sin-informacion {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    background: #f5f8f6;
+
+    color: #6f8076;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ENCABEZADOS DE TARJETAS
+========================================================= */
+
+.perfil-card-formulario,
+.perfil-card-seguridad {
+    padding: 28px;
+}
+
+
+.perfil-card-header {
+    margin-bottom: 24px;
+}
+
+
+.perfil-card-titulo {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 13px;
+}
+
+
+.perfil-card-icono {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #eaf6ee;
+
+    color: #214f3b;
+
+    font-size: 19px;
+}
+
+
+.perfil-card-titulo h4,
+.perfil-card-titulo h5 {
+    margin: 0 0 4px;
+
+    color: #163324;
+
+    font-weight: 700;
+}
+
+
+.perfil-card-titulo h4 {
+    font-size: 19px;
+}
+
+
+.perfil-card-titulo h5 {
+    font-size: 16px;
+}
+
+
+.perfil-card-titulo p {
+    margin: 0;
+
+    color: #7a8c81;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FOTO DE EDICIÓN
+========================================================= */
+
+.perfil-foto-edicion {
+    display: flex;
+    align-items: center;
+
+    gap: 22px;
+
+    margin-bottom: 8px;
+}
+
+
+.perfil-foto-preview {
+    width: 100px;
+    height: 100px;
+
+    min-width: 100px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background: #f5faf7;
+
+    border: 2px dashed #b9d3c3;
+}
+
+
+.perfil-foto-preview img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.perfil-preview-icono {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #5f9781;
+
+    font-size: 34px;
+}
+
+
+.perfil-foto-controles {
+    min-width: 0;
+}
+
+
+.perfil-foto-controles h6 {
+    margin: 0 0 5px;
+
+    color: #163324;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.perfil-foto-controles p {
+    margin: 0 0 12px;
+
+    color: #809088;
+
+    font-size: 12px;
+}
+
+
+.perfil-foto-botones {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   SEPARADOR
+========================================================= */
+
+.perfil-separador {
+    margin: 24px 0;
+
+    border-color: #e1ebe5;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   CAMPOS DEL FORMULARIO
+========================================================= */
+
+.pagina-mi-perfil .form-label {
+    margin-bottom: 7px;
+
+    color: #214f3b;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.pagina-mi-perfil .form-control,
+.pagina-mi-perfil .form-select,
+.pagina-mi-perfil .input-group-text {
+    min-height: 46px;
+
+    border-color: #cfe0d5;
+}
+
+
+.pagina-mi-perfil .form-control,
+.pagina-mi-perfil .form-select {
+    border-radius: 11px;
+
+    color: #163324;
+
+    font-size: 14px;
+}
+
+
+.pagina-mi-perfil .input-group .form-control {
+    border-radius: 0;
+}
+
+
+.pagina-mi-perfil .input-group-text {
+    border-radius: 11px 0 0 11px;
+
+    background: #f4f9f6;
+
+    color: #5f9781;
+}
+
+
+.pagina-mi-perfil .input-group > .btn {
+    border-radius: 0 11px 11px 0;
+}
+
+
+.pagina-mi-perfil .form-control:focus,
+.pagina-mi-perfil .form-select:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.20rem
+        rgba(95, 151, 129, 0.14);
+}
+
+
+.pagina-mi-perfil .form-control:disabled,
+.pagina-mi-perfil .form-control[readonly] {
+    background: #f5f7f6;
+
+    color: #6e7c74;
+}
+
+
+/* =========================================================
+   TEXTO DE AYUDA
+========================================================= */
+
+.perfil-ayuda {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #84938b;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   FOOTER DEL FORMULARIO
+========================================================= */
+
+.perfil-form-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 28px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5eee8;
+}
+
+
+.perfil-form-footer .btn {
+    min-width: 180px;
+
+    min-height: 44px;
+
+    border-radius: 11px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   AVISO DE SEGURIDAD
+========================================================= */
+
+.perfil-aviso-seguridad {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin-bottom: 22px;
+
+    padding: 14px 16px;
+
+    border-radius: 13px;
+
+    background: #f5faf7;
+
+    border: 1px solid #dce9e0;
+
+    color: #53675a;
+}
+
+
+.perfil-aviso-seguridad > i {
+    margin-top: 2px;
+
+    color: #5f9781;
+}
+
+
+.perfil-aviso-seguridad p {
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   ERROR CONTRASEÑA
+========================================================= */
+
+.perfil-password-error {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 8px;
+
+    color: #c0392b;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   VALIDACIÓN DE CONTRASEÑA
+========================================================= */
+
+.perfil-password-validacion {
+    margin-top: 18px;
+
+    padding: 14px 16px;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 18px;
+
+    border-radius: 12px;
+
+    background: #f7faf8;
+
+    border: 1px solid #e2ebe5;
+}
+
+
+.perfil-password-regla {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: #78877f;
+
+    font-size: 12px;
+}
+
+
+.perfil-password-regla i {
+    font-size: 10px;
+}
+
+
+.perfil-password-regla.regla-correcta {
+    color: #31835d;
+
+    font-weight: 600;
+}
+
+
+.perfil-password-regla.regla-error {
+    color: #c44848;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.pagina-mi-perfil .btn-success {
+    background: #5f9781;
+
+    border-color: #5f9781;
+}
+
+
+.pagina-mi-perfil .btn-success:hover,
+.pagina-mi-perfil .btn-success:focus {
+    background: #214f3b;
+
+    border-color: #214f3b;
+}
+
+
+.pagina-mi-perfil .btn-outline-success {
+    color: #407b64;
+
+    border-color: #7cac99;
+}
+
+
+.pagina-mi-perfil .btn-outline-success:hover {
+    background: #5f9781;
+
+    border-color: #5f9781;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .perfil-grid {
+        grid-template-columns:
+            minmax(240px, 290px)
+            minmax(0, 1fr);
+    }
+
+
+    .perfil-card-formulario,
+    .perfil-card-seguridad {
+        padding: 24px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET PEQUEÑA
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .perfil-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .perfil-columna-lateral {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 20px;
+    }
+
+
+    .perfil-card-identidad,
+    .perfil-card-rol {
+        height: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .pagina-mi-perfil {
+        padding: 0;
+    }
+
+
+    .perfil-encabezado {
+        margin-bottom: 20px;
+    }
+
+
+    .perfil-encabezado h2 {
+        font-size: 24px;
+    }
+
+
+    .perfil-encabezado p {
+        font-size: 13px;
+    }
+
+
+    .perfil-columna-lateral {
+        display: flex;
+
+        flex-direction: column;
+    }
+
+
+    .perfil-card {
+        border-radius: 16px;
+    }
+
+
+    .perfil-card-identidad,
+    .perfil-card-rol,
+    .perfil-card-formulario,
+    .perfil-card-seguridad {
+        padding: 20px;
+    }
+
+
+    .perfil-avatar-principal {
+        width: 110px;
+        height: 110px;
+    }
+
+
+    .perfil-foto-edicion {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .perfil-foto-preview {
+        width: 90px;
+        height: 90px;
+
+        min-width: 90px;
+    }
+
+
+    .perfil-form-footer {
+        justify-content: stretch;
+    }
+
+
+    .perfil-form-footer .btn {
+        width: 100%;
+    }
+
+
+    .perfil-password-validacion {
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .perfil-card-identidad,
+    .perfil-card-rol,
+    .perfil-card-formulario,
+    .perfil-card-seguridad {
+        padding: 17px;
+    }
+
+
+    .perfil-foto-botones {
+        width: 100%;
+    }
+
+
+    .perfil-foto-botones .btn,
+    .perfil-foto-botones label {
+        width: 100%;
+
+        text-align: center;
+    }
+
+
+    .perfil-dato-rol {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 4px;
+    }
+
+
+    .perfil-dato-rol strong {
+        text-align: left;
+    }
+
+}
