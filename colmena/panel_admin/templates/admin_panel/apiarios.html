@@ -27,11 +27,12 @@
             </button>
         </div>
 
-        <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarApiario">
-            <i class="bi bi-plus-circle me-2"></i>
-            Agregar
-        </button>
-
+        {% if "ag" in permisos_usuario %}
+            <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarApiario">
+                <i class="bi bi-plus-circle me-2"></i>
+                Agregar
+            </button>
+        {% endif %}
     </div>
 </div>
 
@@ -530,12 +531,14 @@
             </div>
 
             <div class="acciones mt-3">
+                
                 <button type="button" class="btn-accion btn-ver"
                         data-bs-toggle="modal"
                         data-bs-target="#modalDetalleApiario{{ apiario.id_apiario }}">
                     <i class="bi bi-eye"></i>
                 </button>
 
+                {% if "ag" in permisos_usuario %}
                 <button type="button" class="btn-accion btn-editar"
                         data-bs-toggle="modal"
                         data-bs-target="#modalEditarApiario{{ apiario.id_apiario }}">
@@ -547,6 +550,8 @@
                         data-bs-target="#modalEliminarApiario{{ apiario.id_apiario }}">
                     <i class="bi bi-trash"></i>
                 </button>
+                {% endif %}
+                
             </div>
 
         </div>

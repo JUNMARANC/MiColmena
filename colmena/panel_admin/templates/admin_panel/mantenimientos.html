@@ -26,12 +26,12 @@
                 <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
         </div>
-
-        <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
-            <i class="bi bi-plus-circle me-2"></i>
-            Agregar
-        </button>
-
+        {% if "mr" in permisos_usuario %}
+            <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
+                <i class="bi bi-plus-circle me-2"></i>
+                Agregar
+            </button>
+        {% endif %}
     </div>
 </div>
 
@@ -566,13 +566,15 @@
                     <i class="bi bi-eye"></i>
                 </button>
 
-                <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
+                {% if "mr" in permisos_usuario %}
+                    <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
 
-                <button type="button" class="btn-accion btn-borrar" data-bs-toggle="modal" data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                    <i class="bi bi-trash"></i>
-                </button>
+                    <button type="button" class="btn-accion btn-borrar" data-bs-toggle="modal" data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                {% endif %}
             </div>
 
         </div>

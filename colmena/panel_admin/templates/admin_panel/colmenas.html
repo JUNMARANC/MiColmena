@@ -27,11 +27,12 @@
             </button>
         </div>
 
+        {% if "cv" in permisos_usuario %}
         <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
             <i class="bi bi-plus-circle me-2"></i>
             Agregar
         </button>
-
+        {% endif %}
     </div>
 </div>
 
@@ -614,18 +615,20 @@
                         data-bs-target="#modalDetalleColmena{{ colmena.id_colmena }}">
                     <i class="bi bi-eye"></i>
                 </button>
+                
+                {% if "cg" in permisos_usuario %}
+                    <button type="button" class="btn-accion btn-editar"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEditarColmena{{ colmena.id_colmena }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
 
-                <button type="button" class="btn-accion btn-editar"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalEditarColmena{{ colmena.id_colmena }}">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-
-                <button type="button" class="btn-accion btn-borrar"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalEliminarColmena{{ colmena.id_colmena }}">
-                    <i class="bi bi-trash"></i>
-                </button>
+                    <button type="button" class="btn-accion btn-borrar"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEliminarColmena{{ colmena.id_colmena }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                {% endif %}
             </div>
 
         </div>

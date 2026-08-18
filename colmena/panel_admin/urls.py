@@ -56,6 +56,11 @@ urlpatterns = [
 
     # Usuarios
     path('usuarios-roles/', views.usuarios_roles_admin, name='usuarios_roles_admin'),
+    path('usuarios-roles/permisos/guardar/',views.guardar_permisos_roles,name='guardar_permisos_roles'),
+    path("usuarios-roles/administrador/crear/",views.crear_administrador,name="crear_administrador",),
+    path("usuarios-roles/administrador/editar/<int:id_usuario>/",views.editar_administrador,name="editar_administrador",),
+    path("usuarios-roles/administrador/estado/<int:id_usuario>/",views.cambiar_estado_administrador,name="cambiar_estado_administrador",),
+    path("usuarios-roles/administrador/eliminar/<int:id_usuario>/",views.eliminar_administrador,name="eliminar_administrador",),
 
     # Configuración
     path('configuracion/', views.configuracion_admin, name='configuracion_admin'),
