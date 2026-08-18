@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from functools import wraps
+from django.contrib.auth import update_session_auth_hash
 import traceback
 import json
 from calendar import monthrange
@@ -5693,4 +5694,757 @@ def _redirigir_usuarios():
 
     return redirect(
         f"{url}?tab=usuarios"
+    )
+
+
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_admin"
+)
+def mi_perfil(request):
+
+    usuario = request.user
+
+
+    # ========================================================
+    # DATOS POR DEFECTO
+    # ========================================================
+
+    perfil = None
+
+    tipo_perfil = None
+
+    rol = "Sin rol"
+
+    telefono = ""
+
+    foto = ""
+
+    datos_extra = {}
+
+
+    # ========================================================
+    # BUSCAR ADMINISTRADOR
+    # ========================================================
+
+    administrador = (
+        Administrador.objects
+        .select_related(
+            "id_rol"
+        )
+        .filter(
+            user=usuario
+        )
+        .first()
+    )
+
+
+    # ========================================================
+    # BUSCAR APICULTOR
+    # ========================================================
+
+    apicultor = (
+        Apicultor.objects
+        .select_related(
+            "id_rol"
+        )
+        .filter(
+            user=usuario
+        )
+        .first()
+    )
+
+
+    # ========================================================
+    # ADMINISTRADOR
+    # ========================================================
+
+    if administrador:
+
+        perfil = administrador
+
+        tipo_perfil = (
+            "administrador"
+        )
+
+        telefono = (
+            administrador.celular
+            or ""
+        )
+
+
+        if administrador.id_rol:
+
+            rol = (
+                administrador.id_rol.nombrerol
+                or "Administrador"
+            )
+
+        else:
+
+            rol = (
+                "Administrador"
+            )
+
+
+        if administrador.fotoperfil:
+
+            try:
+
+                foto = (
+                    administrador.fotoperfil.url
+                )
+
+            except ValueError:
+
+                foto = ""
+
+
+        datos_extra = {
+
+            "nivel_acceso":
+                administrador.nivelacceso
+                or "Sin registrar",
+
+        }
+
+
+    # ========================================================
+    # APICULTOR
+    # ========================================================
+
+    elif apicultor:
+
+        perfil = apicultor
+
+        tipo_perfil = (
+            "apicultor"
+        )
+
+        telefono = (
+            apicultor.telefono
+            or ""
+        )
+
+
+        if apicultor.id_rol:
+
+            rol = (
+                apicultor.id_rol.nombrerol
+                or "Apicultor"
+            )
+
+        else:
+
+            rol = (
+                "Apicultor"
+            )
+
+
+        if apicultor.fotoperfil:
+
+            try:
+
+                foto = (
+                    apicultor.fotoperfil.url
+                )
+
+            except ValueError:
+
+                foto = ""
+
+
+        datos_extra = {
+
+            "identificacion":
+                apicultor.identificacion
+                or "",
+
+            "zona_trabajo":
+                apicultor.zona_trabajo
+                or "",
+
+            "experiencia":
+                apicultor.experienciaanios,
+
+        }
+
+
+    # ========================================================
+    # SUPERUSUARIO SIN PERFIL
+    # ========================================================
+
+    elif usuario.is_superuser:
+
+        tipo_perfil = (
+            "administrador"
+        )
+
+        rol = (
+            "Administrador"
+        )
+
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "usuario":
+            usuario,
+
+        "perfil":
+            perfil,
+
+        "tipo_perfil":
+            tipo_perfil,
+
+        "rol":
+            rol,
+
+        "telefono":
+            telefono,
+
+        "foto":
+            foto,
+
+        "datos_extra":
+            datos_extra,
+
+    }
+
+
+    return render(
+        request,
+        "admin_panel/mi_perfil.html",
+        contexto
+    )
+
+
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_admin"
+)
+@require_POST
+def actualizar_mi_perfil(request):
+
+    usuario = request.user
+
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    nombres = (
+        request.POST.get(
+            "nombres",
+            ""
+        )
+        .strip()
+    )
+
+
+    apellidos = (
+        request.POST.get(
+            "apellidos",
+            ""
+        )
+        .strip()
+    )
+
+
+    correo = (
+        request.POST.get(
+            "correo",
+            ""
+        )
+        .strip()
+        .lower()
+    )
+
+
+    telefono = (
+        request.POST.get(
+            "telefono",
+            ""
+        )
+        .strip()
+    )
+
+
+    foto = request.FILES.get(
+        "fotoperfil"
+    )
+
+
+    eliminar_foto = (
+        request.POST.get(
+            "eliminar_foto",
+            "0"
+        )
+        == "1"
+    )
+
+
+    # ========================================================
+    # VALIDACIONES
+    # ========================================================
+
+    if not nombres:
+
+        messages.error(
+            request,
+            "El nombre es obligatorio."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    if not apellidos:
+
+        messages.error(
+            request,
+            "El apellido es obligatorio."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    if not correo:
+
+        messages.error(
+            request,
+            "El correo electrónico es obligatorio."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    if (
+        telefono
+        and not telefono.isdigit()
+    ):
+
+        messages.error(
+            request,
+            "El teléfono solo puede contener números."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # CORREO DUPLICADO
+    # ========================================================
+
+    correo_existe = (
+        User.objects
+        .filter(
+            email__iexact=correo
+        )
+        .exclude(
+            pk=usuario.pk
+        )
+        .exists()
+    )
+
+
+    if correo_existe:
+
+        messages.error(
+            request,
+            "Este correo electrónico ya pertenece a otro usuario."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # VALIDAR FOTO
+    # ========================================================
+
+    if foto:
+
+        tipos_permitidos = {
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+        }
+
+
+        if (
+            foto.content_type
+            not in tipos_permitidos
+        ):
+
+            messages.error(
+                request,
+                "La fotografía debe estar en formato JPG, PNG o WEBP."
+            )
+
+            return redirect(
+                "mi_perfil"
+            )
+
+
+        tamano_maximo = (
+            5 * 1024 * 1024
+        )
+
+
+        if (
+            foto.size >
+            tamano_maximo
+        ):
+
+            messages.error(
+                request,
+                "La fotografía no puede superar los 5 MB."
+            )
+
+            return redirect(
+                "mi_perfil"
+            )
+
+
+    # ========================================================
+    # BUSCAR PERFIL
+    # ========================================================
+
+    administrador = (
+        Administrador.objects
+        .filter(
+            user=usuario
+        )
+        .first()
+    )
+
+
+    apicultor = (
+        Apicultor.objects
+        .filter(
+            user=usuario
+        )
+        .first()
+    )
+
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            # ------------------------------------------------
+            # USER DJANGO
+            # ------------------------------------------------
+
+            usuario.first_name = (
+                nombres
+            )
+
+            usuario.last_name = (
+                apellidos
+            )
+
+            usuario.email = (
+                correo
+            )
+
+            usuario.save(
+                update_fields=[
+                    "first_name",
+                    "last_name",
+                    "email",
+                ]
+            )
+
+
+            # =================================================
+            # ADMINISTRADOR
+            # =================================================
+
+            if administrador:
+
+                administrador.celular = (
+                    telefono
+                    or None
+                )
+
+
+                if eliminar_foto:
+
+                    if administrador.fotoperfil:
+
+                        administrador.fotoperfil.delete(
+                            save=False
+                        )
+
+                    administrador.fotoperfil = (
+                        None
+                    )
+
+
+                if foto:
+
+                    if administrador.fotoperfil:
+
+                        administrador.fotoperfil.delete(
+                            save=False
+                        )
+
+                    administrador.fotoperfil = (
+                        foto
+                    )
+
+
+                administrador.save()
+
+
+            # =================================================
+            # APICULTOR
+            # =================================================
+
+            elif apicultor:
+
+                apicultor.telefono = (
+                    telefono
+                    or None
+                )
+
+
+                if eliminar_foto:
+
+                    if apicultor.fotoperfil:
+
+                        apicultor.fotoperfil.delete(
+                            save=False
+                        )
+
+                    apicultor.fotoperfil = (
+                        None
+                    )
+
+
+                if foto:
+
+                    if apicultor.fotoperfil:
+
+                        apicultor.fotoperfil.delete(
+                            save=False
+                        )
+
+                    apicultor.fotoperfil = (
+                        foto
+                    )
+
+
+                apicultor.save()
+
+
+        messages.success(
+            request,
+            "Tu perfil se actualizó correctamente."
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR ACTUALIZANDO PERFIL:",
+            error
+        )
+
+        messages.error(
+            request,
+            "No fue posible actualizar tu perfil."
+        )
+
+
+    return redirect(
+        "mi_perfil"
+    )
+
+
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_admin"
+)
+@require_POST
+def cambiar_password_perfil(request):
+
+    usuario = request.user
+
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    password_actual = (
+        request.POST.get(
+            "password_actual",
+            ""
+        )
+    )
+
+
+    password_nuevo = (
+        request.POST.get(
+            "password_nuevo",
+            ""
+        )
+    )
+
+
+    confirmar_password = (
+        request.POST.get(
+            "confirmar_password",
+            ""
+        )
+    )
+
+
+    # ========================================================
+    # CAMPOS OBLIGATORIOS
+    # ========================================================
+
+    if (
+        not password_actual
+        or not password_nuevo
+        or not confirmar_password
+    ):
+
+        messages.error(
+            request,
+            "Debes completar todos los campos de contraseña."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # VALIDAR CONTRASEÑA ACTUAL
+    # ========================================================
+
+    if not usuario.check_password(
+        password_actual
+    ):
+
+        messages.error(
+            request,
+            "La contraseña actual no es correcta."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # LONGITUD
+    # ========================================================
+
+    if (
+        len(password_nuevo)
+        < 8
+    ):
+
+        messages.error(
+            request,
+            "La nueva contraseña debe tener mínimo 8 caracteres."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # COINCIDENCIA
+    # ========================================================
+
+    if (
+        password_nuevo
+        != confirmar_password
+    ):
+
+        messages.error(
+            request,
+            "Las nuevas contraseñas no coinciden."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # EVITAR REUTILIZAR LA MISMA
+    # ========================================================
+
+    if usuario.check_password(
+        password_nuevo
+    ):
+
+        messages.error(
+            request,
+            "La nueva contraseña debe ser diferente a la contraseña actual."
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
+
+    usuario.set_password(
+        password_nuevo
+    )
+
+    usuario.save(
+        update_fields=[
+            "password"
+        ]
+    )
+
+
+    # ========================================================
+    # MANTENER SESIÓN ABIERTA
+    # ========================================================
+
+    update_session_auth_hash(
+        request,
+        usuario
+    )
+
+
+    messages.success(
+        request,
+        "Tu contraseña se actualizó correctamente."
+    )
+
+
+    return redirect(
+        "mi_perfil"
     )
