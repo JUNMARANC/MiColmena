@@ -6046,3 +6046,320 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
         animation: none !important;
     }
 }
+
+
+
+/* =========================================================
+   ESTRUCTURA DEL SIDEBAR
+========================================================= */
+
+.sidebar-admin {
+    display: flex;
+    flex-direction: column;
+
+    height: 100vh;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MENÚ PRINCIPAL
+========================================================= */
+
+.sidebar-menu {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-bottom: 12px;
+
+    /* Firefox */
+    scrollbar-width: none;
+}
+
+
+/* Chrome / Edge */
+
+.sidebar-menu::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* =========================================================
+   ZONA INFERIOR DEL USUARIO
+========================================================= */
+
+.sidebar-user {
+    flex: 0 0 auto;
+
+    width: 100%;
+
+    padding: 12px 15px 14px;
+
+    border-top: 1px solid rgba(
+        33,
+        79,
+        59,
+        0.20
+    );
+
+    background: #c0f1ca;
+}
+
+
+/* =========================================================
+   TARJETA MI PERFIL
+========================================================= */
+
+.sidebar-profile-link {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        50px
+        minmax(0, 1fr)
+        20px;
+
+    align-items: center;
+
+    column-gap: 11px;
+
+    padding: 8px;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    color: #163324;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.sidebar-profile-link:hover {
+    background: rgba(
+        95,
+        151,
+        129,
+        0.20
+    );
+
+    color: #163324;
+}
+
+
+.sidebar-profile-link.active {
+    background: rgba(
+        95,
+        151,
+        129,
+        0.30
+    );
+}
+
+
+/* =========================================================
+   FOTO
+========================================================= */
+
+.sidebar-profile-avatar {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    border: 2px solid #5f9781;
+
+    color: #214f3b;
+
+    font-size: 22px;
+}
+
+
+.sidebar-profile-avatar img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   NOMBRE Y ROL
+========================================================= */
+
+.sidebar-profile-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    text-align: left;
+}
+
+
+.sidebar-profile-info strong {
+    display: block;
+
+    margin: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color: #163324;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.sidebar-profile-info span {
+    display: block;
+
+    margin: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color: #5f9781;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   FLECHA
+========================================================= */
+
+.sidebar-profile-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #5f9781;
+
+    font-size: 14px;
+
+    transition: transform 0.2s ease;
+}
+
+
+.sidebar-profile-link:hover
+.sidebar-profile-arrow {
+    transform: translateX(3px);
+}
+
+
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
+
+.sidebar-profile-logout {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 8px;
+
+    margin-top: 4px;
+
+    padding: 8px 12px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    color: #d12f2f;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.sidebar-profile-logout:hover {
+    background: rgba(
+        209,
+        47,
+        47,
+        0.10
+    );
+
+    color: #a92121;
+}
+
+
+/* =========================================================
+   SIDEBAR CONTRAÍDO
+========================================================= */
+
+.sidebar-admin.collapsed
+.sidebar-profile-link {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 0;
+}
+
+
+.sidebar-admin.collapsed
+.sidebar-profile-info,
+
+.sidebar-admin.collapsed
+.sidebar-profile-arrow,
+
+.sidebar-admin.collapsed
+.sidebar-profile-logout span {
+    display: none;
+}
+
+
+.sidebar-admin.collapsed
+.sidebar-user {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+
+.sidebar-admin.collapsed
+.sidebar-profile-logout {
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+}
