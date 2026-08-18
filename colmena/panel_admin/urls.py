@@ -62,6 +62,11 @@ urlpatterns = [
     path("usuarios-roles/administrador/estado/<int:id_usuario>/",views.cambiar_estado_administrador,name="cambiar_estado_administrador",),
     path("usuarios-roles/administrador/eliminar/<int:id_usuario>/",views.eliminar_administrador,name="eliminar_administrador",),
 
+    #MiPerfil
+    path("mi-perfil/",views.mi_perfil,name="mi_perfil",),
+    path("mi-perfil/actualizar/",views.actualizar_mi_perfil,name="actualizar_mi_perfil",),
+    path("mi-perfil/cambiar-password/",views.cambiar_password_perfil,name="cambiar_password_perfil",),
+
     # Configuración
     path('configuracion/', views.configuracion_admin, name='configuracion_admin'),
 ]
