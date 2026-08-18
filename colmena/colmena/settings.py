@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'usuarios.context_processors.perfil_usuario',
+                "panel_admin.context_processors.permisos_usuario",
             ],
         },
     },
@@ -97,7 +98,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dbmicolmena',
         'USER' : 'root',
-        'PASSWORD' : '252512',
+        'PASSWORD' : 'admin',
         'HOST' : 'localhost',
         'PORT' : '3306'
     }

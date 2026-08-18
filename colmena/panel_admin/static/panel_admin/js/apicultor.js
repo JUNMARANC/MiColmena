@@ -1733,3 +1733,78 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 });
+
+
+/* =========================================================
+   ABRIR AUTOMÁTICAMENTE MODAL NUEVO APICULTOR
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const parametros =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const abrirNuevo =
+            parametros.get(
+                "nuevo"
+            );
+
+
+        if (abrirNuevo !== "1") {
+            return;
+        }
+
+
+        const modalElemento =
+            document.getElementById(
+                "modalAgregarApicultor"
+            );
+
+
+        if (
+            !modalElemento ||
+            typeof bootstrap === "undefined"
+        ) {
+            return;
+        }
+
+
+        const modal =
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modalElemento
+                );
+
+
+        modal.show();
+
+
+        /*
+        Quitamos ?nuevo=1 para evitar que el modal
+        vuelva a abrirse si el usuario actualiza.
+        */
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.searchParams.delete(
+            "nuevo"
+        );
+
+
+        window.history.replaceState(
+            {},
+            "",
+            url
+        );
+
+    }
+);

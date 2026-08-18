@@ -49,6 +49,12 @@ from panel_admin.reportes.reporte_corporativo import (
     generar_reporte_corporativo_pdf,
 )
 
+from panel_admin.permisos import (
+    permiso_requerido,
+    usuario_tiene_permiso,
+    alguno_permiso_requerido,
+)
+
 def administrador_requerido(vista):
     @wraps(vista)
     @login_required(login_url="login")
@@ -271,17 +277,14 @@ def dashboard_datos_json(request):
     return JsonResponse(obtener_datos_dashboard())
 
 
-
 @administrador_requerido
-def usuarios_roles_admin(request):
-    return render(request, 'admin_panel/usuarios_roles.html')
-
-@administrador_requerido
+@permiso_requerido("cfg")
 def configuracion_admin(request):
     return render(request, 'admin_panel/configuracion.html')
 
 #LOGICA DE LOS APIARIOS
 @administrador_requerido
+@permiso_requerido("av")
 def apiarios_admin(request):
     apiarios_lista = Apiario.objects.all().order_by('id_apiario')
     apicultores = Apicultor.objects.all()
@@ -301,6 +304,7 @@ def apiarios_admin(request):
     })
 
 @administrador_requerido
+@permiso_requerido("ag",redireccion="apiarios_admin")
 def crear_apiario(request):
     if request.method == "POST":
         Apiario.objects.create(
@@ -317,6 +321,7 @@ def crear_apiario(request):
     return redirect("apiarios_admin")
 
 @administrador_requerido
+@permiso_requerido("ag",redireccion="apiarios_admin")
 def editar_apiario(request, id):
     apiario = get_object_or_404(Apiario, id_apiario=id)
 
@@ -337,6 +342,7 @@ def editar_apiario(request, id):
     return redirect("apiarios_admin")
 
 @administrador_requerido
+@permiso_requerido("ag",redireccion="apiarios_admin")
 def eliminar_apiario(request, id):
     apiario = get_object_or_404(Apiario, id_apiario=id)
 
@@ -348,6 +354,7 @@ def eliminar_apiario(request, id):
 
 #LOGICA DE LOS COLMENAS
 @administrador_requerido
+@permiso_requerido("cv")
 def colmenas_admin(request):
 
     colmenas_lista = Colmena.objects.select_related(
@@ -395,6 +402,7 @@ def colmenas_admin(request):
     })
 
 @administrador_requerido
+@permiso_requerido("cg",redireccion="colmenas_admin")
 def crear_colmena(request):
     if request.method == "POST":
 
@@ -419,6 +427,7 @@ def crear_colmena(request):
     return redirect("colmenas_admin")
 
 @administrador_requerido
+@permiso_requerido("cg",redireccion="colmenas_admin")
 def editar_colmena(request, id):
     colmena = get_object_or_404(Colmena, id_colmena=id)
 
@@ -436,6 +445,7 @@ def editar_colmena(request, id):
     return redirect("colmenas_admin")
 
 @administrador_requerido
+@permiso_requerido("cg",redireccion="colmenas_admin")
 def eliminar_colmena(request, id):
     colmena = get_object_or_404(Colmena, id_colmena=id)
 
@@ -446,6 +456,7 @@ def eliminar_colmena(request, id):
 
 #LOGICA DE MATENIMIENTOS
 @administrador_requerido
+@permiso_requerido("mg")
 def mantenimientos_admin(request):
 
     apicultores = (
@@ -521,6 +532,7 @@ def mantenimientos_admin(request):
     )
 
 @administrador_requerido
+@permiso_requerido("mr",redireccion="mantenimientos_admin")
 def crear_mantenimiento(request):
 
     if request.method == "POST":
@@ -575,6 +587,7 @@ def crear_mantenimiento(request):
     return redirect("mantenimientos_admin")
 
 @administrador_requerido
+@permiso_requerido("mg",redireccion="mantenimientos_admin")
 def editar_mantenimiento(request, id):
     mantenimiento = get_object_or_404(Mantenimiento, id_mantenimiento=id)
 
@@ -592,6 +605,7 @@ def editar_mantenimiento(request, id):
 
 @administrador_requerido
 @require_POST
+@permiso_requerido("mg",redireccion="mantenimientos_admin")
 def eliminar_mantenimiento(request, id):
 
     mantenimiento = get_object_or_404(
@@ -612,6 +626,7 @@ def eliminar_mantenimiento(request, id):
 # LOGICO DE INCIDENCIAS 
 
 @administrador_requerido
+@permiso_requerido("ig")
 def incidencias_admin(request):
     incidencias_lista = Incidencia.objects.select_related(
         "id_apicultor",
@@ -699,6 +714,7 @@ def incidencias_admin(request):
 #CREAR INCIDENCIA 
 
 @administrador_requerido
+@permiso_requerido("ir",redireccion="incidencias_admin")
 def crear_incidencia(request):
     if request.method != "POST":
         return redirect("incidencias_admin")
@@ -821,6 +837,7 @@ def crear_incidencia(request):
 #editar incidencias 
 
 @administrador_requerido
+@permiso_requerido("ig",redireccion="incidencias_admin")
 def editar_incidencia(request, id_incidencia):
     incidencia = get_object_or_404(
         Incidencia,
@@ -959,6 +976,7 @@ def editar_incidencia(request, id_incidencia):
 #Eliminar incidencia
 
 @administrador_requerido
+@permiso_requerido("ig",redireccion="incidencias_admin")
 def eliminar_incidencia(request, id_incidencia):
     incidencia = get_object_or_404(
         Incidencia,
@@ -2687,6 +2705,7 @@ def agregar_errores_formulario(request, formulario):
                 )
 
 @administrador_requerido
+@permiso_requerido("agenda")
 def agenda_admin(request):
 
     mes_actual = obtener_mes_agenda(
@@ -2843,6 +2862,7 @@ def agenda_admin(request):
     )
 
 @administrador_requerido
+@permiso_requerido("agenda")
 @require_POST
 def crear_evento_agenda(request):
 
@@ -2883,6 +2903,7 @@ def crear_evento_agenda(request):
     )
 
 @administrador_requerido
+@permiso_requerido("agenda")
 @require_POST
 def editar_evento_agenda(
     request,
@@ -2927,6 +2948,7 @@ def editar_evento_agenda(
     )
 
 @administrador_requerido
+@permiso_requerido("agenda")
 @require_POST
 def eliminar_evento_agenda(
     request,
@@ -2955,6 +2977,7 @@ def eliminar_evento_agenda(
 #LOGICA DE LOS REPORTES
 
 @administrador_requerido
+@permiso_requerido("rv")
 def reportes_admin(request):
 
     apiarios = (
@@ -3087,6 +3110,7 @@ def reportes_admin(request):
     )
 
 @administrador_requerido
+@permiso_requerido("rg",redireccion="reportes_admin")
 @require_POST
 def generar_reporte_sistema(request):
 
@@ -3636,6 +3660,7 @@ def generar_reporte_sistema(request):
         raise
 
 @administrador_requerido
+@permiso_requerido("rv",redireccion="reportes_admin")
 def abrir_reporte_sistema(
     request,
     id_reporte
@@ -3660,4 +3685,2012 @@ def abrir_reporte_sistema(
         as_attachment=False,
         filename=reporte.nombre_archivo,
         content_type="application/pdf"
+    )
+
+
+#___________________________________________________
+# Vista de perfil y roles 
+#___________________________________________________
+
+# ============================================================
+# PERMISOS DEL SISTEMA
+# ============================================================
+
+PERMISOS_SISTEMA = [
+    {
+        "codigo": "av",
+        "nombre": "Ver apiarios",
+    },
+    {
+        "codigo": "ag",
+        "nombre": "Administrar apiarios",
+    },
+    {
+        "codigo": "cv",
+        "nombre": "Ver colmenas",
+    },
+    {
+        "codigo": "cg",
+        "nombre": "Crear / editar colmenas",
+    },
+    {
+        "codigo": "mr",
+        "nombre": "Registrar mantenimientos",
+    },
+    {
+        "codigo": "mg",
+        "nombre": "Gestionar mantenimientos",
+    },
+    {
+        "codigo": "ir",
+        "nombre": "Reportar incidencias",
+    },
+    {
+        "codigo": "ig",
+        "nombre": "Gestionar incidencias",
+    },
+    {
+        "codigo": "agenda",
+        "nombre": "Acceder a agenda",
+    },
+    {
+        "codigo": "rv",
+        "nombre": "Ver reportes",
+    },
+    {
+        "codigo": "rg",
+        "nombre": "Generar reportes",
+    },
+    {
+        "codigo": "ug",
+        "nombre": "Administrar usuarios",
+    },
+    {
+        "codigo": "roles",
+        "nombre": "Administrar roles",
+    },
+    {
+        "codigo": "cfg",
+        "nombre": "Configuración del sistema",
+    },
+    {
+        "codigo": "perfil",
+        "nombre": "Mi perfil",
+    },
+]
+
+
+PERMISOS_ADMIN_DEFAULT = {
+    "av",
+    "ag",
+    "cv",
+    "cg",
+    "mr",
+    "mg",
+    "ir",
+    "ig",
+    "agenda",
+    "rv",
+    "rg",
+    "ug",
+    "roles",
+    "cfg",
+    "perfil",
+}
+
+
+PERMISOS_APICULTOR_DEFAULT = {
+    "av",
+    "cv",
+    "mr",
+    "ir",
+    "agenda",
+    "perfil",
+}
+
+@administrador_requerido
+@alguno_permiso_requerido(
+    "ug",
+    "roles"
+)
+def usuarios_roles_admin(request):
+
+    # ========================================================
+    # 1. USUARIOS DJANGO
+    # ========================================================
+
+    usuarios_django = (
+        User.objects
+        .all()
+        .order_by(
+            "first_name",
+            "last_name",
+            "username"
+        )
+    )
+
+
+    # ========================================================
+    # 2. PERFILES ADMINISTRADORES
+    # ========================================================
+
+    administradores = {
+        administrador.user_id: administrador
+
+        for administrador in (
+            Administrador.objects
+            .select_related(
+                "user",
+                "id_rol"
+            )
+            .exclude(
+                user__isnull=True
+            )
+        )
+    }
+
+
+    # ========================================================
+    # 3. PERFILES APICULTORES
+    # ========================================================
+
+    apicultores = {
+        apicultor.user_id: apicultor
+
+        for apicultor in (
+            Apicultor.objects
+            .select_related(
+                "user",
+                "id_rol"
+            )
+            .exclude(
+                user__isnull=True
+            )
+        )
+    }
+
+
+    # ========================================================
+    # 4. CONSTRUIR LISTA DE USUARIOS
+    # ========================================================
+
+    usuarios = []
+
+
+    for usuario in usuarios_django:
+
+        # ----------------------------------------------------
+        # Valores por defecto
+        # ----------------------------------------------------
+
+        perfil = None
+
+        tipo_perfil = None
+
+        rol_nombre = "Sin rol"
+
+        celular = ""
+
+        nivel_acceso = ""
+
+        foto = ""
+
+        puede_editar_administrador = False
+
+
+        # ====================================================
+        # ADMINISTRADOR
+        # ====================================================
+
+        if usuario.id in administradores:
+
+            perfil = administradores[
+                usuario.id
+            ]
+
+            tipo_perfil = (
+                "administrador"
+            )
+
+
+            # ------------------------------------------------
+            # Rol
+            # ------------------------------------------------
+
+            if perfil.id_rol:
+
+                rol_nombre = (
+                    perfil.id_rol.nombrerol
+                    or "Administrador"
+                )
+
+            else:
+
+                rol_nombre = (
+                    "Administrador"
+                )
+
+
+            # ------------------------------------------------
+            # Datos propios del Administrador
+            # ------------------------------------------------
+
+            celular = (
+                perfil.celular
+                or ""
+            )
+
+
+            nivel_acceso = (
+                perfil.nivelacceso
+                or "Alto"
+            )
+
+
+            if perfil.fotoperfil:
+
+                try:
+
+                    foto = (
+                        perfil.fotoperfil.url
+                    )
+
+                except ValueError:
+
+                    foto = ""
+
+
+            
+            # Este usuario sí tiene registro en la tabla
+            # Administrador, por lo tanto puede utilizar
+            # editar_administrador().
+            
+
+            puede_editar_administrador = True
+
+
+        # ====================================================
+        # APICULTOR
+        # ====================================================
+
+        elif usuario.id in apicultores:
+
+            perfil = apicultores[
+                usuario.id
+            ]
+
+            tipo_perfil = (
+                "apicultor"
+            )
+
+
+            # ------------------------------------------------
+            # Rol
+            # ------------------------------------------------
+
+            if perfil.id_rol:
+
+                rol_nombre = (
+                    perfil.id_rol.nombrerol
+                    or "Apicultor"
+                )
+
+            else:
+
+                rol_nombre = (
+                    "Apicultor"
+                )
+
+
+            # ------------------------------------------------
+            # Datos propios del Apicultor
+            # ------------------------------------------------
+
+            celular = (
+                perfil.telefono
+                or ""
+            )
+
+
+            if perfil.fotoperfil:
+
+                try:
+
+                    foto = (
+                        perfil.fotoperfil.url
+                    )
+
+                except ValueError:
+
+                    foto = ""
+
+
+        # ====================================================
+        # SUPERUSUARIO SIN PERFIL ADMINISTRADOR
+        # ====================================================
+
+        elif usuario.is_superuser:
+
+            tipo_perfil = (
+                "administrador"
+            )
+
+            rol_nombre = (
+                "Administrador"
+            )
+
+            # 
+            # Se muestra como Administrador en la tabla,
+            # pero si no tiene un registro en Administrador
+            # no podemos enviarlo a editar_administrador(),
+            # porque esa vista trabaja con ese perfil.
+            # 
+
+            puede_editar_administrador = False
+
+
+        # ====================================================
+        # NOMBRE COMPLETO
+        # ====================================================
+
+        nombre_completo = (
+            usuario
+            .get_full_name()
+            .strip()
+            or usuario.username
+        )
+
+
+        # ====================================================
+        # DATOS PARA EL TEMPLATE
+        # ====================================================
+
+        usuarios.append({
+
+            # ------------------------------------------------
+            # Identificación
+            # ------------------------------------------------
+
+            "id":
+                usuario.id,
+
+
+            # ------------------------------------------------
+            # Información visible
+            # ------------------------------------------------
+
+            "nombre":
+                nombre_completo,
+
+            "username":
+                usuario.username,
+
+            "correo":
+                (
+                    usuario.email
+                    or "Sin correo"
+                ),
+
+            "rol":
+                rol_nombre,
+
+            "tipo_perfil":
+                tipo_perfil,
+
+
+            # ------------------------------------------------
+            # Datos para formularios de edición
+            # ------------------------------------------------
+
+            "nombres":
+                (
+                    usuario.first_name
+                    or ""
+                ),
+
+            "apellidos":
+                (
+                    usuario.last_name
+                    or ""
+                ),
+
+            "correo_editar":
+                (
+                    usuario.email
+                    or ""
+                ),
+
+            "celular":
+                celular,
+
+            "nivel_acceso":
+                nivel_acceso,
+
+            "foto":
+                foto,
+
+
+            # ------------------------------------------------
+            # Estado del usuario
+            # ------------------------------------------------
+
+            "activo":
+                usuario.is_active,
+
+            "ultimo_acceso":
+                usuario.last_login,
+
+            "fecha_registro":
+                usuario.date_joined,
+
+
+            # ------------------------------------------------
+            # Seguridad / tipo de cuenta
+            # ------------------------------------------------
+
+            "es_superusuario":
+                usuario.is_superuser,
+
+            "puede_editar_administrador":
+                puede_editar_administrador,
+
+        })
+
+
+    # ========================================================
+    # 5. ROLES
+    # ========================================================
+
+    roles_queryset = (
+        Rol.objects
+        .all()
+        .order_by(
+            "nombrerol"
+        )
+    )
+
+
+    roles = []
+
+
+    # --------------------------------------------------------
+    # Permisos que un Apicultor nunca puede activar
+    # --------------------------------------------------------
+
+    permisos_no_permitidos_apicultor = {
+        "ag",
+        "cg",
+        "mg",
+        "ig",
+        "rv",
+        "rg",
+        "ug",
+        "roles",
+        "cfg",
+    }
+
+
+    # --------------------------------------------------------
+    # Nombres antiguos guardados en BD
+    # --------------------------------------------------------
+
+    permisos_legacy = {
+        "gestión completa",
+        "gestion completa",
+        "gestión limitada",
+        "gestion limitada",
+    }
+
+
+    for rol in roles_queryset:
+
+        # ====================================================
+        # INFORMACIÓN DEL ROL
+        # ====================================================
+
+        nombre_rol = (
+            rol.nombrerol
+            or "Sin nombre"
+        )
+
+
+        clave_rol = (
+            nombre_rol
+            .strip()
+            .lower()
+        )
+
+
+        es_administrador = (
+            "admin"
+            in clave_rol
+        )
+
+
+        es_apicultor = (
+            "apicult"
+            in clave_rol
+        )
+
+
+        # ====================================================
+        # PERMISOS GUARDADOS EN BD
+        # ====================================================
+
+        permisos_guardados = {
+            codigo.strip()
+
+            for codigo in (
+                rol.permisos
+                or ""
+            ).split(",")
+
+            if codigo.strip()
+        }
+
+
+        # ====================================================
+        # COMPATIBILIDAD CON PERMISOS ANTIGUOS
+        # ====================================================
+
+        usar_permisos_default = False
+
+
+        if not permisos_guardados:
+
+            usar_permisos_default = True
+
+
+        elif len(
+            permisos_guardados
+        ) == 1:
+
+            unico_permiso = next(
+                iter(
+                    permisos_guardados
+                )
+            )
+
+
+            if (
+                unico_permiso.lower()
+                in permisos_legacy
+            ):
+
+                usar_permisos_default = True
+
+
+        if usar_permisos_default:
+
+            if es_administrador:
+
+                permisos_guardados = (
+                    PERMISOS_ADMIN_DEFAULT
+                    .copy()
+                )
+
+
+            elif es_apicultor:
+
+                permisos_guardados = (
+                    PERMISOS_APICULTOR_DEFAULT
+                    .copy()
+                )
+
+
+        # ====================================================
+        # CONSTRUIR PERMISOS PARA EL TEMPLATE
+        # ====================================================
+
+        permisos_rol = []
+
+
+        for permiso in PERMISOS_SISTEMA:
+
+            codigo_permiso = (
+                permiso["codigo"]
+            )
+
+
+            nombre_permiso = (
+                permiso["nombre"]
+            )
+
+
+            # ------------------------------------------------
+            # Nombres especiales para Apicultor
+            # ------------------------------------------------
+
+            if es_apicultor:
+
+                nombres_apicultor = {
+
+                    "av":
+                        "Ver apiarios asignados",
+
+                    "agenda":
+                        "Ver agenda",
+
+                    "perfil":
+                        "Configurar mi perfil",
+
+                }
+
+
+                nombre_permiso = (
+                    nombres_apicultor.get(
+                        codigo_permiso,
+                        nombre_permiso
+                    )
+                )
+
+
+            # =================================================
+            # PERMISO BLOQUEADO
+            # =================================================
+
+            bloqueado = False
+
+
+            # ------------------------------------------------
+            # Restricciones del Apicultor
+            # ------------------------------------------------
+
+            if (
+                es_apicultor
+                and codigo_permiso
+                in permisos_no_permitidos_apicultor
+            ):
+
+                bloqueado = True
+
+
+            # ------------------------------------------------
+            # Administrador siempre conserva "roles"
+            # ------------------------------------------------
+
+            if (
+                es_administrador
+                and codigo_permiso
+                == "roles"
+            ):
+
+                bloqueado = True
+
+
+            # =================================================
+            # AGREGAR PERMISO
+            # =================================================
+
+            permisos_rol.append({
+
+                "codigo":
+                    codigo_permiso,
+
+                "nombre":
+                    nombre_permiso,
+
+                "activo":
+                    (
+                        codigo_permiso
+                        in permisos_guardados
+                    ),
+
+                "bloqueado":
+                    bloqueado,
+
+            })
+
+
+        # ====================================================
+        # AGREGAR ROL
+        # ====================================================
+
+        roles.append({
+
+            "id":
+                rol.id_rol,
+
+            "nombre":
+                nombre_rol,
+
+            "descripcion":
+                (
+                    rol.descripcion
+                    or ""
+                ),
+
+            "nivel_acceso":
+                (
+                    rol.nivelacceso
+                    or ""
+                ),
+
+            "activo":
+                (
+                    rol.estadoactivo
+                    != 0
+                ),
+
+            "permisos":
+                permisos_rol,
+
+        })
+
+
+    # ========================================================
+    # 6. PESTAÑA ACTIVA
+    # ========================================================
+
+    tab_activa = request.GET.get(
+        "tab",
+        "usuarios"
+    )
+
+
+    tabs_validas = {
+        "usuarios",
+        "roles",
+    }
+
+
+    if (
+        tab_activa
+        not in tabs_validas
+    ):
+
+        tab_activa = (
+            "usuarios"
+        )
+
+
+    # ========================================================
+    # 7. CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "usuarios":
+            usuarios,
+
+        "roles":
+            roles,
+
+        "tab_activa":
+            tab_activa,
+
+    }
+
+
+    # ========================================================
+    # 8. RENDER
+    # ========================================================
+
+    return render(
+        request,
+        "admin_panel/usuarios_roles.html",
+        contexto
+    )
+
+@administrador_requerido
+@permiso_requerido("roles",redireccion="usuarios_roles_admin")
+@require_POST
+def guardar_permisos_roles(request):
+
+    # ========================================================
+    # PERMISOS VÁLIDOS DEL SISTEMA
+    # ========================================================
+
+    permisos_validos = {
+        permiso["codigo"]
+        for permiso in PERMISOS_SISTEMA
+    }
+
+    # ========================================================
+    # PERMISOS QUE EL APICULTOR NUNCA DEBE TENER
+    # ========================================================
+
+    permisos_prohibidos_apicultor = {
+        "ag",      # Administrar apiarios
+        "cg",      # Crear / editar colmenas
+        "mg",      # Gestionar mantenimientos
+        "ig",      # Gestionar incidencias
+        "rv",      # Ver reportes administrativos
+        "rg",      # Generar reportes administrativos
+        "exp",     # Exportar base de datos
+        "ug",      # Administrar usuarios
+        "roles",   # Administrar roles
+        "cfg",     # Configuración general
+    }
+
+    roles = Rol.objects.all()
+
+    for rol in roles:
+
+        nombre_rol = (
+            rol.nombrerol
+            or ""
+        ).strip().lower()
+
+        nombre_campo = (
+            f"permisos_{rol.id_rol}"
+        )
+
+        permisos_recibidos = set(
+            request.POST.getlist(
+                nombre_campo
+            )
+        )
+
+        # Solo aceptar códigos conocidos.
+        permisos_recibidos = (
+            permisos_recibidos
+            & permisos_validos
+        )
+
+
+        # ====================================================
+        # REGLA DEL ADMINISTRADOR
+        # ====================================================
+
+        if "admin" in nombre_rol:
+
+            # Siempre debe existir al menos la capacidad
+            # de administrar los roles.
+            permisos_recibidos.add(
+                "roles"
+            )
+        # ====================================================
+        # REGLA ESPECIAL DEL APICULTOR
+        # ====================================================
+
+        if "apicult" in nombre_rol:
+
+            permisos_recibidos -= (
+                permisos_prohibidos_apicultor
+            )
+
+            # Estos permisos mínimos sí corresponden
+            # al funcionamiento normal del apicultor.
+            permisos_recibidos.update({
+                "av",
+                "cv",
+                "mr",
+                "ir",
+                "agenda",
+                "perfil",
+            })
+
+        # ====================================================
+        # GUARDAR
+        # ====================================================
+
+        rol.permisos = ",".join(
+            sorted(
+                permisos_recibidos
+            )
+        )
+
+        rol.save(
+            update_fields=["permisos"]
+        )
+
+    messages.success(
+        request,
+        "Los permisos de los roles se actualizaron correctamente."
+    )
+
+    url = reverse(
+        "usuarios_roles_admin"
+    )
+
+    return redirect(
+        f"{url}?tab=roles"
+    )
+
+
+# ============================================================
+# CREAR ADMINISTRADOR
+# ============================================================
+
+@administrador_requerido
+@permiso_requerido(
+    "ug",
+    redireccion="usuarios_roles_admin"
+)
+def crear_administrador(request):
+
+    if request.method != "POST":
+        return redirect("usuarios_roles_admin")
+
+    # =========================================================
+    # DATOS PERSONALES
+    # =========================================================
+
+    primer_nombre = request.POST.get(
+        "primer_nombre",
+        ""
+    ).strip()
+
+    segundo_nombre = request.POST.get(
+        "segundo_nombre",
+        ""
+    ).strip()
+
+    primer_apellido = request.POST.get(
+        "primer_apellido",
+        ""
+    ).strip()
+
+    segundo_apellido = request.POST.get(
+        "segundo_apellido",
+        ""
+    ).strip()
+
+    celular = request.POST.get(
+        "celular",
+        ""
+    ).strip()
+
+    correo = request.POST.get(
+        "correo",
+        ""
+    ).strip().lower()
+
+    nivel_acceso = request.POST.get(
+        "nivel_acceso",
+        "Alto"
+    ).strip()
+
+    # =========================================================
+    # CREDENCIALES
+    # =========================================================
+
+    username = request.POST.get(
+        "username",
+        ""
+    ).strip()
+
+    password = request.POST.get(
+        "password",
+        ""
+    )
+
+    confirmar_password = request.POST.get(
+        "confirmar_password",
+        ""
+    )
+
+    # =========================================================
+    # FOTO
+    # =========================================================
+
+    fotoperfil = request.FILES.get(
+        "fotoperfil"
+    )
+
+    # =========================================================
+    # VALIDACIONES
+    # =========================================================
+
+    if not primer_nombre:
+
+        messages.error(
+            request,
+            "El primer nombre es obligatorio."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if not primer_apellido:
+
+        messages.error(
+            request,
+            "El primer apellido es obligatorio."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if not correo:
+
+        messages.error(
+            request,
+            "El correo electrónico es obligatorio."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if not username:
+
+        messages.error(
+            request,
+            "El nombre de usuario es obligatorio."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if not password:
+
+        messages.error(
+            request,
+            "La contraseña es obligatoria."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if len(password) < 8:
+
+        messages.error(
+            request,
+            "La contraseña debe tener como mínimo 8 caracteres."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if password != confirmar_password:
+
+        messages.error(
+            request,
+            "Las contraseñas no coinciden."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    # =========================================================
+    # VALIDAR CELULAR
+    # =========================================================
+
+    if celular and not celular.isdigit():
+
+        messages.error(
+            request,
+            "El celular debe contener solamente números."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    # =========================================================
+    # VALIDAR NIVEL DE ACCESO
+    # =========================================================
+
+    niveles_permitidos = {
+        "Alto",
+        "Medio",
+    }
+
+    if nivel_acceso not in niveles_permitidos:
+
+        messages.error(
+            request,
+            "El nivel de acceso seleccionado no es válido."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    # =========================================================
+    # FOTO
+    # =========================================================
+
+    if fotoperfil:
+
+        tipos_permitidos = [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+        ]
+
+        if (
+            fotoperfil.content_type
+            not in tipos_permitidos
+        ):
+
+            messages.error(
+                request,
+                (
+                    "La foto debe estar en formato "
+                    "JPG, PNG o WEBP."
+                )
+            )
+
+            return redirect(
+                "usuarios_roles_admin"
+            )
+
+        tamano_maximo = (
+            5 * 1024 * 1024
+        )
+
+        if fotoperfil.size > tamano_maximo:
+
+            messages.error(
+                request,
+                (
+                    "La foto de perfil no puede "
+                    "superar los 5 MB."
+                )
+            )
+
+            return redirect(
+                "usuarios_roles_admin"
+            )
+
+    # =========================================================
+    # DUPLICADOS
+    # =========================================================
+
+    if User.objects.filter(
+        username__iexact=username
+    ).exists():
+
+        messages.error(
+            request,
+            (
+                "Ese nombre de usuario "
+                "ya está registrado."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    if User.objects.filter(
+        email__iexact=correo
+    ).exists():
+
+        messages.error(
+            request,
+            (
+                "Ese correo electrónico "
+                "ya está registrado."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+    # =========================================================
+    # NOMBRES
+    # =========================================================
+
+    nombres = " ".join(
+        valor
+        for valor in [
+            primer_nombre,
+            segundo_nombre,
+        ]
+        if valor
+    )
+
+    apellidos = " ".join(
+        valor
+        for valor in [
+            primer_apellido,
+            segundo_apellido,
+        ]
+        if valor
+    )
+
+    # =========================================================
+    # CREACIÓN
+    # =========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            rol_administrador = (
+                Rol.objects.get(
+                    nombrerol__iexact=(
+                        "Administrador"
+                    )
+                )
+            )
+
+            usuario = (
+                User.objects.create_user(
+                    username=username,
+                    email=correo,
+                    password=password,
+                    first_name=nombres,
+                    last_name=apellidos,
+                    is_active=True,
+                    is_staff=False,
+                    is_superuser=False,
+                )
+            )
+
+            Administrador.objects.create(
+                user=usuario,
+                id_rol=rol_administrador,
+                celular=celular or None,
+                fecharegistro=date.today(),
+                nivelacceso=(
+                    nivel_acceso
+                ),
+                fotoperfil=fotoperfil,
+            )
+
+        messages.success(
+            request,
+            (
+                "El administrador fue "
+                "registrado correctamente."
+            )
+        )
+
+    except Rol.DoesNotExist:
+
+        messages.error(
+            request,
+            (
+                "No existe el rol Administrador "
+                "en la base de datos."
+            )
+        )
+
+    except IntegrityError:
+
+        messages.error(
+            request,
+            (
+                "No fue posible registrar el administrador "
+                "porque alguno de los datos ya existe."
+            )
+        )
+
+    except Exception as error:
+
+        print(
+            "\n"
+            + "=" * 70
+        )
+
+        print(
+            "ERROR AL REGISTRAR EL ADMINISTRADOR"
+        )
+
+        print(
+            "Tipo de error:",
+            type(error).__name__
+        )
+
+        print(
+            "Mensaje:",
+            str(error)
+        )
+
+        traceback.print_exc()
+
+        print(
+            "=" * 70
+            + "\n"
+        )
+
+        messages.error(
+            request,
+            (
+                "Ocurrió un error inesperado "
+                "al registrar el administrador. "
+                "Revisa la terminal."
+            )
+        )
+
+    return redirect(
+        "usuarios_roles_admin"
+    )
+
+
+@administrador_requerido
+@permiso_requerido(
+    "ug",
+    redireccion="usuarios_roles_admin"
+)
+@require_POST
+def editar_administrador(
+    request,
+    id_usuario
+):
+
+    # =========================================================
+    # BUSCAR ADMINISTRADOR
+    # =========================================================
+
+    administrador = get_object_or_404(
+        Administrador.objects.select_related(
+            "user"
+        ),
+        user_id=id_usuario
+    )
+
+    usuario = administrador.user
+
+
+    # =========================================================
+    # DATOS DEL FORMULARIO
+    # =========================================================
+
+    nombres = (
+        request.POST.get(
+            "nombres",
+            ""
+        )
+        .strip()
+    )
+
+    apellidos = (
+        request.POST.get(
+            "apellidos",
+            ""
+        )
+        .strip()
+    )
+
+    celular = (
+        request.POST.get(
+            "celular",
+            ""
+        )
+        .strip()
+    )
+
+    correo = (
+        request.POST.get(
+            "correo",
+            ""
+        )
+        .strip()
+    )
+
+    nivel_acceso = (
+        request.POST.get(
+            "nivel_acceso",
+            ""
+        )
+        .strip()
+    )
+
+    username = (
+        request.POST.get(
+            "username",
+            ""
+        )
+        .strip()
+    )
+
+    password = request.POST.get(
+        "password",
+        ""
+    )
+
+    confirmar_password = request.POST.get(
+        "confirmar_password",
+        ""
+    )
+
+    usuario_activo = (
+        request.POST.get(
+            "usuario_activo"
+        )
+        == "on"
+    )
+
+    eliminar_foto = (
+        request.POST.get(
+            "eliminar_foto",
+            "0"
+        )
+        == "1"
+    )
+
+    nueva_foto = request.FILES.get(
+        "fotoperfil"
+    )
+
+
+    # =========================================================
+    # VALIDAR CAMPOS OBLIGATORIOS
+    # =========================================================
+
+    if not nombres:
+
+        messages.error(
+            request,
+            "Los nombres del administrador son obligatorios."
+        )
+
+        return _redirigir_usuarios()
+
+
+    if not apellidos:
+
+        messages.error(
+            request,
+            "Los apellidos del administrador son obligatorios."
+        )
+
+        return _redirigir_usuarios()
+
+
+    if not correo:
+
+        messages.error(
+            request,
+            "El correo electrónico es obligatorio."
+        )
+
+        return _redirigir_usuarios()
+
+
+    if not username:
+
+        messages.error(
+            request,
+            "El nombre de usuario es obligatorio."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR CELULAR
+    # =========================================================
+
+    if celular and not celular.isdigit():
+
+        messages.error(
+            request,
+            "El celular solo puede contener números."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR NIVEL DE ACCESO
+    # =========================================================
+
+    niveles_permitidos = {
+        "Alto",
+        "Medio"
+    }
+
+
+    if nivel_acceso not in niveles_permitidos:
+
+        messages.error(
+            request,
+            "El nivel de acceso seleccionado no es válido."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR USERNAME DUPLICADO
+    # =========================================================
+
+    username_existe = (
+        User.objects
+        .filter(
+            username__iexact=username
+        )
+        .exclude(
+            pk=usuario.pk
+        )
+        .exists()
+    )
+
+
+    if username_existe:
+
+        messages.error(
+            request,
+            "Ese nombre de usuario ya está registrado."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR CORREO DUPLICADO
+    # =========================================================
+
+    correo_existe = (
+        User.objects
+        .filter(
+            email__iexact=correo
+        )
+        .exclude(
+            pk=usuario.pk
+        )
+        .exists()
+    )
+
+
+    if correo_existe:
+
+        messages.error(
+            request,
+            "Ese correo electrónico ya está registrado."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR CONTRASEÑA
+    # =========================================================
+
+    if password or confirmar_password:
+
+        if len(password) < 8:
+
+            messages.error(
+                request,
+                "La nueva contraseña debe tener mínimo 8 caracteres."
+            )
+
+            return _redirigir_usuarios()
+
+
+        if password != confirmar_password:
+
+            messages.error(
+                request,
+                "Las contraseñas no coinciden."
+            )
+
+            return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR FOTO
+    # =========================================================
+
+    if nueva_foto:
+
+        tipos_permitidos = {
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        }
+
+
+        if nueva_foto.content_type not in tipos_permitidos:
+
+            messages.error(
+                request,
+                "La fotografía debe ser JPG, PNG o WEBP."
+            )
+
+            return _redirigir_usuarios()
+
+
+        tamano_maximo = (
+            5 * 1024 * 1024
+        )
+
+
+        if nueva_foto.size > tamano_maximo:
+
+            messages.error(
+                request,
+                "La fotografía no puede superar los 5 MB."
+            )
+
+            return _redirigir_usuarios()
+
+
+    # =========================================================
+    # GUARDAR
+    # =========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            # -------------------------------------------------
+            # USER DE DJANGO
+            # -------------------------------------------------
+
+            usuario.first_name = nombres
+
+            usuario.last_name = apellidos
+
+            usuario.email = correo
+
+            usuario.username = username
+
+            usuario.is_active = usuario_activo
+
+
+            if password:
+
+                usuario.set_password(
+                    password
+                )
+
+
+            usuario.save()
+
+
+            # -------------------------------------------------
+            # PERFIL ADMINISTRADOR
+            # -------------------------------------------------
+
+            administrador.celular = (
+                celular or None
+            )
+
+            administrador.nivelacceso = (
+                nivel_acceso
+            )
+
+
+            # -------------------------------------------------
+            # ELIMINAR FOTO
+            # -------------------------------------------------
+
+            if eliminar_foto:
+
+                if administrador.fotoperfil:
+
+                    administrador.fotoperfil.delete(
+                        save=False
+                    )
+
+                administrador.fotoperfil = None
+
+
+            # -------------------------------------------------
+            # NUEVA FOTO
+            # -------------------------------------------------
+
+            if nueva_foto:
+
+                if administrador.fotoperfil:
+
+                    administrador.fotoperfil.delete(
+                        save=False
+                    )
+
+                administrador.fotoperfil = (
+                    nueva_foto
+                )
+
+
+            administrador.save()
+
+
+        messages.success(
+            request,
+            "El administrador se actualizó correctamente."
+        )
+
+
+    except IntegrityError:
+
+        messages.error(
+            request,
+            "No fue posible actualizar el administrador porque existe información duplicada."
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR EDITANDO ADMINISTRADOR:",
+            error
+        )
+
+        messages.error(
+            request,
+            "Ocurrió un error al actualizar el administrador."
+        )
+
+
+    return _redirigir_usuarios()
+
+
+@administrador_requerido
+@permiso_requerido(
+    "ug",
+    redireccion="usuarios_roles_admin"
+)
+@require_POST
+def cambiar_estado_administrador(
+    request,
+    id_usuario
+):
+
+    # ========================================================
+    # BUSCAR ADMINISTRADOR
+    # ========================================================
+
+    administrador = get_object_or_404(
+        Administrador.objects.select_related(
+            "user"
+        ),
+        user_id=id_usuario
+    )
+
+    usuario = administrador.user
+
+
+    # ========================================================
+    # NUEVO ESTADO
+    # ========================================================
+
+    nuevo_estado = request.POST.get(
+        "activo",
+        ""
+    )
+
+
+    if nuevo_estado not in {
+        "0",
+        "1",
+    }:
+
+        messages.error(
+            request,
+            "El estado solicitado no es válido."
+        )
+
+        return _redirigir_usuarios()
+
+
+    activar = (
+        nuevo_estado == "1"
+    )
+
+
+    # ========================================================
+    # EVITAR DESACTIVARSE A SÍ MISMO
+    # ========================================================
+
+    if (
+        usuario.id == request.user.id
+        and not activar
+    ):
+
+        messages.error(
+            request,
+            "No puedes desactivar tu propia cuenta."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # ========================================================
+    # PROTEGER ÚLTIMO ADMINISTRADOR ACTIVO
+    # ========================================================
+
+    if (
+        usuario.is_active
+        and not activar
+    ):
+
+        administradores_activos = (
+            Administrador.objects
+            .filter(
+                user__is_active=True
+            )
+            .exclude(
+                user__isnull=True
+            )
+            .count()
+        )
+
+
+        if administradores_activos <= 1:
+
+            messages.error(
+                request,
+                (
+                    "No puedes desactivar este administrador "
+                    "porque es el último administrador activo."
+                )
+            )
+
+            return _redirigir_usuarios()
+
+
+    # ========================================================
+    # ACTUALIZAR ESTADO
+    # ========================================================
+
+    usuario.is_active = activar
+
+    usuario.save(
+        update_fields=[
+            "is_active"
+        ]
+    )
+
+
+    if activar:
+
+        messages.success(
+            request,
+            "El administrador fue activado correctamente."
+        )
+
+    else:
+
+        messages.success(
+            request,
+            "El administrador fue desactivado correctamente."
+        )
+
+
+    return _redirigir_usuarios()
+
+
+@administrador_requerido
+@permiso_requerido(
+    "ug",
+    redireccion="usuarios_roles_admin"
+)
+@require_POST
+def eliminar_administrador(
+    request,
+    id_usuario
+):
+
+    # ========================================================
+    # BUSCAR ADMINISTRADOR
+    # ========================================================
+
+    administrador = get_object_or_404(
+        Administrador.objects.select_related(
+            "user"
+        ),
+        user_id=id_usuario
+    )
+
+    usuario = administrador.user
+
+
+    # ========================================================
+    # EVITAR ELIMINARSE A SÍ MISMO
+    # ========================================================
+
+    if usuario.id == request.user.id:
+
+        messages.error(
+            request,
+            "No puedes eliminar tu propia cuenta."
+        )
+
+        return _redirigir_usuarios()
+
+
+    # ========================================================
+    # PROTEGER ÚLTIMO ADMINISTRADOR ACTIVO
+    # ========================================================
+
+    if usuario.is_active:
+
+        administradores_activos = (
+            Administrador.objects
+            .filter(
+                user__is_active=True
+            )
+            .exclude(
+                user__isnull=True
+            )
+            .count()
+        )
+
+
+        if administradores_activos <= 1:
+
+            messages.error(
+                request,
+                (
+                    "No puedes eliminar este administrador "
+                    "porque es el último administrador activo."
+                )
+            )
+
+            return _redirigir_usuarios()
+
+
+    # ========================================================
+    # DATOS PARA MENSAJE
+    # ========================================================
+
+    nombre = (
+        usuario.get_full_name().strip()
+        or usuario.username
+    )
+
+
+    # ========================================================
+    # ELIMINAR
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            # ------------------------------------------------
+            # FOTO DE PERFIL
+            # ------------------------------------------------
+
+            if administrador.fotoperfil:
+
+                administrador.fotoperfil.delete(
+                    save=False
+                )
+
+
+            # ------------------------------------------------
+            # PERFIL
+            # ------------------------------------------------
+
+            administrador.delete()
+
+
+            # ------------------------------------------------
+            # USUARIO DJANGO
+            # ------------------------------------------------
+
+            usuario.delete()
+
+
+        messages.success(
+            request,
+            (
+                f'El administrador "{nombre}" '
+                "fue eliminado correctamente."
+            )
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR ELIMINANDO ADMINISTRADOR:",
+            error
+        )
+
+        messages.error(
+            request,
+            "No fue posible eliminar el administrador."
+        )
+
+
+    return _redirigir_usuarios()
+
+
+def _redirigir_usuarios():
+
+    url = reverse(
+        "usuarios_roles_admin"
+    )
+
+    return redirect(
+        f"{url}?tab=usuarios"
     )

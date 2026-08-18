@@ -1,0 +1,2249 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_admin/css/usuarios_roles.css' %}?v=2"
+>
+
+<div class="container-fluid pagina-usuarios-roles">
+
+    <!-- =====================================================
+        ENCABEZADO
+    ====================================================== -->
+
+    <div class="encabezado-usuarios">
+
+        <div>
+
+            <h2>
+                Usuarios y Roles
+            </h2>
+
+            <p>
+                Administra cuentas y niveles de acceso del sistema.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#modalSeleccionarTipoUsuario"
+        >
+            <i class="bi bi-person-plus-fill me-2"></i>
+            Nuevo Usuario
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         PESTAÑAS
+    ====================================================== -->
+
+    <ul
+        class="nav nav-tabs tabs-usuarios"
+        id="usuariosRolesTabs"
+        role="tablist"
+    >
+
+        <li
+            class="nav-item"
+            role="presentation"
+        >
+
+            <button
+                class="
+                    nav-link
+                    {% if tab_activa == 'usuarios' %}
+                        active
+                    {% endif %}
+                "
+                id="usuarios-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#panelUsuarios"
+                type="button"
+                role="tab"
+            >
+                Usuarios
+            </button>
+
+        </li>
+
+        <li
+            class="nav-item"
+            role="presentation"
+        >
+
+            <button
+                class="
+                    nav-link
+                    {% if tab_activa == 'roles' %}
+                        active
+                    {% endif %}
+                "
+                id="roles-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#panelRoles"
+                type="button"
+                role="tab"
+            >
+                Roles y Permisos
+            </button>
+
+        </li>
+
+    </ul>
+
+
+    <div class="tab-content">
+
+        <!-- =================================================
+             TAB USUARIOS
+        ================================================== -->
+
+        <div
+            class="
+                tab-pane
+                fade
+                {% if tab_activa == 'usuarios' %}
+                    show active
+                {% endif %}
+            "
+            id="panelUsuarios"
+            role="tabpanel"
+        >
+
+            <div class="card tabla-usuarios-card">
+
+                <div class="table-responsive">
+
+                    <table class="table tabla-usuarios">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Usuario
+                                </th>
+
+                                <th>
+                                    Correo
+                                </th>
+
+                                <th>
+                                    Rol
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th>
+                                    Último acceso
+                                </th>
+
+                                <th class="text-center">
+                                    Acciones
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for usuario in usuarios %}
+
+                                <tr>
+
+                                    <!-- USUARIO -->
+                                    <td>
+
+                                        <div class="usuario-info">
+
+                                            <div class="avatar-usuario">
+
+                                                {{ usuario.nombre|first|upper }}
+
+                                            </div>
+
+                                            <div>
+
+                                                <strong>
+                                                    {{ usuario.nombre }}
+                                                </strong>
+
+                                                <small>
+                                                    {{ usuario.username }}
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- CORREO -->
+                                    <td>
+
+                                        {{ usuario.correo }}
+
+                                    </td>
+
+
+                                    <!-- ROL -->
+                                    <td>
+
+                                        {% if usuario.tipo_perfil == "administrador" %}
+
+                                            <span class="badge-rol badge-admin">
+                                                Administrador
+                                            </span>
+
+                                        {% elif usuario.tipo_perfil == "apicultor" %}
+
+                                            <span class="badge-rol badge-apicultor">
+                                                Apicultor
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge-rol badge-sin-rol">
+                                                {{ usuario.rol }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- ESTADO -->
+                                    <td>
+
+                                        {% if usuario.activo %}
+
+                                            <span class="estado-usuario estado-activo">
+
+                                                <span class="punto-estado"></span>
+
+                                                Activo
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="estado-usuario estado-inactivo">
+
+                                                <span class="punto-estado"></span>
+
+                                                Inactivo
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- ÚLTIMO ACCESO -->
+                                    <td>
+
+                                        {% if usuario.ultimo_acceso %}
+
+                                            <strong>
+                                                {{ usuario.ultimo_acceso|date:"d/m/Y" }}
+                                            </strong>
+
+                                            <small class="ultimo-acceso-hora">
+                                                {{ usuario.ultimo_acceso|date:"H:i" }}
+                                            </small>
+
+                                        {% else %}
+
+                                            <span class="sin-acceso">
+                                                Nunca
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- =====================================================
+                                        ACCIONES
+                                    ====================================================== -->
+
+                                    <td class="text-center">
+
+                                        <div
+                                            class="
+                                                d-flex
+                                                justify-content-center
+                                                align-items-center
+                                                gap-2
+                                            "
+                                        >
+
+                                            <!-- =============================================
+                                                ADMINISTRADOR
+                                            ============================================== -->
+
+                                            {% if usuario.tipo_perfil == "administrador" %}
+
+                                                {% if usuario.puede_editar_administrador %}
+
+                                                    <!-- EDITAR -->
+
+                                                    <button
+                                                        type="button"
+                                                        class="
+                                                            btn-accion-usuario
+                                                            btn-editar-administrador
+                                                        "
+                                                        title="Editar administrador"
+
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalEditarAdministrador"
+
+                                                        data-url="{% url 'editar_administrador' usuario.id %}"
+
+                                                        data-id="{{ usuario.id }}"
+                                                        data-nombres="{{ usuario.nombres|escape }}"
+                                                        data-apellidos="{{ usuario.apellidos|escape }}"
+                                                        data-username="{{ usuario.username|escape }}"
+                                                        data-correo="{{ usuario.correo_editar|escape }}"
+                                                        data-celular="{{ usuario.celular|escape }}"
+                                                        data-nivel-acceso="{{ usuario.nivel_acceso|escape }}"
+
+                                                        data-activo="{% if usuario.activo %}1{% else %}0{% endif %}"
+
+                                                        data-foto="{{ usuario.foto }}"
+                                                    >
+
+                                                        <i class="bi bi-pencil-square"></i>
+
+                                                    </button>
+
+
+                                                    <!-- =========================================
+                                                        ACTIVAR / DESACTIVAR
+                                                    ========================================== -->
+
+                                                    {% if usuario.id == request.user.id %}
+
+                                                        <button
+                                                            type="button"
+                                                            class="
+                                                                btn-accion-usuario
+                                                                btn-accion-bloqueada
+                                                            "
+                                                            title="No puedes cambiar el estado de tu propia cuenta"
+                                                            disabled
+                                                        >
+
+                                                            {% if usuario.activo %}
+
+                                                                <i class="bi bi-lock-fill"></i>
+
+                                                            {% else %}
+
+                                                                <i class="bi bi-unlock-fill"></i>
+
+                                                            {% endif %}
+
+                                                        </button>
+
+                                                    {% else %}
+
+                                                        <button
+                                                            type="button"
+                                                            class="
+                                                                btn-accion-usuario
+                                                                btn-estado-administrador
+                                                                {% if usuario.activo %}
+                                                                    btn-desactivar-usuario
+                                                                {% else %}
+                                                                    btn-activar-usuario
+                                                                {% endif %}
+                                                            "
+
+                                                            title="
+                                                                {% if usuario.activo %}
+                                                                    Desactivar administrador
+                                                                {% else %}
+                                                                    Activar administrador
+                                                                {% endif %}
+                                                            "
+
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modalEstadoAdministrador"
+
+                                                            data-url="{% url 'cambiar_estado_administrador' usuario.id %}"
+
+                                                            data-nombre="{{ usuario.nombre|escape }}"
+
+                                                            data-activo="{% if usuario.activo %}1{% else %}0{% endif %}"
+                                                        >
+
+                                                            {% if usuario.activo %}
+
+                                                                <i class="bi bi-lock-fill"></i>
+
+                                                            {% else %}
+
+                                                                <i class="bi bi-unlock-fill"></i>
+
+                                                            {% endif %}
+
+                                                        </button>
+
+                                                    {% endif %}
+
+
+                                                    <!-- =========================================
+                                                        ELIMINAR
+                                                    ========================================== -->
+
+                                                    {% if usuario.id == request.user.id %}
+
+                                                        <button
+                                                            type="button"
+                                                            class="
+                                                                btn-accion-usuario
+                                                                btn-accion-bloqueada
+                                                            "
+                                                            title="No puedes eliminar tu propia cuenta"
+                                                            disabled
+                                                        >
+
+                                                            <i class="bi bi-trash3-fill"></i>
+
+                                                        </button>
+
+                                                    {% else %}
+
+                                                        <button
+                                                            type="button"
+                                                            class="
+                                                                btn-accion-usuario
+                                                                btn-eliminar-administrador
+                                                            "
+                                                            title="Eliminar administrador"
+
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modalEliminarAdministrador"
+
+                                                            data-url="{% url 'eliminar_administrador' usuario.id %}"
+
+                                                            data-nombre="{{ usuario.nombre|escape }}"
+                                                            data-username="{{ usuario.username|escape }}"
+                                                        >
+
+                                                            <i class="bi bi-trash3-fill"></i>
+
+                                                        </button>
+
+                                                    {% endif %}
+
+
+                                                {% else %}
+
+                                                    <!--
+                                                        Es un superusuario Django,
+                                                        pero no tiene perfil en la tabla Administrador.
+                                                    -->
+
+                                                    <button
+                                                        type="button"
+                                                        class="
+                                                            btn-accion-usuario
+                                                            btn-accion-bloqueada
+                                                        "
+                                                        title="Este usuario no tiene perfil Administrador"
+                                                        disabled
+                                                    >
+
+                                                        <i class="bi bi-shield-exclamation"></i>
+
+                                                    </button>
+
+                                                {% endif %}
+
+
+                                            <!-- =============================================
+                                                APICULTOR
+                                            ============================================== -->
+
+                                            {% elif usuario.tipo_perfil == "apicultor" %}
+
+                                                <span
+                                                    class="text-muted small"
+                                                    title="La gestión del Apicultor se realiza desde su módulo"
+                                                >
+
+                                                    <i class="bi bi-person-badge me-1"></i>
+
+                                                    Gestionar en Apicultores
+
+                                                </span>
+
+
+                                            <!-- =============================================
+                                                SIN PERFIL
+                                            ============================================== -->
+
+                                            {% else %}
+
+                                                <span class="text-muted">
+
+                                                    —
+
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        class="text-center py-5"
+                                    >
+
+                                        No hay usuarios registrados.
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+            TAB ROLES Y PERMISOS
+        ================================================== -->
+
+        <div
+            class="
+                tab-pane
+                fade
+                {% if tab_activa == 'roles' %}
+                    show active
+                {% endif %}
+            "
+            id="panelRoles"
+            role="tabpanel"
+        >
+
+            <form
+                method="POST"
+                action="{% url 'guardar_permisos_roles' %}"
+                id="formPermisosRoles"
+            >
+
+                {% csrf_token %}
+
+                <div class="encabezado-roles">
+
+                    <div>
+
+                        <h5>
+                            Roles y Permisos
+                        </h5>
+
+                        <p>
+                            Define el acceso y las capacidades
+                            de cada rol.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn-guardar-permisos"
+                        id="btnGuardarPermisos"
+                        disabled
+                    >
+                        <i class="bi bi-floppy-fill"></i>
+                        Guardar cambios
+                    </button>
+
+                </div>
+
+
+                <div class="grid-roles">
+
+                    {% for rol in roles %}
+
+                        <article class="tarjeta-rol">
+
+                            <div class="icono-rol">
+
+                                {% if "Admin" in rol.nombre %}
+
+                                    <i class="bi bi-person-gear"></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-person-badge"></i>
+
+                                {% endif %}
+
+                            </div>
+
+                            <h4>
+                                {{ rol.nombre }}
+                            </h4>
+
+                            {% if rol.descripcion %}
+
+                                <p class="descripcion-rol">
+                                    {{ rol.descripcion }}
+                                </p>
+
+                            {% endif %}
+
+
+                            <div class="lista-permisos">
+
+                                {% for permiso in rol.permisos %}
+
+                                    <label
+                                        class="
+                                            permiso-item
+                                            {% if not permiso.activo %}
+                                                permiso-desactivado
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        <input
+                                            type="checkbox"
+                                            class="checkbox-permiso"
+                                            name="permisos_{{ rol.id }}"
+                                            value="{{ permiso.codigo }}"
+                                            data-rol="{{ rol.id }}"
+                                            data-codigo="{{ permiso.codigo }}"
+                                            {% if permiso.activo %}
+                                                checked
+                                            {% endif %}
+                                            {% if permiso.bloqueado %}
+                                                disabled
+                                            {% endif %}
+                                        >
+
+                                        <span class="check-visual">
+
+                                            <i
+                                                class="
+                                                    bi
+                                                    {% if permiso.activo %}
+                                                        bi-check-lg
+                                                    {% else %}
+                                                        bi-x-lg
+                                                    {% endif %}
+                                                "
+                                            ></i>
+
+                                        </span>
+
+                                        <span>
+                                            {{ permiso.nombre }}
+                                        </span>
+
+                                    </label>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </article>
+
+                    {% empty %}
+
+                        <div class="sin-roles">
+
+                            No hay roles registrados
+                            en la base de datos.
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+    MODAL - SELECCIONAR TIPO DE USUARIO
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalSeleccionarTipoUsuario"
+    tabindex="-1"
+    aria-labelledby="modalSeleccionarTipoUsuarioLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header">
+                <div>
+                    <h5
+                        class="modal-title fw-bold"
+                        id="modalSeleccionarTipoUsuarioLabel"
+                    >
+                        Nuevo usuario
+                    </h5>
+
+                    <p class="text-muted mb-0 mt-1">
+                        Selecciona el tipo de usuario que deseas registrar.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+            </div>
+
+            <div class="modal-body p-4">
+
+                <div class="row g-3">
+
+                    <!-- ADMINISTRADOR -->
+                    <div class="col-md-6">
+
+                        <button
+                            type="button"
+                            class="btn w-100 p-4 border rounded-4"
+                            id="btnSeleccionarAdministrador"
+                        >
+                            <div class="fs-1 mb-3">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                Administrador
+                            </h6>
+
+                            <small class="text-muted">
+                                Usuario encargado de administrar
+                                y configurar el sistema.
+                            </small>
+                        </button>
+
+                    </div>
+
+                    <!-- APICULTOR -->
+                    <div class="col-md-6">
+
+                        <button
+                            type="button"
+                            class="btn w-100 p-4 border rounded-4"
+                            id="btnSeleccionarApicultor"
+                            data-url="{% url 'apicultores_admin' %}"
+                        >
+                            <div class="fs-1 mb-3">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                Apicultor
+                            </h6>
+
+                            <small class="text-muted">
+                                Usuario encargado del manejo
+                                de apiarios y colmenas.
+                            </small>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+    MODAL - REGISTRAR ADMINISTRADOR
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalAgregarAdministrador"
+    tabindex="-1"
+    aria-labelledby="modalAgregarAdministradorLabel"
+    aria-hidden="true"
+>
+    <div
+        class="
+            modal-dialog
+            modal-xl
+            modal-dialog-centered
+            modal-dialog-scrollable
+        "
+    >
+
+        <div class="modal-content border-0">
+
+            <!-- ENCABEZADO -->
+            <div class="modal-header">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="fs-3">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+
+                    <div>
+
+                        <h4
+                            class="modal-title fw-bold mb-1"
+                            id="modalAgregarAdministradorLabel"
+                        >
+                            Registrar administrador
+                        </h4>
+
+                        <p class="mb-0 text-muted">
+                            Ingresa la información y las credenciales
+                            del nuevo administrador.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+
+            <!-- FORMULARIO -->
+            <form
+                method="POST"
+                action="{% url 'crear_administrador' %}"
+                enctype="multipart/form-data"
+                id="formAgregarAdministrador"
+            >
+
+                {% csrf_token %}
+
+                <div class="modal-body p-4 p-lg-5">
+
+                    <div class="row g-4">
+
+                        <!-- =============================================
+                             FOTO
+                        ============================================== -->
+
+                        <div class="col-lg-3">
+
+                            <div class="text-center">
+
+                                <h6 class="fw-bold mb-3">
+                                    Foto de perfil
+                                </h6>
+
+                                <div
+                                    class="
+                                        border
+                                        rounded-circle
+                                        mx-auto
+                                        mb-3
+                                        d-flex
+                                        align-items-center
+                                        justify-content-center
+                                        overflow-hidden
+                                    "
+                                    style="
+                                        width: 150px;
+                                        height: 150px;
+                                    "
+                                >
+
+                                    <i
+                                        class="bi bi-person-fill fs-1"
+                                        id="iconoPreviewAdministrador"
+                                    ></i>
+
+                                    <img
+                                        src=""
+                                        alt="Vista previa"
+                                        id="imagenPreviewAdministrador"
+                                        class="d-none w-100 h-100"
+                                        style="object-fit: cover;"
+                                    >
+
+                                </div>
+
+                                <label
+                                    for="fotoperfilAdministrador"
+                                    class="btn btn-outline-secondary"
+                                >
+                                    <i class="bi bi-camera-fill me-2"></i>
+                                    Seleccionar foto
+                                </label>
+
+                                <input
+                                    type="file"
+                                    class="d-none"
+                                    id="fotoperfilAdministrador"
+                                    name="fotoperfil"
+                                    accept="image/jpeg,image/png,image/webp"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn
+                                        btn-link
+                                        text-danger
+                                        d-none
+                                        mt-2
+                                    "
+                                    id="btnQuitarFotoAdministrador"
+                                >
+                                    <i class="bi bi-trash3-fill me-1"></i>
+                                    Quitar foto
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =============================================
+                             INFORMACIÓN
+                        ============================================== -->
+
+                        <div class="col-lg-9">
+
+
+                            <!-- INFORMACIÓN PERSONAL -->
+
+                            <section>
+
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-person-vcard-fill me-2"></i>
+                                    Información personal
+                                </h6>
+
+                                <div class="row g-3">
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Primer nombre
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="primer_nombre"
+                                            maxlength="75"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Segundo nombre
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="segundo_nombre"
+                                            maxlength="75"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Primer apellido
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="primer_apellido"
+                                            maxlength="75"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Segundo apellido
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="segundo_apellido"
+                                            maxlength="75"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Celular
+                                        </label>
+
+                                        <input
+                                            type="tel"
+                                            class="form-control"
+                                            name="celular"
+                                            maxlength="20"
+                                            inputmode="numeric"
+                                            placeholder="Ejemplo: 3101234567"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Correo electrónico
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            name="correo"
+                                            maxlength="254"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Nivel de acceso
+                                        </label>
+
+                                        <select
+                                            class="form-select"
+                                            name="nivel_acceso"
+                                        >
+                                            <option value="Alto" selected>
+                                                Alto
+                                            </option>
+
+                                            <option value="Medio">
+                                                Medio
+                                            </option>
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+
+                            <hr class="my-4">
+
+
+                            <!-- CREDENCIALES -->
+
+                            <section>
+
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-shield-lock-fill me-2"></i>
+                                    Credenciales de acceso
+                                </h6>
+
+                                <div class="row g-3">
+
+                                    <div class="col-12">
+
+                                        <label class="form-label">
+                                            Nombre de usuario
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="username"
+                                            maxlength="150"
+                                            pattern="[A-Za-z0-9_@.+-]+"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Contraseña
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="password"
+                                                class="form-control"
+                                                id="passwordAdministrador"
+                                                name="password"
+                                                minlength="8"
+                                                required
+                                            >
+
+                                            <button
+                                                type="button"
+                                                class="
+                                                    btn
+                                                    btn-outline-secondary
+                                                    btn-password-administrador
+                                                "
+                                                data-password-target="passwordAdministrador"
+                                            >
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+                                            Confirmar contraseña
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="password"
+                                                class="form-control"
+                                                id="confirmarPasswordAdministrador"
+                                                name="confirmar_password"
+                                                minlength="8"
+                                                required
+                                            >
+
+                                            <button
+                                                type="button"
+                                                class="
+                                                    btn
+                                                    btn-outline-secondary
+                                                    btn-password-administrador
+                                                "
+                                                data-password-target="confirmarPasswordAdministrador"
+                                            >
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+
+                                        </div>
+
+                                        <div
+                                            class="text-danger small mt-2 d-none"
+                                            id="mensajePasswordAdministrador"
+                                        >
+                                            <i class="bi bi-exclamation-circle-fill"></i>
+                                            Las contraseñas no coinciden.
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PIE -->
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                        id="btnGuardarAdministrador"
+                    >
+                        <i class="bi bi-person-check-fill me-2"></i>
+                        Registrar administrador
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL - EDITAR ADMINISTRADOR
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalEditarAdministrador"
+    tabindex="-1"
+    aria-labelledby="modalEditarAdministradorLabel"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-xl
+            modal-dialog-centered
+            modal-dialog-scrollable
+        "
+    >
+
+        <div class="modal-content border-0">
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <div class="modal-header">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="fs-3">
+
+                        <i class="bi bi-person-gear"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4
+                            class="modal-title fw-bold mb-1"
+                            id="modalEditarAdministradorLabel"
+                        >
+                            Editar administrador
+                        </h4>
+
+                        <p class="mb-0 text-muted">
+
+                            Actualiza la información y las
+                            credenciales del administrador.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form
+                method="POST"
+                action=""
+                enctype="multipart/form-data"
+                id="formEditarAdministrador"
+                novalidate
+            >
+
+                {% csrf_token %}
+
+
+                <div class="modal-body p-4 p-lg-5">
+
+
+                    <div class="row g-4">
+
+
+                        <!-- =====================================
+                             FOTO
+                        ====================================== -->
+
+                        <div class="col-lg-3">
+
+                            <div class="text-center">
+
+                                <h6 class="fw-bold mb-3">
+
+                                    Foto de perfil
+
+                                </h6>
+
+
+                                <div
+                                    class="
+                                        border
+                                        rounded-circle
+                                        mx-auto
+                                        mb-3
+                                        d-flex
+                                        align-items-center
+                                        justify-content-center
+                                        overflow-hidden
+                                    "
+                                    style="
+                                        width: 150px;
+                                        height: 150px;
+                                    "
+                                >
+
+                                    <i
+                                        class="bi bi-person-fill fs-1"
+                                        id="iconoPreviewEditarAdministrador"
+                                    ></i>
+
+
+                                    <img
+                                        src=""
+                                        alt="Foto del administrador"
+                                        id="imagenPreviewEditarAdministrador"
+                                        class="d-none w-100 h-100"
+                                        style="object-fit: cover;"
+                                    >
+
+                                </div>
+
+
+                                <label
+                                    for="fotoperfilEditarAdministrador"
+                                    class="btn btn-outline-secondary"
+                                >
+
+                                    <i class="bi bi-camera-fill me-2"></i>
+
+                                    Cambiar foto
+
+                                </label>
+
+
+                                <input
+                                    type="file"
+                                    class="d-none"
+                                    id="fotoperfilEditarAdministrador"
+                                    name="fotoperfil"
+                                    accept="image/jpeg,image/png,image/webp"
+                                >
+
+
+                                <input
+                                    type="hidden"
+                                    name="eliminar_foto"
+                                    id="eliminarFotoEditarAdministrador"
+                                    value="0"
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn
+                                        btn-link
+                                        text-danger
+                                        d-none
+                                        mt-2
+                                    "
+                                    id="btnQuitarFotoEditarAdministrador"
+                                >
+
+                                    <i class="bi bi-trash3-fill me-1"></i>
+
+                                    Quitar foto
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================
+                             INFORMACIÓN
+                        ====================================== -->
+
+                        <div class="col-lg-9">
+
+
+                            <!-- ================================
+                                 INFORMACIÓN PERSONAL
+                            ================================= -->
+
+                            <section>
+
+                                <h6 class="fw-bold mb-3">
+
+                                    <i class="bi bi-person-vcard-fill me-2"></i>
+
+                                    Información personal
+
+                                </h6>
+
+
+                                <div class="row g-3">
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Nombres
+
+                                            <span class="text-danger">*</span>
+
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="nombresEditarAdministrador"
+                                            name="nombres"
+                                            maxlength="150"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Apellidos
+
+                                            <span class="text-danger">*</span>
+
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="apellidosEditarAdministrador"
+                                            name="apellidos"
+                                            maxlength="150"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Celular
+
+                                        </label>
+
+                                        <input
+                                            type="tel"
+                                            class="form-control"
+                                            id="celularEditarAdministrador"
+                                            name="celular"
+                                            maxlength="20"
+                                            inputmode="numeric"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Correo electrónico
+
+                                            <span class="text-danger">*</span>
+
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            id="correoEditarAdministrador"
+                                            name="correo"
+                                            maxlength="254"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Nivel de acceso
+
+                                        </label>
+
+                                        <select
+                                            class="form-select"
+                                            id="nivelAccesoEditarAdministrador"
+                                            name="nivel_acceso"
+                                        >
+
+                                            <option value="Alto">
+                                                Alto
+                                            </option>
+
+                                            <option value="Medio">
+                                                Medio
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+
+                                    <!-- ESTADO -->
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label d-block">
+
+                                            Estado de la cuenta
+
+                                        </label>
+
+
+                                        <div class="form-check form-switch pt-2">
+
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                role="switch"
+                                                id="usuarioActivoEditarAdministrador"
+                                                name="usuario_activo"
+                                            >
+
+
+                                            <label
+                                                class="form-check-label fw-semibold"
+                                                for="usuarioActivoEditarAdministrador"
+                                                id="textoEstadoEditarAdministrador"
+                                            >
+
+                                                Usuario activo
+
+                                            </label>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                            </section>
+
+
+                            <hr class="my-4">
+
+
+                            <!-- ================================
+                                 CREDENCIALES
+                            ================================= -->
+
+                            <section>
+
+                                <h6 class="fw-bold mb-3">
+
+                                    <i class="bi bi-shield-lock-fill me-2"></i>
+
+                                    Credenciales de acceso
+
+                                </h6>
+
+
+                                <div class="row g-3">
+
+
+                                    <div class="col-12">
+
+                                        <label class="form-label">
+
+                                            Nombre de usuario
+
+                                            <span class="text-danger">*</span>
+
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="usernameEditarAdministrador"
+                                            name="username"
+                                            maxlength="150"
+                                            pattern="[A-Za-z0-9_@.+-]+"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Nueva contraseña
+
+                                        </label>
+
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="password"
+                                                class="form-control"
+                                                id="passwordEditarAdministrador"
+                                                name="password"
+                                                minlength="8"
+                                            >
+
+
+                                            <button
+                                                type="button"
+                                                class="
+                                                    btn
+                                                    btn-outline-secondary
+                                                    btn-password-editar-administrador
+                                                "
+                                                data-password-target="passwordEditarAdministrador"
+                                                aria-label="Mostrar contraseña"
+                                            >
+
+                                                <i class="bi bi-eye-fill"></i>
+
+                                            </button>
+
+                                        </div>
+
+
+                                        <small class="text-muted">
+
+                                            Déjala vacía para conservar
+                                            la contraseña actual.
+
+                                        </small>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label class="form-label">
+
+                                            Confirmar nueva contraseña
+
+                                        </label>
+
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="password"
+                                                class="form-control"
+                                                id="confirmarPasswordEditarAdministrador"
+                                                name="confirmar_password"
+                                                minlength="8"
+                                            >
+
+
+                                            <button
+                                                type="button"
+                                                class="
+                                                    btn
+                                                    btn-outline-secondary
+                                                    btn-password-editar-administrador
+                                                "
+                                                data-password-target="confirmarPasswordEditarAdministrador"
+                                                aria-label="Mostrar contraseña"
+                                            >
+
+                                                <i class="bi bi-eye-fill"></i>
+
+                                            </button>
+
+                                        </div>
+
+
+                                        <div
+                                            class="
+                                                text-danger
+                                                small
+                                                mt-2
+                                                d-none
+                                            "
+                                            id="mensajePasswordEditarAdministrador"
+                                        >
+
+                                            <i class="bi bi-exclamation-circle-fill"></i>
+
+                                            Las contraseñas no coinciden.
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                            </section>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ===========================================
+                     FOOTER
+                ============================================ -->
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                        id="btnGuardarEdicionAdministrador"
+                    >
+
+                        <i class="bi bi-floppy-fill me-2"></i>
+
+                        Guardar cambios
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     MODAL - ACTIVAR / DESACTIVAR ADMINISTRADOR
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalEstadoAdministrador"
+    tabindex="-1"
+    aria-labelledby="modalEstadoAdministradorLabel"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-dialog-centered
+        "
+    >
+
+        <div
+            class="
+                modal-content
+                border-0
+                shadow
+            "
+        >
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <div class="modal-header">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div
+                        class="icono-modal-estado"
+                        id="iconoEstadoAdministrador"
+                    >
+
+                        <i class="bi bi-lock-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h5
+                            class="
+                                modal-title
+                                fw-bold
+                                mb-1
+                            "
+                            id="modalEstadoAdministradorLabel"
+                        >
+
+                            Cambiar estado
+
+                        </h5>
+
+
+                        <p class="text-muted mb-0">
+
+                            Confirma el cambio de estado
+                            de la cuenta.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form
+                method="POST"
+                action=""
+                id="formEstadoAdministrador"
+            >
+
+                {% csrf_token %}
+
+
+                <input
+                    type="hidden"
+                    name="activo"
+                    id="nuevoEstadoAdministrador"
+                    value=""
+                >
+
+
+                <div class="modal-body p-4">
+
+                    <div
+                        class="
+                            alerta-estado-administrador
+                            text-center
+                        "
+                    >
+
+                        <div
+                            class="mb-3"
+                            id="iconoGrandeEstadoAdministrador"
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-lock-fill
+                                    fs-1
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <h5
+                            class="fw-bold"
+                            id="tituloEstadoAdministrador"
+                        >
+
+                            Desactivar administrador
+
+                        </h5>
+
+
+                        <p
+                            class="
+                                text-muted
+                                mb-0
+                            "
+                            id="mensajeEstadoAdministrador"
+                        >
+
+                            ¿Deseas cambiar el estado
+                            de esta cuenta?
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FOOTER
+                ================================================== -->
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning"
+                        id="btnConfirmarEstadoAdministrador"
+                    >
+
+                        <i class="bi bi-lock-fill me-2"></i>
+
+                        Desactivar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL - ELIMINAR ADMINISTRADOR
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalEliminarAdministrador"
+    tabindex="-1"
+    aria-labelledby="modalEliminarAdministradorLabel"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-dialog-centered
+        "
+    >
+
+        <div
+            class="
+                modal-content
+                border-0
+                shadow
+            "
+        >
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <div class="modal-header">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="text-danger fs-3">
+
+                        <i class="bi bi-trash3-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h5
+                            class="
+                                modal-title
+                                fw-bold
+                                mb-1
+                            "
+                            id="modalEliminarAdministradorLabel"
+                        >
+
+                            Eliminar administrador
+
+                        </h5>
+
+
+                        <p class="text-muted mb-0">
+
+                            Esta acción requiere confirmación.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form
+                method="POST"
+                action=""
+                id="formEliminarAdministrador"
+            >
+
+                {% csrf_token %}
+
+
+                <div class="modal-body p-4">
+
+                    <div class="text-center">
+
+                        <div
+                            class="
+                                icono-eliminar-administrador
+                                mx-auto
+                                mb-3
+                            "
+                        >
+
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                        </div>
+
+
+                        <h5 class="fw-bold">
+
+                            ¿Eliminar esta cuenta?
+
+                        </h5>
+
+
+                        <p class="text-muted">
+
+                            Estás a punto de eliminar al administrador:
+
+                        </p>
+
+
+                        <div
+                            class="
+                                nombre-eliminar-administrador
+                                mb-3
+                            "
+                        >
+
+                            <strong
+                                id="nombreEliminarAdministrador"
+                            >
+                                Administrador
+                            </strong>
+
+
+                            <small
+                                class="
+                                    d-block
+                                    text-muted
+                                    mt-1
+                                "
+                                id="usernameEliminarAdministrador"
+                            >
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                alert
+                                alert-danger
+                                text-start
+                                mb-0
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-exclamation-triangle-fill
+                                    me-2
+                                "
+                            ></i>
+
+                            La cuenta será eliminada junto
+                            con su perfil de Administrador.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FOOTER
+                ================================================== -->
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        id="btnConfirmarEliminarAdministrador"
+                    >
+
+                        <i class="bi bi-trash3-fill me-2"></i>
+
+                        Eliminar definitivamente
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=12"
+></script>
+
+{% endblock %}
+
+
+{% endblock %}

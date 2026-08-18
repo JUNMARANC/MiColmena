@@ -44,51 +44,68 @@
                 <span>Inicio</span>
             </a>
 
-            <a href="{% url 'apiarios_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'apiarios_admin' %}active{% endif %}">
-                <i class="bi bi-geo-alt"></i>
-                <span>Apiarios</span>
-            </a>
+            {% if "av" in permisos_usuario %}
+                <a href="{% url 'apiarios_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'apiarios_admin' %}active{% endif %}">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>Apiarios</span>
+                </a>
+            {% endif %}
 
-            <a href="{% url 'colmenas_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'colmenas_admin' %}active{% endif %}">
-                <i class="bi bi-box-seam"></i>
-                <span>Colmenas</span>
-            </a>
+            {% if "cv" in permisos_usuario %}
+                <a href="{% url 'colmenas_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'colmenas_admin' %}active{% endif %}">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Colmenas</span>
+                </a>
+            {% endif %}
 
-            <a href="{% url 'mantenimientos_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'mantenimientos_admin' %}active{% endif %}">
-                <i class="bi bi-tools"></i>
-                <span>Mantenimientos</span>
-            </a>
+            {% if "mg" in permisos_usuario or "mr" in permisos_usuario %}
+                <a href="{% url 'mantenimientos_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'mantenimientos_admin' %}active{% endif %}">
+                    <i class="bi bi-tools"></i>
+                    <span>Mantenimientos</span>
+                </a>
+            {% endif %}
 
-            <a href="{% url 'incidencias_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'incidencias_admin' %}active{% endif %}">
-                <i class="bi bi-exclamation-triangle"></i>
-                <span>Incidencias</span>
-            </a>
+            {% if "ig" in permisos_usuario or "ir" in permisos_usuario %}
+                <a href="{% url 'incidencias_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'incidencias_admin' %}active{% endif %}">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span>Incidencias</span>
+                </a>
+            {% endif %}
+
 
             <a href="{% url 'apicultores_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'apicultores_admin' %}active{% endif %}">
                 <i class="bi bi-person-badge"></i>
                 <span>Apicultores</span>
             </a>
+            
 
-            <a href="{% url 'agenda_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}">
-                <i class="bi bi-calendar-event"></i>
-                <span>Agenda</span>
-            </a>
+            {% if "agenda" in permisos_usuario %}
+                <a href="{% url 'agenda_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Agenda</span>
+                </a>
+            {% endif %}
 
-            <a href="{% url 'reportes_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'reportes_admin' %}active{% endif %}">
-                <i class="bi bi-file-earmark-bar-graph"></i>
-                <span>Reportes</span>
-            </a>
+            {% if "rv" in permisos_usuario %}
+                <a href="{% url 'reportes_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'reportes_admin' %}active{% endif %}">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Reportes</span>
+                </a>
+            {% endif %}
 
-            <a href="{% url 'usuarios_roles_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}active{% endif %}">
-                <i class="bi bi-people"></i>
-                <span>Usuarios y Roles</span>
-            </a>
+            {% if "ug" in permisos_usuario or "roles" in permisos_usuario %}
+                <a href="{% url 'usuarios_roles_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}active{% endif %}">
+                    <i class="bi bi-people"></i>
+                    <span>Usuarios y Roles</span>
+                </a>
+            {% endif %}
 
-            <a href="{% url 'configuracion_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_admin' %}active{% endif %}">
-                <i class="bi bi-gear"></i>
-                <span>Configuración</span>
-            </a>
-
+            {% if "cfg" in permisos_usuario %}
+                <a href="{% url 'configuracion_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_admin' %}active{% endif %}">
+                    <i class="bi bi-gear"></i>
+                    <span>Configuración</span>
+                </a>
+            {% endif %}
         </nav>
 
         <div class="sidebar-user">
@@ -140,6 +157,48 @@
 
         </header>
 
+        {% if messages %}
+
+            <div class="container-fluid mt-3">
+
+                {% for message in messages %}
+
+                    <div
+                        class="
+                            alert
+                            {% if message.tags == 'success' %}
+                                alert-success
+                            {% elif message.tags == 'error' %}
+                                alert-danger
+                            {% elif message.tags == 'warning' %}
+                                alert-warning
+                            {% else %}
+                                alert-info
+                            {% endif %}
+                            alert-dismissible
+                            fade
+                            show
+                        "
+                        role="alert"
+                    >
+
+                        {{ message }}
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Cerrar"
+                        ></button>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+        
         <section class="contenido-page">
             {% block content %}
             {% endblock %}
