@@ -17,7 +17,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=2"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=4"
 >
 
 
@@ -82,47 +82,66 @@
 
             <article class="perfil-card perfil-card-identidad">
 
+                <i class="bi bi-hexagon-fill perfil-panal-decorativo" aria-hidden="true"></i>
 
                 <!-- FOTO -->
 
                 <div class="perfil-avatar-principal">
 
-                    {% if foto %}
+                    <div class="perfil-avatar-circulo">
 
-                        <img
-                            src="{{ foto }}"
-                            alt="Foto de perfil de {{ usuario.get_full_name|default:usuario.username }}"
-                            id="fotoPerfilPrincipal"
-                        >
+                        {% if foto %}
 
-                        <div
-                            class="perfil-avatar-sin-foto d-none"
-                            id="iconoPerfilPrincipal"
-                        >
+                            <img
+                                src="{{ foto }}"
+                                alt="Foto de perfil de {{ usuario.get_full_name|default:usuario.username }}"
+                                id="fotoPerfilPrincipal"
+                            >
 
-                            <i class="bi bi-person-fill"></i>
+                            <div
+                                class="perfil-avatar-sin-foto d-none"
+                                id="iconoPerfilPrincipal"
+                            >
 
-                        </div>
+                                <i class="bi bi-person-fill"></i>
 
-                    {% else %}
+                            </div>
 
-                        <img
-                            src=""
-                            alt="Vista previa de foto"
-                            id="fotoPerfilPrincipal"
-                            class="d-none"
-                        >
+                        {% else %}
 
-                        <div
-                            class="perfil-avatar-sin-foto"
-                            id="iconoPerfilPrincipal"
-                        >
+                            <img
+                                src=""
+                                alt="Vista previa de foto"
+                                id="fotoPerfilPrincipal"
+                                class="d-none"
+                            >
 
-                            <i class="bi bi-person-fill"></i>
+                            <div
+                                class="perfil-avatar-sin-foto"
+                                id="iconoPerfilPrincipal"
+                            >
 
-                        </div>
+                                <i class="bi bi-person-fill"></i>
 
-                    {% endif %}
+                            </div>
+
+                        {% endif %}
+
+                        <label for="fotoperfil" class="perfil-avatar-overlay" title="Cambiar foto">
+                            <i class="bi bi-camera-fill"></i>
+                            <span>Cambiar foto</span>
+                        </label>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btnQuitarFotoPerfil"
+                        class="perfil-avatar-quitar {% if not foto %}d-none{% endif %}"
+                        title="Quitar foto"
+                    >
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
 
                 </div>
 
@@ -567,114 +586,19 @@
 
 
                     <!-- =====================================
-                         FOTO
+                         FOTO (el control visible vive en el
+                         avatar de la tarjeta izquierda; aquí solo
+                         se mantiene el input real para que viaje
+                         con este formulario al enviarlo)
                     ====================================== -->
 
-                    <div class="perfil-foto-edicion">
-
-
-                        <div class="perfil-foto-preview">
-
-                            {% if foto %}
-
-                                <img
-                                    src="{{ foto }}"
-                                    alt="Foto de perfil"
-                                    id="imagenPreviewPerfil"
-                                >
-
-                                <div
-                                    class="perfil-preview-icono d-none"
-                                    id="iconoPreviewPerfil"
-                                >
-
-                                    <i class="bi bi-person-fill"></i>
-
-                                </div>
-
-                            {% else %}
-
-                                <img
-                                    src=""
-                                    alt="Vista previa"
-                                    id="imagenPreviewPerfil"
-                                    class="d-none"
-                                >
-
-                                <div
-                                    class="perfil-preview-icono"
-                                    id="iconoPreviewPerfil"
-                                >
-
-                                    <i class="bi bi-person-fill"></i>
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-
-
-                        <div class="perfil-foto-controles">
-
-                            <h6>
-                                Foto de perfil
-                            </h6>
-
-
-                            <p>
-                                JPG, PNG o WEBP.
-                                Máximo 5 MB.
-                            </p>
-
-
-                            <div class="perfil-foto-botones">
-
-                                <label
-                                    for="fotoperfil"
-                                    class="btn btn-outline-success"
-                                >
-
-                                    <i class="bi bi-camera-fill me-2"></i>
-
-                                    Cambiar foto
-
-                                </label>
-
-
-                                <input
-                                    type="file"
-                                    class="d-none"
-                                    id="fotoperfil"
-                                    name="fotoperfil"
-                                    accept="image/jpeg,image/png,image/webp"
-                                >
-
-
-                                <button
-                                    type="button"
-                                    class="
-                                        btn
-                                        btn-outline-danger
-                                        {% if not foto %}
-                                            d-none
-                                        {% endif %}
-                                    "
-                                    id="btnQuitarFotoPerfil"
-                                >
-
-                                    <i class="bi bi-trash3-fill me-2"></i>
-
-                                    Quitar
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <input
+                        type="file"
+                        class="d-none"
+                        id="fotoperfil"
+                        name="fotoperfil"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
 
 
 
@@ -1319,7 +1243,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=2"
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=4"
 ></script>
 
 {% endblock %}

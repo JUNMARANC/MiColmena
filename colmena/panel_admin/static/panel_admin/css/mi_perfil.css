@@ -10,13 +10,63 @@
 
 
 /* =========================================================
+   ANIMACIONES DE ENTRADA
+========================================================= */
+
+.perfil-encabezado,
+.perfil-columna-lateral > *,
+.perfil-contenido-principal > * {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: perfilAparecer .55s ease forwards;
+}
+
+.perfil-encabezado { animation-delay: 0s; }
+.perfil-columna-lateral > *:nth-child(1) { animation-delay: .08s; }
+.perfil-columna-lateral > *:nth-child(2) { animation-delay: .16s; }
+.perfil-columna-lateral > *:nth-child(3) { animation-delay: .24s; }
+.perfil-contenido-principal > *:nth-child(1) { animation-delay: .12s; }
+.perfil-contenido-principal > *:nth-child(2) { animation-delay: .2s; }
+.perfil-contenido-principal > *:nth-child(3) { animation-delay: .28s; }
+
+@keyframes perfilAparecer {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.perfil-card {
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.perfil-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(33, 79, 59, .1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .perfil-encabezado,
+    .perfil-columna-lateral > *,
+    .perfil-contenido-principal > * {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    .perfil-card:hover {
+        transform: none;
+    }
+}
+
+
+/* =========================================================
    ENCABEZADO
 ========================================================= */
 
 .perfil-encabezado {
+    position: relative;
     margin-bottom: 28px;
+    padding: 4px 4px 4px 14px;
+    border-left: 3px solid #f6de87;
 }
-
 
 .perfil-etiqueta {
     display: inline-flex;
@@ -120,6 +170,21 @@
 
 .perfil-card-identidad {
     padding: 30px 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* hexágono decorativo, muy sutil, tipo panal, en la esquina de la tarjeta */
+.perfil-panal-decorativo {
+    position: absolute;
+    bottom: -18px;
+    right: -14px;
+    font-size: 84px;
+    line-height: 1;
+    color: #f6de87;
+    opacity: .16;
+    transform: rotate(-12deg);
+    pointer-events: none;
 }
 
 
@@ -135,6 +200,23 @@
 
     position: relative;
 
+    animation: avatarEntrada .6s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: .1s;
+}
+
+@keyframes avatarEntrada {
+    from { opacity: 0; transform: scale(.6) rotate(-8deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* círculo que recorta la foto — el botón de quitar vive FUERA
+   de este contenedor para no ser recortado por el overflow */
+.perfil-avatar-circulo {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -147,12 +229,17 @@
 
     border: 4px solid #c0f1ca;
 
-    box-shadow:
-        0 7px 18px rgba(33, 79, 59, 0.10);
+    box-shadow: 0 7px 18px rgba(33, 79, 59, 0.10);
+
+    transition: border-color .3s ease, box-shadow .3s ease;
 }
 
+.perfil-avatar-principal:hover .perfil-avatar-circulo {
+    border-color: #f6de87;
+    box-shadow: 0 12px 26px rgba(33, 79, 59, .16), 0 0 0 6px rgba(246, 222, 135, .25);
+}
 
-.perfil-avatar-principal img {
+.perfil-avatar-circulo img {
     width: 100%;
     height: 100%;
 
@@ -173,6 +260,105 @@
     color: #214f3b;
 
     font-size: 48px;
+}
+
+/* overlay "cambiar foto" al pasar el mouse sobre el avatar */
+.perfil-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    background: rgba(22, 51, 36, .68);
+    color: #fff;
+
+    opacity: 0;
+    cursor: pointer;
+
+    transition: opacity .25s ease;
+}
+
+.perfil-avatar-overlay i {
+    font-size: 20px;
+}
+
+.perfil-avatar-overlay span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-align: center;
+    padding: 0 8px;
+}
+
+.perfil-avatar-principal:hover .perfil-avatar-overlay,
+.perfil-avatar-overlay:focus-visible {
+    opacity: 1;
+}
+
+/* botón de "quitar foto" — vive fuera del círculo recortado,
+   por eso ahora sí se ve completo en vez de cortado a la mitad */
+.perfil-avatar-quitar {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: 5;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+
+    background: #e05656;
+    color: #fff;
+
+    font-size: 15px;
+
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(224, 86, 86, .45);
+
+    transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+
+    animation: quitarLatido 2.6s ease-in-out .8s infinite;
+}
+
+.perfil-avatar-quitar:hover {
+    transform: scale(1.14);
+    background: #c73f3f;
+    box-shadow: 0 6px 14px rgba(199, 63, 63, .5);
+    animation-play-state: paused;
+}
+
+/* pequeño latido para que el botón de quitar se note sin ser molesto */
+@keyframes quitarLatido {
+    0%, 100% { box-shadow: 0 4px 10px rgba(224, 86, 86, .45), 0 0 0 0 rgba(224, 86, 86, .35); }
+    50%      { box-shadow: 0 4px 10px rgba(224, 86, 86, .45), 0 0 0 7px rgba(224, 86, 86, 0); }
+}
+
+/* pequeño pulso al confirmar una foto nueva */
+.perfil-avatar-principal.avatar-actualizado .perfil-avatar-circulo {
+    animation: avatarPop .5s ease;
+}
+
+@keyframes avatarPop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .perfil-avatar-principal { animation: none; }
+    .perfil-avatar-quitar { animation: none; }
+    .perfil-avatar-principal.avatar-actualizado .perfil-avatar-circulo { animation: none; }
 }
 
 
@@ -428,6 +614,13 @@
     color: #214f3b;
 
     font-size: 19px;
+
+    transition: transform .3s ease, background .3s ease;
+}
+
+.perfil-card:hover .perfil-card-icono {
+    transform: rotate(-8deg) scale(1.08);
+    background: #f6de87;
 }
 
 
@@ -458,96 +651,6 @@
 
     font-size: 13px;
     line-height: 1.5;
-}
-
-
-/* =========================================================
-   FOTO DE EDICIÓN
-========================================================= */
-
-.perfil-foto-edicion {
-    display: flex;
-    align-items: center;
-
-    gap: 22px;
-
-    margin-bottom: 8px;
-}
-
-
-.perfil-foto-preview {
-    width: 100px;
-    height: 100px;
-
-    min-width: 100px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-
-    border-radius: 18px;
-
-    background: #f5faf7;
-
-    border: 2px dashed #b9d3c3;
-}
-
-
-.perfil-foto-preview img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-}
-
-
-.perfil-preview-icono {
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #5f9781;
-
-    font-size: 34px;
-}
-
-
-.perfil-foto-controles {
-    min-width: 0;
-}
-
-
-.perfil-foto-controles h6 {
-    margin: 0 0 5px;
-
-    color: #163324;
-
-    font-size: 14px;
-    font-weight: 700;
-}
-
-
-.perfil-foto-controles p {
-    margin: 0 0 12px;
-
-    color: #809088;
-
-    font-size: 12px;
-}
-
-
-.perfil-foto-botones {
-    display: flex;
-    flex-wrap: wrap;
-
-    gap: 8px;
 }
 
 
@@ -594,6 +697,8 @@
     color: #163324;
 
     font-size: 14px;
+
+    transition: border-color .2s ease, box-shadow .2s ease;
 }
 
 
@@ -608,6 +713,14 @@
     background: #f4f9f6;
 
     color: #5f9781;
+
+    transition: color .2s ease, background .2s ease;
+}
+
+
+.pagina-mi-perfil .input-group:focus-within .input-group-text {
+    color: #214f3b;
+    background: #eaf6ee;
 }
 
 
@@ -793,6 +906,12 @@
    BOTONES
 ========================================================= */
 
+.pagina-mi-perfil .btn-success,
+.pagina-mi-perfil .btn-outline-success,
+.pagina-mi-perfil .btn-outline-danger {
+    transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
 .pagina-mi-perfil .btn-success {
     background: #5f9781;
 
@@ -805,6 +924,9 @@
     background: #214f3b;
 
     border-color: #214f3b;
+
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(33, 79, 59, .22);
 }
 
 
@@ -821,6 +943,8 @@
     border-color: #5f9781;
 
     color: #ffffff;
+
+    transform: translateY(-2px);
 }
 
 

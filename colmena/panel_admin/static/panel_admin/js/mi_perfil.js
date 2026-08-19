@@ -185,6 +185,28 @@ function inicializarFotoPerfil() {
                     );
 
 
+                    if (fotoPrincipal) {
+
+                        const contenedorAvatar =
+                            fotoPrincipal.closest(".perfil-avatar-principal");
+
+                        if (contenedorAvatar) {
+
+                            contenedorAvatar.classList.remove(
+                                "avatar-actualizado"
+                            );
+
+                            void contenedorAvatar.offsetWidth;
+
+                            contenedorAvatar.classList.add(
+                                "avatar-actualizado"
+                            );
+
+                        }
+
+                    }
+
+
                     if (botonQuitar) {
 
                         botonQuitar.classList.remove(
