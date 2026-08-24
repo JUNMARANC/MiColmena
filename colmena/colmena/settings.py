@@ -13,6 +13,21 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+### borrar esto para el despliegue
+SITE_URL = "https://spent-daycare-sludge.ngrok-free.dev"
+
+DEBUG = True
+
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "starlet-sprang-famine.ngrok-free.dev",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://starlet-sprang-famine.ngrok-free.dev",
+]
+### hasta aqui 
 WEASYPRINT_DLL_HANDLE = None
 
 if os.name == "nt":
@@ -39,8 +54,6 @@ SECRET_KEY = 'django-insecure-6okhrqphwa8zzx0r&o=4st(ovfo2x5#d9*cp9pf%p2d35ba=dm
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition

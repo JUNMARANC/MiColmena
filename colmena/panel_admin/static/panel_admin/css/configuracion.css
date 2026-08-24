@@ -1,0 +1,1155 @@
+/* =========================================================
+   CONFIGURACIÓN - CONTENEDOR GENERAL
+========================================================= */
+
+.pagina-configuracion {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.configuracion-encabezado {
+    margin-bottom: 28px;
+}
+
+
+.configuracion-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 10px;
+
+    color: #5f9781;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+}
+
+
+.configuracion-encabezado h2 {
+    margin: 0 0 8px;
+
+    color: #163324;
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+
+.configuracion-encabezado p {
+    max-width: 720px;
+
+    margin: 0;
+
+    color: #6f8176;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   TARJETAS DE NAVEGACIÓN
+========================================================= */
+
+.configuracion-opciones {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 28px;
+}
+
+
+/* =========================================================
+   TARJETA / BOTÓN
+========================================================= */
+
+.configuracion-opcion {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        52px
+        minmax(0, 1fr)
+        24px;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 20px;
+
+    border: 1px solid #d9e6de;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    color: #163324;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 20px rgba(33, 79, 59, 0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+.configuracion-opcion:hover {
+    transform: translateY(-2px);
+
+    border-color: #9ac5aa;
+
+    box-shadow:
+        0 10px 24px rgba(33, 79, 59, 0.09);
+}
+
+
+/* =========================================================
+   TARJETA ACTIVA
+========================================================= */
+
+.configuracion-opcion.active {
+    border-color: #5f9781;
+
+    background: #edf8f0;
+
+    box-shadow:
+        0 8px 25px rgba(33, 79, 59, 0.10);
+}
+
+
+/* =========================================================
+   ICONO DE LA TARJETA
+========================================================= */
+
+.configuracion-opcion-icono {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: #eaf6ee;
+
+    color: #5f9781;
+
+    font-size: 23px;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.configuracion-opcion.active
+.configuracion-opcion-icono {
+    background: #5f9781;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   INFORMACIÓN DE TARJETA
+========================================================= */
+
+.configuracion-opcion-info {
+    min-width: 0;
+}
+
+
+.configuracion-opcion-info h4 {
+    margin: 0 0 5px;
+
+    color: #163324;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+.configuracion-opcion-info p {
+    margin: 0;
+
+    color: #7b8c82;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   FLECHA
+========================================================= */
+
+.configuracion-opcion-flecha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #96aa9e;
+
+    font-size: 15px;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.configuracion-opcion:hover
+.configuracion-opcion-flecha {
+    transform: translateX(3px);
+
+    color: #5f9781;
+}
+
+
+.configuracion-opcion.active
+.configuracion-opcion-flecha {
+    color: #214f3b;
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.configuracion-contenido {
+    width: 100%;
+}
+
+
+/* =========================================================
+   PANEL PRINCIPAL
+========================================================= */
+
+.configuracion-panel {
+    width: 100%;
+
+    padding: 28px;
+
+    background: #ffffff;
+
+    border: 1px solid #e1ebe5;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 8px 28px rgba(33, 79, 59, 0.06);
+}
+
+
+/* =========================================================
+   HEADER DEL PANEL
+========================================================= */
+
+.configuracion-panel-header {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-bottom: 26px;
+
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid #e5eee8;
+}
+
+
+.configuracion-panel-icono {
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #eaf6ee;
+
+    color: #214f3b;
+
+    font-size: 21px;
+}
+
+
+.configuracion-panel-header h3 {
+    margin: 0 0 5px;
+
+    color: #163324;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+.configuracion-panel-header p {
+    margin: 0;
+
+    color: #788a80;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   BLOQUE TEMPORAL / PENDIENTE
+========================================================= */
+
+.configuracion-panel-pendiente {
+    min-height: 170px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 15px;
+
+    padding: 30px;
+
+    border: 2px dashed #cfe1d5;
+
+    border-radius: 18px;
+
+    background: #f8fbf9;
+
+    color: #607369;
+}
+
+
+.configuracion-pendiente-icono {
+    width: 50px;
+    height: 50px;
+
+    min-width: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e8f5ec;
+
+    color: #5f9781;
+
+    font-size: 21px;
+}
+
+
+.configuracion-panel-pendiente strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #214f3b;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.configuracion-panel-pendiente p {
+    max-width: 520px;
+
+    margin: 0;
+
+    color: #788a80;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   TRANSICIÓN DE PESTAÑAS
+========================================================= */
+
+.configuracion-contenido
+.tab-pane {
+    animation:
+        configuracionEntrada
+        0.25s ease;
+}
+
+
+@keyframes configuracionEntrada {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   ELEMENTOS GENERALES PARA LOS FORMULARIOS QUE VIENEN
+========================================================= */
+
+.pagina-configuracion .form-label {
+    margin-bottom: 7px;
+
+    color: #214f3b;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.pagina-configuracion .form-control,
+.pagina-configuracion .form-select {
+    min-height: 46px;
+
+    border: 1px solid #cfe0d5;
+
+    border-radius: 11px;
+
+    color: #163324;
+
+    font-size: 14px;
+
+    background-color: #ffffff;
+}
+
+
+.pagina-configuracion .form-control:focus,
+.pagina-configuracion .form-select:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.20rem
+        rgba(95, 151, 129, 0.14);
+}
+
+
+.pagina-configuracion
+.form-control::placeholder {
+    color: #a4b1aa;
+}
+
+
+/* =========================================================
+   INPUT GROUP
+========================================================= */
+
+.pagina-configuracion
+.input-group-text {
+    min-height: 46px;
+
+    background: #f4f9f6;
+
+    border-color: #cfe0d5;
+
+    color: #5f9781;
+}
+
+
+/* =========================================================
+   SWITCHES
+========================================================= */
+
+.pagina-configuracion
+.form-check-input {
+    cursor: pointer;
+}
+
+
+.pagina-configuracion
+.form-switch
+.form-check-input {
+    width: 42px;
+    height: 22px;
+
+    margin-top: 0;
+
+    border-color: #aebeb4;
+
+    box-shadow: none;
+}
+
+
+.pagina-configuracion
+.form-switch
+.form-check-input:checked {
+    background-color: #5f9781;
+
+    border-color: #5f9781;
+}
+
+
+.pagina-configuracion
+.form-switch
+.form-check-input:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.18rem
+        rgba(95, 151, 129, 0.12);
+}
+
+
+/* =========================================================
+   BOTÓN PRINCIPAL
+========================================================= */
+
+.pagina-configuracion
+.btn-success {
+    min-height: 44px;
+
+    padding-left: 20px;
+    padding-right: 20px;
+
+    border-radius: 11px;
+
+    background: #5f9781;
+
+    border-color: #5f9781;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.pagina-configuracion
+.btn-success:hover,
+.pagina-configuracion
+.btn-success:focus {
+    background: #214f3b;
+
+    border-color: #214f3b;
+}
+
+
+/* =========================================================
+   TARJETAS INTERNAS
+========================================================= */
+
+.configuracion-card-interna {
+    padding: 22px;
+
+    border: 1px solid #e1ebe5;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+}
+
+
+.configuracion-card-interna + 
+.configuracion-card-interna {
+    margin-top: 18px;
+}
+
+
+/* =========================================================
+   TÍTULOS INTERNOS
+========================================================= */
+
+.configuracion-subtitulo {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+
+.configuracion-subtitulo-icono {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #edf7f0;
+
+    color: #5f9781;
+
+    font-size: 17px;
+}
+
+
+.configuracion-subtitulo h5 {
+    margin: 0;
+
+    color: #163324;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+.configuracion-subtitulo p {
+    margin: 2px 0 0;
+
+    color: #809188;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   FOOTER DE FORMULARIO
+========================================================= */
+
+.configuracion-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 26px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5eee8;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .configuracion-opciones {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .configuracion-opcion:last-child {
+        grid-column:
+            1 / -1;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET PEQUEÑA
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .configuracion-opciones {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .configuracion-opcion:last-child {
+        grid-column:
+            auto;
+    }
+
+
+    .configuracion-panel {
+        padding: 24px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .configuracion-encabezado {
+        margin-bottom: 20px;
+    }
+
+
+    .configuracion-encabezado h2 {
+        font-size: 24px;
+    }
+
+
+    .configuracion-encabezado p {
+        font-size: 13px;
+    }
+
+
+    .configuracion-opciones {
+        gap: 12px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .configuracion-opcion {
+        grid-template-columns:
+            45px
+            minmax(0, 1fr)
+            18px;
+
+        gap: 11px;
+
+        padding: 15px;
+
+        border-radius: 15px;
+    }
+
+
+    .configuracion-opcion-icono {
+        width: 45px;
+        height: 45px;
+
+        font-size: 20px;
+
+        border-radius: 12px;
+    }
+
+
+    .configuracion-opcion-info h4 {
+        font-size: 14px;
+    }
+
+
+    .configuracion-opcion-info p {
+        font-size: 11px;
+    }
+
+
+    .configuracion-panel {
+        padding: 19px;
+
+        border-radius: 17px;
+    }
+
+
+    .configuracion-panel-header {
+        margin-bottom: 20px;
+
+        padding-bottom: 18px;
+    }
+
+
+    .configuracion-panel-icono {
+        width: 42px;
+        height: 42px;
+
+        min-width: 42px;
+
+        font-size: 18px;
+    }
+
+
+    .configuracion-panel-header h3 {
+        font-size: 17px;
+    }
+
+
+    .configuracion-panel-header p {
+        font-size: 12px;
+    }
+
+
+    .configuracion-panel-pendiente {
+        min-height: 150px;
+
+        padding: 20px;
+    }
+
+
+    .configuracion-card-interna {
+        padding: 17px;
+    }
+
+
+    .configuracion-form-footer {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .configuracion-form-footer .btn {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .configuracion-opcion {
+        grid-template-columns:
+            42px
+            minmax(0, 1fr);
+
+        padding: 13px;
+    }
+
+
+    .configuracion-opcion-flecha {
+        display: none;
+    }
+
+
+    .configuracion-opcion-icono {
+        width: 42px;
+        height: 42px;
+    }
+
+
+    .configuracion-panel {
+        padding: 16px;
+    }
+
+
+    .configuracion-panel-header {
+        gap: 10px;
+    }
+
+
+    .configuracion-panel-pendiente {
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+}
+
+
+
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+========================================================= */
+
+#formConfiguracionGeneral {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+#descripcionSistema {
+    min-height: 110px;
+
+    resize: vertical;
+}
+
+
+.configuracion-textarea-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 7px;
+
+    color: #85958c;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   INPUT GROUP
+========================================================= */
+
+#formConfiguracionGeneral
+.input-group
+.form-control {
+    border-left: 0;
+
+    border-radius:
+        0
+        11px
+        11px
+        0;
+}
+
+
+#formConfiguracionGeneral
+.input-group-text {
+    border-radius:
+        11px
+        0
+        0
+        11px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 500px) {
+
+    .configuracion-textarea-info {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 4px;
+    }
+
+}
+
+
+/* =========================================================
+   NOTIFICACIONES
+========================================================= */
+
+#formConfiguracionNotificaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+
+.notificaciones-lista {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.notificacion-opcion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 17px 4px;
+
+    border-bottom: 1px solid #e7eee9;
+}
+
+
+.notificacion-opcion:last-child {
+    border-bottom: 0;
+}
+
+
+.notificacion-opcion-principal {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border: 0;
+}
+
+
+.notificacion-opcion-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+}
+
+
+.notificacion-icono {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #edf7f0;
+
+    color: #5f9781;
+
+    font-size: 17px;
+}
+
+
+.notificacion-opcion-info strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #163324;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.notificacion-opcion-info p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: #7f8e85;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* DESHABILITADAS */
+
+.notificaciones-lista.notificaciones-deshabilitadas {
+    opacity: 0.48;
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+.notificacion-preview {
+    max-width: 650px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 16px;
+
+    border: 1px solid #dce8e0;
+
+    border-radius: 14px;
+
+    background: #f8fbf9;
+}
+
+
+.notificacion-preview-icono {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fff3d8;
+
+    color: #af791c;
+}
+
+
+.notificacion-preview-contenido {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.notificacion-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 4px;
+}
+
+
+.notificacion-preview-header strong {
+    color: #163324;
+
+    font-size: 13px;
+}
+
+
+.notificacion-preview-header span {
+    color: #92a098;
+
+    font-size: 10px;
+}
+
+
+.notificacion-preview p {
+    margin: 0;
+
+    color: #697a70;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+@media (max-width: 600px) {
+
+    .notificacion-opcion {
+        align-items: flex-start;
+    }
+
+
+    .notificacion-opcion-info {
+        align-items: flex-start;
+    }
+
+
+    .notificacion-preview-header {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 3px;
+    }
+
+}

@@ -68,7 +68,14 @@ urlpatterns = [
     path("mi-perfil/cambiar-password/",views.cambiar_password_perfil,name="cambiar_password_perfil",),
 
     # Configuración
-    path('configuracion/', views.configuracion_admin, name='configuracion_admin'),
+    path("configuracion/",views.configuracion_admin,name="configuracion_admin"),
+    path("configuracion/general/guardar/", views.guardar_configuracion_general, name="guardar_configuracion_general",),
+    path("configuracion/notificaciones/guardar/", views.guardar_configuracion_notificaciones,name="guardar_configuracion_notificaciones",),
+    path("notificaciones/<int:id_notificacion>/leer/",views.marcar_notificacion_leida,name="marcar_notificacion_leida",),
+    path("notificaciones/", views.centro_notificaciones, name="centro_notificaciones"),
+    path("notificaciones/marcar-todas-leidas/",views.marcar_todas_notificaciones_leidas,name="marcar_todas_notificaciones_leidas"),
+    path("notificaciones/<int:id_notificacion>/eliminar/",views.eliminar_notificacion,name="eliminar_notificacion"),
+    
 ]
 
 if settings.DEBUG:

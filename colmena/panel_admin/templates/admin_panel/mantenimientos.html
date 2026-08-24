@@ -611,19 +611,35 @@
 
                         <!-- RESPONSABLE -->
                         <div class="col-md-6">
-                            <label class="form-label">Responsable</label>
-                            <select name="id_apicultor"
-                                    id="responsableMantenimiento"
-                                    class="form-select"
-                                    required>
-                                <option value="">Seleccione un responsable</option>
+
+                            <label
+                                for="responsableMantenimiento"
+                                class="form-label"
+                            >
+                                Responsable
+                            </label>
+
+                            <select
+                                name="responsable_id"
+                                id="responsableMantenimiento"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Seleccione un responsable
+                                </option>
 
                                 {% for apicultor in apicultores %}
+
                                     <option value="{{ apicultor.id_apicultor }}">
                                         {{ apicultor.nombre_completo }}
                                     </option>
+
                                 {% endfor %}
+
                             </select>
+
                         </div>
 
                         <!-- APIARIO -->
