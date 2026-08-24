@@ -1,0 +1,1118 @@
+{% extends "admin_panel/base_admin.html" %}
+
+{% load static %}
+
+
+{% block title %}
+    Configuración | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Configuración
+{% endblock %}
+
+
+{% block content %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_admin/css/configuracion.css' %}?v=3"
+>
+
+
+<!-- =========================================================
+     CONFIGURACIÓN
+========================================================== -->
+
+<div class="pagina-configuracion">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="configuracion-encabezado">
+
+        <div>
+
+            <span class="configuracion-etiqueta">
+
+                <i class="bi bi-gear-fill"></i>
+
+                CONFIGURACIÓN DEL SISTEMA
+
+            </span>
+
+
+            <h2>
+                Configuración
+            </h2>
+
+
+            <p>
+                Administra las preferencias generales,
+                notificaciones y opciones de seguridad
+                de Mi Colmena.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TARJETAS DE CONFIGURACIÓN
+    ====================================================== -->
+
+    <section class="configuracion-opciones" role="tablist" aria-label="Secciones de configuración">
+
+
+        <!-- =================================================
+             CONFIGURACIÓN GENERAL
+        ================================================== -->
+
+        <button
+            type="button"
+            class="configuracion-opcion active"
+            id="config-general-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#config-general"
+            role="tab"
+            aria-controls="config-general"
+            aria-selected="true"
+        >
+
+            <div class="configuracion-opcion-icono">
+
+                <i class="bi bi-sliders"></i>
+
+            </div>
+
+
+            <div class="configuracion-opcion-info">
+
+                <h4>
+                    Configuración General
+                </h4>
+
+                <p>
+                    Preferencias principales del sistema.
+                </p>
+
+            </div>
+
+
+            <div class="configuracion-opcion-flecha">
+
+                <i class="bi bi-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+
+        <!-- =================================================
+             NOTIFICACIONES
+        ================================================== -->
+
+        <button
+            type="button"
+            class="configuracion-opcion"
+            id="config-notificaciones-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#config-notificaciones"
+            role="tab"
+            aria-controls="config-notificaciones"
+            aria-selected="false"
+        >
+
+            <div class="configuracion-opcion-icono">
+
+                <i class="bi bi-bell-fill"></i>
+
+            </div>
+
+
+            <div class="configuracion-opcion-info">
+
+                <h4>
+                    Notificaciones
+                </h4>
+
+                <p>
+                    Alertas y preferencias de avisos.
+                </p>
+
+            </div>
+
+
+            <div class="configuracion-opcion-flecha">
+
+                <i class="bi bi-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+
+        <!-- =================================================
+             SEGURIDAD
+        ================================================== -->
+
+        <button
+            type="button"
+            class="configuracion-opcion"
+            id="config-seguridad-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#config-seguridad"
+            role="tab"
+            aria-controls="config-seguridad"
+            aria-selected="false"
+        >
+
+            <div class="configuracion-opcion-icono">
+
+                <i class="bi bi-shield-lock-fill"></i>
+
+            </div>
+
+
+            <div class="configuracion-opcion-info">
+
+                <h4>
+                    Seguridad
+                </h4>
+
+                <p>
+                    Protege el acceso y las sesiones.
+                </p>
+
+            </div>
+
+
+            <div class="configuracion-opcion-flecha">
+
+                <i class="bi bi-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENIDO DE LAS PESTAÑAS
+    ====================================================== -->
+
+    <section class="configuracion-contenido">
+
+        <div
+            class="tab-content"
+            id="configuracionTabContent"
+        >
+
+
+            <!-- =================================================
+                 CONFIGURACIÓN GENERAL
+            ================================================== -->
+
+            <div
+                class="tab-pane fade show active"
+                id="config-general"
+                role="tabpanel"
+                aria-labelledby="config-general-tab"
+                tabindex="0"
+            >
+
+                <article class="configuracion-panel">
+
+
+                    <!-- ENCABEZADO -->
+
+                    <div class="configuracion-panel-header">
+
+                        <div class="configuracion-panel-icono">
+
+                            <i class="bi bi-sliders"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Configuración General
+                            </h3>
+
+                            <p>
+                                Personaliza la información y
+                                preferencias principales de Mi Colmena.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         AQUÍ CONSTRUIREMOS LA PRIMERA TARJETA
+                    ================================================== -->
+
+                    <!-- =========================================================
+                        FORMULARIO CONFIGURACIÓN GENERAL
+                    ========================================================== -->
+
+                    <form
+                        method="POST"
+                        action="{% url 'guardar_configuracion_general' %}"
+                        id="formConfiguracionGeneral"
+                        novalidate
+                    >
+
+                        {% csrf_token %}
+
+
+                        <!-- =====================================================
+                            IDENTIDAD DEL SISTEMA
+                        ====================================================== -->
+
+                        <div class="configuracion-card-interna">
+
+                            <div class="configuracion-subtitulo">
+
+                                <div class="configuracion-subtitulo-icono">
+
+                                    <i class="bi bi-grid-fill"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Identidad del sistema
+                                    </h5>
+
+                                    <p>
+                                        Información principal utilizada por Mi Colmena.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="row g-4">
+
+
+                                <!-- NOMBRE DEL SISTEMA -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="nombreSistema"
+                                        class="form-label"
+                                    >
+
+                                        Nombre del sistema
+
+                                        <span class="text-danger">
+                                            *
+                                        </span>
+
+                                    </label>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="nombreSistema"
+                                        name="nombre_sistema"
+                                        value="{{ configuracion.nombre_sistema }}"
+                                        maxlength="100"
+                                        required
+                                    >
+
+
+                                    <div class="invalid-feedback">
+
+                                        Ingresa el nombre del sistema.
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- ENTIDAD -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="nombreEntidad"
+                                        class="form-label"
+                                    >
+
+                                        Empresa o entidad
+
+                                    </label>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="nombreEntidad"
+                                        name="nombre_entidad"
+                                        value="{{ configuracion.nombre_entidad }}"
+                                        maxlength="150"
+                                        placeholder="Ejemplo: KEMI"
+                                    >
+
+                                </div>
+
+
+                                <!-- CIERRA .row.g-4 -->
+                                </div>
+
+                                <!-- CIERRA .configuracion-card-interna -->
+                                </div>
+
+
+                        <!-- =====================================================
+                            INFORMACIÓN DE CONTACTO
+                        ====================================================== -->
+
+                        <div class="configuracion-card-interna">
+
+                            <div class="configuracion-subtitulo">
+
+                                <div class="configuracion-subtitulo-icono">
+
+                                    <i class="bi bi-person-lines-fill"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Información de contacto
+                                    </h5>
+
+                                    <p>
+                                        Datos generales de contacto de la organización.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="row g-4">
+
+
+                                <!-- CORREO -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="correoContacto"
+                                        class="form-label"
+                                    >
+
+                                        Correo electrónico
+
+                                    </label>
+
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+
+                                            <i class="bi bi-envelope"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            id="correoContacto"
+                                            name="correo_contacto"
+                                            value="{{ configuracion.correo_contacto }}"
+                                            maxlength="254"
+                                            placeholder="correo@empresa.com"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- TELÉFONO -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="telefonoContacto"
+                                        class="form-label"
+                                    >
+
+                                        Teléfono de contacto
+
+                                    </label>
+
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+
+                                            <i class="bi bi-telephone"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="tel"
+                                            class="form-control"
+                                            id="telefonoContacto"
+                                            name="telefono_contacto"
+                                            value="{{ configuracion.telefono_contacto }}"
+                                            maxlength="20"
+                                            inputmode="numeric"
+                                            placeholder="Ejemplo: 3101234567"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================================
+                            FOOTER
+                        ====================================================== -->
+
+                        <div class="configuracion-form-footer">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success"
+                                id="btnGuardarConfiguracionGeneral"
+                            >
+
+                                <i class="bi bi-floppy-fill me-2"></i>
+
+                                Guardar configuración
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </article>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NOTIFICACIONES
+            ================================================== -->
+
+            <div
+                class="tab-pane fade"
+                id="config-notificaciones"
+                role="tabpanel"
+                aria-labelledby="config-notificaciones-tab"
+                tabindex="0"
+            >
+
+                <article class="configuracion-panel">
+
+
+                    <div class="configuracion-panel-header">
+
+                        <div class="configuracion-panel-icono">
+
+                            <i class="bi bi-bell-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Notificaciones
+                            </h3>
+
+                            <p>
+                                Configura qué alertas deseas recibir
+                                dentro del sistema.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <form
+                        method="POST"
+                        action="{% url 'guardar_configuracion_notificaciones' %}"
+                        id="formConfiguracionNotificaciones"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <!-- =====================================================
+                            ESTADO GENERAL
+                        ====================================================== -->
+
+                        <div class="configuracion-card-interna">
+
+                            <div class="configuracion-subtitulo">
+
+                                <div class="configuracion-subtitulo-icono">
+
+                                    <i class="bi bi-bell-fill"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Notificaciones del sistema
+                                    </h5>
+
+                                    <p>
+                                        Controla si Mi Colmena puede generar
+                                        alertas internas para los usuarios.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="notificacion-opcion notificacion-opcion-principal">
+
+                                <div class="notificacion-opcion-info">
+
+                                    <div class="notificacion-icono">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong>
+                                            Activar notificaciones
+                                        </strong>
+
+                                        <p>
+                                            Permite mostrar alertas mediante la
+                                            campanita del panel.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        id="activarNotificaciones"
+                                        name="activar_notificaciones"
+
+                                        {% if config_notificaciones.activar_notificaciones %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =====================================================
+                            TIPOS DE ALERTA
+                        ====================================================== -->
+
+                        <div class="configuracion-card-interna">
+
+                            <div class="configuracion-subtitulo">
+
+                                <div class="configuracion-subtitulo-icono">
+
+                                    <i class="bi bi-sliders2"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Tipos de alertas
+                                    </h5>
+
+                                    <p>
+                                        Selecciona qué eventos deben generar
+                                        una notificación.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                class="notificaciones-lista"
+                                id="listaTiposNotificaciones"
+                            >
+
+
+                                <!-- COLMENAS -->
+
+                                <div class="notificacion-opcion">
+
+                                    <div class="notificacion-opcion-info">
+
+                                        <div class="notificacion-icono">
+
+                                            <i class="bi bi-box-seam"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <strong>
+                                                Colmenas en riesgo
+                                            </strong>
+
+                                            <p>
+                                                Alertas relacionadas con cambios
+                                                importantes en el estado de las colmenas.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input notificacion-switch-secundario"
+                                            type="checkbox"
+                                            name="alertas_colmenas_riesgo"
+
+                                            {% if config_notificaciones.alertas_colmenas_riesgo %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- INCIDENCIAS -->
+
+                                <div class="notificacion-opcion">
+
+                                    <div class="notificacion-opcion-info">
+
+                                        <div class="notificacion-icono">
+
+                                            <i class="bi bi-exclamation-triangle"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <strong>
+                                                Incidencias
+                                            </strong>
+
+                                            <p>
+                                                Notificar incidencias nuevas,
+                                                importantes o pendientes de atención.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input notificacion-switch-secundario"
+                                            type="checkbox"
+                                            name="alertas_incidencias"
+
+                                            {% if config_notificaciones.alertas_incidencias %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- MANTENIMIENTOS -->
+
+                                <div class="notificacion-opcion">
+
+                                    <div class="notificacion-opcion-info">
+
+                                        <div class="notificacion-icono">
+
+                                            <i class="bi bi-tools"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <strong>
+                                                Mantenimientos
+                                            </strong>
+
+                                            <p>
+                                                Avisar sobre mantenimientos próximos,
+                                                pendientes o vencidos.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input notificacion-switch-secundario"
+                                            type="checkbox"
+                                            name="alertas_mantenimientos"
+
+                                            {% if config_notificaciones.alertas_mantenimientos %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- AGENDA -->
+
+                                <div class="notificacion-opcion">
+
+                                    <div class="notificacion-opcion-info">
+
+                                        <div class="notificacion-icono">
+
+                                            <i class="bi bi-calendar-event"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <strong>
+                                                Agenda
+                                            </strong>
+
+                                            <p>
+                                                Recordatorios de actividades
+                                                y eventos próximos.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input notificacion-switch-secundario"
+                                            type="checkbox"
+                                            name="alertas_agenda"
+
+                                            {% if config_notificaciones.alertas_agenda %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- SEGURIDAD -->
+
+                                <div class="notificacion-opcion">
+
+                                    <div class="notificacion-opcion-info">
+
+                                        <div class="notificacion-icono">
+
+                                            <i class="bi bi-shield-exclamation"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <strong>
+                                                Seguridad
+                                            </strong>
+
+                                            <p>
+                                                Avisos sobre accesos,
+                                                intentos fallidos y cambios de seguridad.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="form-check form-switch">
+
+                                        <input
+                                            class="form-check-input notificacion-switch-secundario"
+                                            type="checkbox"
+                                            name="alertas_seguridad"
+
+                                            {% if config_notificaciones.alertas_seguridad %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =====================================================
+                            PREVISUALIZACIÓN
+                        ====================================================== -->
+
+                        <div class="configuracion-card-interna">
+
+                            <div class="configuracion-subtitulo">
+
+                                <div class="configuracion-subtitulo-icono">
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Previsualización
+                                    </h5>
+
+                                    <p>
+                                        Así se mostrarán las notificaciones
+                                        desde la campanita del panel.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="notificacion-preview">
+
+                                <div class="notificacion-preview-icono">
+
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                </div>
+
+
+                                <div class="notificacion-preview-contenido">
+
+                                    <div class="notificacion-preview-header">
+
+                                        <strong>
+                                            Incidencia pendiente
+                                        </strong>
+
+                                        <span>
+                                            Ahora
+                                        </span>
+
+                                    </div>
+
+
+                                    <p>
+                                        Se registró una incidencia que requiere
+                                        atención en uno de los apiarios.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =====================================================
+                            GUARDAR
+                        ====================================================== -->
+
+                        <div class="configuracion-form-footer">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success"
+                                id="btnGuardarNotificaciones"
+                            >
+
+                                <i class="bi bi-floppy-fill me-2"></i>
+
+                                Guardar notificaciones
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </article>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SEGURIDAD
+            ================================================== -->
+
+            <div
+                class="tab-pane fade"
+                id="config-seguridad"
+                role="tabpanel"
+                aria-labelledby="config-seguridad-tab"
+                tabindex="0"
+            >
+
+                <article class="configuracion-panel">
+
+
+                    <div class="configuracion-panel-header">
+
+                        <div class="configuracion-panel-icono">
+
+                            <i class="bi bi-shield-lock-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Seguridad
+                            </h3>
+
+                            <p>
+                                Administra la protección de acceso
+                                y las sesiones del sistema.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="configuracion-panel-pendiente">
+
+                        <div class="configuracion-pendiente-icono">
+
+                            <i class="bi bi-shield-check"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                Próximamente
+                            </strong>
+
+                            <p>
+                                Aquí construiremos 2FA,
+                                bloqueo por intentos fallidos,
+                                sesiones activas e historial
+                                de accesos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_admin/js/configuracion.js' %}?v=4"
+></script>
+
+{% endblock %}
