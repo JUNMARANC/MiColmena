@@ -1029,7 +1029,7 @@
 
 
             <!-- =================================================
-                 SEGURIDAD
+                SEGURIDAD
             ================================================== -->
 
             <div
@@ -1042,6 +1042,10 @@
 
                 <article class="configuracion-panel">
 
+
+                    <!-- =================================================
+                        ENCABEZADO
+                    ================================================== -->
 
                     <div class="configuracion-panel-header">
 
@@ -1068,32 +1072,153 @@
                     </div>
 
 
+                    <!-- =================================================
+                        FORMULARIO DE SEGURIDAD
+                    ================================================== -->
 
-                    <div class="configuracion-panel-pendiente">
+                    <form
+                        method="POST"
+                        action="{% url 'guardar_configuracion_seguridad' %}"
+                        class="seguridad-config-form"
+                    >
 
-                        <div class="configuracion-pendiente-icono">
+                        {% csrf_token %}
 
-                            <i class="bi bi-shield-check"></i>
+
+                        <!-- =================================================
+                            CIERRE AUTOMÁTICO POR INACTIVIDAD
+                        ================================================== -->
+
+                        <div class="seguridad-opcion">
+
+
+                            <!-- ICONO -->
+
+                            <div class="seguridad-opcion-icono">
+
+                                <i class="bi bi-clock-history"></i>
+
+                            </div>
+
+
+                            <!-- CONTENIDO -->
+
+                            <div class="seguridad-opcion-contenido">
+
+
+                                <div class="seguridad-opcion-header">
+
+
+                                    <div>
+
+                                        <h4>
+                                            Cierre automático por inactividad
+                                        </h4>
+
+                                        <p>
+                                            Cierra automáticamente la sesión
+                                            cuando el usuario permanece inactivo
+                                            durante el tiempo establecido.
+                                        </p>
+
+                                    </div>
+
+
+                                    <!-- SWITCH -->
+
+                                    <label class="switch">
+
+                                        <input
+                                            type="checkbox"
+                                            name="cerrar_sesion_inactividad"
+                                            id="cerrarSesionInactividad"
+
+                                            {% if contexto_seguridad.cerrar_sesion_inactividad %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                        <span class="slider"></span>
+
+                                    </label>
+
+
+                                </div>
+
+
+                                <!-- =========================================
+                                    TIEMPO DE INACTIVIDAD
+                                ========================================== -->
+
+                                <div
+                                    class="seguridad-tiempo"
+                                    id="contenedorTiempoInactividad"
+                                >
+
+
+                                    <label for="minutosInactividad">
+
+                                        Tiempo máximo de inactividad
+
+                                    </label>
+
+
+                                    <div class="seguridad-input-tiempo">
+
+
+                                        <input
+                                            type="number"
+                                            id="minutosInactividad"
+                                            name="minutos_inactividad"
+                                            min="5"
+                                            max="480"
+                                            value="{{ contexto_seguridad.minutos_inactividad }}"
+                                        >
+
+
+                                        <span>
+                                            minutos
+                                        </span>
+
+
+                                    </div>
+
+
+                                    <small>
+                                        Mínimo 5 minutos y máximo 8 horas.
+                                    </small>
+
+
+                                </div>
+
+
+                            </div>
 
                         </div>
 
 
-                        <div>
+                        <!-- =================================================
+                            BOTÓN GUARDAR
+                        ================================================== -->
 
-                            <strong>
-                                Próximamente
-                            </strong>
+                        <div class="seguridad-acciones">
 
-                            <p>
-                                Aquí construiremos 2FA,
-                                bloqueo por intentos fallidos,
-                                sesiones activas e historial
-                                de accesos.
-                            </p>
+                            <button
+                                type="submit"
+                                class="btn-guardar-seguridad"
+                            >
+
+                                <i class="bi bi-shield-check"></i>
+
+                                Guardar configuración
+
+                            </button>
 
                         </div>
 
-                    </div>
+
+                    </form>
+
 
                 </article>
 

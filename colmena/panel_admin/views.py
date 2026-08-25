@@ -72,6 +72,15 @@ from panel_admin.notificaciones import (
 )
 
 
+from panel_admin.models import (
+    ConfiguracionSistema,
+    ConfiguracionNotificaciones,
+    ConfiguracionSeguridad,
+)
+
+from usuarios.services import (
+    obtener_sesiones_activas_usuario,
+)
 
 
 def administrador_requerido(vista):
@@ -6393,6 +6402,18 @@ def mi_perfil(request):
         )
 
 
+    # ============================================================
+    # SESIONES ACTIVAS DEL USUARIO
+    # ============================================================
+
+    sesiones_activas = (
+        obtener_sesiones_activas_usuario(
+            request.user,
+            request.session.session_key
+        )
+    )
+
+
     # ========================================================
     # CONTEXTO
     # ========================================================
@@ -6419,6 +6440,12 @@ def mi_perfil(request):
 
         "datos_extra":
             datos_extra,
+
+        "sesiones_activas": sesiones_activas,
+
+        "cantidad_sesiones_activas": len(
+            sesiones_activas
+        ),
 
     }
 
@@ -6994,6 +7021,13 @@ def configuracion_admin(request):
         )
     )
 
+    config_seguridad, creado = (
+        ConfiguracionSeguridad.objects
+        .get_or_create(
+            pk=1
+        )
+    )
+
 
     # ========================================================
     # CONFIGURACIÓN DE NOTIFICACIONES
@@ -7019,6 +7053,9 @@ def configuracion_admin(request):
 
             "config_notificaciones":
                 config_notificaciones,
+
+            "contexto_seguridad": 
+                config_seguridad,
         }
     )
 
@@ -7628,4 +7665,87 @@ def eliminar_notificacion(
         "centro_notificaciones"
     )
 
+
+@administrador_requerido
+@permiso_requerido(
+    "cfg",
+    redireccion="configuracion_admin"
+)
+@require_POST
+def guardar_configuracion_seguridad(
+    request
+):
+
+    config, creado = (
+        ConfiguracionSeguridad.objects
+        .get_or_create(
+            pk=1
+        )
+    )
+
+
+    # ========================================================
+    # CIERRE AUTOMÁTICO
+    # ========================================================
+
+    config.cerrar_sesion_inactividad = (
+        request.POST.get(
+            "cerrar_sesion_inactividad"
+        )
+        ==
+        "on"
+    )
+
+
+    # ========================================================
+    # MINUTOS DE INACTIVIDAD
+    # ========================================================
+
+    try:
+
+        minutos = int(
+            request.POST.get(
+                "minutos_inactividad",
+                30
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        minutos = 30
+
+
+    # Seguridad también en backend
+
+    minutos = max(
+        5,
+        min(
+            minutos,
+            480
+        )
+    )
+
+
+    config.minutos_inactividad = (
+        minutos
+    )
+
+
+    config.save()
+
+
+    messages.success(
+        request,
+        "La configuración de seguridad "
+        "se actualizó correctamente."
+    )
+
+
+    return redirect(
+        f"{reverse('configuracion_admin')}"
+        "?tab=seguridad"
+    )
 

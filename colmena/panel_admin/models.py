@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.validators import (
+    MinValueValidator,
+    MaxValueValidator,
+)
 
 
 
@@ -259,3 +263,35 @@ class ControlIntentosLogin(models.Model):
         verbose_name_plural = (
             "Controles de intentos de inicio de sesión"
         )
+
+
+class ConfiguracionSeguridad(models.Model):
+
+    cerrar_sesion_inactividad = models.BooleanField(
+        default=True
+    )
+
+    minutos_inactividad = models.PositiveSmallIntegerField(
+        default=30,
+        validators=[
+            MinValueValidator(5),
+            MaxValueValidator(480),
+        ]
+    )
+
+    registrar_historial_accesos = models.BooleanField(
+        default=True
+    )
+
+    actualizado_en = models.DateTimeField(
+        auto_now=True
+    )
+
+
+    def __str__(self):
+        return "Configuración de seguridad"
+
+
+    class Meta:
+        verbose_name = "Configuración de seguridad"
+        verbose_name_plural = "Configuración de seguridad"

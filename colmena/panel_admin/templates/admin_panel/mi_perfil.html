@@ -1,10 +1,9 @@
 {% extends "admin_panel/base_admin.html" %}
-
 {% load static %}
 
 
 {% block title %}
-    Mi perfil | Mi Colmena
+    Mi perfil | {{ nombre_sistema|default:"Mi Colmena" }}
 {% endblock %}
 
 
@@ -13,12 +12,17 @@
 {% endblock %}
 
 
-{% block content %}
+{% block extra_css %}
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=2"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=3"
 >
+
+{% endblock %}
+
+
+{% block content %}
 
 
 <!-- =========================================================
@@ -52,7 +56,7 @@
 
             <p>
                 Consulta y actualiza tu información personal,
-                fotografía y credenciales de acceso.
+                fotografía y seguridad de tu cuenta.
             </p>
 
         </div>
@@ -70,14 +74,13 @@
 
         <!-- =================================================
              COLUMNA IZQUIERDA
-             TARJETA DEL USUARIO
         ================================================== -->
 
         <aside class="perfil-columna-lateral">
 
 
             <!-- =============================================
-                 TARJETA PRINCIPAL
+                 TARJETA PRINCIPAL DEL USUARIO
             ============================================== -->
 
             <article class="perfil-card perfil-card-identidad">
@@ -94,6 +97,7 @@
                             alt="Foto de perfil de {{ usuario.get_full_name|default:usuario.username }}"
                             id="fotoPerfilPrincipal"
                         >
+
 
                         <div
                             class="perfil-avatar-sin-foto d-none"
@@ -113,6 +117,7 @@
                             class="d-none"
                         >
 
+
                         <div
                             class="perfil-avatar-sin-foto"
                             id="iconoPerfilPrincipal"
@@ -127,7 +132,7 @@
                 </div>
 
 
-                <!-- NOMBRE -->
+                <!-- IDENTIDAD -->
 
                 <div class="perfil-identidad">
 
@@ -142,8 +147,10 @@
 
                             {% if tipo_perfil == 'administrador' %}
                                 perfil-badge-admin
+
                             {% elif tipo_perfil == 'apicultor' %}
                                 perfil-badge-apicultor
+
                             {% endif %}
                         "
                     >
@@ -178,6 +185,8 @@
                 <div class="perfil-resumen-cuenta">
 
 
+                    <!-- USUARIO -->
+
                     <div class="perfil-resumen-item">
 
                         <div class="perfil-resumen-icono">
@@ -201,6 +210,9 @@
 
                     </div>
 
+
+
+                    <!-- CORREO -->
 
                     <div class="perfil-resumen-item">
 
@@ -226,6 +238,9 @@
                     </div>
 
 
+
+                    <!-- ESTADO -->
+
                     <div class="perfil-resumen-item">
 
                         <div class="perfil-resumen-icono">
@@ -241,20 +256,17 @@
                                 Estado
                             </span>
 
+
                             {% if usuario.is_active %}
 
                                 <strong class="perfil-estado-activo">
-
                                     Activo
-
                                 </strong>
 
                             {% else %}
 
                                 <strong class="perfil-estado-inactivo">
-
                                     Inactivo
-
                                 </strong>
 
                             {% endif %}
@@ -263,6 +275,9 @@
 
                     </div>
 
+
+
+                    <!-- ÚLTIMO ACCESO -->
 
                     <div class="perfil-resumen-item">
 
@@ -278,6 +293,7 @@
                             <span>
                                 Último acceso
                             </span>
+
 
                             <strong>
 
@@ -297,6 +313,9 @@
 
                     </div>
 
+
+
+                    <!-- FECHA DE CREACIÓN -->
 
                     <div class="perfil-resumen-item">
 
@@ -321,6 +340,7 @@
 
                     </div>
 
+
                 </div>
 
             </article>
@@ -333,7 +353,9 @@
 
             <article class="perfil-card perfil-card-rol">
 
+
                 <div class="perfil-card-titulo">
+
 
                     <div class="perfil-card-icono">
 
@@ -376,6 +398,7 @@
 
                 {% if tipo_perfil == "administrador" %}
 
+
                     <div class="perfil-dato-rol">
 
                         <span>
@@ -409,6 +432,7 @@
 
                 {% elif tipo_perfil == "apicultor" %}
 
+
                     <div class="perfil-dato-rol">
 
                         <span>
@@ -440,6 +464,7 @@
                         <span>
                             Experiencia
                         </span>
+
 
                         <strong>
 
@@ -479,6 +504,7 @@
 
                 {% else %}
 
+
                     <div class="perfil-sin-informacion">
 
                         <i class="bi bi-info-circle"></i>
@@ -488,7 +514,9 @@
 
                     </div>
 
+
                 {% endif %}
+
 
             </article>
 
@@ -530,8 +558,8 @@
                             </h4>
 
                             <p>
-                                Actualiza tus datos personales y
-                                tu fotografía de perfil.
+                                Actualiza tus datos personales
+                                y tu fotografía de perfil.
                             </p>
 
                         </div>
@@ -583,6 +611,7 @@
                                     id="imagenPreviewPerfil"
                                 >
 
+
                                 <div
                                     class="perfil-preview-icono d-none"
                                     id="iconoPreviewPerfil"
@@ -600,6 +629,7 @@
                                     id="imagenPreviewPerfil"
                                     class="d-none"
                                 >
+
 
                                 <div
                                     class="perfil-preview-icono"
@@ -657,6 +687,7 @@
                                     class="
                                         btn
                                         btn-outline-danger
+
                                         {% if not foto %}
                                             d-none
                                         {% endif %}
@@ -718,6 +749,7 @@
                                 required
                             >
 
+
                             <div class="invalid-feedback">
                                 Ingresa tus nombres.
                             </div>
@@ -754,6 +786,7 @@
                                 autocomplete="family-name"
                                 required
                             >
+
 
                             <div class="invalid-feedback">
                                 Ingresa tus apellidos.
@@ -860,9 +893,7 @@
                                 for="usernamePerfil"
                                 class="form-label"
                             >
-
                                 Nombre de usuario
-
                             </label>
 
 
@@ -904,9 +935,7 @@
                                 for="rolPerfil"
                                 class="form-label"
                             >
-
                                 Rol
-
                             </label>
 
 
@@ -938,13 +967,12 @@
 
                         </div>
 
+
                     </div>
 
 
 
-                    <!-- =====================================
-                         BOTÓN GUARDAR
-                    ====================================== -->
+                    <!-- BOTÓN -->
 
                     <div class="perfil-form-footer">
 
@@ -962,6 +990,7 @@
 
                     </div>
 
+
                 </form>
 
             </article>
@@ -969,13 +998,15 @@
 
 
             <!-- =================================================
-                 SEGURIDAD / CONTRASEÑA
+                 SEGURIDAD
             ================================================== -->
 
             <article class="perfil-card perfil-card-seguridad">
 
 
-                <!-- ENCABEZADO -->
+                <!-- =============================================
+                     ENCABEZADO
+                ============================================== -->
 
                 <div class="perfil-card-header">
 
@@ -995,8 +1026,8 @@
                             </h4>
 
                             <p>
-                                Cambia la contraseña de acceso
-                                a tu cuenta.
+                                Administra tu contraseña y revisa
+                                las sesiones activas de tu cuenta.
                             </p>
 
                         </div>
@@ -1007,234 +1038,25 @@
 
 
 
-                <!-- =========================================
-                     AVISO
-                ========================================== -->
+                <!-- =================================================
+                     CAMBIO DE CONTRASEÑA
+                ================================================== -->
 
-                <div class="perfil-aviso-seguridad">
+                <section class="perfil-bloque-seguridad">
 
-                    <i class="bi bi-info-circle-fill"></i>
 
-                    <p>
-                        Para cambiar tu contraseña debes ingresar
-                        primero la contraseña que utilizas actualmente.
-                    </p>
+                    <div class="perfil-subtitulo-seguridad">
 
-                </div>
+                        <div>
 
+                            <h5>
+                                Contraseña
+                            </h5>
 
-
-                <!-- =========================================
-                     FORMULARIO CONTRASEÑA
-                ========================================== -->
-
-                <form
-                    method="POST"
-                    action="{% url 'cambiar_password_perfil' %}"
-                    id="formCambiarPasswordPerfil"
-                    novalidate
-                >
-
-                    {% csrf_token %}
-
-
-                    <div class="row g-4">
-
-
-                        <!-- CONTRASEÑA ACTUAL -->
-
-                        <div class="col-12">
-
-                            <label
-                                for="passwordActualPerfil"
-                                class="form-label"
-                            >
-
-                                Contraseña actual
-
-                                <span class="text-danger">
-                                    *
-                                </span>
-
-                            </label>
-
-
-                            <div class="input-group">
-
-                                <span class="input-group-text">
-
-                                    <i class="bi bi-key-fill"></i>
-
-                                </span>
-
-
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="passwordActualPerfil"
-                                    name="password_actual"
-                                    autocomplete="current-password"
-                                    required
-                                >
-
-
-                                <button
-                                    type="button"
-                                    class="
-                                        btn
-                                        btn-outline-secondary
-                                        btn-password-perfil
-                                    "
-                                    data-password-target="passwordActualPerfil"
-                                    aria-label="Mostrar contraseña"
-                                    title="Mostrar contraseña"
-                                >
-
-                                    <i class="bi bi-eye-fill"></i>
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <!-- NUEVA CONTRASEÑA -->
-
-                        <div class="col-md-6">
-
-                            <label
-                                for="passwordNuevoPerfil"
-                                class="form-label"
-                            >
-
-                                Nueva contraseña
-
-                                <span class="text-danger">
-                                    *
-                                </span>
-
-                            </label>
-
-
-                            <div class="input-group">
-
-                                <span class="input-group-text">
-
-                                    <i class="bi bi-lock-fill"></i>
-
-                                </span>
-
-
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="passwordNuevoPerfil"
-                                    name="password_nuevo"
-                                    minlength="8"
-                                    autocomplete="new-password"
-                                    required
-                                >
-
-
-                                <button
-                                    type="button"
-                                    class="
-                                        btn
-                                        btn-outline-secondary
-                                        btn-password-perfil
-                                    "
-                                    data-password-target="passwordNuevoPerfil"
-                                    aria-label="Mostrar contraseña"
-                                    title="Mostrar contraseña"
-                                >
-
-                                    <i class="bi bi-eye-fill"></i>
-
-                                </button>
-
-                            </div>
-
-
-                            <small class="perfil-ayuda">
-                                Mínimo 8 caracteres.
-                            </small>
-
-                        </div>
-
-
-
-                        <!-- CONFIRMAR CONTRASEÑA -->
-
-                        <div class="col-md-6">
-
-                            <label
-                                for="confirmarPasswordPerfil"
-                                class="form-label"
-                            >
-
-                                Confirmar contraseña
-
-                                <span class="text-danger">
-                                    *
-                                </span>
-
-                            </label>
-
-
-                            <div class="input-group">
-
-                                <span class="input-group-text">
-
-                                    <i class="bi bi-lock-fill"></i>
-
-                                </span>
-
-
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="confirmarPasswordPerfil"
-                                    name="confirmar_password"
-                                    minlength="8"
-                                    autocomplete="new-password"
-                                    required
-                                >
-
-
-                                <button
-                                    type="button"
-                                    class="
-                                        btn
-                                        btn-outline-secondary
-                                        btn-password-perfil
-                                    "
-                                    data-password-target="confirmarPasswordPerfil"
-                                    aria-label="Mostrar contraseña"
-                                    title="Mostrar contraseña"
-                                >
-
-                                    <i class="bi bi-eye-fill"></i>
-
-                                </button>
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    perfil-password-error
-                                    d-none
-                                "
-                                id="mensajePasswordPerfil"
-                            >
-
-                                <i class="bi bi-exclamation-circle-fill"></i>
-
-                                Las contraseñas no coinciden.
-
-                            </div>
+                            <p>
+                                Cambia la contraseña utilizada
+                                para acceder al sistema.
+                            </p>
 
                         </div>
 
@@ -1242,75 +1064,676 @@
 
 
 
-                    <!-- =====================================
-                         INDICADOR DE CONTRASEÑA
-                    ====================================== -->
+                    <!-- AVISO -->
 
-                    <div
-                        class="perfil-password-validacion d-none"
-                        id="estadoPasswordPerfil"
+                    <div class="perfil-aviso-seguridad">
+
+                        <i class="bi bi-info-circle-fill"></i>
+
+                        <p>
+                            Para cambiar tu contraseña debes ingresar
+                            primero la contraseña que utilizas actualmente.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- FORMULARIO -->
+
+                    <form
+                        method="POST"
+                        action="{% url 'cambiar_password_perfil' %}"
+                        id="formCambiarPasswordPerfil"
+                        novalidate
                     >
 
-                        <div class="perfil-password-regla">
+                        {% csrf_token %}
 
-                            <i
-                                class="bi bi-circle"
-                                id="iconoLongitudPassword"
-                            ></i>
 
-                            <span>
-                                Mínimo 8 caracteres
-                            </span>
+                        <div class="row g-4">
+
+
+                            <!-- CONTRASEÑA ACTUAL -->
+
+                            <div class="col-12">
+
+                                <label
+                                    for="passwordActualPerfil"
+                                    class="form-label"
+                                >
+
+                                    Contraseña actual
+
+                                    <span class="text-danger">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="bi bi-key-fill"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="passwordActualPerfil"
+                                        name="password_actual"
+                                        autocomplete="current-password"
+                                        required
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn
+                                            btn-outline-secondary
+                                            btn-password-perfil
+                                        "
+                                        data-password-target="passwordActualPerfil"
+                                        aria-label="Mostrar contraseña"
+                                        title="Mostrar contraseña"
+                                    >
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- NUEVA CONTRASEÑA -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="passwordNuevoPerfil"
+                                    class="form-label"
+                                >
+
+                                    Nueva contraseña
+
+                                    <span class="text-danger">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="passwordNuevoPerfil"
+                                        name="password_nuevo"
+                                        minlength="8"
+                                        autocomplete="new-password"
+                                        required
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn
+                                            btn-outline-secondary
+                                            btn-password-perfil
+                                        "
+                                        data-password-target="passwordNuevoPerfil"
+                                        aria-label="Mostrar contraseña"
+                                        title="Mostrar contraseña"
+                                    >
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </button>
+
+                                </div>
+
+
+                                <small class="perfil-ayuda">
+                                    Mínimo 8 caracteres.
+                                </small>
+
+                            </div>
+
+
+
+                            <!-- CONFIRMAR CONTRASEÑA -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="confirmarPasswordPerfil"
+                                    class="form-label"
+                                >
+
+                                    Confirmar contraseña
+
+                                    <span class="text-danger">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="confirmarPasswordPerfil"
+                                        name="confirmar_password"
+                                        minlength="8"
+                                        autocomplete="new-password"
+                                        required
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn
+                                            btn-outline-secondary
+                                            btn-password-perfil
+                                        "
+                                        data-password-target="confirmarPasswordPerfil"
+                                        aria-label="Mostrar contraseña"
+                                        title="Mostrar contraseña"
+                                    >
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </button>
+
+                                </div>
+
+
+                                <div
+                                    class="
+                                        perfil-password-error
+                                        d-none
+                                    "
+                                    id="mensajePasswordPerfil"
+                                >
+
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+
+                                    Las contraseñas no coinciden.
+
+                                </div>
+
+                            </div>
+
 
                         </div>
 
 
-                        <div class="perfil-password-regla">
 
-                            <i
-                                class="bi bi-circle"
-                                id="iconoCoincidenciaPassword"
-                            ></i>
+                        <!-- VALIDACIÓN -->
 
-                            <span>
-                                Las contraseñas coinciden
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- =====================================
-                         BOTÓN
-                    ====================================== -->
-
-                    <div class="perfil-form-footer">
-
-                        <button
-                            type="submit"
-                            class="btn btn-success"
-                            id="btnCambiarPasswordPerfil"
+                        <div
+                            class="perfil-password-validacion d-none"
+                            id="estadoPasswordPerfil"
                         >
 
-                            <i class="bi bi-shield-lock-fill me-2"></i>
 
-                            Actualizar contraseña
+                            <div class="perfil-password-regla">
 
-                        </button>
+                                <i
+                                    class="bi bi-circle"
+                                    id="iconoLongitudPassword"
+                                ></i>
+
+                                <span>
+                                    Mínimo 8 caracteres
+                                </span>
+
+                            </div>
+
+
+                            <div class="perfil-password-regla">
+
+                                <i
+                                    class="bi bi-circle"
+                                    id="iconoCoincidenciaPassword"
+                                ></i>
+
+                                <span>
+                                    Las contraseñas coinciden
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- BOTÓN -->
+
+                        <div class="perfil-form-footer">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success"
+                                id="btnCambiarPasswordPerfil"
+                            >
+
+                                <i class="bi bi-shield-lock-fill me-2"></i>
+
+                                Actualizar contraseña
+
+                            </button>
+
+                        </div>
+
+
+                    </form>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     SESIONES ACTIVAS
+                ================================================== -->
+
+                <section
+                    class="
+                        perfil-bloque-seguridad
+                        sesiones-activas-seccion
+                    "
+                >
+
+
+                    <!-- =============================================
+                         HEADER SESIONES
+                    ============================================== -->
+
+                    <div class="sesiones-header">
+
+
+                        <div class="sesiones-header-info">
+
+
+                            <div class="sesiones-header-icono">
+
+                                <i class="bi bi-display"></i>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <div class="sesiones-titulo-linea">
+
+                                    <h5>
+                                        Sesiones activas
+                                    </h5>
+
+
+                                    <span class="sesiones-contador">
+
+                                        {{ cantidad_sesiones_activas|default:0 }}
+
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    Revisa los dispositivos donde tu cuenta
+                                    mantiene una sesión iniciada.
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- CERRAR TODAS LAS DEMÁS -->
+
+                        {% if cantidad_sesiones_activas > 1 %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'cerrar_otras_sesiones' %}"
+                            >
+
+                                {% csrf_token %}
+
+
+                                <button
+                                    type="submit"
+                                    class="btn-cerrar-otras-sesiones"
+                                >
+
+                                    <i class="bi bi-box-arrow-right"></i>
+
+                                    Cerrar las demás
+
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
 
                     </div>
 
-                </form>
+
+
+                    <!-- =============================================
+                         AVISO
+                    ============================================== -->
+
+                    <div class="sesiones-aviso">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <p>
+                            Si no reconoces alguna sesión,
+                            ciérrala inmediatamente y cambia
+                            la contraseña de tu cuenta.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         LISTADO DE SESIONES
+                    ============================================== -->
+
+                    <div class="sesiones-lista">
+
+
+                        {% for sesion in sesiones_activas %}
+
+
+                            <article
+                                class="
+                                    sesion-card
+
+                                    {% if sesion.es_actual %}
+                                        sesion-actual
+                                    {% endif %}
+                                "
+                            >
+
+
+                                <!-- ICONO DISPOSITIVO -->
+
+                                <div class="sesion-dispositivo-icono">
+
+
+                                    {% if sesion.dispositivo == "Móvil" %}
+
+                                        <i class="bi bi-phone-fill"></i>
+
+
+                                    {% elif sesion.dispositivo == "Tablet" %}
+
+                                        <i class="bi bi-tablet-fill"></i>
+
+
+                                    {% else %}
+
+                                        <i class="bi bi-laptop"></i>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+
+                                <!-- INFORMACIÓN -->
+
+                                <div class="sesion-info">
+
+
+                                    <div class="sesion-superior">
+
+
+                                        <div>
+
+
+                                            <div class="sesion-navegador">
+
+
+                                                <span>
+                                                    {{ sesion.navegador|default:"Navegador desconocido" }}
+                                                </span>
+
+
+                                                {% if sesion.es_actual %}
+
+                                                    <span class="badge-sesion-actual">
+
+                                                        <i class="bi bi-check-circle-fill"></i>
+
+                                                        Sesión actual
+
+                                                    </span>
+
+                                                {% endif %}
+
+
+                                            </div>
+
+
+                                            <div class="sesion-sistema">
+
+                                                {{ sesion.sistema_operativo|default:"Sistema desconocido" }}
+
+                                                ·
+
+                                                {{ sesion.dispositivo|default:"Dispositivo desconocido" }}
+
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        <!-- CERRAR SESIÓN REMOTA -->
+
+                                        {% if not sesion.es_actual %}
+
+                                            <form
+                                                method="POST"
+                                                action="{% url 'cerrar_sesion_remota' sesion.id %}"
+                                                class="form-cerrar-sesion-remota"
+                                            >
+
+                                                {% csrf_token %}
+
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn-cerrar-sesion"
+                                                >
+
+                                                    <i class="bi bi-box-arrow-right"></i>
+
+                                                    Cerrar sesión
+
+                                                </button>
+
+                                            </form>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                    <!-- DETALLES -->
+
+                                    <div class="sesion-detalles">
+
+
+                                        <!-- IP -->
+
+                                        <div>
+
+                                            <i class="bi bi-globe2"></i>
+
+                                            <span>
+                                                IP:
+                                            </span>
+
+                                            <strong>
+                                                {{ sesion.ip|default:"No disponible" }}
+                                            </strong>
+
+                                        </div>
+
+
+
+                                        <!-- ACTIVIDAD -->
+
+                                        <div>
+
+                                            <i class="bi bi-clock-history"></i>
+
+                                            <span>
+                                                Última actividad:
+                                            </span>
+
+
+                                            <strong>
+
+                                                {% if sesion.es_actual %}
+
+                                                    Ahora
+
+                                                {% else %}
+
+                                                    Hace
+                                                    {{ sesion.ultima_actividad|timesince }}
+
+                                                {% endif %}
+
+                                            </strong>
+
+                                        </div>
+
+
+
+                                        <!-- INICIO -->
+
+                                        <div>
+
+                                            <i class="bi bi-calendar3"></i>
+
+                                            <span>
+                                                Inicio:
+                                            </span>
+
+                                            <strong>
+                                                {{ sesion.fecha_inicio|date:"d/m/Y H:i" }}
+                                            </strong>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </article>
+
+
+                        {% empty %}
+
+
+                            <!-- =====================================
+                                 SIN SESIONES
+                            ====================================== -->
+
+                            <div class="sesiones-vacias">
+
+
+                                <div class="sesiones-vacias-icono">
+
+                                    <i class="bi bi-display"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        No hay sesiones registradas
+                                    </strong>
+
+
+                                    <p>
+                                        Las sesiones aparecerán aquí
+                                        cuando inicies sesión en el sistema.
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                </section>
+
 
             </article>
+
 
         </div>
 
     </div>
 
 </div>
+
 
 {% endblock %}
 
@@ -1319,7 +1742,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=2"
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=3"
 ></script>
 
 {% endblock %}

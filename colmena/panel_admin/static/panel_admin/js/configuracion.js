@@ -21,7 +21,8 @@ document.addEventListener(
         inicializarConfiguracionGeneral();
 
         inicializarConfiguracionNotificaciones();
-
+        
+        inicializarConfiguracionSeguridad();
     }
 );
 
@@ -536,5 +537,72 @@ function actualizarEstadoNotificaciones(
         );
 
     }
+
+}
+
+
+function inicializarConfiguracionSeguridad() {
+
+    const switchInactividad = (
+        document.getElementById(
+            "cerrarSesionInactividad"
+        )
+    );
+
+
+    const contenedorTiempo = (
+        document.getElementById(
+            "contenedorTiempoInactividad"
+        )
+    );
+
+
+    const inputMinutos = (
+        document.getElementById(
+            "minutosInactividad"
+        )
+    );
+
+
+    if (
+        !switchInactividad
+        ||
+        !contenedorTiempo
+        ||
+        !inputMinutos
+    ) {
+
+        return;
+
+    }
+
+
+    function actualizarEstado() {
+
+        const activo = (
+            switchInactividad.checked
+        );
+
+
+        inputMinutos.disabled = (
+            !activo
+        );
+
+
+        contenedorTiempo.classList.toggle(
+            "inactivo",
+            !activo
+        );
+
+    }
+
+
+    switchInactividad.addEventListener(
+        "change",
+        actualizarEstado
+    );
+
+
+    actualizarEstado();
 
 }
