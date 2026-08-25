@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    "usuarios.middleware.InactividadSesionMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -178,7 +179,7 @@ LOGOUT_REDIRECT_URL = "login"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # 30 minutos
-SESSION_COOKIE_AGE = 1800
+SESSION_COOKIE_AGE = 43200
 
 # Reinicia el contador en cada petición
 SESSION_SAVE_EVERY_REQUEST = True

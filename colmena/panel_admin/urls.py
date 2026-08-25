@@ -75,6 +75,7 @@ urlpatterns = [
     path("notificaciones/", views.centro_notificaciones, name="centro_notificaciones"),
     path("notificaciones/marcar-todas-leidas/",views.marcar_todas_notificaciones_leidas,name="marcar_todas_notificaciones_leidas"),
     path("notificaciones/<int:id_notificacion>/eliminar/",views.eliminar_notificacion,name="eliminar_notificacion"),
+    path("configuracion/seguridad/guardar/", views.guardar_configuracion_seguridad, name="guardar_configuracion_seguridad"),
     
 ]
 
