@@ -1,0 +1,859 @@
+/* ==========================================================
+   MIS APIARIOS
+========================================================== */
+
+
+/* ==========================================================
+   CONTENEDOR
+========================================================== */
+
+.apiarios-page {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 22px;
+}
+
+
+/* ==========================================================
+   ENCABEZADO
+========================================================== */
+
+.apiarios-encabezado {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+.apiarios-encabezado h1 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 30px;
+
+    font-weight: 700;
+}
+
+
+.apiarios-encabezado p {
+
+    margin-top: 7px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   CONTADOR
+========================================================== */
+
+.apiarios-total {
+
+    min-width: 150px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px
+        17px;
+
+    border:
+        1px solid
+        #EADFAE;
+
+    border-radius: 14px;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.apiarios-total > i {
+
+    width: 40px;
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.55);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+}
+
+
+.apiarios-total div {
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.apiarios-total strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.apiarios-total span {
+
+    margin-top: 3px;
+
+    color:
+        #66736C;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   FILTROS
+========================================================== */
+
+.apiarios-filtros {
+
+    padding: 15px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, 0.80);
+}
+
+
+.apiarios-form-filtros {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   BUSCADOR
+========================================================== */
+
+.apiarios-buscador {
+
+    position: relative;
+
+    flex: 1;
+
+    min-width: 220px;
+}
+
+
+.apiarios-buscador i {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 15px;
+
+    transform:
+        translateY(-50%);
+
+    color:
+        #7E8D84;
+
+    font-size: 14px;
+}
+
+
+.apiarios-buscador input {
+
+    width: 100%;
+
+    height: 44px;
+
+    padding:
+        0
+        15px
+        0
+        42px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color:
+        var(--apicultor-texto);
+
+    font-family: inherit;
+
+    font-size: 11px;
+}
+
+
+.apiarios-buscador input:focus {
+
+    border-color:
+        #D7B94E;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.22);
+}
+
+
+/* ==========================================================
+   SELECT
+========================================================== */
+
+.apiarios-select {
+
+    height: 44px;
+
+    min-width: 175px;
+
+    padding:
+        0
+        13px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color:
+        var(--apicultor-texto);
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   BOTONES FILTROS
+========================================================== */
+
+.btn-filtrar-apiarios,
+.btn-limpiar-apiarios {
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        15px;
+
+    border-radius: 11px;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.btn-filtrar-apiarios {
+
+    border:
+        1px solid
+        #E5C75C;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+.btn-filtrar-apiarios:hover {
+
+    background:
+        #F5CB52;
+}
+
+
+.btn-limpiar-apiarios {
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #647269;
+}
+
+
+/* ==========================================================
+   GRID
+========================================================== */
+
+.apiarios-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 20px;
+}
+
+
+/* ==========================================================
+   CARD
+========================================================== */
+
+.apiario-card {
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 18px;
+
+    background: #FFFFFF;
+
+    box-shadow:
+        0 4px 15px
+        rgba(33, 79, 59, 0.06);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.apiario-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 8px 22px
+        rgba(33, 79, 59, 0.11);
+}
+
+
+/* ==========================================================
+   IMAGEN
+========================================================== */
+
+.apiario-imagen {
+
+    position: relative;
+
+    height: 190px;
+
+    overflow: hidden;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.apiario-imagen img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.apiario-imagen-vacia {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 40px;
+}
+
+
+/* ==========================================================
+   ESTADO
+========================================================== */
+
+.apiario-estado {
+
+    position: absolute;
+
+    top: 14px;
+
+    right: 14px;
+
+    padding:
+        6px
+        10px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    box-shadow:
+        0 3px 8px
+        rgba(0, 0, 0, 0.08);
+}
+
+
+.apiario-estado.bueno {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+.apiario-estado.precaucion {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+.apiario-estado.deficiente {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+/* ==========================================================
+   BODY CARD
+========================================================== */
+
+.apiario-card-body {
+
+    padding:
+        18px;
+}
+
+
+.apiario-card-body h2 {
+
+    margin-bottom: 13px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   DATOS
+========================================================== */
+
+.apiario-dato {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 8px;
+
+    color:
+        #617067;
+
+    font-size: 10px;
+
+    font-weight: 500;
+}
+
+
+.apiario-dato i {
+
+    width: 18px;
+
+    color:
+        #B8921E;
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+
+/* ==========================================================
+   DESCRIPCIÓN
+========================================================== */
+
+.apiario-descripcion {
+
+    min-height: 45px;
+
+    margin-top: 14px;
+
+    color:
+        #6E7B73;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+}
+
+
+.apiario-descripcion.sin-descripcion {
+
+    color:
+        #9AA39E;
+
+    font-style: italic;
+}
+
+
+/* ==========================================================
+   VACÍO
+========================================================== */
+
+.apiarios-vacio {
+
+    min-height: 380px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 30px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.75);
+
+    text-align: center;
+}
+
+
+.apiarios-vacio-icono {
+
+    width: 70px;
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom: 17px;
+
+    border-radius: 50%;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 29px;
+}
+
+
+.apiarios-vacio h2 {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+
+    font-weight: 800;
+}
+
+
+.apiarios-vacio p {
+
+    max-width: 420px;
+
+    margin-top: 8px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+.btn-ver-apiarios {
+
+    margin-top: 17px;
+
+    padding:
+        10px
+        15px;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+/* ==========================================================
+   PAGINACIÓN
+========================================================== */
+
+.apiarios-paginacion {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    margin-top: 5px;
+}
+
+
+.paginacion-btn {
+
+    width: 36px;
+
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #E5DDB9;
+
+    border-radius: 9px;
+
+    background: #FFFFFF;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.paginacion-btn:hover {
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.paginacion-btn.active {
+
+    background:
+        var(--apicultor-sidebar);
+
+    border-color:
+        #E2C34F;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 1200px) {
+
+    .apiarios-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+@media (max-width: 820px) {
+
+    .apiarios-encabezado {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .apiarios-form-filtros {
+
+        align-items: stretch;
+
+        flex-wrap: wrap;
+    }
+
+
+    .apiarios-buscador {
+
+        flex-basis: 100%;
+    }
+
+
+    .apiarios-select {
+
+        flex: 1;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .apiarios-encabezado h1 {
+
+        font-size: 23px;
+    }
+
+
+    .apiarios-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .apiarios-form-filtros {
+
+        flex-direction: column;
+    }
+
+
+    .apiarios-select,
+    .btn-filtrar-apiarios,
+    .btn-limpiar-apiarios {
+
+        width: 100%;
+    }
+
+
+    .apiario-imagen {
+
+        height: 175px;
+    }
+
+}

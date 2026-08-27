@@ -442,13 +442,13 @@ def login_view(request):
         # APICULTOR
         # ====================================================
 
-        # if Apicultor.objects.filter(
-        #     user=user
-        # ).exists():
-        #
-        #     return redirect(
-        #         "dashboard_apicultor"
-        #     )
+        if Apicultor.objects.filter(
+            user=user
+        ).exists():
+        
+            return redirect(
+                "dashboard_apicultor"
+            )
 
 
         # ====================================================
@@ -1838,13 +1838,13 @@ def verificar_login_2fa(request):
             # Cuando tengas listo el dashboard
             # del apicultor puedes activar esto.
 
-            # if Apicultor.objects.filter(
-            #     user=user
-            # ).exists():
-            #
-            #     return redirect(
-            #         "dashboard_apicultor"
-            #     )
+            if Apicultor.objects.filter(
+                user=user
+            ).exists():
+            
+                return redirect(
+                    "dashboard_apicultor"
+                )
 
 
             # ================================================
