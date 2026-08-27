@@ -1,0 +1,939 @@
+{% extends "admin_panel/base_admin.html" %}
+{% load static %}
+
+
+{% block title %}
+Centro de notificaciones
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_admin/css/notificaciones_centro.css' %}?v=2"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="notificaciones-page">
+
+
+    <!-- ======================================================
+         ENCABEZADO
+    ======================================================= -->
+
+    <div class="notificaciones-header">
+
+        <div>
+
+            <span class="notificaciones-eyebrow">
+                Mi Colmena
+            </span>
+
+            <h1>
+                Centro de notificaciones
+            </h1>
+
+            <p>
+                Consulta tus alertas, recordatorios y
+                novedades del sistema.
+            </p>
+
+        </div>
+
+
+        {% if total_no_leidas > 0 %}
+
+            <form
+                method="POST"
+                action="{% url 'marcar_todas_notificaciones_leidas' %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn-marcar-todas"
+                >
+
+                    <i class="bi bi-check2-all"></i>
+
+                    Marcar todas como leídas
+
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ======================================================
+         RESUMEN
+    ======================================================= -->
+
+    <div class="notificaciones-resumen">
+
+
+        <a
+            href="?estado=todas{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"
+            class="
+                resumen-card
+                {% if estado_actual == 'todas' %}
+                    activo
+                {% endif %}
+            "
+        >
+
+            <div class="resumen-icono">
+
+                <i class="bi bi-bell"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Todas
+                </span>
+
+                <strong>
+                    {{ total_notificaciones }}
+                </strong>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="?estado=no-leidas{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"
+            class="
+                resumen-card
+                {% if estado_actual == 'no-leidas' %}
+                    activo
+                {% endif %}
+            "
+        >
+
+            <div class="resumen-icono">
+
+                <i class="bi bi-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    No leídas
+                </span>
+
+                <strong>
+                    {{ total_no_leidas }}
+                </strong>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="?estado=leidas{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"
+            class="
+                resumen-card
+                {% if estado_actual == 'leidas' %}
+                    activo
+                {% endif %}
+            "
+        >
+
+            <div class="resumen-icono">
+
+                <i class="bi bi-check2-circle"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Leídas
+                </span>
+
+                <strong>
+                    {{ total_leidas }}
+                </strong>
+
+            </div>
+
+        </a>
+
+    </div>
+
+
+    <!-- ======================================================
+         FILTRO POR TIPO
+    ======================================================= -->
+
+    <div class="notificaciones-filtros">
+
+        <div class="filtro-titulo">
+
+            <i class="bi bi-funnel"></i>
+
+            Filtrar notificaciones
+
+        </div>
+
+
+        <form
+            method="GET"
+            class="filtro-form"
+        >
+
+            <input
+                type="hidden"
+                name="estado"
+                value="{{ estado_actual }}"
+            >
+
+
+            <div class="campo-filtro">
+
+                <label for="tipo">
+                    Tipo
+                </label>
+
+
+                <select
+                    id="tipo"
+                    name="tipo"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Todos los tipos
+                    </option>
+
+
+                    {% for codigo, nombre in tipos_notificacion %}
+
+                        <option
+                            value="{{ codigo }}"
+                            {% if tipo_actual == codigo %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ nombre }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            {% if tipo_actual %}
+
+                <a
+                    href="?estado={{ estado_actual }}"
+                    class="btn-limpiar-filtro"
+                >
+
+                    <i class="bi bi-x-circle"></i>
+
+                    Limpiar filtro
+
+                </a>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+    <!-- ======================================================
+         LISTADO
+    ======================================================= -->
+
+    <div class="notificaciones-contenedor">
+
+
+        {% for notificacion in pagina %}
+
+
+            <article
+                class="
+                    notificacion-card
+                    {% if not notificacion.leida %}
+                        no-leida
+                    {% endif %}
+                "
+                id="notificacion-{{ notificacion.id }}"
+            >
+
+
+                <!-- ICONO -->
+
+                <div
+                    class="
+                        notificacion-icono
+                        tipo-{{ notificacion.tipo }}
+                    "
+                >
+
+
+                    {% if notificacion.tipo == "incidencia" %}
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+
+                    {% elif notificacion.tipo == "mantenimiento" %}
+
+                        <i class="bi bi-tools"></i>
+
+
+                    {% elif notificacion.tipo == "agenda" %}
+
+                        <i class="bi bi-calendar-event"></i>
+
+
+                    {% elif notificacion.tipo == "colmena" %}
+
+                        <i class="bi bi-hexagon"></i>
+
+
+                    {% elif notificacion.tipo == "seguridad" %}
+
+                        <i class="bi bi-shield-lock"></i>
+
+
+                    {% else %}
+
+                        <i class="bi bi-bell"></i>
+
+                    {% endif %}
+
+
+                </div>
+
+
+                <!-- CONTENIDO -->
+
+                <div class="notificacion-contenido">
+
+
+                    <div class="notificacion-superior">
+
+
+                        <div class="notificacion-titulo-contenedor">
+
+
+                            {% if not notificacion.leida %}
+
+                                <span
+                                    class="punto-no-leida"
+                                ></span>
+
+                            {% endif %}
+
+
+                            <h3>
+                                {{ notificacion.titulo }}
+                            </h3>
+
+
+                        </div>
+
+
+                        <span class="notificacion-fecha">
+
+                            <i class="bi bi-clock"></i>
+
+                            {{ notificacion.fecha_creacion|date:"d/m/Y H:i" }}
+
+                        </span>
+
+
+                    </div>
+
+
+                    <span class="notificacion-tipo">
+
+                        {{ notificacion.get_tipo_display }}
+
+                    </span>
+
+
+                    <p class="notificacion-mensaje">
+
+                        {{ notificacion.mensaje|truncatechars:180 }}
+
+                    </p>
+
+
+                    <div class="notificacion-acciones">
+
+
+                        <button
+                            type="button"
+                            class="btn-ver-notificacion"
+
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalCentroNotificacion"
+
+                            data-id="{{ notificacion.id }}"
+
+                            data-titulo="{{ notificacion.titulo|escape }}"
+
+                            data-mensaje="{{ notificacion.mensaje|escape }}"
+
+                            data-tipo="{{ notificacion.get_tipo_display|escape }}"
+
+                            data-fecha="{{ notificacion.fecha_creacion|date:'d/m/Y H:i' }}"
+
+                            data-leida="{% if notificacion.leida %}true{% else %}false{% endif %}"
+
+                            data-url="{{ notificacion.url }}"
+
+                            data-leer-url="{% url 'marcar_notificacion_leida' notificacion.id %}"
+                        >
+
+                            <i class="bi bi-eye"></i>
+
+                            Ver detalle
+
+                        </button>
+
+
+                        {% if notificacion.url %}
+
+                            <a
+                                href="{{ notificacion.url }}"
+                                class="btn-ir-modulo"
+                            >
+
+                                <i class="bi bi-box-arrow-up-right"></i>
+
+                                Ir al módulo
+
+                            </a>
+
+                        {% endif %}
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'eliminar_notificacion' notificacion.id %}"
+                            class="form-eliminar-notificacion"
+                        >
+
+                            {% csrf_token %}
+
+
+                            <button
+                                type="button"
+                                class="btn-eliminar-notificacion"
+
+                                data-titulo="{{ notificacion.titulo|escape }}"
+                                data-tipo="{{ notificacion.get_tipo_display|escape }}"
+                            >
+
+                                <i class="bi bi-trash3"></i>
+
+                                Eliminar
+
+                            </button>
+
+                        </form>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+        {% empty %}
+
+
+            <!-- ==================================================
+                 SIN NOTIFICACIONES
+            =================================================== -->
+
+            <div class="notificaciones-vacias">
+
+                <div class="vacio-icono">
+
+                    <i class="bi bi-bell-slash"></i>
+
+                </div>
+
+
+                <h3>
+                    No hay notificaciones
+                </h3>
+
+
+                <p>
+
+                    No encontramos notificaciones
+                    que coincidan con los filtros seleccionados.
+
+                </p>
+
+
+                {% if tipo_actual or estado_actual != "todas" %}
+
+                    <a
+                        href="{% url 'centro_notificaciones' %}"
+                        class="btn-ver-todas"
+                    >
+
+                        Ver todas las notificaciones
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+    <!-- ======================================================
+         PAGINACIÓN
+    ======================================================= -->
+
+    {% if pagina.paginator.num_pages > 1 %}
+
+        <nav
+            class="paginacion-notificaciones"
+            aria-label="Paginación de notificaciones"
+        >
+
+
+            {% if pagina.has_previous %}
+
+                <a
+                    href="?page={{ pagina.previous_page_number }}&estado={{ estado_actual }}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"
+                    class="pagina-control"
+                >
+
+                    <i class="bi bi-chevron-left"></i>
+
+                </a>
+
+            {% endif %}
+
+
+            {% for numero in pagina.paginator.page_range %}
+
+
+                {% if numero == pagina.number %}
+
+                    <span
+                        class="pagina-numero activa"
+                    >
+
+                        {{ numero }}
+
+                    </span>
+
+
+                {% else %}
+
+                    <a
+                        href="?page={{ numero }}&estado={{ estado_actual }}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"
+                        class="pagina-numero"
+                    >
+
+                        {{ numero }}
+
+                    </a>
+
+                {% endif %}
+
+
+            {% endfor %}
+
+
+            {% if pagina.has_next %}
+
+                <a
+                    href="?page={{ pagina.next_page_number }}&estado={{ estado_actual }}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"
+                    class="pagina-control"
+                >
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </a>
+
+            {% endif %}
+
+
+        </nav>
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- ==========================================================
+     MODAL DETALLE
+=========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalCentroNotificacion"
+    tabindex="-1"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-dialog-centered
+        "
+    >
+
+        <div class="modal-content modal-notificacion-centro">
+
+
+            <div class="modal-header">
+
+                <div>
+
+                    <span class="modal-tipo-notificacion">
+                        Notificación
+                    </span>
+
+                    <h5
+                        class="modal-title"
+                        id="centroNotificacionTitulo"
+                    >
+                    </h5>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+
+                <div class="detalle-notificacion-meta">
+
+
+                    <div>
+
+                        <span>
+                            Tipo
+                        </span>
+
+                        <strong
+                            id="centroNotificacionTipo"
+                        >
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Fecha
+                        </span>
+
+                        <strong
+                            id="centroNotificacionFecha"
+                        >
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Estado
+                        </span>
+
+                        <strong
+                            id="centroNotificacionEstado"
+                        >
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="detalle-mensaje">
+
+                    <p
+                        id="centroNotificacionMensaje"
+                    >
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+
+                <button
+                    type="button"
+                    class="btn-modal-cerrar"
+                    data-bs-dismiss="modal"
+                >
+
+                    Cerrar
+
+                </button>
+
+
+                <a
+                    href="#"
+                    id="centroNotificacionUrl"
+                    class="btn-modal-ir"
+                >
+
+                    <i class="bi bi-box-arrow-up-right"></i>
+
+                    Ir al módulo
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     MODAL CONFIRMAR ELIMINACIÓN
+=========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalEliminarNotificacion"
+    tabindex="-1"
+    aria-labelledby="modalEliminarNotificacionLabel"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-dialog-centered
+        "
+    >
+
+        <div
+            class="
+                modal-content
+                modal-eliminar-notificacion
+            "
+        >
+
+
+            <!-- ==================================================
+                 CABECERA
+            =================================================== -->
+
+            <div class="modal-header modal-eliminar-header">
+
+
+                <div class="modal-eliminar-titulo-contenedor">
+
+
+                    <div class="modal-eliminar-icono">
+
+                        <i class="bi bi-trash3"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="modal-eliminar-etiqueta">
+                            Eliminar notificación
+                        </span>
+
+
+                        <h5
+                            class="modal-title"
+                            id="modalEliminarNotificacionLabel"
+                        >
+                            Confirmar eliminación
+                        </h5>
+
+                    </div>
+
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 CONTENIDO
+            =================================================== -->
+
+            <div class="modal-body modal-eliminar-body">
+
+
+                <p class="modal-eliminar-pregunta">
+
+                    ¿Estás seguro de que deseas eliminar
+                    esta notificación?
+
+                </p>
+
+
+                <div class="notificacion-eliminar-preview">
+
+
+                    <div class="preview-eliminar-icono">
+
+                        <i class="bi bi-bell"></i>
+
+                    </div>
+
+
+                    <div class="preview-eliminar-contenido">
+
+
+                        <span
+                            class="preview-eliminar-tipo"
+                            id="eliminarNotificacionTipo"
+                        >
+                            Notificación
+                        </span>
+
+
+                        <strong
+                            id="eliminarNotificacionTitulo"
+                        >
+                            Notificación seleccionada
+                        </strong>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="modal-eliminar-aviso">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Esta acción eliminará la notificación
+                        de tu historial y no se puede deshacer.
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 ACCIONES
+            =================================================== -->
+
+            <div class="modal-footer modal-eliminar-footer">
+
+
+                <button
+                    type="button"
+                    class="btn-cancelar-eliminacion"
+                    data-bs-dismiss="modal"
+                >
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn-confirmar-eliminacion"
+                    id="btnConfirmarEliminarNotificacion"
+                >
+
+                    <i class="bi bi-trash3"></i>
+
+                    Sí, eliminar
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_admin/js/notificaciones_centro.js' %}?v=2"
+></script>
+
+{% endblock %}

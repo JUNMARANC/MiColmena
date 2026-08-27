@@ -25,7 +25,11 @@ from calendar import Calendar
 from panel_admin.forms import EventoAgendaForm
 from pathlib import Path
 from django.urls import reverse
+from usuarios.models import HistorialAcceso
 from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from panel_admin.models import ConfiguracionSistema,ConfiguracionNotificaciones, Notificacion
 
 from panel_admin.reportes.estado_colmenas import (
     generar_reporte_estado_colmenas_pdf,
@@ -55,6 +59,42 @@ from panel_admin.permisos import (
     usuario_tiene_permiso,
     alguno_permiso_requerido,
 )
+
+from panel_admin.notificaciones import (
+    notificar_incidencia_creada,
+    notificar_mantenimiento_creado,
+    revisar_alertas_mantenimientos,
+    revisar_alertas_mantenimientos,
+    revisar_alertas_agenda,
+    revisar_evento_agenda,
+    notificar_colmena_en_riesgo,
+    revisar_cambio_estado_colmena,
+    notificar_cambio_password,
+)
+
+
+from panel_admin.models import (
+    ConfiguracionSistema,
+    ConfiguracionNotificaciones,
+    ConfiguracionSeguridad,
+)
+
+from usuarios.services import (
+    obtener_sesiones_activas_usuario,
+    registrar_historial_acceso,
+    sincronizar_session_key,
+    obtener_politica_2fa,
+)
+
+from django.contrib.auth.password_validation import (
+    validate_password,
+)
+
+from usuarios.models import (
+    HistorialAcceso,
+    Configuracion2FA,
+)
+
 
 def administrador_requerido(vista):
     @wraps(vista)
@@ -172,101 +212,284 @@ def obtener_datos_dashboard():
 @administrador_requerido
 def dashboard_admin(request):
 
+    # ========================================================
+    # REVISAR ALERTAS AUTOMÁTICAS DE MANTENIMIENTO
+    # ========================================================
+
+    try:
+
+        resultado_alertas = (
+            revisar_alertas_mantenimientos()
+        )
+
+
+        if (
+            resultado_alertas["proximos"] > 0
+            or
+            resultado_alertas["vencidos"] > 0
+        ):
+
+            print(
+                "ALERTAS DE MANTENIMIENTO GENERADAS:",
+                resultado_alertas
+            )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR REVISANDO MANTENIMIENTOS:",
+            error
+        )
+
+
+    # ========================================================
+    # REVISAR ALERTAS AUTOMÁTICAS DE AGENDA
+    # ========================================================
+
+    try:
+
+        resultado_agenda = (
+            revisar_alertas_agenda()
+        )
+
+
+        if (
+            resultado_agenda["hoy"] > 0
+            or
+            resultado_agenda["manana"] > 0
+        ):
+
+            print(
+                "ALERTAS DE AGENDA GENERADAS:",
+                resultado_agenda
+            )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR REVISANDO ALERTAS DE AGENDA:",
+            error
+        )
+
+    # ========================================================
+    # FECHA ACTUAL
+    # ========================================================
+
     hoy = timezone.localdate()
+
+
+    # ========================================================
+    # DATOS DEL DASHBOARD
+    # ========================================================
 
     datos = obtener_datos_dashboard()
 
+
     def rango_mes(fecha_mes):
-        inicio = fecha_mes.replace(day=1)
-        fin = desplazar_mes(inicio, 1)
+
+        inicio = fecha_mes.replace(
+            day=1
+        )
+
+        fin = desplazar_mes(
+            inicio,
+            1
+        )
+
         return inicio, fin
 
     # ---------- GRÁFICA DE ACTIVIDAD (últimos 6 meses, 3 líneas) ----------
+
     etiquetas_actividad = []
     valores_mantenimientos_actividad = []
     valores_incidencias_actividad = []
 
-    mes_cursor = desplazar_mes(hoy.replace(day=1), -5)
+    mes_cursor = desplazar_mes(
+        hoy.replace(day=1),
+        -5
+    )
 
     for _ in range(6):
-        inicio_mes, fin_mes = rango_mes(mes_cursor)
 
-        cantidad_mantenimientos = Mantenimiento.objects.filter(
-            fechaejecucion__gte=inicio_mes,
-            fechaejecucion__lt=fin_mes
-        ).count()
+        inicio_mes, fin_mes = rango_mes(
+            mes_cursor
+        )
 
-        cantidad_incidencias = Incidencia.objects.filter(
-            fechadeteccion__gte=inicio_mes,
-            fechadeteccion__lt=fin_mes
-        ).count()
+        cantidad_mantenimientos = (
+            Mantenimiento.objects.filter(
+                fechaejecucion__gte=inicio_mes,
+                fechaejecucion__lt=fin_mes
+            )
+            .count()
+        )
 
-        etiquetas_actividad.append(MESES_ESPANOL[inicio_mes.month][:3])
-        valores_mantenimientos_actividad.append(cantidad_mantenimientos)
-        valores_incidencias_actividad.append(cantidad_incidencias)
+        cantidad_incidencias = (
+            Incidencia.objects.filter(
+                fechadeteccion__gte=inicio_mes,
+                fechadeteccion__lt=fin_mes
+            )
+            .count()
+        )
 
-        mes_cursor = desplazar_mes(mes_cursor, 1)
+        etiquetas_actividad.append(
+            MESES_ESPANOL[
+                inicio_mes.month
+            ][:3]
+        )
+
+        valores_mantenimientos_actividad.append(
+            cantidad_mantenimientos
+        )
+
+        valores_incidencias_actividad.append(
+            cantidad_incidencias
+        )
+
+        mes_cursor = desplazar_mes(
+            mes_cursor,
+            1
+        )
+
 
     # ---------- INCIDENCIAS POR PRIORIDAD (estado actual) ----------
-    prioridades_orden = ["Baja", "Media", "Alta", "Crítica"]
+
+    prioridades_orden = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica"
+    ]
 
     conteo_prioridad = (
         Incidencia.objects
-        .exclude(estado="Resuelta")
-        .values("prioridad")
-        .annotate(total=Count("id_incidencia"))
+        .exclude(
+            estado="Resuelta"
+        )
+        .values(
+            "prioridad"
+        )
+        .annotate(
+            total=Count(
+                "id_incidencia"
+            )
+        )
     )
 
     mapa_conteo_prioridad = {
-        item["prioridad"]: item["total"]
-        for item in conteo_prioridad
+        item["prioridad"]:
+            item["total"]
+
+        for item
+        in conteo_prioridad
     }
 
     valores_prioridad_incidencias = [
-        mapa_conteo_prioridad.get(p, 0)
-        for p in prioridades_orden
+
+        mapa_conteo_prioridad.get(
+            prioridad,
+            0
+        )
+
+        for prioridad
+        in prioridades_orden
+
     ]
 
 
     # ---------- GRÁFICA DE MANTENIMIENTOS (últimos 3 meses) ----------
+
     etiquetas_mantenimientos = []
     valores_mantenimientos = []
 
-    mes_cursor = desplazar_mes(hoy.replace(day=1), -2)
+    mes_cursor = desplazar_mes(
+        hoy.replace(day=1),
+        -2
+    )
 
     for _ in range(3):
-        inicio_mes, fin_mes = rango_mes(mes_cursor)
 
-        cantidad = Mantenimiento.objects.filter(
-            fechaejecucion__gte=inicio_mes,
-            fechaejecucion__lt=fin_mes
-        ).count()
+        inicio_mes, fin_mes = rango_mes(
+            mes_cursor
+        )
 
-        etiquetas_mantenimientos.append(MESES_ESPANOL[inicio_mes.month][:3])
-        valores_mantenimientos.append(cantidad)
+        cantidad = (
+            Mantenimiento.objects.filter(
+                fechaejecucion__gte=inicio_mes,
+                fechaejecucion__lt=fin_mes
+            )
+            .count()
+        )
 
-        mes_cursor = desplazar_mes(mes_cursor, 1)
+        etiquetas_mantenimientos.append(
+            MESES_ESPANOL[
+                inicio_mes.month
+            ][:3]
+        )
+
+        valores_mantenimientos.append(
+            cantidad
+        )
+
+        mes_cursor = desplazar_mes(
+            mes_cursor,
+            1
+        )
+
 
     contexto = {
-        "nombre_usuario": request.user.get_full_name() or request.user.username,
+
+        "nombre_usuario":
+            request.user.get_full_name()
+            or request.user.username,
 
         **datos,
 
-        "etiquetas_actividad_json": json.dumps(etiquetas_actividad),
-        "valores_mantenimientos_actividad_json": json.dumps(valores_mantenimientos_actividad),
-        "valores_incidencias_actividad_json": json.dumps(valores_incidencias_actividad),
-        "etiquetas_prioridad_incidencias_json": json.dumps(prioridades_orden),
-        "valores_prioridad_incidencias_json": json.dumps(valores_prioridad_incidencias),
+        "etiquetas_actividad_json":
+            json.dumps(
+                etiquetas_actividad
+            ),
 
-        "etiquetas_mantenimientos_json": json.dumps(etiquetas_mantenimientos),
-        "valores_mantenimientos_json": json.dumps(valores_mantenimientos),
+        "valores_mantenimientos_actividad_json":
+            json.dumps(
+                valores_mantenimientos_actividad
+            ),
+
+        "valores_incidencias_actividad_json":
+            json.dumps(
+                valores_incidencias_actividad
+            ),
+
+        "etiquetas_prioridad_incidencias_json":
+            json.dumps(
+                prioridades_orden
+            ),
+
+        "valores_prioridad_incidencias_json":
+            json.dumps(
+                valores_prioridad_incidencias
+            ),
+
+        "etiquetas_mantenimientos_json":
+            json.dumps(
+                etiquetas_mantenimientos
+            ),
+
+        "valores_mantenimientos_json":
+            json.dumps(
+                valores_mantenimientos
+            ),
+
     }
+
 
     return render(
         request,
         "admin_panel/dashboard.html",
         contexto
     )
+
 
 @administrador_requerido
 def dashboard_datos_json(request):
@@ -277,11 +500,6 @@ def dashboard_datos_json(request):
     """
     return JsonResponse(obtener_datos_dashboard())
 
-
-@administrador_requerido
-@permiso_requerido("cfg")
-def configuracion_admin(request):
-    return render(request, 'admin_panel/configuracion.html')
 
 #LOGICA DE LOS APIARIOS
 @administrador_requerido
@@ -402,48 +620,207 @@ def colmenas_admin(request):
         "apiarios": apiarios,
     })
 
+
+
 @administrador_requerido
-@permiso_requerido("cg",redireccion="colmenas_admin")
+@permiso_requerido(
+    "cg",
+    redireccion="colmenas_admin"
+)
 def crear_colmena(request):
+
     if request.method == "POST":
 
-        ultima_colmena = Colmena.objects.order_by('-id_colmena').first()
-
-        if ultima_colmena:
-            nuevo_numero = ultima_colmena.id_colmena + 1
-        else:
-            nuevo_numero = 1
-
-        codigo = f"CM{nuevo_numero:08d}"
-
-        Colmena.objects.create(
-            id_apiario_id=request.POST.get("id_apiario"),
-            codigocolmena=codigo,
-            estadocolmena=request.POST.get("estado_colmena"),
-            fecharegistro=request.POST.get("fecha_registro"),
-            descripcion=request.POST.get("descripcion"),
-            imagen=request.FILES.get("imagen")   # ← Aquí se guarda la imagen
+        ultima_colmena = (
+            Colmena.objects
+            .order_by(
+                "-id_colmena"
+            )
+            .first()
         )
 
-    return redirect("colmenas_admin")
+
+        if ultima_colmena:
+
+            nuevo_numero = (
+                ultima_colmena.id_colmena
+                + 1
+            )
+
+        else:
+
+            nuevo_numero = 1
+
+
+        codigo = (
+            f"CM{nuevo_numero:08d}"
+        )
+
+
+        # ====================================================
+        # CREAR COLMENA
+        # ====================================================
+
+        colmena = (
+            Colmena.objects.create(
+
+                id_apiario_id=
+                    request.POST.get(
+                        "id_apiario"
+                    ),
+
+                codigocolmena=
+                    codigo,
+
+                estadocolmena=
+                    request.POST.get(
+                        "estado_colmena"
+                    ),
+
+                fecharegistro=
+                    request.POST.get(
+                        "fecha_registro"
+                    ),
+
+                descripcion=
+                    request.POST.get(
+                        "descripcion"
+                    ),
+
+                imagen=
+                    request.FILES.get(
+                        "imagen"
+                    )
+
+            )
+        )
+
+
+        # ====================================================
+        # NOTIFICAR SI NACE EN ESTADO RIESGO
+        # ====================================================
+
+        try:
+
+            notificar_colmena_en_riesgo(
+                colmena
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR GENERANDO ALERTA DE COLMENA:",
+                error
+            )
+
+
+    return redirect(
+        "colmenas_admin"
+    )
+
 
 @administrador_requerido
-@permiso_requerido("cg",redireccion="colmenas_admin")
+@permiso_requerido(
+    "cg",
+    redireccion="colmenas_admin"
+)
 def editar_colmena(request, id):
-    colmena = get_object_or_404(Colmena, id_colmena=id)
+
+    colmena = get_object_or_404(
+        Colmena,
+        id_colmena=id
+    )
+
 
     if request.method == "POST":
-        colmena.id_apiario_id = request.POST.get("id_apiario")
-        colmena.estadocolmena = request.POST.get("estado_colmena")
-        colmena.fecharegistro = request.POST.get("fecha_registro")
-        colmena.descripcion = request.POST.get("descripcion")
 
-        if request.FILES.get("imagen"):
-            colmena.imagen = request.FILES.get("imagen")
+        # ====================================================
+        # GUARDAR ESTADO ANTERIOR
+        # ====================================================
+
+        estado_anterior = (
+            colmena.estadocolmena
+        )
+
+
+        # ====================================================
+        # ACTUALIZAR DATOS
+        # ====================================================
+
+        colmena.id_apiario_id = (
+            request.POST.get(
+                "id_apiario"
+            )
+        )
+
+
+        colmena.estadocolmena = (
+            request.POST.get(
+                "estado_colmena"
+            )
+        )
+
+
+        colmena.fecharegistro = (
+            request.POST.get(
+                "fecha_registro"
+            )
+        )
+
+
+        colmena.descripcion = (
+            request.POST.get(
+                "descripcion"
+            )
+        )
+
+
+        # ====================================================
+        # IMAGEN
+        # ====================================================
+
+        if request.FILES.get(
+            "imagen"
+        ):
+
+            colmena.imagen = (
+                request.FILES.get(
+                    "imagen"
+                )
+            )
+
+
+        # ====================================================
+        # GUARDAR COLMENA
+        # ====================================================
 
         colmena.save()
 
-    return redirect("colmenas_admin")
+
+        # ====================================================
+        # REVISAR CAMBIO A ESTADO RIESGO
+        # ====================================================
+
+        try:
+
+            revisar_cambio_estado_colmena(
+                colmena,
+                estado_anterior
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR REVISANDO ESTADO DE COLMENA:",
+                error
+            )
+
+
+    return redirect(
+        "colmenas_admin"
+    )
+
+
 
 @administrador_requerido
 @permiso_requerido("cg",redireccion="colmenas_admin")
@@ -532,8 +909,14 @@ def mantenimientos_admin(request):
         }
     )
 
+
+
+
 @administrador_requerido
-@permiso_requerido("mr",redireccion="mantenimientos_admin")
+@permiso_requerido(
+    "mr",
+    redireccion="mantenimientos_admin"
+)
 def crear_mantenimiento(request):
 
     if request.method == "POST":
@@ -542,50 +925,152 @@ def crear_mantenimiento(request):
             "entidad_mantenimiento"
         )
 
+        responsable_id = request.POST.get(
+            "responsable_id"
+        )
+
         id_apiario = None
         id_colmena = None
 
+        responsable = "Sin Responsable"
+
+
+        # ====================================================
+        # RESPONSABLE
+        # ====================================================
+
+        if responsable_id:
+
+            apicultor_responsable = (
+                Apicultor.objects
+                .select_related("user")
+                .filter(
+                    pk=responsable_id
+                )
+                .first()
+            )
+
+
+            if (
+                apicultor_responsable
+                and apicultor_responsable.user
+            ):
+
+                responsable = (
+                    apicultor_responsable
+                    .user
+                    .get_full_name()
+                    .strip()
+                    or
+                    apicultor_responsable
+                    .user
+                    .username
+                )
+
+
+        # ====================================================
+        # ENTIDAD
+        # ====================================================
+
         if entidad == "Apiario":
+
             id_apiario = request.POST.get(
                 "id_apiario"
             )
 
+
         elif entidad == "Colmena":
+
             id_colmena = request.POST.get(
                 "id_colmena"
             )
 
-            colmena = Colmena.objects.filter(
-                id_colmena=id_colmena
-            ).first()
+            colmena = (
+                Colmena.objects
+                .filter(
+                    id_colmena=id_colmena
+                )
+                .first()
+            )
 
-            if colmena and colmena.id_apiario:
-                id_apiario = colmena.id_apiario_id
+            if (
+                colmena
+                and colmena.id_apiario
+            ):
 
-        Mantenimiento.objects.create(
-            entidadmantenimiento=entidad,
-            id_apiario_id=id_apiario,
-            id_colmena_id=id_colmena,
-            tipo=request.POST.get("tipo"),
-            fechaejecucion=request.POST.get(
-                "fecha_ejecucion"
-            ),
-            estado=request.POST.get("estado"),
-            prioridad=request.POST.get("prioridad"),
-            observaciones=request.POST.get(
-                "observaciones"
-            ),
-            responsable=request.POST.get(
-                "responsable"
+                id_apiario = (
+                    colmena.id_apiario_id
+                )
+
+
+        # ====================================================
+        # CREAR
+        # ====================================================
+
+        mantenimiento = (
+            Mantenimiento.objects.create(
+
+                entidadmantenimiento=entidad,
+
+                id_apiario_id=id_apiario,
+
+                id_colmena_id=id_colmena,
+
+                tipo=request.POST.get(
+                    "tipo"
+                ),
+
+                fechaejecucion=request.POST.get(
+                    "fecha_ejecucion"
+                ),
+
+                estado=request.POST.get(
+                    "estado"
+                ),
+
+                prioridad=request.POST.get(
+                    "prioridad"
+                ),
+
+                observaciones=request.POST.get(
+                    "observaciones"
+                ),
+
+                responsable=responsable
             )
         )
+
+
+        # ====================================================
+        # NOTIFICACIÓN
+        # ====================================================
+
+        try:
+
+            notificar_mantenimiento_creado(
+                mantenimiento
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR GENERANDO NOTIFICACIÓN DE MANTENIMIENTO:",
+                error
+            )
+
 
         messages.success(
             request,
             "Mantenimiento creado correctamente."
         )
 
-    return redirect("mantenimientos_admin")
+
+    return redirect(
+        "mantenimientos_admin"
+    )
+
+
+
 
 @administrador_requerido
 @permiso_requerido("mg",redireccion="mantenimientos_admin")
@@ -827,6 +1312,29 @@ def crear_incidencia(request):
         incidencia.id_apiario = colmena.id_apiario
 
     incidencia.save()
+
+
+    # ============================================================
+    # GENERAR NOTIFICACIÓN AUTOMÁTICA
+    # ============================================================
+
+    try:
+
+        notificar_incidencia_creada(
+            incidencia
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR GENERANDO NOTIFICACIÓN DE INCIDENCIA:",
+            error
+        )
+
+
+    # ============================================================
+    # MENSAJE DE ÉXITO
+    # ============================================================
 
     messages.success(
         request,
@@ -2877,8 +3385,29 @@ def crear_evento_agenda(request):
             commit=False
         )
 
-        evento.creado_por = request.user
+        evento.creado_por = (
+            request.user
+        )
+
         evento.save()
+
+
+        # ========================================================
+        # GENERAR RECORDATORIO SI ES HOY O MAÑANA
+        # ========================================================
+
+        try:
+
+            revisar_evento_agenda(
+                evento
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR GENERANDO ALERTA DE AGENDA:",
+                error
+            )
 
         messages.success(
             request,
@@ -5886,6 +6415,47 @@ def mi_perfil(request):
         )
 
 
+    # ============================================================
+    # SESIONES ACTIVAS DEL USUARIO
+    # ============================================================
+
+    sesiones_activas = (
+        obtener_sesiones_activas_usuario(
+            request.user,
+            request.session.session_key
+        )
+    )
+
+    # ============================================================
+    # HISTORIAL DE ACCESOS
+    # ============================================================
+
+    historial_accesos = (
+        HistorialAcceso.objects
+        .filter(
+            usuario=request.user
+        )
+        .order_by(
+            "-fecha"
+        )[:10]
+    )
+
+    # ============================================================
+    # CONFIGURACIÓN 2FA DEL USUARIO
+    # ============================================================
+
+    config_2fa, creado = (
+        Configuracion2FA.objects
+        .get_or_create(
+            usuario=request.user
+        )
+    )
+
+    politica_2fa = obtener_politica_2fa(
+        request.user
+    )
+
+
     # ========================================================
     # CONTEXTO
     # ========================================================
@@ -5913,6 +6483,26 @@ def mi_perfil(request):
         "datos_extra":
             datos_extra,
 
+        "sesiones_activas": sesiones_activas,
+
+        "cantidad_sesiones_activas": len(
+            sesiones_activas
+        ),
+
+        "sesiones_activas":
+            sesiones_activas,
+
+        "cantidad_sesiones_activas":
+            len(sesiones_activas),
+
+        "historial_accesos":
+            historial_accesos,
+
+        "config_2fa": config_2fa,
+
+        "config_2fa": config_2fa,
+
+        "politica_2fa": politica_2fa,
     }
 
 
@@ -6280,6 +6870,9 @@ def actualizar_mi_perfil(request):
         "mi_perfil"
     )
 
+# ============================================================
+# CAMBIAR CONTRASEÑA DESDE MI PERFIL
+# ============================================================
 
 @login_required
 @permiso_requerido(
@@ -6287,13 +6880,26 @@ def actualizar_mi_perfil(request):
     redireccion="dashboard_admin"
 )
 @require_POST
-def cambiar_password_perfil(request):
+def cambiar_password_perfil(
+    request
+):
+
+    # ========================================================
+    # VERIFICAR AUTENTICACIÓN
+    # ========================================================
+
+    if not request.user.is_authenticated:
+
+        return redirect(
+            "login"
+        )
+
 
     usuario = request.user
 
 
     # ========================================================
-    # DATOS
+    # OBTENER DATOS DEL FORMULARIO
     # ========================================================
 
     password_actual = (
@@ -6321,18 +6927,21 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # CAMPOS OBLIGATORIOS
+    # VALIDAR CAMPOS VACÍOS
     # ========================================================
 
     if (
         not password_actual
-        or not password_nuevo
-        or not confirmar_password
+        or
+        not password_nuevo
+        or
+        not confirmar_password
     ):
 
         messages.error(
             request,
-            "Debes completar todos los campos de contraseña."
+            "Debes completar todos los campos "
+            "de contraseña."
         )
 
         return redirect(
@@ -6350,7 +6959,7 @@ def cambiar_password_perfil(request):
 
         messages.error(
             request,
-            "La contraseña actual no es correcta."
+            "La contraseña actual es incorrecta."
         )
 
         return redirect(
@@ -6359,36 +6968,19 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # LONGITUD
-    # ========================================================
-
-    if (
-        len(password_nuevo)
-        < 8
-    ):
-
-        messages.error(
-            request,
-            "La nueva contraseña debe tener mínimo 8 caracteres."
-        )
-
-        return redirect(
-            "mi_perfil"
-        )
-
-
-    # ========================================================
-    # COINCIDENCIA
+    # VALIDAR QUE LAS CONTRASEÑAS COINCIDAN
     # ========================================================
 
     if (
         password_nuevo
-        != confirmar_password
+        !=
+        confirmar_password
     ):
 
         messages.error(
             request,
-            "Las nuevas contraseñas no coinciden."
+            "Las nuevas contraseñas "
+            "no coinciden."
         )
 
         return redirect(
@@ -6397,16 +6989,17 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # EVITAR REUTILIZAR LA MISMA
+    # NO PERMITIR LA MISMA CONTRASEÑA
     # ========================================================
 
     if usuario.check_password(
         password_nuevo
     ):
 
-        messages.error(
+        messages.warning(
             request,
-            "La nueva contraseña debe ser diferente a la contraseña actual."
+            "La nueva contraseña debe ser "
+            "diferente a la contraseña actual."
         )
 
         return redirect(
@@ -6415,7 +7008,43 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # GUARDAR
+    # VALIDADORES DE CONTRASEÑA DE DJANGO
+    # ========================================================
+
+    try:
+
+        validate_password(
+            password_nuevo,
+            user=usuario
+        )
+
+    except ValidationError as error:
+
+        mensajes_error = " ".join(
+            error.messages
+        )
+
+        messages.error(
+            request,
+            mensajes_error
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # GUARDAR SESSION_KEY ACTUAL
+    # ========================================================
+
+    session_key_anterior = (
+        request.session.session_key
+    )
+
+
+    # ========================================================
+    # CAMBIAR CONTRASEÑA
     # ========================================================
 
     usuario.set_password(
@@ -6430,7 +7059,7 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # MANTENER SESIÓN ABIERTA
+    # MANTENER LA SESIÓN ACTUAL ABIERTA
     # ========================================================
 
     update_session_auth_hash(
@@ -6439,12 +7068,945 @@ def cambiar_password_perfil(request):
     )
 
 
+    # ========================================================
+    # SINCRONIZAR SesionUsuario
+    # ========================================================
+
+    try:
+
+        sincronizar_session_key(
+            request,
+            session_key_anterior
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR SINCRONIZANDO "
+            "SESSION KEY:",
+            error
+        )
+
+
+    # ========================================================
+    # REGISTRAR EN HISTORIAL
+    # ========================================================
+
+    try:
+
+        registrar_historial_acceso(
+            request,
+            usuario,
+            actividad="cambio_password",
+            detalle=(
+                "El usuario actualizó "
+                "la contraseña de su cuenta."
+            )
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR REGISTRANDO CAMBIO "
+            "DE CONTRASEÑA:",
+            error
+        )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
     messages.success(
         request,
-        "Tu contraseña se actualizó correctamente."
+        "Tu contraseña se actualizó "
+        "correctamente."
     )
 
 
     return redirect(
         "mi_perfil"
     )
+
+
+@administrador_requerido
+@permiso_requerido(
+    "cfg",
+    redireccion="dashboard_admin"
+)
+def configuracion_admin(request):
+
+    # ========================================================
+    # CONFIGURACIÓN GENERAL
+    # ========================================================
+
+    configuracion, creado = (
+        ConfiguracionSistema.objects.get_or_create(
+            pk=1,
+            defaults={
+                "nombre_sistema": "Mi Colmena",
+            }
+        )
+    )
+
+    config_seguridad, creado = (
+        ConfiguracionSeguridad.objects
+        .get_or_create(
+            pk=1
+        )
+    )
+
+
+    # ========================================================
+    # CONFIGURACIÓN DE NOTIFICACIONES
+    # ========================================================
+
+    config_notificaciones, creado_notificaciones = (
+        ConfiguracionNotificaciones.objects.get_or_create(
+            pk=1
+        )
+    )
+
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    return render(
+        request,
+        "admin_panel/configuracion.html",
+        {
+            "configuracion":
+                configuracion,
+
+            "config_notificaciones":
+                config_notificaciones,
+
+            "contexto_seguridad": 
+                config_seguridad,
+
+            "permitir_2fa":
+                config_seguridad.permitir_2fa,
+
+            "obligar_2fa_administradores":
+                config_seguridad.obligar_2fa_administradores,
+
+            "obligar_2fa_todos":
+                config_seguridad.obligar_2fa_todos,
+        }
+    )
+
+@administrador_requerido
+@permiso_requerido(
+    "cfg",
+    redireccion="dashboard_admin"
+)
+@require_POST
+def guardar_configuracion_general(request):
+
+    configuracion, creado = (
+        ConfiguracionSistema.objects.get_or_create(
+            pk=1,
+            defaults={
+                "nombre_sistema": "Mi Colmena",
+            }
+        )
+    )
+
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    nombre_sistema = (
+        request.POST.get(
+            "nombre_sistema",
+            ""
+        )
+        .strip()
+    )
+
+
+    nombre_entidad = (
+        request.POST.get(
+            "nombre_entidad",
+            ""
+        )
+        .strip()
+    )
+
+
+    descripcion = (
+        request.POST.get(
+            "descripcion",
+            ""
+        )
+        .strip()
+    )
+
+
+    correo_contacto = (
+        request.POST.get(
+            "correo_contacto",
+            ""
+        )
+        .strip()
+        .lower()
+    )
+
+
+    telefono_contacto = (
+        request.POST.get(
+            "telefono_contacto",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # VALIDACIONES
+    # ========================================================
+
+    if not nombre_sistema:
+
+        messages.error(
+            request,
+            "El nombre del sistema es obligatorio."
+        )
+
+        return redirect(
+            f"{reverse('configuracion_admin')}?tab=general"
+        )
+
+
+    if len(nombre_sistema) > 100:
+
+        messages.error(
+            request,
+            "El nombre del sistema no puede superar los 100 caracteres."
+        )
+
+        return redirect(
+            f"{reverse('configuracion_admin')}?tab=general"
+        )
+
+
+    if len(nombre_entidad) > 150:
+
+        messages.error(
+            request,
+            "El nombre de la empresa no puede superar los 150 caracteres."
+        )
+
+        return redirect(
+            f"{reverse('configuracion_admin')}?tab=general"
+        )
+
+
+    if len(descripcion) > 500:
+
+        messages.error(
+            request,
+            "La descripción no puede superar los 500 caracteres."
+        )
+
+        return redirect(
+            f"{reverse('configuracion_admin')}?tab=general"
+        )
+
+
+    if correo_contacto:
+
+        try:
+
+            validate_email(
+                correo_contacto
+            )
+
+        except ValidationError:
+
+            messages.error(
+                request,
+                "El correo electrónico no es válido."
+            )
+
+            return redirect(
+                f"{reverse('configuracion_admin')}?tab=general"
+            )
+
+
+    if (
+        telefono_contacto
+        and not telefono_contacto.isdigit()
+    ):
+
+        messages.error(
+            request,
+            "El teléfono solo puede contener números."
+        )
+
+        return redirect(
+            f"{reverse('configuracion_admin')}?tab=general"
+        )
+
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
+
+    configuracion.nombre_sistema = (
+        nombre_sistema
+    )
+
+    configuracion.nombre_entidad = (
+        nombre_entidad
+    )
+
+    configuracion.descripcion = (
+        descripcion
+    )
+
+    configuracion.correo_contacto = (
+        correo_contacto
+    )
+
+    configuracion.telefono_contacto = (
+        telefono_contacto
+    )
+
+
+    configuracion.save()
+
+
+    messages.success(
+        request,
+        "La configuración general se actualizó correctamente."
+    )
+
+
+    url = reverse(
+        "configuracion_admin"
+    )
+
+
+    return redirect(
+        f"{url}?tab=general"
+    )
+
+
+@administrador_requerido
+@permiso_requerido(
+    "cfg",
+    redireccion="dashboard_admin"
+)
+@require_POST
+def guardar_configuracion_notificaciones(request):
+
+    configuracion, creado = (
+        ConfiguracionNotificaciones.objects.get_or_create(
+            pk=1
+        )
+    )
+
+
+    # ========================================================
+    # LEER SWITCHES
+    # ========================================================
+
+    configuracion.activar_notificaciones = (
+        request.POST.get(
+            "activar_notificaciones"
+        )
+        == "on"
+    )
+
+
+    configuracion.alertas_colmenas_riesgo = (
+        request.POST.get(
+            "alertas_colmenas_riesgo"
+        )
+        == "on"
+    )
+
+
+    configuracion.alertas_incidencias = (
+        request.POST.get(
+            "alertas_incidencias"
+        )
+        == "on"
+    )
+
+
+    configuracion.alertas_mantenimientos = (
+        request.POST.get(
+            "alertas_mantenimientos"
+        )
+        == "on"
+    )
+
+
+    configuracion.alertas_agenda = (
+        request.POST.get(
+            "alertas_agenda"
+        )
+        == "on"
+    )
+
+
+    configuracion.alertas_seguridad = (
+        request.POST.get(
+            "alertas_seguridad"
+        )
+        == "on"
+    )
+
+
+    configuracion.save()
+
+
+    messages.success(
+        request,
+        "La configuración de notificaciones se actualizó correctamente."
+    )
+
+
+    url = reverse(
+        "configuracion_admin"
+    )
+
+
+    return redirect(
+        f"{url}?tab=notificaciones"
+    )
+
+
+@login_required
+@require_POST
+def marcar_notificacion_leida(request, id_notificacion):
+
+    # ========================================================
+    # BUSCAR NOTIFICACIÓN
+    # IMPORTANTE:
+    # SOLO PUEDE LEER NOTIFICACIONES DEL USUARIO ACTUAL
+    # ========================================================
+
+    notificacion = get_object_or_404(
+        Notificacion,
+        pk=id_notificacion,
+        usuario=request.user
+    )
+
+
+    # ========================================================
+    # MARCAR COMO LEÍDA
+    # ========================================================
+
+    if not notificacion.leida:
+
+        notificacion.leida = True
+
+        notificacion.fecha_lectura = (
+            timezone.now()
+        )
+
+        notificacion.save(
+            update_fields=[
+                "leida",
+                "fecha_lectura",
+            ]
+        )
+
+
+    # ========================================================
+    # CONTAR LAS QUE TODAVÍA ESTÁN PENDIENTES
+    # ========================================================
+
+    pendientes = (
+        Notificacion.objects
+        .filter(
+            usuario=request.user,
+            leida=False
+        )
+        .count()
+    )
+
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "pendientes": pendientes,
+        }
+    )
+
+
+# ============================================================
+# CENTRO DE NOTIFICACIONES
+# ============================================================
+
+@login_required
+def centro_notificaciones(request):
+
+    # ========================================================
+    # FILTROS
+    # ========================================================
+
+    estado = (
+        request.GET.get(
+            "estado",
+            "todas"
+        )
+        .strip()
+        .lower()
+    )
+
+
+    tipo = (
+        request.GET.get(
+            "tipo",
+            ""
+        )
+        .strip()
+        .lower()
+    )
+
+
+    # ========================================================
+    # CONSULTA BASE
+    # ========================================================
+
+    notificaciones = (
+        Notificacion.objects
+        .filter(
+            usuario=request.user
+        )
+        .order_by(
+            "-fecha_creacion"
+        )
+    )
+
+
+    # ========================================================
+    # CONTADORES GENERALES
+    # ========================================================
+
+    total_notificaciones = (
+        Notificacion.objects
+        .filter(
+            usuario=request.user
+        )
+        .count()
+    )
+
+
+    total_no_leidas = (
+        Notificacion.objects
+        .filter(
+            usuario=request.user,
+            leida=False
+        )
+        .count()
+    )
+
+
+    total_leidas = (
+        Notificacion.objects
+        .filter(
+            usuario=request.user,
+            leida=True
+        )
+        .count()
+    )
+
+
+    # ========================================================
+    # FILTRO POR ESTADO
+    # ========================================================
+
+    if estado == "no-leidas":
+
+        notificaciones = (
+            notificaciones
+            .filter(
+                leida=False
+            )
+        )
+
+
+    elif estado == "leidas":
+
+        notificaciones = (
+            notificaciones
+            .filter(
+                leida=True
+            )
+        )
+
+
+    else:
+
+        estado = "todas"
+
+
+    # ========================================================
+    # FILTRO POR TIPO
+    # ========================================================
+
+    tipos_validos = {
+        codigo
+        for codigo, nombre
+        in Notificacion.TIPOS
+    }
+
+
+    if (
+        tipo
+        and
+        tipo in tipos_validos
+    ):
+
+        notificaciones = (
+            notificaciones
+            .filter(
+                tipo=tipo
+            )
+        )
+
+    else:
+
+        tipo = ""
+
+
+    # ========================================================
+    # PAGINACIÓN
+    # ========================================================
+
+    paginator = Paginator(
+        notificaciones,
+        10
+    )
+
+
+    numero_pagina = (
+        request.GET.get(
+            "page"
+        )
+    )
+
+
+    pagina = (
+        paginator.get_page(
+            numero_pagina
+        )
+    )
+
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "pagina":
+            pagina,
+
+        "estado_actual":
+            estado,
+
+        "tipo_actual":
+            tipo,
+
+        "tipos_notificacion":
+            Notificacion.TIPOS,
+
+        "total_notificaciones":
+            total_notificaciones,
+
+        "total_no_leidas":
+            total_no_leidas,
+
+        "total_leidas":
+            total_leidas,
+
+    }
+
+
+    return render(
+        request,
+        "admin_panel/notificaciones.html",
+        contexto
+    )
+
+
+
+# ============================================================
+# MARCAR TODAS LAS NOTIFICACIONES COMO LEÍDAS
+# ============================================================
+
+@login_required
+@require_POST
+def marcar_todas_notificaciones_leidas(
+    request
+):
+
+    ahora = timezone.now()
+
+
+    (
+        Notificacion.objects
+        .filter(
+            usuario=request.user,
+            leida=False
+        )
+        .update(
+            leida=True,
+            fecha_lectura=ahora
+        )
+    )
+
+
+    return redirect(
+        "centro_notificaciones"
+    )
+
+
+
+# ============================================================
+# ELIMINAR NOTIFICACIÓN
+# ============================================================
+
+@login_required
+@require_POST
+def eliminar_notificacion(
+    request,
+    id_notificacion
+):
+
+    notificacion = (
+        get_object_or_404(
+
+            Notificacion,
+
+            pk=id_notificacion,
+
+            usuario=request.user
+
+        )
+    )
+
+
+    notificacion.delete()
+
+
+    return redirect(
+        "centro_notificaciones"
+    )
+
+
+@administrador_requerido
+@permiso_requerido(
+    "cfg",
+    redireccion="configuracion_admin"
+)
+@require_POST
+def guardar_configuracion_seguridad(request):
+
+    config, creado = (
+        ConfiguracionSeguridad.objects
+        .get_or_create(pk=1)
+    )
+
+
+    # ========================================================
+    # CIERRE AUTOMÁTICO POR INACTIVIDAD
+    # ========================================================
+
+    config.cerrar_sesion_inactividad = (
+        request.POST.get(
+            "cerrar_sesion_inactividad"
+        )
+        ==
+        "on"
+    )
+
+
+    try:
+
+        minutos_inactividad = int(
+            request.POST.get(
+                "minutos_inactividad",
+                30
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        minutos_inactividad = 30
+
+
+    minutos_inactividad = max(
+        5,
+        min(
+            minutos_inactividad,
+            480
+        )
+    )
+
+
+    config.minutos_inactividad = (
+        minutos_inactividad
+    )
+
+
+    # ========================================================
+    # HISTORIAL DE ACCESOS
+    # ========================================================
+
+    config.registrar_historial_accesos = (
+        request.POST.get(
+            "registrar_historial_accesos"
+        )
+        ==
+        "on"
+    )
+
+
+    # ========================================================
+    # BLOQUEO POR INTENTOS FALLIDOS
+    # ========================================================
+
+    config.bloquear_intentos_fallidos = (
+        request.POST.get(
+            "bloquear_intentos_fallidos"
+        )
+        ==
+        "on"
+    )
+
+
+    # ========================================================
+    # INTENTOS MÁXIMOS
+    # ========================================================
+
+    try:
+
+        intentos_maximos = int(
+            request.POST.get(
+                "intentos_maximos_login",
+                5
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        intentos_maximos = 5
+
+
+    intentos_maximos = max(
+        3,
+        min(
+            intentos_maximos,
+            10
+        )
+    )
+
+
+    config.intentos_maximos_login = (
+        intentos_maximos
+    )
+
+
+    # ========================================================
+    # DURACIÓN DEL BLOQUEO
+    # ========================================================
+
+    try:
+
+        minutos_bloqueo = int(
+            request.POST.get(
+                "minutos_bloqueo_login",
+                15
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        minutos_bloqueo = 15
+
+
+    minutos_bloqueo = max(
+        5,
+        min(
+            minutos_bloqueo,
+            1440
+        )
+    )
+
+
+    config.minutos_bloqueo_login = (
+        minutos_bloqueo
+    )
+
+
+    # ============================================================
+    # CONFIGURACIÓN 2FA
+    # ============================================================
+
+    config.permitir_2fa = (
+        request.POST.get(
+            "permitir_2fa"
+        )
+        ==
+        "on"
+    )
+
+
+    config.obligar_2fa_administradores = (
+        config.permitir_2fa
+        and
+        request.POST.get(
+            "obligar_2fa_administradores"
+        )
+        ==
+        "on"
+    )
+
+
+    config.obligar_2fa_todos = (
+        config.permitir_2fa
+        and
+        request.POST.get(
+            "obligar_2fa_todos"
+        )
+        ==
+        "on"
+    )
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
+
+    config.save()
+
+
+    messages.success(
+        request,
+        "La configuración de seguridad "
+        "se actualizó correctamente."
+    )
+
+
+    return redirect(
+        f"{reverse('configuracion_admin')}"
+        "?tab=seguridad"
+    )
+

@@ -13,6 +13,21 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+### borrar esto para el despliegue
+SITE_URL = "https://spent-daycare-sludge.ngrok-free.dev"
+
+DEBUG = True
+
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "starlet-sprang-famine.ngrok-free.dev",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://starlet-sprang-famine.ngrok-free.dev",
+]
+### hasta aqui 
 WEASYPRINT_DLL_HANDLE = None
 
 if os.name == "nt":
@@ -40,8 +55,6 @@ SECRET_KEY = 'django-insecure-6okhrqphwa8zzx0r&o=4st(ovfo2x5#d9*cp9pf%p2d35ba=dm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -65,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    "usuarios.middleware.InactividadSesionMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -127,7 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'
 
 TIME_ZONE = "America/Bogota"
 
@@ -152,16 +166,22 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "micolmena690@gmail.com"
 EMAIL_HOST_PASSWORD = "thwbzoouzgbvpnqs"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_TIMEOUT = 10
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard_admin"
 LOGOUT_REDIRECT_URL = "login"
 
+
+#2FA
+TWO_FA_ENCRYPTION_KEY = 'YDg9IIj1T3uLKQBkD0fx9CpAnS-VmhxYqvHXXUCUd0s='
+
 # La sesión termina al cerrar el navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # 30 minutos
-SESSION_COOKIE_AGE = 1800
+SESSION_COOKIE_AGE = 43200
 
 # Reinicia el contador en cada petición
 SESSION_SAVE_EVERY_REQUEST = True

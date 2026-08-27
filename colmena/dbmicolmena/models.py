@@ -150,7 +150,7 @@ class Mantenimiento(models.Model):
     estado = models.CharField(db_column='Estado', max_length=50, blank=True, null=True)
     prioridad = models.CharField(db_column='Prioridad', max_length=50, blank=True, null=True)
     observaciones = models.CharField(db_column='Observaciones', max_length=255, blank=True, null=True)
-    responsable = models.CharField(db_column='Responsable', max_length=100, blank=True, null=True)
+    responsable = models.CharField(db_column='Responsable', max_length=100, blank=True, null=True,default="Sin Responsable")
 
     class Meta:
         managed = False

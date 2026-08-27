@@ -1,0 +1,234 @@
+{% extends "admin_panel/base_admin.html" %}
+
+
+{% block title %}
+    Verificar 2FA | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Seguridad
+{% endblock %}
+
+
+{% block content %}
+
+
+<div
+    class="container"
+    style="
+        max-width: 520px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    "
+>
+
+
+    <div
+        class="card border-0 shadow-sm"
+        style="border-radius: 18px;"
+    >
+
+
+        <div class="card-body p-4 p-md-5">
+
+
+            <div class="text-center mb-4">
+
+
+                <div
+                    class="
+                        d-inline-flex
+                        align-items-center
+                        justify-content-center
+                        rounded-circle
+                        mb-3
+                    "
+                    style="
+                        width: 64px;
+                        height: 64px;
+                        background: #eaf7ee;
+                        color: #326d56;
+                        font-size: 25px;
+                    "
+                >
+
+                    <i class="bi bi-shield-lock-fill"></i>
+
+                </div>
+
+
+                <h4 class="fw-bold">
+
+                    Verifica tu correo
+
+                </h4>
+
+
+                <p class="text-muted small mb-0">
+
+                    Enviamos un código de 6 dígitos a
+
+                    <strong>
+                        {{ correo_oculto }}
+                    </strong>
+
+                </p>
+
+
+            </div>
+
+
+
+            {% if error %}
+
+                <div class="alert alert-danger">
+
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+                    {{ error }}
+
+                </div>
+
+            {% endif %}
+
+
+
+            {% if puede_verificar %}
+
+
+                <form
+                    method="POST"
+                    id="formVerificacion2FA"
+                >
+
+                    {% csrf_token %}
+
+
+                    <div class="mb-4">
+
+                        <label
+                            for="codigo2FA"
+                            class="form-label fw-semibold"
+                        >
+
+                            Código de verificación
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="codigo2FA"
+                            name="codigo"
+                            class="
+                                form-control
+                                form-control-lg
+                                text-center
+                            "
+                            inputmode="numeric"
+                            pattern="[0-9]{6}"
+                            maxlength="6"
+                            autocomplete="one-time-code"
+                            placeholder="000000"
+                            required
+                            style="
+                                letter-spacing: 8px;
+                                font-weight: 700;
+                                font-size: 24px;
+                            "
+                        >
+
+
+                        <small class="text-muted">
+
+                            El código tiene una duración
+                            de 5 minutos.
+
+                        </small>
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-success w-100"
+                    >
+
+                        <i class="bi bi-check-circle-fill me-2"></i>
+
+                        Verificar y activar 2FA
+
+                    </button>
+
+
+                </form>
+
+
+            {% else %}
+
+
+                <a
+                    href="{% url 'mi_perfil' %}"
+                    class="btn btn-outline-secondary w-100"
+                >
+
+                    Volver a Mi Perfil
+
+                </a>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const codigo = document.getElementById(
+            "codigo2FA"
+        );
+
+
+        if (!codigo) {
+            return;
+        }
+
+
+        codigo.addEventListener(
+            "input",
+            function () {
+
+                this.value = (
+                    this.value
+                    .replace(
+                        /[^0-9]/g,
+                        ""
+                    )
+                    .slice(
+                        0,
+                        6
+                    )
+                );
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+{% endblock %}
