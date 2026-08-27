@@ -4,32 +4,22 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
-from panel_admin.models import (
-    ConfiguracionSeguridad,
-)
+from panel_admin.models import ConfiguracionSeguridad
 
 from usuarios.services import (
     actualizar_sesion_actual,
     cerrar_registro_sesion_actual,
+    registrar_historial_acceso,
 )
 
 
 class InactividadSesionMiddleware:
 
-    def __init__(
-        self,
-        get_response
-    ):
-
-        self.get_response = (
-            get_response
-        )
+    def __init__(self, get_response):
+        self.get_response = get_response
 
 
-    def __call__(
-        self,
-        request
-    ):
+    def __call__(self, request):
 
         # ====================================================
         # SOLO USUARIOS AUTENTICADOS
@@ -37,23 +27,21 @@ class InactividadSesionMiddleware:
 
         if request.user.is_authenticated:
 
+            # =================================================
+            # OBTENER CONFIGURACIÓN DE SEGURIDAD
+            # =================================================
+
             config = (
                 ConfiguracionSeguridad.objects
-                .filter(
-                    pk=1
-                )
+                .filter(pk=1)
                 .first()
             )
 
-
-            ahora = (
-                timezone.now()
-                .timestamp()
-            )
+            ahora = timezone.now().timestamp()
 
 
             # =================================================
-            # VERIFICAR INACTIVIDAD
+            # VERIFICAR CIERRE POR INACTIVIDAD
             # =================================================
 
             if (
@@ -68,32 +56,51 @@ class InactividadSesionMiddleware:
                     )
                 )
 
-
                 limite_segundos = (
                     config.minutos_inactividad
-                    *
-                    60
+                    * 60
                 )
 
 
                 # =============================================
-                # SUPERÓ EL TIEMPO DE INACTIVIDAD
+                # SESIÓN VENCIDA POR INACTIVIDAD
                 # =============================================
 
                 if (
                     ultima_actividad
                     and
                     (
-                        ahora
-                        -
-                        ultima_actividad
-                    )
-                    >
-                    limite_segundos
+                        ahora - ultima_actividad
+                    ) > limite_segundos
                 ):
 
                     # =========================================
-                    # MARCAR REGISTRO COMO CERRADO
+                    # REGISTRAR HISTORIAL
+                    # =========================================
+
+                    try:
+
+                        registrar_historial_acceso(
+                            request,
+                            request.user,
+                            actividad="inactividad",
+                            detalle=(
+                                "La sesión fue cerrada "
+                                "automáticamente por inactividad."
+                            )
+                        )
+
+                    except Exception as error:
+
+                        print(
+                            "ERROR REGISTRANDO HISTORIAL "
+                            "DE INACTIVIDAD:",
+                            error
+                        )
+
+
+                    # =========================================
+                    # MARCAR SesionUsuario COMO CERRADA
                     # =========================================
 
                     try:
@@ -106,25 +113,22 @@ class InactividadSesionMiddleware:
                     except Exception as error:
 
                         print(
-                            "ERROR CERRANDO SESIÓN "
-                            "POR INACTIVIDAD:",
+                            "ERROR CERRANDO REGISTRO "
+                            "DE SESIÓN:",
                             error
                         )
 
 
                     # =========================================
-                    # CERRAR SESIÓN DJANGO
+                    # CERRAR SESIÓN REAL DE DJANGO
                     # =========================================
 
-                    logout(
-                        request
-                    )
+                    logout(request)
 
 
                     messages.warning(
                         request,
-                        "Tu sesión se cerró "
-                        "por inactividad."
+                        "Tu sesión se cerró por inactividad."
                     )
 
 
@@ -135,7 +139,7 @@ class InactividadSesionMiddleware:
 
 
             # =================================================
-            # LA SESIÓN SIGUE VÁLIDA
+            # LA SESIÓN TODAVÍA ES VÁLIDA
             # =================================================
 
             request.session[
@@ -144,7 +148,7 @@ class InactividadSesionMiddleware:
 
 
             # =================================================
-            # ACTUALIZAR REGISTRO DE SESIÓN
+            # ACTUALIZAR SesionUsuario.ultima_actividad
             # =================================================
 
             try:

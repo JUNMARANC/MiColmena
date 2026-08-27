@@ -606,3 +606,256 @@ function inicializarConfiguracionSeguridad() {
     actualizarEstado();
 
 }
+
+
+
+
+// ============================================================
+// VALIDACIÓN DE CAMPOS NUMÉRICOS DE SEGURIDAD
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const inputInactividad = document.getElementById(
+        "minutosInactividad"
+    );
+
+    const inputIntentos = document.getElementById(
+        "intentosMaximosLogin"
+    );
+
+    const inputMinutosBloqueo = document.getElementById(
+        "minutosBloqueoLogin"
+    );
+
+
+    // ========================================================
+    // SOLO NÚMEROS ENTEROS
+    // ========================================================
+
+    function permitirSoloNumeros(input) {
+
+        if (!input) {
+            return;
+        }
+
+
+        input.addEventListener("input", function () {
+
+            this.value = this.value.replace(
+                /[^0-9]/g,
+                ""
+            );
+
+        });
+
+
+        // También limpia texto pegado
+        input.addEventListener("paste", function () {
+
+            setTimeout(() => {
+
+                this.value = this.value.replace(
+                    /[^0-9]/g,
+                    ""
+                );
+
+            }, 0);
+
+        });
+
+    }
+
+
+    // ========================================================
+    // VALIDAR RANGO
+    // ========================================================
+
+    function validarRango(
+        input,
+        minimo,
+        maximo,
+        valorPorDefecto
+    ) {
+
+        if (!input) {
+            return;
+        }
+
+
+        input.addEventListener("blur", function () {
+
+            let valor = parseInt(
+                this.value,
+                10
+            );
+
+
+            if (isNaN(valor)) {
+
+                valor = valorPorDefecto;
+
+            }
+
+
+            if (valor < minimo) {
+
+                valor = minimo;
+
+            }
+
+
+            if (valor > maximo) {
+
+                valor = maximo;
+
+            }
+
+
+            this.value = valor;
+
+        });
+
+    }
+
+
+    // ========================================================
+    // SOLO NÚMEROS
+    // ========================================================
+
+    permitirSoloNumeros(
+        inputInactividad
+    );
+
+    permitirSoloNumeros(
+        inputIntentos
+    );
+
+    permitirSoloNumeros(
+        inputMinutosBloqueo
+    );
+
+
+    // ========================================================
+    // CIERRE POR INACTIVIDAD
+    // 5 - 480 MINUTOS
+    // ========================================================
+
+    validarRango(
+        inputInactividad,
+        5,
+        480,
+        30
+    );
+
+
+    // ========================================================
+    // INTENTOS DE LOGIN
+    // 3 - 10 INTENTOS
+    // ========================================================
+
+    validarRango(
+        inputIntentos,
+        3,
+        10,
+        5
+    );
+
+
+    // ========================================================
+    // DURACIÓN DEL BLOQUEO
+    // 5 - 1440 MINUTOS
+    // ========================================================
+
+    validarRango(
+        inputMinutosBloqueo,
+        5,
+        1440,
+        15
+    );
+
+
+    // ============================================================
+    // CONFIGURACIÓN GLOBAL 2FA
+    // ============================================================
+
+    const permitir2FA = (
+        document.getElementById(
+            "permitir2FA"
+        )
+    );
+
+
+    const obligarAdmins = (
+        document.getElementById(
+            "obligar2FAAdministradores"
+        )
+    );
+
+
+    const obligarTodos = (
+        document.getElementById(
+            "obligar2FATodos"
+        )
+    );
+
+
+    function actualizarControles2FA() {
+
+        if (!permitir2FA) {
+            return;
+        }
+
+
+        const habilitado = (
+            permitir2FA.checked
+        );
+
+
+        if (obligarAdmins) {
+
+            obligarAdmins.disabled =
+                !habilitado;
+
+
+            if (!habilitado) {
+
+                obligarAdmins.checked =
+                    false;
+
+            }
+
+        }
+
+
+        if (obligarTodos) {
+
+            obligarTodos.disabled =
+                !habilitado;
+
+
+            if (!habilitado) {
+
+                obligarTodos.checked =
+                    false;
+
+            }
+
+        }
+
+    }
+
+
+    if (permitir2FA) {
+
+        permitir2FA.addEventListener(
+            "change",
+            actualizarControles2FA
+        );
+
+
+        actualizarControles2FA();
+
+    }
+
+});
