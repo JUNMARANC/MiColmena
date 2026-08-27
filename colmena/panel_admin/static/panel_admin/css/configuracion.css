@@ -1577,3 +1577,110 @@
     }
 
 }
+
+
+.seguridad-info-adicional {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 8px;
+
+    margin-top: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    background: #f5faf7;
+
+    color: #708078;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+.seguridad-info-adicional i {
+    margin-top: 1px;
+
+    color: #5f9781;
+}
+
+
+/* ==========================================================
+   CONFIGURACIÓN DEL BLOQUEO DE LOGIN
+========================================================== */
+
+.seguridad-login-config {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-top: 18px;
+}
+
+
+.seguridad-login-campo {
+    padding: 15px;
+
+    border:
+        1px solid
+        #e1ebe5;
+
+    border-radius: 12px;
+
+    background: #fbfdfc;
+}
+
+
+.seguridad-login-campo > label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #38594a;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.seguridad-login-campo small {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #87938d;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+.seguridad-login-campo
+.seguridad-input-tiempo {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.seguridad-login-campo
+.seguridad-input-tiempo input {
+    width: 95px;
+}
+
+
+@media (max-width: 768px) {
+
+    .seguridad-login-config {
+        grid-template-columns: 1fr;
+    }
+
+}

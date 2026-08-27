@@ -16,7 +16,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=3"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=4"
 >
 
 {% endblock %}
@@ -1359,6 +1359,163 @@
 
                 </section>
 
+                <!-- =========================================================
+                    AUTENTICACIÓN EN DOS PASOS
+                ========================================================== -->
+
+                <section
+                    class="
+                        perfil-bloque-seguridad
+                        perfil-2fa-seccion
+                    "
+                >
+
+
+                    <div class="sesiones-header">
+
+
+                        <div class="sesiones-header-info">
+
+
+                            <div class="sesiones-header-icono">
+
+                                <i class="bi bi-shield-check"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <div class="sesiones-titulo-linea">
+
+                                    <h5>
+                                        Autenticación en dos pasos
+                                    </h5>
+
+
+                                    {% if config_2fa.activo %}
+
+                                        <span class="badge-sesion-actual">
+
+                                            <i class="bi bi-check-circle-fill"></i>
+
+                                            Activado
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="perfil-2fa-inactivo">
+
+                                            Desactivado
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <p>
+                                    Añade una verificación adicional mediante
+                                    un código de 6 dígitos enviado a tu correo.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        {% if config_2fa.activo %}
+
+                            {% if politica_2fa.obligatorio %}
+
+                                <div
+                                    class="alert alert-info mb-0"
+                                    style="
+                                        max-width: 320px;
+                                        font-size: 13px;
+                                    "
+                                >
+
+                                    <i class="bi bi-lock-fill me-2"></i>
+
+                                    El 2FA es obligatorio por la política
+                                    de seguridad del sistema.
+
+                                </div>
+
+                            {% else %}
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'iniciar_desactivacion_2fa' %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline-danger"
+                                    >
+
+                                        <i class="bi bi-shield-x me-2"></i>
+
+                                        Desactivar 2FA
+
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'iniciar_activacion_2fa' %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-success"
+                                >
+
+                                    <i class="bi bi-shield-lock-fill me-2"></i>
+
+                                    Activar 2FA
+
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <div class="seguridad-info-adicional">
+
+                        <i class="bi bi-envelope-check"></i>
+
+                        <span>
+
+                            Los códigos de seguridad serán enviados al correo:
+
+                            <strong>
+                                {{ usuario.email|default:"Sin correo registrado" }}
+                            </strong>
+
+                        </span>
+
+                    </div>
+
+
+                </section>
 
 
                 <!-- =================================================
@@ -1708,6 +1865,390 @@
                                     <p>
                                         Las sesiones aparecerán aquí
                                         cuando inicies sesión en el sistema.
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                </section>
+
+                <!-- =========================================================
+                    HISTORIAL DE ACCESOS
+                ========================================================== -->
+
+                <section
+                    class="
+                        perfil-bloque-seguridad
+                        historial-accesos-seccion
+                    "
+                >
+
+
+                    <!-- =====================================================
+                        ENCABEZADO
+                    ====================================================== -->
+
+                    <div class="historial-header">
+
+
+                        <div class="historial-header-info">
+
+
+                            <div class="historial-header-icono">
+
+                                <i class="bi bi-clock-history"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h5>
+                                    Historial de accesos
+                                </h5>
+
+
+                                <p>
+                                    Consulta las actividades recientes
+                                    relacionadas con la seguridad de tu cuenta.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <span class="historial-limite">
+
+                            Últimos 10 registros
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- =====================================================
+                        AVISO
+                    ====================================================== -->
+
+                    <div class="historial-aviso">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <p>
+                            Revisa regularmente esta información.
+                            Si identificas una actividad que no reconoces,
+                            cambia tu contraseña y cierra las demás sesiones.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =====================================================
+                        LISTADO
+                    ====================================================== -->
+
+                    <div class="historial-lista">
+
+
+                        {% for registro in historial_accesos %}
+
+
+                            <article class="historial-item">
+
+
+                                <!-- =========================================
+                                    ICONO
+                                ========================================== -->
+
+                                <div
+                                    class="
+                                        historial-icono
+
+                                        {% if registro.actividad == 'login' %}
+                                            historial-icono-login
+
+                                        {% elif registro.actividad == 'logout' %}
+                                            historial-icono-logout
+
+                                        {% elif registro.actividad == 'cambio_password' %}
+                                            historial-icono-password
+
+                                        {% elif registro.actividad == 'inactividad' %}
+                                            historial-icono-inactividad
+
+                                        {% elif registro.actividad == 'cierre_remoto' %}
+                                            historial-icono-remoto
+
+                                        {% else %}
+                                            historial-icono-sistema
+
+                                        {% endif %}
+                                    "
+                                >
+
+
+                                    {% if registro.actividad == "login" %}
+
+                                        <i class="bi bi-box-arrow-in-right"></i>
+
+
+                                    {% elif registro.actividad == "logout" %}
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+
+                                    {% elif registro.actividad == "cambio_password" %}
+
+                                        <i class="bi bi-key-fill"></i>
+
+
+                                    {% elif registro.actividad == "inactividad" %}
+
+                                        <i class="bi bi-clock-fill"></i>
+
+
+                                    {% elif registro.actividad == "cierre_remoto" %}
+
+                                        <i class="bi bi-display"></i>
+
+
+                                    {% else %}
+
+                                        <i class="bi bi-shield-check"></i>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                    INFORMACIÓN PRINCIPAL
+                                ========================================== -->
+
+                                <div class="historial-contenido">
+
+
+                                    <div class="historial-superior">
+
+
+                                        <div>
+
+
+                                            <div class="historial-actividad">
+
+                                                {{ registro.get_actividad_display }}
+
+                                            </div>
+
+
+                                            <div class="historial-fecha">
+
+                                                <i class="bi bi-calendar3"></i>
+
+                                                {{ registro.fecha|date:"d/m/Y" }}
+
+                                                <span>
+                                                    ·
+                                                </span>
+
+                                                <i class="bi bi-clock"></i>
+
+                                                {{ registro.fecha|date:"H:i" }}
+
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        {% if registro.exitoso %}
+
+                                            <span class="historial-estado exitoso">
+
+                                                <i class="bi bi-check-circle-fill"></i>
+
+                                                Registrado
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="historial-estado error">
+
+                                                <i class="bi bi-exclamation-circle-fill"></i>
+
+                                                Fallido
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                    <!-- =====================================
+                                        DETALLE DEL EVENTO
+                                    ====================================== -->
+
+                                    {% if registro.detalle %}
+
+                                        <p class="historial-detalle">
+
+                                            {{ registro.detalle }}
+
+                                        </p>
+
+                                    {% endif %}
+
+
+
+                                    <!-- =====================================
+                                        INFORMACIÓN DEL DISPOSITIVO
+                                    ====================================== -->
+
+                                    <div class="historial-datos">
+
+
+                                        <!-- NAVEGADOR -->
+
+                                        <div>
+
+                                            <i class="bi bi-browser-chrome"></i>
+
+                                            <span>
+
+                                                {{ registro.navegador|default:"Navegador desconocido" }}
+
+                                            </span>
+
+                                        </div>
+
+
+
+                                        <!-- SISTEMA -->
+
+                                        <div>
+
+                                            <i class="bi bi-pc-display"></i>
+
+                                            <span>
+
+                                                {{ registro.sistema_operativo|default:"Sistema desconocido" }}
+
+                                            </span>
+
+                                        </div>
+
+
+
+                                        <!-- DISPOSITIVO -->
+
+                                        <div>
+
+
+                                            {% if registro.dispositivo == "Móvil" %}
+
+                                                <i class="bi bi-phone"></i>
+
+
+                                            {% elif registro.dispositivo == "Tablet" %}
+
+                                                <i class="bi bi-tablet"></i>
+
+
+                                            {% else %}
+
+                                                <i class="bi bi-laptop"></i>
+
+
+                                            {% endif %}
+
+
+                                            <span>
+
+                                                {{ registro.dispositivo|default:"Dispositivo desconocido" }}
+
+                                            </span>
+
+                                        </div>
+
+
+
+                                        <!-- IP -->
+
+                                        <div>
+
+                                            <i class="bi bi-globe2"></i>
+
+                                            <span>
+
+                                                IP:
+
+                                                <strong>
+                                                    {{ registro.ip|default:"No disponible" }}
+                                                </strong>
+
+                                            </span>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </article>
+
+
+                        {% empty %}
+
+
+                            <!-- =============================================
+                                SIN HISTORIAL
+                            ============================================== -->
+
+                            <div class="historial-vacio">
+
+
+                                <div class="historial-vacio-icono">
+
+                                    <i class="bi bi-clock-history"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        No hay actividades registradas
+                                    </strong>
+
+
+                                    <p>
+                                        Los eventos relacionados con la
+                                        seguridad de tu cuenta aparecerán aquí.
                                     </p>
 
                                 </div>

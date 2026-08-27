@@ -25,6 +25,7 @@ from calendar import Calendar
 from panel_admin.forms import EventoAgendaForm
 from pathlib import Path
 from django.urls import reverse
+from usuarios.models import HistorialAcceso
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -80,6 +81,18 @@ from panel_admin.models import (
 
 from usuarios.services import (
     obtener_sesiones_activas_usuario,
+    registrar_historial_acceso,
+    sincronizar_session_key,
+    obtener_politica_2fa,
+)
+
+from django.contrib.auth.password_validation import (
+    validate_password,
+)
+
+from usuarios.models import (
+    HistorialAcceso,
+    Configuracion2FA,
 )
 
 
@@ -6413,6 +6426,35 @@ def mi_perfil(request):
         )
     )
 
+    # ============================================================
+    # HISTORIAL DE ACCESOS
+    # ============================================================
+
+    historial_accesos = (
+        HistorialAcceso.objects
+        .filter(
+            usuario=request.user
+        )
+        .order_by(
+            "-fecha"
+        )[:10]
+    )
+
+    # ============================================================
+    # CONFIGURACIÓN 2FA DEL USUARIO
+    # ============================================================
+
+    config_2fa, creado = (
+        Configuracion2FA.objects
+        .get_or_create(
+            usuario=request.user
+        )
+    )
+
+    politica_2fa = obtener_politica_2fa(
+        request.user
+    )
+
 
     # ========================================================
     # CONTEXTO
@@ -6447,6 +6489,20 @@ def mi_perfil(request):
             sesiones_activas
         ),
 
+        "sesiones_activas":
+            sesiones_activas,
+
+        "cantidad_sesiones_activas":
+            len(sesiones_activas),
+
+        "historial_accesos":
+            historial_accesos,
+
+        "config_2fa": config_2fa,
+
+        "config_2fa": config_2fa,
+
+        "politica_2fa": politica_2fa,
     }
 
 
@@ -6814,6 +6870,9 @@ def actualizar_mi_perfil(request):
         "mi_perfil"
     )
 
+# ============================================================
+# CAMBIAR CONTRASEÑA DESDE MI PERFIL
+# ============================================================
 
 @login_required
 @permiso_requerido(
@@ -6821,13 +6880,26 @@ def actualizar_mi_perfil(request):
     redireccion="dashboard_admin"
 )
 @require_POST
-def cambiar_password_perfil(request):
+def cambiar_password_perfil(
+    request
+):
+
+    # ========================================================
+    # VERIFICAR AUTENTICACIÓN
+    # ========================================================
+
+    if not request.user.is_authenticated:
+
+        return redirect(
+            "login"
+        )
+
 
     usuario = request.user
 
 
     # ========================================================
-    # DATOS
+    # OBTENER DATOS DEL FORMULARIO
     # ========================================================
 
     password_actual = (
@@ -6855,18 +6927,21 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # CAMPOS OBLIGATORIOS
+    # VALIDAR CAMPOS VACÍOS
     # ========================================================
 
     if (
         not password_actual
-        or not password_nuevo
-        or not confirmar_password
+        or
+        not password_nuevo
+        or
+        not confirmar_password
     ):
 
         messages.error(
             request,
-            "Debes completar todos los campos de contraseña."
+            "Debes completar todos los campos "
+            "de contraseña."
         )
 
         return redirect(
@@ -6884,7 +6959,7 @@ def cambiar_password_perfil(request):
 
         messages.error(
             request,
-            "La contraseña actual no es correcta."
+            "La contraseña actual es incorrecta."
         )
 
         return redirect(
@@ -6893,36 +6968,19 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # LONGITUD
-    # ========================================================
-
-    if (
-        len(password_nuevo)
-        < 8
-    ):
-
-        messages.error(
-            request,
-            "La nueva contraseña debe tener mínimo 8 caracteres."
-        )
-
-        return redirect(
-            "mi_perfil"
-        )
-
-
-    # ========================================================
-    # COINCIDENCIA
+    # VALIDAR QUE LAS CONTRASEÑAS COINCIDAN
     # ========================================================
 
     if (
         password_nuevo
-        != confirmar_password
+        !=
+        confirmar_password
     ):
 
         messages.error(
             request,
-            "Las nuevas contraseñas no coinciden."
+            "Las nuevas contraseñas "
+            "no coinciden."
         )
 
         return redirect(
@@ -6931,16 +6989,17 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # EVITAR REUTILIZAR LA MISMA
+    # NO PERMITIR LA MISMA CONTRASEÑA
     # ========================================================
 
     if usuario.check_password(
         password_nuevo
     ):
 
-        messages.error(
+        messages.warning(
             request,
-            "La nueva contraseña debe ser diferente a la contraseña actual."
+            "La nueva contraseña debe ser "
+            "diferente a la contraseña actual."
         )
 
         return redirect(
@@ -6949,7 +7008,43 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # GUARDAR
+    # VALIDADORES DE CONTRASEÑA DE DJANGO
+    # ========================================================
+
+    try:
+
+        validate_password(
+            password_nuevo,
+            user=usuario
+        )
+
+    except ValidationError as error:
+
+        mensajes_error = " ".join(
+            error.messages
+        )
+
+        messages.error(
+            request,
+            mensajes_error
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # GUARDAR SESSION_KEY ACTUAL
+    # ========================================================
+
+    session_key_anterior = (
+        request.session.session_key
+    )
+
+
+    # ========================================================
+    # CAMBIAR CONTRASEÑA
     # ========================================================
 
     usuario.set_password(
@@ -6964,7 +7059,7 @@ def cambiar_password_perfil(request):
 
 
     # ========================================================
-    # MANTENER SESIÓN ABIERTA
+    # MANTENER LA SESIÓN ACTUAL ABIERTA
     # ========================================================
 
     update_session_auth_hash(
@@ -6972,27 +7067,60 @@ def cambiar_password_perfil(request):
         usuario
     )
 
+
     # ========================================================
-    # NOTIFICACIÓN DE SEGURIDAD
+    # SINCRONIZAR SesionUsuario
     # ========================================================
 
     try:
 
-        notificar_cambio_password(
-            usuario
+        sincronizar_session_key(
+            request,
+            session_key_anterior
         )
 
     except Exception as error:
 
         print(
-            "ERROR GENERANDO NOTIFICACIÓN DE SEGURIDAD:",
+            "ERROR SINCRONIZANDO "
+            "SESSION KEY:",
             error
         )
 
 
+    # ========================================================
+    # REGISTRAR EN HISTORIAL
+    # ========================================================
+
+    try:
+
+        registrar_historial_acceso(
+            request,
+            usuario,
+            actividad="cambio_password",
+            detalle=(
+                "El usuario actualizó "
+                "la contraseña de su cuenta."
+            )
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR REGISTRANDO CAMBIO "
+            "DE CONTRASEÑA:",
+            error
+        )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
     messages.success(
         request,
-        "Tu contraseña se actualizó correctamente."
+        "Tu contraseña se actualizó "
+        "correctamente."
     )
 
 
@@ -7056,6 +7184,15 @@ def configuracion_admin(request):
 
             "contexto_seguridad": 
                 config_seguridad,
+
+            "permitir_2fa":
+                config_seguridad.permitir_2fa,
+
+            "obligar_2fa_administradores":
+                config_seguridad.obligar_2fa_administradores,
+
+            "obligar_2fa_todos":
+                config_seguridad.obligar_2fa_todos,
         }
     )
 
@@ -7672,20 +7809,16 @@ def eliminar_notificacion(
     redireccion="configuracion_admin"
 )
 @require_POST
-def guardar_configuracion_seguridad(
-    request
-):
+def guardar_configuracion_seguridad(request):
 
     config, creado = (
         ConfiguracionSeguridad.objects
-        .get_or_create(
-            pk=1
-        )
+        .get_or_create(pk=1)
     )
 
 
     # ========================================================
-    # CIERRE AUTOMÁTICO
+    # CIERRE AUTOMÁTICO POR INACTIVIDAD
     # ========================================================
 
     config.cerrar_sesion_inactividad = (
@@ -7697,13 +7830,9 @@ def guardar_configuracion_seguridad(
     )
 
 
-    # ========================================================
-    # MINUTOS DE INACTIVIDAD
-    # ========================================================
-
     try:
 
-        minutos = int(
+        minutos_inactividad = int(
             request.POST.get(
                 "minutos_inactividad",
                 30
@@ -7715,24 +7844,156 @@ def guardar_configuracion_seguridad(
         ValueError
     ):
 
-        minutos = 30
+        minutos_inactividad = 30
 
 
-    # Seguridad también en backend
-
-    minutos = max(
+    minutos_inactividad = max(
         5,
         min(
-            minutos,
+            minutos_inactividad,
             480
         )
     )
 
 
     config.minutos_inactividad = (
-        minutos
+        minutos_inactividad
     )
 
+
+    # ========================================================
+    # HISTORIAL DE ACCESOS
+    # ========================================================
+
+    config.registrar_historial_accesos = (
+        request.POST.get(
+            "registrar_historial_accesos"
+        )
+        ==
+        "on"
+    )
+
+
+    # ========================================================
+    # BLOQUEO POR INTENTOS FALLIDOS
+    # ========================================================
+
+    config.bloquear_intentos_fallidos = (
+        request.POST.get(
+            "bloquear_intentos_fallidos"
+        )
+        ==
+        "on"
+    )
+
+
+    # ========================================================
+    # INTENTOS MÁXIMOS
+    # ========================================================
+
+    try:
+
+        intentos_maximos = int(
+            request.POST.get(
+                "intentos_maximos_login",
+                5
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        intentos_maximos = 5
+
+
+    intentos_maximos = max(
+        3,
+        min(
+            intentos_maximos,
+            10
+        )
+    )
+
+
+    config.intentos_maximos_login = (
+        intentos_maximos
+    )
+
+
+    # ========================================================
+    # DURACIÓN DEL BLOQUEO
+    # ========================================================
+
+    try:
+
+        minutos_bloqueo = int(
+            request.POST.get(
+                "minutos_bloqueo_login",
+                15
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        minutos_bloqueo = 15
+
+
+    minutos_bloqueo = max(
+        5,
+        min(
+            minutos_bloqueo,
+            1440
+        )
+    )
+
+
+    config.minutos_bloqueo_login = (
+        minutos_bloqueo
+    )
+
+
+    # ============================================================
+    # CONFIGURACIÓN 2FA
+    # ============================================================
+
+    config.permitir_2fa = (
+        request.POST.get(
+            "permitir_2fa"
+        )
+        ==
+        "on"
+    )
+
+
+    config.obligar_2fa_administradores = (
+        config.permitir_2fa
+        and
+        request.POST.get(
+            "obligar_2fa_administradores"
+        )
+        ==
+        "on"
+    )
+
+
+    config.obligar_2fa_todos = (
+        config.permitir_2fa
+        and
+        request.POST.get(
+            "obligar_2fa_todos"
+        )
+        ==
+        "on"
+    )
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
 
     config.save()
 

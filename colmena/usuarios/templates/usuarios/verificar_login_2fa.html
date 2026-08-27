@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Verificación 2FA | Mi Colmena
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f7fbf8;
+
+            color: #163324;
+        }
+
+
+        .contenedor-2fa {
+
+            width: 100%;
+
+            max-width: 460px;
+
+            background: #ffffff;
+
+            border: 1px solid #e2ece6;
+
+            border-radius: 20px;
+
+            padding: 38px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(33, 79, 59, 0.08);
+        }
+
+
+        .icono {
+
+            width: 68px;
+            height: 68px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #e8f6ed;
+
+            color: #214f3b;
+
+            font-size: 30px;
+
+            font-weight: bold;
+        }
+
+
+        h1 {
+
+            margin: 0 0 12px;
+
+            text-align: center;
+
+            font-size: 25px;
+
+            color: #214f3b;
+        }
+
+
+        .descripcion {
+
+            margin-bottom: 28px;
+
+            text-align: center;
+
+            color: #66756c;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        .descripcion strong {
+            color: #214f3b;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+
+        .codigo {
+
+            width: 100%;
+
+            height: 58px;
+
+            border: 1px solid #cbd9d0;
+
+            border-radius: 12px;
+
+            outline: none;
+
+            text-align: center;
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+            letter-spacing: 9px;
+
+            color: #214f3b;
+
+            transition: 0.2s;
+        }
+
+
+        .codigo:focus {
+
+            border-color: #5f9781;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(95, 151, 129, 0.15);
+        }
+
+
+        .ayuda {
+
+            display: block;
+
+            margin-top: 8px;
+
+            color: #7a8980;
+
+            font-size: 12px;
+        }
+
+
+        .btn-verificar {
+
+            width: 100%;
+
+            margin-top: 24px;
+
+            padding: 14px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            cursor: pointer;
+
+            background: #214f3b;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        .btn-verificar:hover {
+            background: #173c2d;
+        }
+
+
+        .error {
+
+            margin-bottom: 20px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            background: #fdeceb;
+
+            color: #9c3d36;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .volver {
+
+            display: block;
+
+            margin-top: 20px;
+
+            text-align: center;
+
+            color: #5f9781;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+
+        .volver:hover {
+            text-decoration: underline;
+        }
+
+
+        @media (
+            max-width: 500px
+        ) {
+
+            .contenedor-2fa {
+                padding: 28px 22px;
+            }
+
+        }
+
+        .mensaje {
+
+            margin-bottom: 18px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .mensaje.success {
+
+            background: #e8f6ed;
+
+            color: #286044;
+        }
+
+
+        .mensaje.error {
+
+            background: #fdeceb;
+
+            color: #9c3d36;
+        }
+
+
+        .mensaje.warning {
+
+            background: #fff7df;
+
+            color: #80631e;
+        }
+
+
+        .reenvio {
+
+            margin-top: 22px;
+
+            text-align: center;
+
+            border-top: 1px solid #e5ece8;
+
+            padding-top: 20px;
+        }
+
+
+        .reenvio p {
+
+            margin: 0 0 10px;
+
+            color: #748078;
+
+            font-size: 13px;
+        }
+
+
+        .btn-reenviar {
+
+            border: 0;
+
+            background: transparent;
+
+            color: #5f9781;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .btn-reenviar:disabled {
+
+            color: #a9b3ad;
+
+            cursor: not-allowed;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="contenedor-2fa">
+
+
+        <div class="icono">
+            ✓
+        </div>
+
+
+        <h1>
+            Verificación de seguridad
+        </h1>
+
+
+        <p class="descripcion">
+
+            Enviamos un código de 6 dígitos a
+
+            <strong>
+                {{ correo_oculto }}
+            </strong>.
+
+            Ingresa el código para completar
+            el inicio de sesión.
+
+        </p>
+
+
+
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div
+                    class="mensaje {{ message.tags }}"
+                >
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+
+        {% if puede_verificar %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <label for="codigo2FA">
+
+                    Código de verificación
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="codigo2FA"
+                    name="codigo"
+                    class="codigo"
+                    maxlength="6"
+                    inputmode="numeric"
+                    pattern="[0-9]{6}"
+                    autocomplete="one-time-code"
+                    placeholder="000000"
+                    required
+                    autofocus
+                >
+
+
+                <small class="ayuda">
+
+                    Este código vence en 5 minutos.
+
+                </small>
+
+
+                <button
+                    type="submit"
+                    class="btn-verificar"
+                >
+
+                    Verificar e iniciar sesión
+
+                </button>
+
+            </form>
+
+
+            <div class="reenvio">
+
+                {% if limite_reenvios %}
+
+                    <p>
+                        Alcanzaste el máximo de
+                        reenvíos permitidos.
+                    </p>
+
+
+                {% else %}
+
+                    <p>
+                        ¿No recibiste el código?
+                    </p>
+
+
+                    <form
+                        method="POST"
+                        action="{% url 'reenviar_login_2fa' %}"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <button
+                            type="submit"
+                            id="btnReenviar2FA"
+                            class="btn-reenviar"
+
+                            {% if not puede_reenviar %}
+                                disabled
+                            {% endif %}
+                        >
+
+                            {% if puede_reenviar %}
+
+                                Reenviar código
+
+                            {% else %}
+
+                                Reenviar en
+
+                                <span id="contadorReenvio">
+                                    {{ segundos_reenvio }}
+                                </span>
+
+                                s
+
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+
+                    <p
+                        style="
+                            margin-top: 8px;
+                            font-size: 11px;
+                        "
+                    >
+
+                        Reenvíos disponibles:
+                        {{ reenvios_restantes }}
+
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        {% else %}
+
+            <a
+                href="{% url 'login' %}"
+                class="volver"
+            >
+
+                Solicitar un nuevo código
+                iniciando sesión nuevamente
+
+            </a>
+
+        {% endif %}
+
+
+        {% if puede_verificar %}
+
+            <a
+                href="{% url 'login' %}"
+                class="volver"
+            >
+
+                Volver al inicio de sesión
+
+            </a>
+
+        {% endif %}
+
+
+    </div>
+
+
+
+    <script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            // ====================================================
+            // INPUT DEL CÓDIGO 2FA
+            // ====================================================
+
+            const codigo = document.getElementById(
+                "codigo2FA"
+            );
+
+
+            if (codigo) {
+
+                codigo.addEventListener(
+                    "input",
+                    function () {
+
+                        this.value = (
+                            this.value
+                            .replace(
+                                /[^0-9]/g,
+                                ""
+                            )
+                            .slice(
+                                0,
+                                6
+                            )
+                        );
+
+                    }
+                );
+
+            }
+
+
+            // ====================================================
+            // BOTÓN REENVIAR
+            // ====================================================
+
+            const btnReenviar = (
+                document.getElementById(
+                    "btnReenviar2FA"
+                )
+            );
+
+
+            const contador = (
+                document.getElementById(
+                    "contadorReenvio"
+                )
+            );
+
+
+            // ====================================================
+            // CONTADOR DE 60 SEGUNDOS
+            // ====================================================
+
+            if (
+                btnReenviar
+                &&
+                contador
+            ) {
+
+                let segundos = parseInt(
+                    contador.textContent,
+                    10
+                );
+
+
+                const intervalo = setInterval(
+                    function () {
+
+                        segundos--;
+
+
+                        if (segundos <= 0) {
+
+                            clearInterval(
+                                intervalo
+                            );
+
+
+                            btnReenviar.disabled = false;
+
+
+                            btnReenviar.textContent =
+                                "Reenviar código";
+
+
+                            return;
+                        }
+
+
+                        contador.textContent =
+                            segundos;
+
+                    },
+                    1000
+                );
+
+            }
+
+        }
+    );
+
+    </script>
+
+
+</body>
+
+</html>

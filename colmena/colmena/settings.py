@@ -145,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'
 
 TIME_ZONE = "America/Bogota"
 
@@ -170,10 +170,16 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "micolmena690@gmail.com"
 EMAIL_HOST_PASSWORD = "thwbzoouzgbvpnqs"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_TIMEOUT = 10
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard_admin"
 LOGOUT_REDIRECT_URL = "login"
+
+
+#2FA
+TWO_FA_ENCRYPTION_KEY = 'YDg9IIj1T3uLKQBkD0fx9CpAnS-VmhxYqvHXXUCUd0s='
 
 # La sesión termina al cerrar el navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

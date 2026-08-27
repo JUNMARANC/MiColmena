@@ -1167,12 +1167,14 @@
 
 
                                         <input
-                                            type="number"
+                                            type="text"
                                             id="minutosInactividad"
                                             name="minutos_inactividad"
-                                            min="5"
-                                            max="480"
                                             value="{{ contexto_seguridad.minutos_inactividad }}"
+                                            inputmode="numeric"
+                                            pattern="[0-9]*"
+                                            maxlength="3"
+                                            autocomplete="off"
                                         >
 
 
@@ -1196,6 +1198,440 @@
 
                         </div>
 
+
+                        <!-- ==========================================================
+                            HISTORIAL DE ACCESOS
+                        =========================================================== -->
+
+                        <div class="seguridad-opcion">
+
+
+                            <div class="seguridad-opcion-icono">
+
+                                <i class="bi bi-clock-history"></i>
+
+                            </div>
+
+
+                            <div class="seguridad-opcion-contenido">
+
+
+                                <div class="seguridad-opcion-header">
+
+
+                                    <div>
+
+                                        <h4>
+                                            Registrar historial de accesos
+                                        </h4>
+
+
+                                        <p>
+                                            Guarda los eventos importantes relacionados
+                                            con la seguridad de las cuentas, como
+                                            inicios y cierres de sesión, cambios de
+                                            contraseña y cierres remotos.
+                                        </p>
+
+                                    </div>
+
+
+
+                                    <label class="switch">
+
+
+                                        <input
+                                            type="checkbox"
+                                            name="registrar_historial_accesos"
+                                            id="registrarHistorialAccesos"
+
+                                            {% if contexto_seguridad.registrar_historial_accesos %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+
+                                        <span class="slider"></span>
+
+
+                                    </label>
+
+
+                                </div>
+
+
+
+                                <div class="seguridad-info-adicional">
+
+                                    <i class="bi bi-info-circle"></i>
+
+                                    <span>
+                                        Desactivar esta opción evita que se creen
+                                        nuevos registros. Los registros existentes
+                                        no serán eliminados.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- ==========================================================
+                            BLOQUEO POR INTENTOS FALLIDOS
+                        =========================================================== -->
+
+                        <div class="seguridad-opcion">
+
+
+                            <!-- ICONO -->
+
+                            <div class="seguridad-opcion-icono">
+
+                                <i class="bi bi-shield-exclamation"></i>
+
+                            </div>
+
+
+                            <!-- CONTENIDO -->
+
+                            <div class="seguridad-opcion-contenido">
+
+
+                                <!-- ================================================
+                                    ENCABEZADO
+                                ================================================= -->
+
+                                <div class="seguridad-opcion-header">
+
+
+                                    <div>
+
+                                        <h4>
+                                            Bloqueo por intentos fallidos
+                                        </h4>
+
+
+                                        <p>
+                                            Bloquea temporalmente el acceso de una
+                                            cuenta cuando se supera el número permitido
+                                            de intentos incorrectos de inicio de sesión.
+                                        </p>
+
+                                    </div>
+
+
+                                    <label class="switch">
+
+                                        <input
+                                            type="checkbox"
+                                            name="bloquear_intentos_fallidos"
+                                            id="bloquearIntentosFallidos"
+
+                                            {% if contexto_seguridad.bloquear_intentos_fallidos %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                        <span class="slider"></span>
+
+                                    </label>
+
+
+                                </div>
+
+
+
+                                <!-- ================================================
+                                    CONFIGURACIÓN DEL BLOQUEO
+                                ================================================= -->
+
+                                <div class="seguridad-login-config">
+
+
+                                    <!-- INTENTOS -->
+
+                                    <div class="seguridad-login-campo">
+
+
+                                        <label for="intentosMaximosLogin">
+
+                                            Intentos permitidos
+
+                                        </label>
+
+
+                                        <div class="seguridad-input-tiempo">
+
+                                            <input
+                                                type="text"
+                                                id="intentosMaximosLogin"
+                                                name="intentos_maximos_login"
+
+                                                value="{{ contexto_seguridad.intentos_maximos_login }}"
+
+                                                inputmode="numeric"
+                                                pattern="[0-9]*"
+                                                maxlength="2"
+
+                                                autocomplete="off"
+                                            >
+
+
+                                            <span>
+                                                intentos
+                                            </span>
+
+                                        </div>
+
+
+                                        <small>
+                                            Puedes permitir entre 3 y 10
+                                            intentos incorrectos.
+                                        </small>
+
+
+                                    </div>
+
+
+
+                                    <!-- DURACIÓN -->
+
+                                    <div class="seguridad-login-campo">
+
+
+                                        <label for="minutosBloqueoLogin">
+
+                                            Duración del bloqueo
+
+                                        </label>
+
+
+                                        <div class="seguridad-input-tiempo">
+
+                                            <input
+                                                type="text"
+                                                id="minutosBloqueoLogin"
+                                                name="minutos_bloqueo_login"
+
+                                                value="{{ contexto_seguridad.minutos_bloqueo_login }}"
+
+                                                inputmode="numeric"
+                                                pattern="[0-9]*"
+                                                maxlength="4"
+
+                                                autocomplete="off"
+                                            >
+
+
+                                            <span>
+                                                minutos
+                                            </span>
+
+                                        </div>
+
+
+                                        <small>
+                                            Mínimo 5 minutos y máximo
+                                            24 horas.
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+
+                                <!-- ================================================
+                                    INFORMACIÓN
+                                ================================================= -->
+
+                                <div class="seguridad-info-adicional">
+
+                                    <i class="bi bi-info-circle"></i>
+
+                                    <span>
+
+                                        Este bloqueo es temporal.
+
+                                        No desactiva la cuenta del usuario ni modifica
+                                        su estado dentro del sistema.
+
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- =========================================================
+                            AUTENTICACIÓN EN DOS PASOS
+                        ========================================================== -->
+
+                        <div class="config-section mt-4">
+
+                            <div class="mb-4">
+
+                                <h5 class="fw-bold mb-1">
+                                    Autenticación en dos pasos
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Controla el uso de códigos de seguridad enviados
+                                    al correo durante el inicio de sesión.
+                                </p>
+
+                            </div>
+
+
+                            <!-- =====================================================
+                                HABILITAR 2FA
+                            ====================================================== -->
+
+                            <div
+                                class="
+                                    d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    py-3
+                                    border-bottom
+                                "
+                            >
+
+                                <div>
+
+                                    <strong>
+                                        Permitir autenticación en dos pasos
+                                    </strong>
+
+                                    <div class="text-muted small">
+                                        Habilita el uso de 2FA dentro del sistema.
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        id="permitir2FA"
+                                        name="permitir_2fa"
+
+                                        {% if contexto_seguridad.permitir_2fa %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =====================================================
+                                ADMINISTRADORES
+                            ====================================================== -->
+
+                            <div
+                                class="
+                                    d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    py-3
+                                    border-bottom
+                                "
+                            >
+
+                                <div>
+
+                                    <strong>
+                                        Obligar 2FA a administradores
+                                    </strong>
+
+                                    <div class="text-muted small">
+                                        Todos los administradores deberán verificar
+                                        un código para iniciar sesión.
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        id="obligar2FAAdministradores"
+                                        name="obligar_2fa_administradores"
+
+                                        {% if contexto_seguridad.obligar_2fa_administradores %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =====================================================
+                                TODOS LOS USUARIOS
+                            ====================================================== -->
+
+                            <div
+                                class="
+                                    d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    py-3
+                                "
+                            >
+
+                                <div>
+
+                                    <strong>
+                                        Obligar 2FA a todos
+                                    </strong>
+
+                                    <div class="text-muted small">
+                                        Todos los usuarios del sistema deberán
+                                        utilizar autenticación en dos pasos.
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        id="obligar2FATodos"
+                                        name="obligar_2fa_todos"
+
+                                        {% if contexto_seguridad.obligar_2fa_todos %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
                         <!-- =================================================
                             BOTÓN GUARDAR
@@ -1237,7 +1673,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/configuracion.js' %}?v=4"
+    src="{% static 'panel_admin/js/configuracion.js' %}?v=6"
 ></script>
 
 {% endblock %}

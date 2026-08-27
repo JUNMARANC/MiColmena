@@ -216,56 +216,13 @@ class Notificacion(models.Model):
 
 
 
-class ControlIntentosLogin(models.Model):
-
-    usuario = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="control_intentos_login"
-    )
-
-    intentos_fallidos = models.PositiveIntegerField(
-        default=0
-    )
-
-    primer_intento = models.DateTimeField(
-        null=True,
-        blank=True
-    )
-
-    ultimo_intento = models.DateTimeField(
-        null=True,
-        blank=True
-    )
-
-    alerta_enviada = models.BooleanField(
-        default=False
-    )
-
-    actualizado_en = models.DateTimeField(
-        auto_now=True
-    )
-
-    def __str__(self):
-
-        return (
-            f"{self.usuario.username} - "
-            f"{self.intentos_fallidos} intentos"
-        )
-
-
-    class Meta:
-
-        verbose_name = (
-            "Control de intentos de inicio de sesión"
-        )
-
-        verbose_name_plural = (
-            "Controles de intentos de inicio de sesión"
-        )
 
 
 class ConfiguracionSeguridad(models.Model):
+
+    # ========================================================
+    # CIERRE POR INACTIVIDAD
+    # ========================================================
 
     cerrar_sesion_inactividad = models.BooleanField(
         default=True
@@ -279,9 +236,61 @@ class ConfiguracionSeguridad(models.Model):
         ]
     )
 
+
+    # ========================================================
+    # HISTORIAL DE ACCESOS
+    # ========================================================
+
     registrar_historial_accesos = models.BooleanField(
         default=True
     )
+
+
+    # ========================================================
+    # BLOQUEO POR INTENTOS FALLIDOS
+    # ========================================================
+
+    bloquear_intentos_fallidos = models.BooleanField(
+        default=True
+    )
+
+    intentos_maximos_login = models.PositiveSmallIntegerField(
+        default=5,
+        validators=[
+            MinValueValidator(3),
+            MaxValueValidator(10),
+        ]
+    )
+
+    minutos_bloqueo_login = models.PositiveSmallIntegerField(
+        default=15,
+        validators=[
+            MinValueValidator(5),
+            MaxValueValidator(1440),
+        ]
+    )
+
+
+    # ========================================================
+    # AUTENTICACIÓN EN DOS PASOS
+    # ========================================================
+
+    permitir_2fa = models.BooleanField(
+        default=True
+    )
+
+    obligar_2fa_administradores = models.BooleanField(
+        default=False
+    )
+
+    obligar_2fa_todos = models.BooleanField(
+        default=False
+    )
+
+
+    # ========================================================
+    # ACTUALIZACIÓN
+    # ========================================================
 
     actualizado_en = models.DateTimeField(
         auto_now=True
@@ -289,9 +298,18 @@ class ConfiguracionSeguridad(models.Model):
 
 
     def __str__(self):
-        return "Configuración de seguridad"
+
+        return (
+            "Configuración de seguridad"
+        )
 
 
     class Meta:
-        verbose_name = "Configuración de seguridad"
-        verbose_name_plural = "Configuración de seguridad"
+
+        verbose_name = (
+            "Configuración de seguridad"
+        )
+
+        verbose_name_plural = (
+            "Configuración de seguridad"
+        )

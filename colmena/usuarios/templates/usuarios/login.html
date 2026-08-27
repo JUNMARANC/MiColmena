@@ -1,111 +1,1622 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
-    <title>Login | {{ nombre_sistema }} </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <title>
+        Login | {{ nombre_sistema }}
+    </title>
 
-    <link rel="stylesheet" href="{% static 'usuarios/css/login.css' %}?v=11">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+
+    <!-- =====================================================
+         FUENTES
+    ====================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         CSS LOGIN
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'usuarios/css/login.css' %}?v=12"
+    >
+
+
+    <!-- =====================================================
+         CSS RECUPERACIÓN DE CONTRASEÑA
+    ====================================================== -->
+
+    <style>
+
+        /* ==================================================
+           ENLACE OLVIDÉ CONTRASEÑA
+        ================================================== */
+
+        .forgot {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+
+        .btn-olvide-password {
+
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            color: #5f9781;
+
+            font-family:
+                "Montserrat Alternates",
+                sans-serif;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .btn-olvide-password:hover {
+
+            color: #214f3b;
+
+            text-decoration: underline;
+        }
+
+
+        /* ==================================================
+           OVERLAY MODALES
+        ================================================== */
+
+        .modal-recuperacion-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 99999;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(
+                    18,
+                    42,
+                    31,
+                    0.62
+                );
+
+            backdrop-filter:
+                blur(5px);
+        }
+
+
+        .modal-recuperacion-overlay.activo {
+
+            display: flex;
+        }
+
+
+        /* ==================================================
+           MODAL
+        ================================================== */
+
+        .modal-recuperacion {
+
+            position: relative;
+
+            width: 100%;
+
+            max-width: 470px;
+
+            max-height: 92vh;
+
+            overflow-y: auto;
+
+            padding: 36px;
+
+            border-radius: 22px;
+
+            background: #ffffff;
+
+            color: #163324;
+
+            font-family:
+                "Montserrat Alternates",
+                sans-serif;
+
+            box-shadow:
+                0 25px 70px
+                rgba(
+                    20,
+                    50,
+                    35,
+                    0.28
+                );
+
+            animation:
+                mostrarModalRecuperacion
+                0.22s ease;
+        }
+
+
+        @keyframes mostrarModalRecuperacion {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(15px)
+                    scale(0.97);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+
+        }
+
+
+        /* ==================================================
+           BOTÓN CERRAR
+        ================================================== */
+
+        .modal-recuperacion-cerrar {
+
+            position: absolute;
+
+            top: 13px;
+
+            right: 16px;
+
+            width: 36px;
+
+            height: 36px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 0;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: transparent;
+
+            color: #78877e;
+
+            font-size: 28px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .modal-recuperacion-cerrar:hover {
+
+            background: #f1f6f3;
+
+            color: #214f3b;
+        }
+
+
+        /* ==================================================
+           ICONO
+        ================================================== */
+
+        .modal-recuperacion-icono {
+
+            width: 66px;
+
+            height: 66px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin:
+                0
+                auto
+                18px;
+
+            border-radius: 50%;
+
+            background: #e8f6ed;
+
+            color: #214f3b;
+
+            font-size: 27px;
+        }
+
+
+        /* ==================================================
+           TÍTULO
+        ================================================== */
+
+        .modal-recuperacion h2 {
+
+            margin:
+                0
+                0
+                10px;
+
+            text-align: center;
+
+            color: #214f3b;
+
+            font-size: 23px;
+
+            font-weight: 800;
+        }
+
+
+        .modal-recuperacion-texto {
+
+            margin:
+                0
+                0
+                25px;
+
+            text-align: center;
+
+            color: #68786e;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        .modal-recuperacion-texto strong {
+
+            color: #214f3b;
+        }
+
+
+        /* ==================================================
+           CAMPOS
+        ================================================== */
+
+        .modal-campo {
+
+            margin-bottom: 17px;
+        }
+
+
+        .modal-campo label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #214f3b;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .modal-input-contenedor {
+
+            position: relative;
+        }
+
+
+        .modal-campo input {
+
+            width: 100%;
+
+            min-height: 48px;
+
+            padding:
+                12px
+                14px;
+
+            border:
+                1px solid
+                #d5e1d9;
+
+            border-radius: 11px;
+
+            outline: none;
+
+            background: #ffffff;
+
+            color: #163324;
+
+            font-family:
+                "Montserrat Alternates",
+                sans-serif;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+
+        .modal-campo input:focus {
+
+            border-color: #5f9781;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    95,
+                    151,
+                    129,
+                    0.12
+                );
+        }
+
+
+        /* ==================================================
+           CÓDIGO 6 DÍGITOS
+        ================================================== */
+
+        #codigoRecuperacion {
+
+            text-align: center;
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            letter-spacing: 8px;
+        }
+
+
+        /* ==================================================
+           BOTÓN PRINCIPAL
+        ================================================== */
+
+        .btn-recuperacion-principal {
+
+            width: 100%;
+
+            margin-top: 7px;
+
+            padding: 13px 16px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            background: #214f3b;
+
+            color: #ffffff;
+
+            font-family:
+                "Montserrat Alternates",
+                sans-serif;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .btn-recuperacion-principal:hover {
+
+            background: #173c2d;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* ==================================================
+           MENSAJES
+        ================================================== */
+
+        .recuperacion-error {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            background: #fdeceb;
+
+            color: #9c3d36;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+        }
+
+
+        .login-message {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 8px;
+
+            margin-bottom: 15px;
+
+            padding: 11px 13px;
+
+            border-radius: 10px;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+
+        .login-message.success {
+
+            background: #e9f7ee;
+
+            color: #286044;
+        }
+
+
+        .login-message.info {
+
+            background: #edf6f2;
+
+            color: #326d56;
+        }
+
+
+        .login-message.warning {
+
+            background: #fff7df;
+
+            color: #80631e;
+        }
+
+
+        .login-message.error {
+
+            background: #fdeceb;
+
+            color: #9c3d36;
+        }
+
+
+        /* ==================================================
+           VOLVER
+        ================================================== */
+
+        .recuperacion-volver {
+
+            display: block;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: #5f9781;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .recuperacion-volver:hover {
+
+            color: #214f3b;
+
+            text-decoration: underline;
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (
+            max-width: 500px
+        ) {
+
+            .modal-recuperacion {
+
+                padding:
+                    32px
+                    22px;
+            }
+
+        }
+
+    </style>
+
 </head>
 
-<body>
+
+<body data-abrir-modal-password="{{ abrir_modal_password|yesno:'true,false' }}">
+
 
 <div class="login-page">
 
-    <a href="{% url 'Inicio' %}" class="back-link back-link-esquina">
-        <span class="signo-volver">-</span> Volver
+
+    <!-- =====================================================
+         VOLVER
+    ====================================================== -->
+
+    <a
+        href="{% url 'Inicio' %}"
+        class="back-link back-link-esquina"
+    >
+
+        <span class="signo-volver">
+            -
+        </span>
+
+        Volver
+
     </a>
 
-    <section class="login-welcome">
-        <span class="hex-flotante hex-flotante-1" aria-hidden="true"></span>
-        <span class="hex-flotante hex-flotante-2" aria-hidden="true"></span>
-        <span class="hex-flotante hex-flotante-3" aria-hidden="true"></span>
 
-        <div class="esquina-bienvenida anim-abajo" style="--demora:0s">
+
+    <!-- =====================================================
+         PANEL IZQUIERDO
+    ====================================================== -->
+
+    <section class="login-welcome">
+
+
+        <span
+            class="
+                hex-flotante
+                hex-flotante-1
+            "
+            aria-hidden="true"
+        ></span>
+
+
+        <span
+            class="
+                hex-flotante
+                hex-flotante-2
+            "
+            aria-hidden="true"
+        ></span>
+
+
+        <span
+            class="
+                hex-flotante
+                hex-flotante-3
+            "
+            aria-hidden="true"
+        ></span>
+
+
+
+        <div
+            class="
+                esquina-bienvenida
+                anim-abajo
+            "
+            style="--demora:0s"
+        >
+
             <div class="brand">
-                <i class="bi bi-hexagon-fill"></i>
-                <span>Mi Colmena</span>
+
+                <i
+                    class="
+                        bi
+                        bi-hexagon-fill
+                    "
+                ></i>
+
+                <span>
+                    Mi Colmena
+                </span>
+
             </div>
+
         </div>
+
+
 
         <div class="welcome-content">
-            <h1 class="anim-abajo" style="--demora:.1s">¡Bienvenido!</h1>
 
-            <div class="bee-icon anim-abajo" style="--demora:.2s">
-                <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja">
+
+            <h1
+                class="anim-abajo"
+                style="--demora:.1s"
+            >
+
+                ¡Bienvenido!
+
+            </h1>
+
+
+            <div
+                class="
+                    bee-icon
+                    anim-abajo
+                "
+                style="--demora:.2s"
+            >
+
+                <img
+                    src="{% static 'home/img/abeja_amarilla_centro.png' %}"
+                    alt="Abeja"
+                >
+
             </div>
 
-            <p class="anim-abajo" style="--demora:.3s">Gestiona tus apiarios, colmenas y mantenimientos en un solo lugar.</p>
+
+            <p
+                class="anim-abajo"
+                style="--demora:.3s"
+            >
+
+                Gestiona tus apiarios,
+                colmenas y mantenimientos
+                en un solo lugar.
+
+            </p>
+
+
         </div>
+
     </section>
+
+
+
+    <!-- =====================================================
+         PANEL DERECHO
+    ====================================================== -->
 
     <div class="login-panel-derecho">
 
-        <video class="login-video-fondo" autoplay muted loop playsinline
-               poster="https://images.pexels.com/videos/5463647/4k-video-glass-products-honey-oriental-food-5463647.jpeg?auto=compress&amp;w=1260&amp;h=750&amp;dpr=1"
-               aria-hidden="true">
-            <source src="https://videos.pexels.com/video-files/5463647/5463647-uhd_1440_2560_25fps.mp4" type="video/mp4">
+
+        <video
+            class="login-video-fondo"
+            autoplay
+            muted
+            loop
+            playsinline
+            poster="https://images.pexels.com/videos/5463647/4k-video-glass-products-honey-oriental-food-5463647.jpeg?auto=compress&amp;w=1260&amp;h=750&amp;dpr=1"
+            aria-hidden="true"
+        >
+
+            <source
+                src="https://videos.pexels.com/video-files/5463647/5463647-uhd_1440_2560_25fps.mp4"
+                type="video/mp4"
+            >
+
         </video>
 
-        <section class="login-card anim-derecha">
 
-        <div class="login-header">
-            <h2>Login</h2>
-            <p>Ingresa tus credenciales para acceder a tu cuenta.</p>
-        </div>
 
-        {% if error %}
-            <div class="alert-error">
-                <i class="bi bi-exclamation-circle"></i>
-                {{ error }}
+        <section
+            class="
+                login-card
+                anim-derecha
+            "
+        >
+
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <div class="login-header">
+
+                <h2>
+                    Login
+                </h2>
+
+                <p>
+                    Ingresa tus credenciales
+                    para acceder a tu cuenta.
+                </p>
+
             </div>
-        {% endif %}
 
-        <form method="POST" action="{% url 'login' %}" class="form-login">
-            {% csrf_token %}
 
-            <div class="form-group">
-                <label>Usuario</label>
-                <div class="input-icon">
-                    <i class="bi bi-person"></i>
-                    <input type="text" name="username" placeholder="Nombre de usuario" required>
+
+            <!-- =================================================
+                 ERROR LOGIN
+            ================================================== -->
+
+            {% if error %}
+
+                <div class="alert-error">
+
+                    <i
+                        class="
+                            bi
+                            bi-exclamation-circle
+                        "
+                    ></i>
+
+                    {{ error }}
+
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Contraseña</label>
-                <div class="input-icon">
-                    <i class="bi bi-lock"></i>
-                    <input type="password" name="password" id="passwordInput" placeholder="Contraseña" required>
-                    <button type="button" class="btn-eye" id="btnPassword" aria-label="Mostrar contraseña" aria-pressed="false">
-                        <i class="bi bi-eye"></i>
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 MENSAJES DJANGO
+            ================================================== -->
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div
+                        class="
+                            login-message
+                            {{ message.tags }}
+                        "
+                    >
+
+                        {% if message.tags == "success" %}
+
+                            <i class="bi bi-check-circle"></i>
+
+                        {% elif message.tags == "warning" %}
+
+                            <i class="bi bi-exclamation-triangle"></i>
+
+                        {% elif message.tags == "error" %}
+
+                            <i class="bi bi-exclamation-circle"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-info-circle"></i>
+
+                        {% endif %}
+
+
+                        <span>
+                            {{ message }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 FORM LOGIN
+            ================================================== -->
+
+            <form
+                method="POST"
+                action="{% url 'login' %}"
+                class="form-login"
+            >
+
+                {% csrf_token %}
+
+
+                <!-- =============================================
+                     USUARIO
+                ============================================== -->
+
+                <div class="form-group">
+
+                    <label>
+                        Usuario
+                    </label>
+
+
+                    <div class="input-icon">
+
+                        <i class="bi bi-person"></i>
+
+
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Nombre de usuario"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     CONTRASEÑA
+                ============================================== -->
+
+                <div class="form-group">
+
+                    <label>
+                        Contraseña
+                    </label>
+
+
+                    <div class="input-icon">
+
+                        <i class="bi bi-lock"></i>
+
+
+                        <input
+                            type="password"
+                            name="password"
+                            id="passwordInput"
+                            placeholder="Contraseña"
+                            autocomplete="current-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="btn-eye"
+                            id="btnPassword"
+                            aria-label="Mostrar contraseña"
+                            aria-pressed="false"
+                        >
+
+                            <i class="bi bi-eye"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     OLVIDÓ CONTRASEÑA
+                ============================================== -->
+
+                <div class="forgot">
+
+                    <button
+                        type="button"
+                        id="abrirModalRecuperacion"
+                        class="btn-olvide-password"
+                    >
+
+                        ¿Olvidó su contraseña?
+
                     </button>
+
                 </div>
-            </div>
 
-            <div class="forgot">
-                <a href="#">¿Olvidó su contraseña?</a>
-            </div>
 
-            <button type="submit" class="btn-login">
-                Ingresar
-            </button>
 
-            <p class="login-tagline">
-                <i class="bi bi-hexagon-fill"></i> Cuidamos cada colmena
-            </p>
-        </form>
+                <!-- =============================================
+                     INGRESAR
+                ============================================== -->
+
+                <button
+                    type="submit"
+                    class="btn-login"
+                >
+
+                    Ingresar
+
+                </button>
+
+
+
+                <p class="login-tagline">
+
+                    <i
+                        class="
+                            bi
+                            bi-hexagon-fill
+                        "
+                    ></i>
+
+                    Cuidamos cada colmena
+
+                </p>
+
+
+            </form>
+
 
         </section>
 
+
     </div>
+
 
 </div>
 
-<script src="{% static 'usuarios/js/login.js' %}?v=3"></script>
+
+
+<!-- =========================================================
+     MODAL 1
+     SOLICITAR RECUPERACIÓN
+========================================================== -->
+
+<div
+    class="modal-recuperacion-overlay"
+    id="modalSolicitarRecuperacion"
+>
+
+
+    <div class="modal-recuperacion">
+
+
+        <!-- CERRAR -->
+
+        <button
+            type="button"
+            class="modal-recuperacion-cerrar"
+            data-cerrar-modal="modalSolicitarRecuperacion"
+            aria-label="Cerrar"
+        >
+
+            &times;
+
+        </button>
+
+
+
+        <!-- ICONO -->
+
+        <div class="modal-recuperacion-icono">
+
+            <i class="bi bi-envelope-lock"></i>
+
+        </div>
+
+
+
+        <!-- TÍTULO -->
+
+        <h2>
+            Recuperar contraseña
+        </h2>
+
+
+
+        <p class="modal-recuperacion-texto">
+
+            Ingresa el correo electrónico
+            asociado a tu cuenta.
+
+            Te enviaremos un código de
+            6 dígitos y un enlace seguro
+            para crear una nueva contraseña.
+
+        </p>
+
+
+
+        <!-- FORMULARIO -->
+
+        <form
+            method="POST"
+            action="{% url 'solicitar_recuperacion_password' %}"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="modal-campo">
+
+
+                <label for="correoRecuperacion">
+
+                    Correo electrónico
+
+                </label>
+
+
+                <input
+                    type="email"
+                    id="correoRecuperacion"
+                    name="correo"
+                    placeholder="correo@ejemplo.com"
+                    autocomplete="email"
+                    required
+                >
+
+
+            </div>
+
+
+
+            <button
+                type="submit"
+                class="btn-recuperacion-principal"
+            >
+
+                <i class="bi bi-send me-1"></i>
+
+                Enviar instrucciones
+
+            </button>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     MODAL 2
+     CREAR NUEVA CONTRASEÑA
+========================================================== -->
+
+<div
+    class="modal-recuperacion-overlay"
+    id="modalNuevaPassword"
+>
+
+
+    <div class="modal-recuperacion">
+
+
+        <!-- CERRAR -->
+
+        <button
+            type="button"
+            class="modal-recuperacion-cerrar"
+            data-cerrar-modal="modalNuevaPassword"
+            aria-label="Cerrar"
+        >
+
+            &times;
+
+        </button>
+
+
+
+        <!-- ICONO -->
+
+        <div class="modal-recuperacion-icono">
+
+            <i class="bi bi-shield-lock"></i>
+
+        </div>
+
+
+
+        <!-- TÍTULO -->
+
+        <h2>
+            Crear nueva contraseña
+        </h2>
+
+
+
+        <p class="modal-recuperacion-texto">
+
+            Ingresa el código de seguridad
+            que enviamos a tu correo.
+
+            {% if correo_recuperacion %}
+
+                <br>
+
+                <strong>
+                    {{ correo_recuperacion }}
+                </strong>
+
+            {% endif %}
+
+        </p>
+
+
+
+        <!-- ERROR -->
+
+        {% if error_recuperacion %}
+
+            <div class="recuperacion-error">
+
+                <i
+                    class="
+                        bi
+                        bi-exclamation-circle
+                    "
+                ></i>
+
+                <span>
+                    {{ error_recuperacion }}
+                </span>
+
+            </div>
+
+        {% endif %}
+
+
+
+        {% if token_recuperacion %}
+
+
+            <form
+                method="POST"
+                action="{% url 'recuperar_password' token_recuperacion %}"
+                id="formNuevaPassword"
+            >
+
+                {% csrf_token %}
+
+
+
+                <!-- =========================================
+                     CÓDIGO
+                ========================================== -->
+
+                <div class="modal-campo">
+
+                    <label for="codigoRecuperacion">
+
+                        Código de 6 dígitos
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="codigoRecuperacion"
+                        name="codigo"
+                        inputmode="numeric"
+                        pattern="[0-9]{6}"
+                        maxlength="6"
+                        autocomplete="one-time-code"
+                        placeholder="000000"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- =========================================
+                     NUEVA CONTRASEÑA
+                ========================================== -->
+
+                <div class="modal-campo">
+
+                    <label for="passwordNueva">
+
+                        Nueva contraseña
+
+                    </label>
+
+
+                    <input
+                        type="password"
+                        id="passwordNueva"
+                        name="password_nueva"
+                        autocomplete="new-password"
+                        placeholder="Nueva contraseña"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- =========================================
+                     CONFIRMAR CONTRASEÑA
+                ========================================== -->
+
+                <div class="modal-campo">
+
+                    <label for="passwordConfirmacion">
+
+                        Confirmar contraseña
+
+                    </label>
+
+
+                    <input
+                        type="password"
+                        id="passwordConfirmacion"
+                        name="password_confirmacion"
+                        autocomplete="new-password"
+                        placeholder="Repite la nueva contraseña"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- =========================================
+                    BOTÓN
+                ========================================== -->
+
+                <button
+                    type="submit"
+                    class="btn-recuperacion-principal"
+                >
+
+                    <i class="bi bi-key me-1"></i>
+
+                    Restablecer contraseña
+
+                </button>
+
+
+            </form>
+
+
+        {% endif %}
+
+
+
+        <a
+            href="{% url 'login' %}"
+            class="recuperacion-volver"
+        >
+
+            <i class="bi bi-arrow-left"></i>
+
+            Volver al inicio de sesión
+
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+
+
+
+
+<!-- =========================================================
+    JS LOGIN ORIGINAL
+========================================================== -->
+
+<script
+    src="{% static 'usuarios/js/login.js' %}?v=4"
+></script>
+
+
+
+<!-- =========================================================
+    JS RECUPERACIÓN DE CONTRASEÑA
+========================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        // ====================================================
+        // ELEMENTOS
+        // ====================================================
+
+        const btnAbrirRecuperacion = (
+            document.getElementById(
+                "abrirModalRecuperacion"
+            )
+        );
+
+
+        const modalSolicitar = (
+            document.getElementById(
+                "modalSolicitarRecuperacion"
+            )
+        );
+
+
+        const modalNuevaPassword = (
+            document.getElementById(
+                "modalNuevaPassword"
+            )
+        );
+
+
+        // ====================================================
+        // ABRIR MODAL SOLICITAR RECUPERACIÓN
+        // ====================================================
+
+        if (
+            btnAbrirRecuperacion
+            &&
+            modalSolicitar
+        ) {
+
+            btnAbrirRecuperacion.addEventListener(
+                "click",
+                function () {
+
+                    modalSolicitar.classList.add(
+                        "activo"
+                    );
+
+
+                    const inputCorreo = (
+                        document.getElementById(
+                            "correoRecuperacion"
+                        )
+                    );
+
+
+                    if (inputCorreo) {
+
+                        setTimeout(
+                            function () {
+
+                                inputCorreo.focus();
+
+                            },
+                            100
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // CERRAR MODALES
+        // ====================================================
+
+        document.querySelectorAll(
+            "[data-cerrar-modal]"
+        ).forEach(
+            function (boton) {
+
+                boton.addEventListener(
+                    "click",
+                    function () {
+
+                        const idModal = (
+                            this.dataset.cerrarModal
+                        );
+
+
+                        const modal = (
+                            document.getElementById(
+                                idModal
+                            )
+                        );
+
+
+                        if (modal) {
+
+                            modal.classList.remove(
+                                "activo"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ====================================================
+        // CERRAR AL HACER CLIC EN EL FONDO
+        // ====================================================
+
+        document.querySelectorAll(
+            ".modal-recuperacion-overlay"
+        ).forEach(
+            function (modal) {
+
+                modal.addEventListener(
+                    "click",
+                    function (evento) {
+
+                        if (
+                            evento.target
+                            ===
+                            modal
+                        ) {
+
+                            modal.classList.remove(
+                                "activo"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ====================================================
+        // CERRAR CON ESC
+        // ====================================================
+
+        document.addEventListener(
+            "keydown",
+            function (evento) {
+
+                if (
+                    evento.key
+                    ===
+                    "Escape"
+                ) {
+
+                    document
+                    .querySelectorAll(
+                        ".modal-recuperacion-overlay.activo"
+                    )
+                    .forEach(
+                        function (modal) {
+
+                            modal.classList.remove(
+                                "activo"
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        // ====================================================
+        // CÓDIGO SOLO NUMÉRICO
+        // ====================================================
+
+        const codigoRecuperacion = (
+            document.getElementById(
+                "codigoRecuperacion"
+            )
+        );
+
+
+        if (
+            codigoRecuperacion
+        ) {
+
+            codigoRecuperacion.addEventListener(
+                "input",
+                function () {
+
+                    this.value = (
+                        this.value
+                        .replace(
+                            /[^0-9]/g,
+                            ""
+                        )
+                        .slice(
+                            0,
+                            6
+                        )
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // ABRIR AUTOMÁTICAMENTE MODAL DE NUEVA CONTRASEÑA
+        // ====================================================
+
+        const abrirModalNuevaPassword = (
+
+            window.MI_COLMENA_RECUPERACION
+            &&
+            window.MI_COLMENA_RECUPERACION
+                .abrirModal
+
+        );
+
+
+        if (
+            abrirModalNuevaPassword
+            &&
+            modalNuevaPassword
+        ) {
+
+            modalNuevaPassword.classList.add(
+                "activo"
+            );
+
+
+            if (
+                codigoRecuperacion
+            ) {
+
+                setTimeout(
+                    function () {
+
+                        codigoRecuperacion.focus();
+
+                    },
+                    100
+                );
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+
 </body>
+
 </html>
