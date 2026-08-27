@@ -299,11 +299,11 @@
                 </div>
 
                 <!-- MODAL EDITAR -->
-                <div class="modal fade" id="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}" tabindex="-1">
+                <div class="modal fade modal-editar-mantenimiento" id="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}" tabindex="-1">
                     <div class="modal-dialog modal-xl modal-dialog-centered">
                         <div class="modal-content border-0 shadow rounded-4">
 
-                            <form method="POST" action="{% url 'editar_mantenimiento' mantenimiento.id_mantenimiento %}">
+                            <form method="POST" action="{% url 'editar_mantenimiento' mantenimiento.id_mantenimiento %}" class="form-mantenimiento">
                                 {% csrf_token %}
 
                                 <div class="modal-header border-0" style="background:#E8F7E9;">
@@ -323,7 +323,7 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label">Alcance</label>
-                                            <select name="entidad_mantenimiento" class="form-select" required>
+                                            <select name="entidad_mantenimiento" class="form-select entidad-editar" required>
                                                 <option value="Apiario" {% if mantenimiento.entidadmantenimiento == "Apiario" %}selected{% endif %}>
                                                     Todo el apiario
                                                 </option>
@@ -335,7 +335,7 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label">Apiario</label>
-                                            <select name="id_apiario" class="form-select" required>
+                                            <select name="id_apiario" class="form-select apiario-editar" required>
                                                 <option value="">Seleccione un apiario</option>
 
                                                 {% for apiario in apiarios %}
@@ -353,11 +353,12 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label">Colmena</label>
-                                            <select name="id_colmena" class="form-select">
+                                            <select name="id_colmena" class="form-select colmena-editar">
                                                 <option value="">No aplica / Todo el apiario</option>
 
                                                 {% for colmena in colmenas %}
                                                     <option value="{{ colmena.id_colmena }}"
+                                                        data-apiario="{{ colmena.id_apiario.id_apiario }}"
                                                         {% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}
                                                             selected
                                                         {% endif %}>
@@ -389,7 +390,7 @@
                                             <label class="form-label">Fecha programada</label>
                                             <input type="date"
                                                 name="fecha_ejecucion"
-                                                class="form-control"
+                                                class="form-control fecha-editar"
                                                 value="{{ mantenimiento.fechaejecucion|date:'Y-m-d' }}"
                                                 required>
                                         </div>
@@ -591,7 +592,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 shadow rounded-4">
 
-            <form method="POST" action="{% url 'crear_mantenimiento' %}">
+            <form method="POST" action="{% url 'crear_mantenimiento' %}" class="form-mantenimiento">
                 {% csrf_token %}
 
                 <div class="modal-header border-0" style="background:#E8F7E9;">
@@ -717,6 +718,7 @@
                             <input type="date"
                                 name="fecha_ejecucion"
                                 class="form-control"
+                                min="{% now 'Y-m-d' %}"
                                 required>
                         </div>
 
