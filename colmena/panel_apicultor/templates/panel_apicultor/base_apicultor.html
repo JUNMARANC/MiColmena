@@ -1,0 +1,594 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Panel Apicultor | Mi Colmena
+        {% endblock %}
+    </title>
+
+
+    <!-- FUENTE -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- BOOTSTRAP ICONS -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+
+    <!-- CSS BASE -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'panel_apicultor/css/base_apicultor.css' %}?v=7"
+    >
+
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+<div class="app-apicultor">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar-apicultor"
+        id="sidebarApicultor"
+    >
+
+
+        <!-- =================================================
+             LOGO
+        ================================================== -->
+
+        <div class="sidebar-logo">
+
+
+            <div class="sidebar-logo-icono">
+
+                <i class="bi bi-hexagon-fill"></i>
+
+                <i
+                    class="
+                        bi
+                        bi-diagram-2
+                        sidebar-abeja-icono
+                    "
+                ></i>
+
+            </div>
+
+
+            <div class="sidebar-logo-texto">
+
+                <strong>
+                    Mi Colmena
+                </strong>
+
+                <span>
+                    Panel Apicultor
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             MENÚ PRINCIPAL
+        ================================================== -->
+
+        <nav class="sidebar-menu">
+
+
+            <!-- =============================================
+                 INICIO
+            ============================================== -->
+
+            <a
+                href="{% url 'dashboard_apicultor' %}"
+                class="
+                    sidebar-link
+
+                    {% if request.resolver_match.url_name == 'dashboard_apicultor' %}
+                        active
+                    {% endif %}
+                "
+            >
+
+                <i class="bi bi-house-door"></i>
+
+                <span>
+                    Inicio
+                </span>
+
+            </a>
+
+
+
+            <!-- =============================================
+                 MIS APIARIOS
+            ============================================== -->
+
+            <a
+                href="{% url 'apiarios_apicultor' %}"
+                class="
+                    sidebar-link
+
+                    {% if request.resolver_match.url_name == 'apiarios_apicultor' %}
+                        active
+                    {% endif %}
+                "
+            >
+
+                <i class="bi bi-geo-alt"></i>
+
+                <span>
+                    Mis Apiarios
+                </span>
+
+            </a>
+
+
+
+            <!-- =============================================
+                 MIS COLMENAS
+            ============================================== -->
+
+            <a
+                href="#"
+                class="sidebar-link"
+            >
+
+                <i class="bi bi-hexagon"></i>
+
+                <span>
+                    Mis Colmenas
+                </span>
+
+            </a>
+
+
+
+            <!-- =============================================
+                 MANTENIMIENTOS
+            ============================================== -->
+
+            <a
+                href="#"
+                class="sidebar-link"
+            >
+
+                <i class="bi bi-tools"></i>
+
+                <span>
+                    Mantenimientos
+                </span>
+
+            </a>
+
+
+
+            <!-- =============================================
+                 INCIDENCIAS
+            ============================================== -->
+
+            <a
+                href="#"
+                class="sidebar-link"
+            >
+
+                <i class="bi bi-exclamation-triangle"></i>
+
+                <span>
+                    Incidencias
+                </span>
+
+            </a>
+
+
+
+            <!-- =============================================
+                 AGENDA
+            ============================================== -->
+
+            <a
+                href="#"
+                class="sidebar-link"
+            >
+
+                <i class="bi bi-calendar3"></i>
+
+                <span>
+                    Agenda
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+
+        <!-- =================================================
+             USUARIO - PARTE INFERIOR DEL SIDEBAR
+        ================================================== -->
+
+        <div class="sidebar-user">
+
+
+            <!-- =============================================
+                 PERFIL
+            ============================================== -->
+
+            <a
+                href="{% url 'mi_perfil' %}"
+                class="sidebar-user-main"
+            >
+
+
+                <!-- FOTO -->
+
+                <div class="sidebar-user-avatar">
+
+
+                    {% if perfil_usuario and perfil_usuario.fotoperfil %}
+
+                        <img
+                            src="{{ perfil_usuario.fotoperfil.url }}"
+                            alt="Foto de perfil"
+                        >
+
+                    {% else %}
+
+                        <span>
+
+                            {% if request.user.first_name %}
+
+                                {{ request.user.first_name|first|upper }}
+
+                            {% else %}
+
+                                {{ request.user.username|first|upper }}
+
+                            {% endif %}
+
+                        </span>
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- INFORMACIÓN -->
+
+                <div class="sidebar-user-info">
+
+
+                    <strong>
+
+                        {% if request.user.first_name %}
+
+                            {{ request.user.first_name }}
+
+                            {% if request.user.last_name %}
+                                {{ request.user.last_name }}
+                            {% endif %}
+
+                        {% else %}
+
+                            {{ request.user.username }}
+
+                        {% endif %}
+
+                    </strong>
+
+
+                    <small>
+
+                        {% if rol_usuario %}
+
+                            {{ rol_usuario.nombrerol }}
+
+                        {% else %}
+
+                            Apicultor
+
+                        {% endif %}
+
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- FLECHA -->
+
+                <div class="sidebar-user-arrow">
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </div>
+
+
+            </a>
+
+
+
+            <!-- =============================================
+                 CERRAR SESIÓN
+            ============================================== -->
+
+            <a
+                href="{% url 'logout' %}"
+                class="sidebar-user-logout"
+            >
+
+                <i class="bi bi-box-arrow-right"></i>
+
+                <span>
+                    Cerrar sesión
+                </span>
+
+            </a>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         OVERLAY PARA MÓVIL
+    ====================================================== -->
+
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+    ></div>
+
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+
+    <main class="main-apicultor">
+
+
+        <!-- =================================================
+             HEADER SUPERIOR
+        ================================================== -->
+
+        <header class="header-apicultor">
+
+
+            <!-- =============================================
+                 IZQUIERDA
+            ============================================== -->
+
+            <div class="header-izquierda">
+
+
+                <!-- HAMBURGUESA -->
+
+                <button
+                    type="button"
+                    class="btn-menu-apicultor"
+                    id="btnMenuApicultor"
+                    aria-label="Abrir menú"
+                >
+
+                    <i class="bi bi-list"></i>
+
+                </button>
+
+
+
+                <!-- TÍTULOS -->
+
+                <div class="header-titulo">
+
+
+                    <h1>
+
+                        {% block page_title %}
+                            Panel Apicultor
+                        {% endblock %}
+
+                    </h1>
+
+
+                    <p>
+
+                        {% block page_subtitle %}
+                            Gestiona tus apiarios, colmenas y actividades
+                        {% endblock %}
+
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 DERECHA
+            ============================================== -->
+
+            <div class="header-derecha">
+
+
+                <!-- =========================================
+                     NOTIFICACIONES
+                ========================================== -->
+
+                <button
+                    type="button"
+                    class="header-icon-btn"
+                    aria-label="Notificaciones"
+                    title="Notificaciones"
+                >
+
+                    <i class="bi bi-bell-fill"></i>
+
+                </button>
+
+
+
+                <!-- =========================================
+                     VER TODAS LAS NOTIFICACIONES
+                ========================================== -->
+
+                <a
+                    href="#"
+                    class="header-notificaciones-enlace"
+                >
+
+                    <span>
+                        Ver todas las notificaciones
+                    </span>
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- =================================================
+             MENSAJES DJANGO
+        ================================================== -->
+
+        {% if messages %}
+
+            <div class="mensajes-apicultor">
+
+
+                {% for message in messages %}
+
+                    <div
+                        class="
+                            mensaje-apicultor
+                            {{ message.tags }}
+                        "
+                    >
+
+
+                        {% if message.tags == "success" %}
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                        {% elif message.tags == "error" %}
+
+                            <i class="bi bi-exclamation-circle-fill"></i>
+
+                        {% elif message.tags == "warning" %}
+
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                        {% endif %}
+
+
+                        <span>
+                            {{ message }}
+                        </span>
+
+
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             CONTENIDO DE CADA MÓDULO
+        ================================================== -->
+
+        <section class="contenido-apicultor">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JS BASE APICULTOR
+========================================================== -->
+
+<script
+    src="{% static 'panel_apicultor/js/base_apicultor.js' %}?v=6"
+></script>
+
+
+
+<!-- =========================================================
+     JS DE CADA MÓDULO
+========================================================== -->
+
+{% block extra_js %}
+{% endblock %}
+
+
+</body>
+
+</html>

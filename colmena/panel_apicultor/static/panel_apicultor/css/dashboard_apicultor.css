@@ -1,0 +1,1445 @@
+/* ==========================================================
+   DASHBOARD APICULTOR
+========================================================== */
+
+
+/* ==========================================================
+   CONTENEDOR GENERAL
+========================================================== */
+
+.dashboard-apicultor {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 24px;
+}
+
+
+/* ==========================================================
+   BIENVENIDA
+========================================================== */
+
+.dashboard-bienvenida {
+
+    margin-bottom: 2px;
+}
+
+
+.dashboard-bienvenida h1 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto);
+
+    font-size: 31px;
+
+    font-weight: 500;
+
+    letter-spacing: -0.5px;
+}
+
+
+.dashboard-bienvenida p {
+
+    margin-top: 7px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 14px;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   TARJETAS DE RESUMEN
+========================================================== */
+
+.resumen-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+/* ==========================================================
+   TARJETA INDIVIDUAL
+========================================================== */
+
+.resumen-card {
+
+    min-height: 190px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 13px;
+
+    padding:
+        22px
+        16px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    box-shadow:
+        0 5px 17px
+        rgba(33, 79, 59, 0.07);
+
+    text-align: center;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.resumen-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(255, 221, 113, 0.85);
+
+    box-shadow:
+        0 9px 24px
+        rgba(33, 79, 59, 0.11);
+}
+
+
+/* ==========================================================
+   ICONO DE TARJETA
+========================================================== */
+
+.resumen-card-icono {
+
+    width: 64px;
+
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 25px;
+}
+
+
+/* ==========================================================
+   CONTENIDO TARJETA RESUMEN
+========================================================== */
+
+.resumen-card-contenido {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.resumen-numero {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 39px;
+
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.resumen-card-contenido span {
+
+    max-width: 150px;
+
+    color:
+        #4C514E;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+/* ==========================================================
+   TARJETAS GENERALES DEL DASHBOARD
+========================================================== */
+
+.dashboard-card {
+
+    width: 100%;
+
+    padding: 23px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    box-shadow:
+        0 5px 17px
+        rgba(33, 79, 59, 0.07);
+}
+
+
+/* ==========================================================
+   ENCABEZADO DE TARJETAS
+========================================================== */
+
+.dashboard-card-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+}
+
+
+.dashboard-card-header h2 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.dashboard-card-header p {
+
+    margin-top: 5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   ICONO DE ENCABEZADOS
+========================================================== */
+
+.dashboard-card-icono {
+
+    width: 42px;
+
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 18px;
+}
+
+
+/* ==========================================================
+   PERÍODO
+========================================================== */
+
+.dashboard-card-periodo {
+
+    flex-shrink: 0;
+
+    color: #89958E;
+
+    font-size: 10px;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   FILA DE GRÁFICAS
+========================================================== */
+
+.dashboard-fila-graficas {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(330px, 0.75fr);
+
+    gap: 24px;
+
+    align-items: stretch;
+}
+
+
+/* ==========================================================
+   ACTIVIDAD DEL APICULTOR
+========================================================== */
+
+.actividad-card {
+
+    min-height: 420px;
+}
+
+
+.grafica-contenedor {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 315px;
+}
+
+
+/* ==========================================================
+   ESTADO GENERAL DE COLMENAS
+========================================================== */
+
+.estado-colmenas-card {
+
+    min-height: 420px;
+}
+
+
+.grafica-dona-contenedor {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 255px;
+
+    max-width: 320px;
+
+    margin:
+        0
+        auto;
+}
+
+
+/* ==========================================================
+   LEYENDA ESTADO COLMENAS
+========================================================== */
+
+.leyenda-colmenas {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        10px
+        15px;
+
+    max-width: 310px;
+
+    margin:
+        15px
+        auto
+        0;
+}
+
+
+.leyenda-colmenas > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+        #59675F;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   PUNTOS DE ESTADO
+========================================================== */
+
+.estado-punto {
+
+    width: 9px;
+
+    height: 9px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+}
+
+
+.estado-punto.activa {
+
+    background: #78A965;
+}
+
+
+.estado-punto.riesgo {
+
+    background: #F2C94C;
+}
+
+
+.estado-punto.revision {
+
+    background: #C6B86D;
+}
+
+
+.estado-punto.inactiva {
+
+    background: #F08A6A;
+}
+
+
+/* ==========================================================
+   FILA SECUNDARIA
+========================================================== */
+
+.dashboard-fila-secundaria {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.35fr)
+        minmax(330px, 0.65fr);
+
+    gap: 24px;
+
+    align-items: stretch;
+}
+
+
+/* ==========================================================
+   PRÓXIMAS ACTIVIDADES
+========================================================== */
+
+.proximas-card {
+
+    min-height: 350px;
+}
+
+
+.proximas-lista {
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+/* ==========================================================
+   ACTIVIDAD PRÓXIMA
+========================================================== */
+
+.proxima-actividad {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding:
+        13px
+        4px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+}
+
+
+.proxima-actividad:last-child {
+
+    border-bottom: none;
+}
+
+
+/* ==========================================================
+   FECHA PRÓXIMA ACTIVIDAD
+========================================================== */
+
+.proxima-fecha {
+
+    width: 55px;
+
+    height: 60px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.proxima-fecha strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.proxima-fecha span {
+
+    margin-top: 5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+/* ==========================================================
+   INFORMACIÓN ACTIVIDAD
+========================================================== */
+
+.proxima-info {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.proxima-info strong {
+
+    overflow: hidden;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.proxima-info span,
+.proxima-info small {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   ESTADO VACÍO
+========================================================== */
+
+.estado-vacio {
+
+    min-height: 220px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 25px;
+
+    text-align: center;
+}
+
+
+.estado-vacio i {
+
+    margin-bottom: 12px;
+
+    color:
+        #D0AC38;
+
+    font-size: 33px;
+}
+
+
+.estado-vacio strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.estado-vacio span {
+
+    max-width: 250px;
+
+    margin-top: 7px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   ACCIONES RÁPIDAS
+========================================================== */
+
+.acciones-card {
+
+    min-height: 350px;
+}
+
+
+.acciones-rapidas {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   ACCIÓN RÁPIDA
+========================================================== */
+
+.accion-rapida {
+
+    display: grid;
+
+    grid-template-columns:
+        46px
+        minmax(0, 1fr)
+        20px;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 75px;
+
+    padding:
+        12px
+        14px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 13px;
+
+    background:
+        rgba(255, 237, 180, 0.33);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.accion-rapida:hover {
+
+    background:
+        var(--apicultor-activo);
+
+    border-color:
+        #E8D17D;
+
+    transform:
+        translateX(3px);
+}
+
+
+/* ==========================================================
+   ICONO ACCIÓN
+========================================================== */
+
+.accion-icono {
+
+    width: 44px;
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #E5F2E2;
+
+    color: #4F7A4B;
+
+    font-size: 17px;
+}
+
+
+.accion-icono.incidencia {
+
+    background: #FDE5E0;
+
+    color: #A94E46;
+}
+
+
+.accion-icono.agenda {
+
+    background: #FFF0BE;
+
+    color: #8D6A17;
+}
+
+
+/* ==========================================================
+   TEXTO ACCIÓN
+========================================================== */
+
+.accion-rapida > div:nth-child(2) {
+
+    min-width: 0;
+}
+
+
+.accion-rapida strong {
+
+    display: block;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+.accion-rapida span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.45;
+}
+
+
+.accion-rapida > .bi-chevron-right {
+
+    color:
+        #819087;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   ÚLTIMAS INCIDENCIAS
+========================================================== */
+
+.incidencias-card {
+
+    min-height: 310px;
+}
+
+
+/* ==========================================================
+   TABLA RESPONSIVE
+========================================================== */
+
+.tabla-responsive {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    scrollbar-width: thin;
+}
+
+
+/* ==========================================================
+   TABLA INCIDENCIAS
+========================================================== */
+
+.tabla-incidencias {
+
+    width: 100%;
+
+    min-width: 760px;
+
+    border-collapse: collapse;
+}
+
+
+/* ==========================================================
+   ENCABEZADO TABLA
+========================================================== */
+
+.tabla-incidencias thead th {
+
+    padding:
+        13px
+        14px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.12);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   FILAS TABLA
+========================================================== */
+
+.tabla-incidencias tbody td {
+
+    padding:
+        14px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+
+    color: #526057;
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    vertical-align: middle;
+}
+
+
+.tabla-incidencias tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+.tabla-incidencias tbody tr {
+
+    transition:
+        background 0.2s ease;
+}
+
+
+.tabla-incidencias tbody tr:hover {
+
+    background:
+        rgba(255, 237, 180, 0.22);
+}
+
+
+/* ==========================================================
+   TÍTULO INCIDENCIA
+========================================================== */
+
+.incidencia-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-weight: 700;
+}
+
+
+.incidencia-titulo i {
+
+    color: #CE755A;
+}
+
+
+/* ==========================================================
+   BADGE PRIORIDAD
+========================================================== */
+
+.badge-prioridad {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 58px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+
+.badge-prioridad.alta {
+
+    background: #FDE5E0;
+
+    color: #A94E46;
+}
+
+
+.badge-prioridad.media {
+
+    background: #FFF0BE;
+
+    color: #8D6A17;
+}
+
+
+.badge-prioridad.baja {
+
+    background: #E7F4E5;
+
+    color: #52794C;
+}
+
+
+/* ==========================================================
+   BADGE ESTADO
+========================================================== */
+
+.badge-estado-incidencia {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        5px
+        10px;
+
+    border-radius: 20px;
+
+    background: #EDF3EF;
+
+    color: #51645A;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   TABLA VACÍA
+========================================================== */
+
+.tabla-vacia {
+
+    height: 180px;
+
+    text-align: center !important;
+}
+
+
+.tabla-vacia i {
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #78A965;
+
+    font-size: 28px;
+}
+
+
+.tabla-vacia strong {
+
+    display: block;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+}
+
+
+.tabla-vacia span {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+}
+
+
+/* ==========================================================
+   FOOTER DEL DASHBOARD
+========================================================== */
+
+.dashboard-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        4px
+        0
+        8px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    font-weight: 500;
+}
+
+
+.dashboard-footer i {
+
+    color:
+        var(--apicultor-sidebar);
+
+    font-size: 10px;
+}
+
+
+/* ==========================================================
+   RESPONSIVE - 1500 PX
+========================================================== */
+
+@media (
+    max-width: 1500px
+) {
+
+    .resumen-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+
+    .resumen-card {
+
+        min-height: 165px;
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE - 1200 PX
+========================================================== */
+
+@media (
+    max-width: 1200px
+) {
+
+    .resumen-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .dashboard-fila-graficas,
+    .dashboard-fila-secundaria {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .grafica-dona-contenedor {
+
+        max-width: 330px;
+    }
+
+
+    .estado-colmenas-card {
+
+        min-height: 390px;
+    }
+
+}
+
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (
+    max-width: 820px
+) {
+
+    .dashboard-apicultor {
+
+        gap: 18px;
+    }
+
+
+    .dashboard-bienvenida h1 {
+
+        font-size: 25px;
+    }
+
+
+    .dashboard-bienvenida p {
+
+        font-size: 12px;
+
+        line-height: 1.6;
+    }
+
+
+    .resumen-grid {
+
+        gap: 12px;
+    }
+
+
+    .resumen-card {
+
+        min-height: 140px;
+
+        padding:
+            17px
+            12px;
+    }
+
+
+    .resumen-card-icono {
+
+        width: 54px;
+
+        height: 54px;
+
+        font-size: 21px;
+    }
+
+
+    .resumen-numero {
+
+        font-size: 31px;
+    }
+
+
+    .resumen-card-contenido span {
+
+        font-size: 11px;
+    }
+
+
+    .dashboard-card {
+
+        padding: 17px;
+
+        border-radius: 15px;
+    }
+
+
+    .dashboard-card-header h2 {
+
+        font-size: 15px;
+    }
+
+
+    .grafica-contenedor {
+
+        height: 260px;
+    }
+
+
+    .grafica-dona-contenedor {
+
+        height: 225px;
+    }
+
+}
+
+
+/* ==========================================================
+   MÓVIL
+========================================================== */
+
+@media (
+    max-width: 560px
+) {
+
+    .dashboard-bienvenida h1 {
+
+        font-size: 22px;
+    }
+
+
+    .dashboard-bienvenida p {
+
+        font-size: 11px;
+    }
+
+
+    .resumen-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .resumen-card {
+
+        min-height: 105px;
+
+        flex-direction: row;
+
+        justify-content: flex-start;
+
+        text-align: left;
+
+        padding:
+            15px
+            18px;
+    }
+
+
+    .resumen-card-contenido {
+
+        align-items: flex-start;
+    }
+
+
+    .resumen-card-icono {
+
+        width: 48px;
+
+        height: 48px;
+
+        font-size: 19px;
+    }
+
+
+    .resumen-numero {
+
+        font-size: 26px;
+    }
+
+
+    .resumen-card-contenido span {
+
+        max-width: none;
+
+        font-size: 11px;
+    }
+
+
+    .dashboard-card-header {
+
+        gap: 9px;
+    }
+
+
+    .dashboard-card-periodo {
+
+        display: none;
+    }
+
+
+    .grafica-contenedor {
+
+        height: 225px;
+    }
+
+
+    .grafica-dona-contenedor {
+
+        height: 210px;
+    }
+
+
+    .leyenda-colmenas {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .accion-rapida {
+
+        grid-template-columns:
+            40px
+            minmax(0, 1fr)
+            16px;
+
+        gap: 9px;
+
+        padding:
+            10px;
+    }
+
+
+    .accion-icono {
+
+        width: 38px;
+
+        height: 38px;
+    }
+
+
+    .proxima-fecha {
+
+        width: 48px;
+
+        height: 54px;
+    }
+
+}

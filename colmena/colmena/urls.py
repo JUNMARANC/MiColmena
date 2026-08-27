@@ -24,6 +24,7 @@ urlpatterns = [
     path('',include("home.urls")),
     path('',include("panel_admin.urls")),
     path("", include("usuarios.urls")),
+    path("apicultor/",include("panel_apicultor.urls")),
 ]
 
 if settings.DEBUG:

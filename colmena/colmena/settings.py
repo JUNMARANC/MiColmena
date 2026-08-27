@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'panel_admin',
     'dbmicolmena',
     'usuarios',
+    "panel_apicultor",
 ]
 
 MIDDLEWARE = [

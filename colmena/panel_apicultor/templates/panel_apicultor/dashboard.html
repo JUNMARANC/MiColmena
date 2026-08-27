@@ -1,0 +1,1056 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Panel Apicultor | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Panel Apicultor
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Gestiona tus apiarios, colmenas y actividades en Mi Colmena
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/dashboard_apicultor.css' %}?v=6"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="dashboard-apicultor">
+
+
+    <!-- =====================================================
+         BIENVENIDA
+    ====================================================== -->
+
+    <section class="dashboard-bienvenida">
+
+        <h1>
+
+            Bienvenido,
+
+            {% if request.user.first_name %}
+
+                {{ request.user.first_name }}
+
+            {% else %}
+
+                {{ request.user.username }}
+
+            {% endif %}
+
+        </h1>
+
+
+        <p>
+            Consulta el estado general de tus apiarios,
+            colmenas y actividades desde este panel.
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TARJETAS RESUMEN
+    ====================================================== -->
+
+    <section class="resumen-grid">
+
+
+        <!-- =================================================
+             APIARIOS
+        ================================================== -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-card-icono">
+
+                <i class="bi bi-geo-alt-fill"></i>
+
+            </div>
+
+
+            <div class="resumen-card-contenido">
+
+                <strong class="resumen-numero">
+
+                    {{ total_apiarios|default:0 }}
+
+                </strong>
+
+
+                <span>
+                    Apiarios asignados
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- =================================================
+             COLMENAS ACTIVAS
+        ================================================== -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-card-icono">
+
+                <i class="bi bi-hexagon-fill"></i>
+
+            </div>
+
+
+            <div class="resumen-card-contenido">
+
+                <strong class="resumen-numero">
+
+                    {{ colmenas_activas|default:0 }}
+
+                </strong>
+
+
+                <span>
+                    Colmenas activas
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- =================================================
+             MANTENIMIENTOS
+        ================================================== -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-card-icono">
+
+                <i class="bi bi-tools"></i>
+
+            </div>
+
+
+            <div class="resumen-card-contenido">
+
+                <strong class="resumen-numero">
+
+                    {{ mantenimientos_pendientes|default:0 }}
+
+                </strong>
+
+
+                <span>
+                    Mantenimientos pendientes
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- =================================================
+             INCIDENCIAS
+        ================================================== -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-card-icono">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+            </div>
+
+
+            <div class="resumen-card-contenido">
+
+                <strong class="resumen-numero">
+
+                    {{ incidencias_abiertas|default:0 }}
+
+                </strong>
+
+
+                <span>
+                    Incidencias activas
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- =================================================
+             REVISIONES
+        ================================================== -->
+
+        <article class="resumen-card">
+
+            <div class="resumen-card-icono">
+
+                <i class="bi bi-clipboard2-check-fill"></i>
+
+            </div>
+
+
+            <div class="resumen-card-contenido">
+
+                <strong class="resumen-numero">
+
+                    {{ revisiones_mes|default:0 }}
+
+                </strong>
+
+
+                <span>
+                    Revisiones este mes
+                </span>
+
+            </div>
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FILA DE GRÁFICAS
+    ====================================================== -->
+
+    <section class="dashboard-fila-graficas">
+
+
+        <!-- =================================================
+             ACTIVIDAD DEL APICULTOR
+        ================================================== -->
+
+        <article class="dashboard-card actividad-card">
+
+
+            <div class="dashboard-card-header">
+
+
+                <div>
+
+                    <h2>
+                        Actividad del apicultor
+                    </h2>
+
+
+                    <p>
+                        Resumen de tu actividad reciente
+                    </p>
+
+                </div>
+
+
+                <span class="dashboard-card-periodo">
+                    Últimas semanas
+                </span>
+
+
+            </div>
+
+
+
+            <div class="grafica-contenedor">
+
+                <canvas
+                    id="graficaActividadApicultor"
+                ></canvas>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- =================================================
+             ESTADO DE COLMENAS
+        ================================================== -->
+
+        <article class="dashboard-card estado-colmenas-card">
+
+
+            <div class="dashboard-card-header">
+
+
+                <div>
+
+                    <h2>
+                        Estado general de colmenas
+                    </h2>
+
+
+                    <p>
+                        Estado actual de tus colmenas
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="grafica-dona-contenedor">
+
+                <canvas
+                    id="graficaEstadoColmenas"
+                ></canvas>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 LEYENDA
+            ============================================== -->
+
+            <div class="leyenda-colmenas">
+
+
+                <div>
+
+                    <span class="estado-punto activa"></span>
+
+                    <span>
+                        Activas
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <span class="estado-punto riesgo"></span>
+
+                    <span>
+                        Riesgo
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <span class="estado-punto revision"></span>
+
+                    <span>
+                        Revisión
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <span class="estado-punto inactiva"></span>
+
+                    <span>
+                        Inactivas
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FILA SECUNDARIA
+    ====================================================== -->
+
+    <section class="dashboard-fila-secundaria">
+
+
+        <!-- =================================================
+             PRÓXIMAS ACTIVIDADES
+        ================================================== -->
+
+        <article class="dashboard-card proximas-card">
+
+
+            <div class="dashboard-card-header">
+
+
+                <div>
+
+                    <h2>
+                        Próximas actividades
+                    </h2>
+
+
+                    <p>
+                        Eventos y trabajos programados
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card-icono">
+
+                    <i class="bi bi-calendar3"></i>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="proximas-lista">
+
+
+                {% for evento in proximos_eventos %}
+
+
+                    <div class="proxima-actividad">
+
+
+                        <!-- =================================
+                             FECHA
+                        ================================== -->
+
+                        <div class="proxima-fecha">
+
+                            <strong>
+
+                                {{ evento.fecha|date:"d" }}
+
+                            </strong>
+
+
+                            <span>
+
+                                {{ evento.fecha|date:"M" }}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- =================================
+                             INFORMACIÓN
+                        ================================== -->
+
+                        <div class="proxima-info">
+
+
+                            <strong>
+
+                                {{ evento.titulo }}
+
+                            </strong>
+
+
+                            {% if evento.id_apiario %}
+
+                                <span>
+
+                                    <i class="bi bi-geo-alt"></i>
+
+                                    {{ evento.id_apiario.nombreapiario }}
+
+                                </span>
+
+                            {% endif %}
+
+
+                            {% if evento.hora %}
+
+                                <small>
+
+                                    <i class="bi bi-clock"></i>
+
+                                    {{ evento.hora|time:"g:i A" }}
+
+                                </small>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% empty %}
+
+
+                    <div class="estado-vacio">
+
+
+                        <i class="bi bi-calendar-check"></i>
+
+
+                        <strong>
+                            No tienes actividades próximas
+                        </strong>
+
+
+                        <span>
+                            Las actividades programadas
+                            aparecerán aquí.
+                        </span>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- =================================================
+             ACCIONES RÁPIDAS
+        ================================================== -->
+
+        <article class="dashboard-card acciones-card">
+
+
+            <div class="dashboard-card-header">
+
+
+                <div>
+
+                    <h2>
+                        Acciones rápidas
+                    </h2>
+
+
+                    <p>
+                        Accede a tus tareas frecuentes
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card-icono">
+
+                    <i class="bi bi-lightning-charge-fill"></i>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="acciones-rapidas">
+
+
+                <!-- =========================================
+                     REGISTRAR MANTENIMIENTO
+                ========================================== -->
+
+                <a
+                    href="#"
+                    class="accion-rapida"
+                >
+
+
+                    <div class="accion-icono">
+
+                        <i class="bi bi-tools"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Registrar mantenimiento
+                        </strong>
+
+
+                        <span>
+                            Registra un trabajo realizado
+                            en una colmena.
+                        </span>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-right"></i>
+
+
+                </a>
+
+
+
+                <!-- =========================================
+                     REPORTAR INCIDENCIA
+                ========================================== -->
+
+                <a
+                    href="#"
+                    class="accion-rapida"
+                >
+
+
+                    <div class="accion-icono incidencia">
+
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Reportar incidencia
+                        </strong>
+
+
+                        <span>
+                            Informa una situación detectada
+                            en un apiario.
+                        </span>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-right"></i>
+
+
+                </a>
+
+
+
+                <!-- =========================================
+                     AGENDA
+                ========================================== -->
+
+                <a
+                    href="#"
+                    class="accion-rapida"
+                >
+
+
+                    <div class="accion-icono agenda">
+
+                        <i class="bi bi-calendar3"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Consultar agenda
+                        </strong>
+
+
+                        <span>
+                            Revisa tus próximas actividades.
+                        </span>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-right"></i>
+
+
+                </a>
+
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ÚLTIMAS INCIDENCIAS
+    ====================================================== -->
+
+    <section class="dashboard-card incidencias-card">
+
+
+        <div class="dashboard-card-header">
+
+
+            <div>
+
+                <h2>
+                    Últimas incidencias reportadas
+                </h2>
+
+
+                <p>
+                    Situaciones recientes detectadas
+                    en tus apiarios.
+                </p>
+
+            </div>
+
+
+            <span class="dashboard-card-periodo">
+                Recientes
+            </span>
+
+
+        </div>
+
+
+
+        <div class="tabla-responsive">
+
+
+            <table class="tabla-incidencias">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Incidencia
+                        </th>
+
+                        <th>
+                            Apiario
+                        </th>
+
+                        <th>
+                            Colmena
+                        </th>
+
+                        <th>
+                            Fecha
+                        </th>
+
+                        <th>
+                            Prioridad
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for incidencia in ultimas_incidencias %}
+
+
+                        <tr>
+
+
+                            <!-- =============================
+                                 INCIDENCIA
+                            ============================== -->
+
+                            <td>
+
+
+                                <div class="incidencia-titulo">
+
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-exclamation-triangle
+                                        "
+                                    ></i>
+
+
+                                    <span>
+
+                                        {{ incidencia.titulo }}
+
+                                    </span>
+
+
+                                </div>
+
+
+                            </td>
+
+
+
+                            <!-- =============================
+                                 APIARIO
+                            ============================== -->
+
+                            <td>
+
+
+                                {% if incidencia.id_apiario %}
+
+                                    {{ incidencia.id_apiario.nombreapiario }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <!-- =============================
+                                 COLMENA
+                            ============================== -->
+
+                            <td>
+
+
+                                {% if incidencia.id_colmena %}
+
+                                    {{ incidencia.id_colmena.codigocolmena }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <!-- =============================
+                                 FECHA
+                            ============================== -->
+
+                            <td>
+
+                                {{ incidencia.fechadeteccion|date:"d/m/Y" }}
+
+                            </td>
+
+
+
+                            <!-- =============================
+                                 PRIORIDAD
+                            ============================== -->
+
+                            <td>
+
+
+                                <span
+                                    class="
+                                        badge-prioridad
+
+                                        {% if incidencia.prioridad|lower == 'alta' %}
+                                            alta
+
+                                        {% elif incidencia.prioridad|lower == 'media' %}
+                                            media
+
+                                        {% else %}
+                                            baja
+
+                                        {% endif %}
+                                    "
+                                >
+
+                                    {{ incidencia.prioridad }}
+
+                                </span>
+
+
+                            </td>
+
+
+
+                            <!-- =============================
+                                 ESTADO
+                            ============================== -->
+
+                            <td>
+
+
+                                <span class="badge-estado-incidencia">
+
+                                    {{ incidencia.estado }}
+
+                                </span>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+
+                        <tr>
+
+
+                            <td
+                                colspan="6"
+                                class="tabla-vacia"
+                            >
+
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+
+                                <strong>
+                                    No tienes incidencias recientes
+                                </strong>
+
+
+                                <span>
+                                    Las incidencias que reportes
+                                    aparecerán aquí.
+                                </span>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PIE
+    ====================================================== -->
+
+    <div class="dashboard-footer">
+
+
+        <i class="bi bi-hexagon-fill"></i>
+
+
+        <span>
+
+            Mi Colmena · Gestión apícola profesional
+
+        </span>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     DATOS PARA CHART.JS
+========================================================== -->
+
+
+<!-- ACTIVIDAD -->
+
+{{ actividad_labels|json_script:"actividad-labels" }}
+
+{{ actividad_revisiones|json_script:"actividad-revisiones" }}
+
+{{ actividad_mantenimientos|json_script:"actividad-mantenimientos" }}
+
+{{ actividad_incidencias|json_script:"actividad-incidencias" }}
+
+
+
+<!-- ESTADO DE COLMENAS -->
+
+{{ colmenas_activas|default:0|json_script:"colmenas-activas" }}
+
+{{ colmenas_riesgo|default:0|json_script:"colmenas-riesgo" }}
+
+{{ colmenas_revision|default:0|json_script:"colmenas-revision" }}
+
+{{ colmenas_inactivas|default:0|json_script:"colmenas-inactivas" }}
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+
+<!-- =========================================================
+     CHART.JS
+========================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+></script>
+
+
+
+<!-- =========================================================
+     JS DASHBOARD APICULTOR
+========================================================== -->
+
+<script
+    src="{% static 'panel_apicultor/js/dashboard_apicultor.js' %}?v=6"
+></script>
+
+
+{% endblock %}
