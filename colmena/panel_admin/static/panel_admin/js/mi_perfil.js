@@ -26,6 +26,8 @@ document.addEventListener(
 
         inicializarFormularioPassword();
 
+        inicializarAvisoCambiosPerfil();
+
     }
 );
 
@@ -577,6 +579,60 @@ function validarPasswordPerfil() {
 
 
     /* --------------------------------------------------------
+       Medidor de fuerza
+    -------------------------------------------------------- */
+
+    const medidorFuerza =
+        document.getElementById(
+            "medidorFuerzaPassword"
+        );
+
+    const textoFuerza =
+        document.getElementById(
+            "perfilFuerzaTexto"
+        );
+
+    if (medidorFuerza) {
+
+        if (!clave) {
+
+            medidorFuerza.classList.add("d-none");
+
+        } else {
+
+            medidorFuerza.classList.remove("d-none");
+
+            let puntos = 0;
+
+            if (clave.length >= 8) puntos++;
+            if (clave.length >= 12) puntos++;
+            if (/[A-Z]/.test(clave) && /[a-z]/.test(clave)) puntos++;
+            if (/[0-9]/.test(clave)) puntos++;
+            if (/[^A-Za-z0-9]/.test(clave)) puntos++;
+
+            medidorFuerza.classList.remove(
+                "fuerza-debil",
+                "fuerza-media",
+                "fuerza-fuerte"
+            );
+
+            if (puntos <= 2) {
+                medidorFuerza.classList.add("fuerza-debil");
+                if (textoFuerza) textoFuerza.textContent = "Contraseña débil";
+            } else if (puntos <= 3) {
+                medidorFuerza.classList.add("fuerza-media");
+                if (textoFuerza) textoFuerza.textContent = "Contraseña media";
+            } else {
+                medidorFuerza.classList.add("fuerza-fuerte");
+                if (textoFuerza) textoFuerza.textContent = "Contraseña fuerte";
+            }
+
+        }
+
+    }
+
+
+    /* --------------------------------------------------------
        Mostrar bloque de validación
     -------------------------------------------------------- */
 
@@ -945,5 +1001,52 @@ function inicializarFormularioPassword() {
 
         }
     );
+
+}
+
+/* ============================================================
+   6. AVISO DE CAMBIOS SIN GUARDAR (info personal)
+============================================================ */
+
+function inicializarAvisoCambiosPerfil() {
+
+    const formulario =
+        document.getElementById(
+            "formActualizarPerfil"
+        );
+
+    const aviso =
+        document.getElementById(
+            "avisoCambiosPerfil"
+        );
+
+    if (!formulario || !aviso) {
+        return;
+    }
+
+    const valoresIniciales = new FormData(formulario);
+
+    function formularioCambio() {
+
+        const valoresActuales = new FormData(formulario);
+        let huboCambio = false;
+
+        for (const [nombre, valor] of valoresActuales.entries()) {
+            if (valoresIniciales.get(nombre) !== valor) {
+                huboCambio = true;
+                break;
+            }
+        }
+
+        aviso.classList.toggle("d-none", !huboCambio);
+
+    }
+
+    formulario.addEventListener("input", formularioCambio);
+    formulario.addEventListener("change", formularioCambio);
+
+    formulario.addEventListener("submit", function () {
+        aviso.classList.add("d-none");
+    });
 
 }

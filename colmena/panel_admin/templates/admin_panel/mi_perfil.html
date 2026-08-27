@@ -17,7 +17,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=4"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=5"
 >
 
 
@@ -872,6 +872,11 @@
 
                     <div class="perfil-form-footer">
 
+                        <span class="perfil-cambios-pendientes d-none" id="avisoCambiosPerfil">
+                            <i class="bi bi-record-circle-fill"></i>
+                            Tienes cambios sin guardar
+                        </span>
+
                         <button
                             type="submit"
                             class="btn btn-success"
@@ -1167,6 +1172,18 @@
 
 
                     <!-- =====================================
+                         MEDIDOR DE FUERZA
+                    ====================================== -->
+
+                    <div class="perfil-fuerza-password d-none" id="medidorFuerzaPassword">
+                        <div class="perfil-fuerza-barra">
+                            <span id="perfilFuerzaRelleno"></span>
+                        </div>
+                        <small id="perfilFuerzaTexto">Contraseña débil</small>
+                    </div>
+
+
+                    <!-- =====================================
                          INDICADOR DE CONTRASEÑA
                     ====================================== -->
 
@@ -1243,7 +1260,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=4"
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=5"
 ></script>
 
 {% endblock %}
