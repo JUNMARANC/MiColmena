@@ -76,6 +76,7 @@
                                 class="form-control"
                                 id="fechaDesdeReporte"
                                 name="fecha_desde"
+                                max="{% now 'Y-m-d' %}"
                             >
 
                         </div>
@@ -96,6 +97,7 @@
                                 class="form-control"
                                 id="fechaHastaReporte"
                                 name="fecha_hasta"
+                                max="{% now 'Y-m-d' %}"
                             >
 
                         </div>
@@ -118,6 +120,7 @@
                                 class="form-control"
                                 id="mesActividadReporte"
                                 name="mes_actividad"
+                                max="{% now 'Y-m' %}"
                             >
 
                             <div class="form-text">
