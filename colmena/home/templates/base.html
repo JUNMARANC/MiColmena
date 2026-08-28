@@ -46,7 +46,7 @@
     <header class="header-elegante" id="header">
         <div class="logo-header">
             <img src="{% static 'home/img/logoo.png' %}" alt="Logo">
-            <span>MI COLMENA</span>
+            <span>{{ nombre_sistema|default:"Mi Colmena" }}</span>
         </div>
 
         <nav class="menu-header">
@@ -70,8 +70,8 @@
 
                 <div class="col-12 col-md-6 col-lg footer-col">
                     <h3>Contáctenos</h3>
-                    <a href="mailto:juanku690@gmail.com"><i class="bi bi-envelope"></i> juanku690@gmail.com</a>
-                    <a href="tel:+573146035811"><i class="bi bi-telephone-fill"></i> 314 6035811 - 313 6739180</a>
+                    <a href="mailto:juanku690@gmail.com"><i class="bi bi-envelope"></i> {{ configuracion_sistema.correo_contacto }} </a>
+                    <a href="tel:+573146035811"><i class="bi bi-telephone-fill"></i> {{ configuracion_sistema.telefono_contacto }} - 313 6739180</a>
                     <a href="https://acortar.link/1IHWrA" target="_blank" rel="noopener"><i class="bi bi-geo-alt"></i> Urrao (ANT)</a>
                 </div>
 
