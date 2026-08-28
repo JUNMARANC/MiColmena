@@ -2,44 +2,413 @@
 
 /* ============================================================
    USUARIOS Y ROLES
-   ------------------------------------------------------------
-   Responsabilidades:
-   1. Gestión visual de permisos
-   2. Persistencia de pestañas en la URL
-   3. Selección del tipo de usuario
-   4. Registro de administrador
-      - Foto de perfil
-      - Mostrar/ocultar contraseña
-      - Validar contraseñas
-      - Validación del formulario
-      - Estado de envío
-      - Limpieza del modal
+   ============================================================
+
+   Organización:
+   1. Arranque seguro del módulo
+   2. Mostrar / ocultar contraseñas
+   3. Permisos y pestañas
+   4. Selector de tipo de usuario
+   5. Registrar administrador
+   6. Editar administrador
+   7. Activar / desactivar administrador
+   8. Eliminar administrador
 ============================================================ */
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+/* ============================================================
+   1. ARRANQUE SEGURO DEL MÓDULO
 
-        inicializarPermisosRoles();
+   IMPORTANTE:
+   Evita registrar los mismos eventos dos veces si este archivo
+   JavaScript se incluye accidentalmente más de una vez.
+============================================================ */
 
-        inicializarPestanas();
+(function arrancarModuloUsuariosRoles() {
 
-        inicializarSelectorTipoUsuario();
+    if (window.__usuariosRolesInicializado) {
 
-        inicializarModalAdministrador();
+        console.warn(
+            "[usuarios_roles] El archivo ya había sido inicializado. Se evitó duplicar eventos."
+        );
 
-        inicializarModalEditarAdministrador();
-
-        inicializarModalEstadoAdministrador();
-
-        inicializarModalEliminarAdministrador();
+        return;
     }
-);
+
+
+    window.__usuariosRolesInicializado =
+        true;
+
+
+    /* ========================================================
+       EVENTO GLOBAL DE LOS OJOS
+
+       Se usa fase de captura para que este evento se ejecute
+       antes que cualquier otro listener conflictivo.
+    ======================================================== */
+
+    document.addEventListener(
+        "click",
+        manejarClickPasswordAdministrador,
+        true
+    );
+
+
+    /* ========================================================
+       INICIALIZAR RESTO DEL MÓDULO
+    ======================================================== */
+
+    const iniciar =
+        function () {
+
+            inicializarPermisosRoles();
+
+            inicializarPestanas();
+
+            inicializarSelectorTipoUsuario();
+
+            inicializarModalAdministrador();
+
+            inicializarModalEditarAdministrador();
+
+            inicializarModalEstadoAdministrador();
+
+            inicializarModalEliminarAdministrador();
+
+
+            console.log(
+                "[usuarios_roles] Módulo inicializado correctamente."
+            );
+
+        };
+
+
+    /*
+     * Si el DOM todavía está cargando,
+     * esperamos DOMContentLoaded.
+     *
+     * Si ya cargó, inicializamos directamente.
+     */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            iniciar,
+            {
+                once: true
+            }
+        );
+
+    } else {
+
+        iniciar();
+
+    }
+
+})();
 
 
 /* ============================================================
-   1. PERMISOS DE ROLES
+   2. MOSTRAR / OCULTAR CONTRASEÑAS
+
+   Este es el ÚNICO evento para los ojos.
+
+   Funciona para:
+
+   Registrar administrador:
+   .btn-password-administrador
+
+   Editar administrador:
+   .btn-password-editar-administrador
+============================================================ */
+
+function manejarClickPasswordAdministrador(
+    evento
+) {
+
+    const boton =
+        evento.target.closest(
+            ".btn-password-administrador, .btn-password-editar-administrador"
+        );
+
+
+    /*
+     * Si el clic no fue sobre un botón de contraseña,
+     * no hacemos nada.
+     */
+
+    if (!boton) {
+
+        return;
+    }
+
+
+    /*
+     * MUY IMPORTANTE:
+     *
+     * Detenemos cualquier otro listener que intente
+     * cambiar nuevamente el type.
+     *
+     * Esto evita:
+     *
+     * password -> text
+     * text -> password
+     *
+     * dentro del mismo clic.
+     */
+
+    evento.preventDefault();
+
+    evento.stopPropagation();
+
+    evento.stopImmediatePropagation();
+
+
+    /* ========================================================
+       IDENTIFICAR EL INPUT
+    ======================================================== */
+
+    const idInput =
+        boton.dataset.passwordTarget;
+
+
+    let inputPassword =
+        null;
+
+
+    /*
+     * PRIMER MÉTODO
+     *
+     * Usamos:
+     *
+     * data-password-target="passwordAdministrador"
+     */
+
+    if (idInput) {
+
+        inputPassword =
+            document.getElementById(
+                idInput
+            );
+
+    }
+
+
+    /*
+     * SEGUNDO MÉTODO DE RESPALDO
+     *
+     * Si por algún motivo no encuentra el ID,
+     * buscamos el input dentro del mismo input-group.
+     */
+
+    if (!inputPassword) {
+
+        const grupo =
+            boton.closest(
+                ".input-group"
+            );
+
+
+        if (grupo) {
+
+            inputPassword =
+                grupo.querySelector(
+                    'input[type="password"], input[type="text"]'
+                );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       VALIDAR QUE EXISTA
+    ======================================================== */
+
+    if (!inputPassword) {
+
+        console.error(
+            "[usuarios_roles] No se encontró el input asociado al botón del ojo."
+        );
+
+        return;
+    }
+
+
+    const icono =
+        boton.querySelector(
+            "i"
+        );
+
+
+    /* ========================================================
+       SABER SI DEBEMOS MOSTRAR U OCULTAR
+    ======================================================== */
+
+    const mostrar =
+        inputPassword.type ===
+        "password";
+
+
+    /* ========================================================
+       CAMBIAR TYPE
+    ======================================================== */
+
+    inputPassword.type =
+        mostrar
+            ? "text"
+            : "password";
+
+
+    /* ========================================================
+       CAMBIAR ICONO
+    ======================================================== */
+
+    if (icono) {
+
+        icono.classList.toggle(
+            "bi-eye-fill",
+            !mostrar
+        );
+
+
+        icono.classList.toggle(
+            "bi-eye-slash-fill",
+            mostrar
+        );
+
+    }
+
+
+    /* ========================================================
+       ACCESIBILIDAD
+    ======================================================== */
+
+    boton.setAttribute(
+        "aria-label",
+        mostrar
+            ? "Ocultar contraseña"
+            : "Mostrar contraseña"
+    );
+
+
+    boton.setAttribute(
+        "title",
+        mostrar
+            ? "Ocultar contraseña"
+            : "Mostrar contraseña"
+    );
+
+
+    /* ========================================================
+       MENSAJE PARA PRUEBAS
+    ======================================================== */
+
+    console.log(
+        "[usuarios_roles] Ojo ejecutado:",
+        inputPassword.id,
+        "=>",
+        inputPassword.type
+    );
+
+}
+
+
+/* ============================================================
+   RESTAURAR OJOS
+============================================================ */
+
+function restaurarOjosPassword(
+    contenedor,
+    selectorBotones
+) {
+
+    if (!contenedor) {
+
+        return;
+    }
+
+
+    const botones =
+        contenedor.querySelectorAll(
+            selectorBotones
+        );
+
+
+    botones.forEach(
+        function (boton) {
+
+            const idInput =
+                boton.dataset.passwordTarget;
+
+
+            const input =
+                idInput
+                    ? document.getElementById(
+                        idInput
+                    )
+                    : null;
+
+
+            const icono =
+                boton.querySelector(
+                    "i"
+                );
+
+
+            /* ------------------------------------------------
+               Ocultar contraseña
+            ------------------------------------------------ */
+
+            if (input) {
+
+                input.type =
+                    "password";
+
+            }
+
+
+            /* ------------------------------------------------
+               Restaurar ojo
+            ------------------------------------------------ */
+
+            if (icono) {
+
+                icono.classList.remove(
+                    "bi-eye-slash-fill"
+                );
+
+
+                icono.classList.add(
+                    "bi-eye-fill"
+                );
+
+            }
+
+
+            boton.setAttribute(
+                "aria-label",
+                "Mostrar contraseña"
+            );
+
+
+            boton.setAttribute(
+                "title",
+                "Mostrar contraseña"
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   3. PERMISOS DE ROLES
 ============================================================ */
 
 function inicializarPermisosRoles() {
@@ -49,33 +418,31 @@ function inicializarPermisosRoles() {
             "formPermisosRoles"
         );
 
+
     const botonGuardar =
         document.getElementById(
             "btnGuardarPermisos"
         );
 
-    const checkboxes =
-        document.querySelectorAll(
-            ".checkbox-permiso"
-        );
-
-
-    /*
-    Esta funcionalidad solamente existe
-    si estamos mostrando el formulario de roles.
-    */
 
     if (
         !formulario ||
         !botonGuardar
     ) {
+
         return;
     }
 
 
-    /* --------------------------------------------------------
-       Estado visual inicial
-    -------------------------------------------------------- */
+    const checkboxes =
+        formulario.querySelectorAll(
+            ".checkbox-permiso"
+        );
+
+
+    /* ========================================================
+       ESTADO INICIAL
+    ======================================================== */
 
     checkboxes.forEach(
         function (checkbox) {
@@ -93,6 +460,7 @@ function inicializarPermisosRoles() {
                         checkbox
                     );
 
+
                     botonGuardar.disabled =
                         false;
 
@@ -103,9 +471,9 @@ function inicializarPermisosRoles() {
     );
 
 
-    /* --------------------------------------------------------
-       Estado de guardado
-    -------------------------------------------------------- */
+    /* ========================================================
+       GUARDAR
+    ======================================================== */
 
     formulario.addEventListener(
         "submit",
@@ -113,6 +481,7 @@ function inicializarPermisosRoles() {
 
             botonGuardar.disabled =
                 true;
+
 
             botonGuardar.innerHTML = `
                 <span
@@ -133,9 +502,9 @@ function inicializarPermisosRoles() {
 }
 
 
-/* ------------------------------------------------------------
-   Actualizar aspecto visual de un permiso
------------------------------------------------------------- */
+/* ============================================================
+   ACTUALIZAR PERMISO
+============================================================ */
 
 function actualizarVisualPermiso(
     checkbox
@@ -148,6 +517,7 @@ function actualizarVisualPermiso(
 
 
     if (!item) {
+
         return;
     }
 
@@ -157,6 +527,10 @@ function actualizarVisualPermiso(
             ".check-visual i"
         );
 
+
+    /* ========================================================
+       ACTIVADO
+    ======================================================== */
 
     if (checkbox.checked) {
 
@@ -171,15 +545,21 @@ function actualizarVisualPermiso(
                 "bi-x-lg"
             );
 
+
             icono.classList.add(
                 "bi-check-lg"
             );
 
         }
 
+
         return;
     }
 
+
+    /* ========================================================
+       DESACTIVADO
+    ======================================================== */
 
     item.classList.add(
         "permiso-desactivado"
@@ -192,6 +572,7 @@ function actualizarVisualPermiso(
             "bi-check-lg"
         );
 
+
         icono.classList.add(
             "bi-x-lg"
         );
@@ -202,7 +583,7 @@ function actualizarVisualPermiso(
 
 
 /* ============================================================
-   2. PESTAÑAS USUARIOS / ROLES
+   PESTAÑAS USUARIOS / ROLES
 ============================================================ */
 
 function inicializarPestanas() {
@@ -211,6 +592,7 @@ function inicializarPestanas() {
         document.getElementById(
             "usuarios-tab"
         );
+
 
     const tabRoles =
         document.getElementById(
@@ -252,9 +634,9 @@ function inicializarPestanas() {
 }
 
 
-/* ------------------------------------------------------------
-   Guardar pestaña activa en la URL
------------------------------------------------------------- */
+/* ============================================================
+   ACTUALIZAR TAB EN URL
+============================================================ */
 
 function actualizarParametroTab(
     tab
@@ -282,7 +664,7 @@ function actualizarParametroTab(
 
 
 /* ============================================================
-   3. SELECCIONAR TIPO DE USUARIO
+   4. SELECTOR DE TIPO DE USUARIO
 ============================================================ */
 
 function inicializarSelectorTipoUsuario() {
@@ -311,15 +693,16 @@ function inicializarSelectorTipoUsuario() {
         );
 
 
-    /* --------------------------------------------------------
-       Administrador
-    -------------------------------------------------------- */
+    /* ========================================================
+       ADMINISTRADOR
+    ======================================================== */
 
     if (
         botonAdministrador &&
         modalSeleccionElemento &&
         modalAdministradorElemento &&
-        typeof bootstrap !== "undefined"
+        typeof bootstrap !==
+            "undefined"
     ) {
 
         botonAdministrador.addEventListener(
@@ -337,9 +720,9 @@ function inicializarSelectorTipoUsuario() {
     }
 
 
-    /* --------------------------------------------------------
-       Apicultor
-    -------------------------------------------------------- */
+    /* ========================================================
+       APICULTOR
+    ======================================================== */
 
     if (botonApicultor) {
 
@@ -359,9 +742,9 @@ function inicializarSelectorTipoUsuario() {
 }
 
 
-/* ------------------------------------------------------------
-   Cerrar selector y abrir modal Administrador
------------------------------------------------------------- */
+/* ============================================================
+   ABRIR MODAL ADMINISTRADOR
+============================================================ */
 
 function abrirModalAdministradorDesdeSelector(
     modalSeleccionElemento,
@@ -372,6 +755,7 @@ function abrirModalAdministradorDesdeSelector(
         typeof bootstrap ===
         "undefined"
     ) {
+
         return;
     }
 
@@ -382,11 +766,6 @@ function abrirModalAdministradorDesdeSelector(
                 modalSeleccionElemento
             );
 
-
-    /*
-    Bootstrap necesita terminar de cerrar
-    el primer modal antes de abrir el segundo.
-    */
 
     const abrirAdministrador =
         function () {
@@ -422,9 +801,9 @@ function abrirModalAdministradorDesdeSelector(
 }
 
 
-/* ------------------------------------------------------------
-   Ir al módulo de Apicultores
------------------------------------------------------------- */
+/* ============================================================
+   REDIRIGIR A NUEVO APICULTOR
+============================================================ */
 
 function redirigirNuevoApicultor(
     boton
@@ -440,6 +819,7 @@ function redirigirNuevoApicultor(
             "No se encontró la URL del módulo de Apicultores."
         );
 
+
         return;
     }
 
@@ -450,11 +830,6 @@ function redirigirNuevoApicultor(
             window.location.origin
         );
 
-
-    /*
-    apicultor.js detectará este parámetro
-    y abrirá modalAgregarApicultor.
-    */
 
     url.searchParams.set(
         "nuevo",
@@ -469,12 +844,12 @@ function redirigirNuevoApicultor(
 
 
 /* ============================================================
-   4. MODAL REGISTRAR ADMINISTRADOR
+   5. REGISTRAR ADMINISTRADOR
 ============================================================ */
 
 function inicializarModalAdministrador() {
 
-    const modalElemento =
+    const modal =
         document.getElementById(
             "modalAgregarAdministrador"
         );
@@ -487,18 +862,77 @@ function inicializarModalAdministrador() {
 
 
     if (
-        !modalElemento ||
+        !modal ||
         !formulario
     ) {
+
         return;
     }
 
 
-    /* --------------------------------------------------------
-       Elementos
-    -------------------------------------------------------- */
+    /* ========================================================
+       CAMPOS
+    ======================================================== */
 
-    const elementos = {
+    const campos = {
+
+        primerNombre:
+            formulario.querySelector(
+                '[name="primer_nombre"]'
+            ),
+
+        segundoNombre:
+            formulario.querySelector(
+                '[name="segundo_nombre"]'
+            ),
+
+        primerApellido:
+            formulario.querySelector(
+                '[name="primer_apellido"]'
+            ),
+
+        segundoApellido:
+            formulario.querySelector(
+                '[name="segundo_apellido"]'
+            ),
+
+        celular:
+            formulario.querySelector(
+                '[name="celular"]'
+            ),
+
+        identificacion:
+            formulario.querySelector(
+                '[name="identificacion"]'
+            ) ||
+            formulario.querySelector(
+                '[name="numero_identificacion"]'
+            ),
+
+        correo:
+            formulario.querySelector(
+                '[name="correo"]'
+            ),
+
+        username:
+            formulario.querySelector(
+                '[name="username"]'
+            ),
+
+        password:
+            document.getElementById(
+                "passwordAdministrador"
+            ),
+
+        confirmarPassword:
+            document.getElementById(
+                "confirmarPasswordAdministrador"
+            ),
+
+        mensajePassword:
+            document.getElementById(
+                "mensajePasswordAdministrador"
+            ),
 
         inputFoto:
             document.getElementById(
@@ -520,21 +954,6 @@ function inicializarModalAdministrador() {
                 "btnQuitarFotoAdministrador"
             ),
 
-        password:
-            document.getElementById(
-                "passwordAdministrador"
-            ),
-
-        confirmarPassword:
-            document.getElementById(
-                "confirmarPasswordAdministrador"
-            ),
-
-        mensajePassword:
-            document.getElementById(
-                "mensajePasswordAdministrador"
-            ),
-
         botonGuardar:
             document.getElementById(
                 "btnGuardarAdministrador"
@@ -543,55 +962,59 @@ function inicializarModalAdministrador() {
     };
 
 
-    /* --------------------------------------------------------
-       Foto
-    -------------------------------------------------------- */
+    /* ========================================================
+       FOTO
+    ======================================================== */
 
-    inicializarFotoAdministrador(
-        elementos
+    inicializarFotoRegistroAdministrador(
+        campos
     );
 
 
-    /* --------------------------------------------------------
-       Mostrar / ocultar contraseña
-    -------------------------------------------------------- */
+    /* ========================================================
+       VALIDACIONES
+    ======================================================== */
 
-    inicializarPasswordAdministrador(
-        modalElemento
-    );
-
-
-    /* --------------------------------------------------------
-       Validación de contraseñas
-    -------------------------------------------------------- */
-
-    inicializarValidacionPasswordAdministrador(
-        elementos
-    );
-
-
-    /* --------------------------------------------------------
-       Enviar formulario
-    -------------------------------------------------------- */
-
-    inicializarSubmitAdministrador(
+    inicializarValidacionesRegistroAdministrador(
         formulario,
-        elementos
+        campos
     );
 
 
-    /* --------------------------------------------------------
-       Limpiar al cerrar
-    -------------------------------------------------------- */
+    /* ========================================================
+       LIMPIAR AL CERRAR
+    ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "hidden.bs.modal",
         function () {
 
-            limpiarModalAdministrador(
-                modalElemento,
-                formulario,
-                elementos
+            formulario.reset();
+
+
+            formulario.classList.remove(
+                "was-validated"
+            );
+
+
+            limpiarFotoRegistroAdministrador(
+                campos
+            );
+
+
+            limpiarEstadoPasswordsRegistroAdministrador(
+                campos
+            );
+
+
+            restaurarOjosPassword(
+                modal,
+                ".btn-password-administrador"
+            );
+
+
+            restaurarBotonRegistrarAdministrador(
+                campos.botonGuardar
             );
 
         }
@@ -601,17 +1024,17 @@ function inicializarModalAdministrador() {
 
 
 /* ============================================================
-   5. FOTO DEL ADMINISTRADOR
+   FOTO - REGISTRAR ADMINISTRADOR
 ============================================================ */
 
-function inicializarFotoAdministrador(
-    elementos
+function inicializarFotoRegistroAdministrador(
+    campos
 ) {
 
     const {
         inputFoto,
         botonQuitarFoto
-    } = elementos;
+    } = campos;
 
 
     if (inputFoto) {
@@ -620,8 +1043,8 @@ function inicializarFotoAdministrador(
             "change",
             function () {
 
-                procesarFotoAdministrador(
-                    elementos
+                procesarFotoRegistroAdministrador(
+                    campos
                 );
 
             }
@@ -636,8 +1059,8 @@ function inicializarFotoAdministrador(
             "click",
             function () {
 
-                limpiarFotoAdministrador(
-                    elementos
+                limpiarFotoRegistroAdministrador(
+                    campos
                 );
 
             }
@@ -648,12 +1071,12 @@ function inicializarFotoAdministrador(
 }
 
 
-/* ------------------------------------------------------------
-   Validar y mostrar foto
------------------------------------------------------------- */
+/* ============================================================
+   PROCESAR FOTO
+============================================================ */
 
-function procesarFotoAdministrador(
-    elementos
+function procesarFotoRegistroAdministrador(
+    campos
 ) {
 
     const {
@@ -661,10 +1084,11 @@ function procesarFotoAdministrador(
         imagenPreview,
         iconoPreview,
         botonQuitarFoto
-    } = elementos;
+    } = campos;
 
 
     if (!inputFoto) {
+
         return;
     }
 
@@ -676,19 +1100,23 @@ function procesarFotoAdministrador(
 
     if (!archivo) {
 
-        limpiarFotoAdministrador(
-            elementos
+        limpiarFotoRegistroAdministrador(
+            campos
         );
 
-        return;
 
+        return;
     }
 
 
     const tiposPermitidos = [
+
         "image/jpeg",
+
         "image/png",
+
         "image/webp"
+
     ];
 
 
@@ -696,9 +1124,9 @@ function procesarFotoAdministrador(
         5 * 1024 * 1024;
 
 
-    /* --------------------------------------------------------
-       Validar tipo
-    -------------------------------------------------------- */
+    /* ========================================================
+       TIPO
+    ======================================================== */
 
     if (
         !tiposPermitidos.includes(
@@ -711,18 +1139,18 @@ function procesarFotoAdministrador(
         );
 
 
-        limpiarFotoAdministrador(
-            elementos
+        limpiarFotoRegistroAdministrador(
+            campos
         );
 
-        return;
 
+        return;
     }
 
 
-    /* --------------------------------------------------------
-       Validar tamaño
-    -------------------------------------------------------- */
+    /* ========================================================
+       TAMAÑO
+    ======================================================== */
 
     if (
         archivo.size >
@@ -734,39 +1162,38 @@ function procesarFotoAdministrador(
         );
 
 
-        limpiarFotoAdministrador(
-            elementos
+        limpiarFotoRegistroAdministrador(
+            campos
         );
 
-        return;
 
+        return;
     }
 
-
-    /* --------------------------------------------------------
-       Mostrar vista previa
-    -------------------------------------------------------- */
 
     const lector =
         new FileReader();
 
 
+    /* ========================================================
+       PREVISUALIZAR
+    ======================================================== */
+
     lector.addEventListener(
         "load",
         function (evento) {
 
-            if (!imagenPreview) {
-                return;
+            if (imagenPreview) {
+
+                imagenPreview.src =
+                    evento.target.result;
+
+
+                imagenPreview.classList.remove(
+                    "d-none"
+                );
+
             }
-
-
-            imagenPreview.src =
-                evento.target.result;
-
-
-            imagenPreview.classList.remove(
-                "d-none"
-            );
 
 
             if (iconoPreview) {
@@ -799,8 +1226,8 @@ function procesarFotoAdministrador(
             );
 
 
-            limpiarFotoAdministrador(
-                elementos
+            limpiarFotoRegistroAdministrador(
+                campos
             );
 
         }
@@ -814,12 +1241,12 @@ function procesarFotoAdministrador(
 }
 
 
-/* ------------------------------------------------------------
-   Limpiar fotografía
------------------------------------------------------------- */
+/* ============================================================
+   LIMPIAR FOTO
+============================================================ */
 
-function limpiarFotoAdministrador(
-    elementos
+function limpiarFotoRegistroAdministrador(
+    campos
 ) {
 
     const {
@@ -827,7 +1254,7 @@ function limpiarFotoAdministrador(
         imagenPreview,
         iconoPreview,
         botonQuitarFoto
-    } = elementos;
+    } = campos;
 
 
     if (inputFoto) {
@@ -873,342 +1300,1359 @@ function limpiarFotoAdministrador(
 
 
 /* ============================================================
-   6. MOSTRAR / OCULTAR CONTRASEÑAS
+   VALIDACIONES - REGISTRAR ADMINISTRADOR
 ============================================================ */
 
-function inicializarPasswordAdministrador(
-    modalElemento
+function inicializarValidacionesRegistroAdministrador(
+    formulario,
+    campos
 ) {
 
-    /*
-    Utilizamos delegación de eventos.
+    /* ========================================================
+       EXPRESIONES REGULARES
+    ======================================================== */
 
-    Ventaja:
-    No necesitamos crear un listener
-    independiente para cada botón.
-    */
+    const REGEX_NOMBRE =
+        /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+(?:[ '\-][A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+)*$/;
 
-    modalElemento.addEventListener(
-        "click",
-        function (evento) {
 
-            const boton =
-                evento.target.closest(
-                    ".btn-password-administrador"
-                );
+    const REGEX_CELULAR =
+        /^3[0-9]{9}$/;
 
 
-            if (!boton) {
-                return;
-            }
+    const REGEX_CORREO =
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 
-            evento.preventDefault();
+    const REGEX_USERNAME =
+        /^[A-Za-z0-9_@.+-]+$/;
 
-            evento.stopPropagation();
 
+    /* ========================================================
+       SABER SI HAY VALOR
+    ======================================================== */
 
-            cambiarVisibilidadPassword(
-                modalElemento,
-                boton
-            );
-
-        }
-    );
-
-}
-
-
-/* ------------------------------------------------------------
-   Cambiar visibilidad de un campo
------------------------------------------------------------- */
-
-function cambiarVisibilidadPassword(
-    modalElemento,
-    boton
-) {
-
-    const idInput =
-        boton.dataset
-            .passwordTarget;
-
-
-    if (!idInput) {
-
-        console.error(
-            "El botón no tiene data-password-target."
-        );
-
-        return;
-
-    }
-
-
-    const input =
-        modalElemento.querySelector(
-            `#${idInput}`
-        );
-
-
-    if (!input) {
-
-        console.error(
-            `No se encontró el input ${idInput}.`
-        );
-
-        return;
-
-    }
-
-
-    const icono =
-        boton.querySelector(
-            "i"
-        );
-
-
-    const estaOculta =
-        input.type ===
-        "password";
-
-
-    /* --------------------------------------------------------
-       Cambiar input
-    -------------------------------------------------------- */
-
-    input.type =
-        estaOculta
-            ? "text"
-            : "password";
-
-
-    /* --------------------------------------------------------
-       Cambiar icono
-    -------------------------------------------------------- */
-
-    if (icono) {
-
-        icono.classList.toggle(
-            "bi-eye-fill",
-            !estaOculta
-        );
-
-
-        icono.classList.toggle(
-            "bi-eye-slash-fill",
-            estaOculta
-        );
-
-    }
-
-
-    /* --------------------------------------------------------
-       Accesibilidad
-    -------------------------------------------------------- */
-
-    const textoAccion =
-        estaOculta
-            ? "Ocultar contraseña"
-            : "Mostrar contraseña";
-
-
-    boton.setAttribute(
-        "aria-label",
-        textoAccion
-    );
-
-
-    boton.setAttribute(
-        "title",
-        textoAccion
-    );
-
-}
-
-
-/* ============================================================
-   7. VALIDAR CONTRASEÑAS
-============================================================ */
-
-function inicializarValidacionPasswordAdministrador(
-    elementos
-) {
-
-    const {
-        password,
-        confirmarPassword
-    } = elementos;
-
-
-    if (password) {
-
-        password.addEventListener(
-            "input",
-            function () {
-
-                validarContrasenasAdministrador(
-                    elementos
-                );
-
-            }
-        );
-
-    }
-
-
-    if (confirmarPassword) {
-
-        confirmarPassword.addEventListener(
-            "input",
-            function () {
-
-                validarContrasenasAdministrador(
-                    elementos
-                );
-
-            }
-        );
-
-    }
-
-}
-
-
-/* ------------------------------------------------------------
-   Comparar contraseña y confirmación
------------------------------------------------------------- */
-
-function validarContrasenasAdministrador(
-    elementos
-) {
-
-    const {
-        password,
-        confirmarPassword,
-        mensajePassword
-    } = elementos;
-
-
-    if (
-        !password ||
-        !confirmarPassword
+    function tieneValor(
+        campo
     ) {
-        return true;
-    }
+
+        if (!campo) {
+
+            return false;
+        }
 
 
-    const clave =
-        password.value;
+        /*
+         * Si es contraseña usamos value directamente.
+         */
 
+        if (
+            campo.name ===
+                "password" ||
+            campo.name ===
+                "confirmar_password"
+        ) {
 
-    const confirmacion =
-        confirmarPassword.value;
-
-
-    confirmarPassword.setCustomValidity(
-        ""
-    );
-
-
-    confirmarPassword.classList.remove(
-        "is-invalid",
-        "is-valid"
-    );
-
-
-    /* --------------------------------------------------------
-       Confirmación vacía
-    -------------------------------------------------------- */
-
-    if (!confirmacion) {
-
-        if (mensajePassword) {
-
-            mensajePassword.classList.add(
-                "d-none"
-            );
+            return campo.value.length >
+                0;
 
         }
 
 
-        return true;
+        return campo.value
+            .trim()
+            .length >
+            0;
 
     }
 
 
-    /* --------------------------------------------------------
-       No coinciden
-    -------------------------------------------------------- */
+    /* ========================================================
+       ESTADO VERDE / ROJO
+    ======================================================== */
 
-    if (
-        clave !==
-        confirmacion
+    function actualizarEstadoCampo(
+        campo,
+        valido
     ) {
 
-        confirmarPassword.setCustomValidity(
-            "Las contraseñas no coinciden."
-        );
+        if (!campo) {
+
+            return;
+        }
 
 
-        confirmarPassword.classList.add(
+        campo.classList.remove(
+            "is-valid",
             "is-invalid"
         );
 
 
-        if (mensajePassword) {
+        if (!tieneValor(campo)) {
 
-            mensajePassword.classList.remove(
-                "d-none"
-            );
-
+            return;
         }
 
 
-        return false;
-
-    }
-
-
-    /* --------------------------------------------------------
-       Correctas
-    -------------------------------------------------------- */
-
-    confirmarPassword.classList.add(
-        "is-valid"
-    );
-
-
-    if (mensajePassword) {
-
-        mensajePassword.classList.add(
-            "d-none"
+        campo.classList.add(
+            valido
+                ? "is-valid"
+                : "is-invalid"
         );
 
     }
 
 
-    return true;
+    /* ========================================================
+       NOMBRES / APELLIDOS
+    ======================================================== */
 
-}
+    function validarNombre(
+        campo,
+        nombreCampo,
+        obligatorio
+    ) {
+
+        if (!campo) {
+
+            return true;
+        }
 
 
-/* ============================================================
-   8. ENVÍO DEL FORMULARIO
-============================================================ */
+        const valor =
+            campo.value.trim();
 
-function inicializarSubmitAdministrador(
-    formulario,
-    elementos
-) {
+
+        campo.setCustomValidity(
+            ""
+        );
+
+
+        /* ----------------------------------------------------
+           VACÍO
+        ---------------------------------------------------- */
+
+        if (!valor) {
+
+            if (obligatorio) {
+
+                campo.setCustomValidity(
+                    `${nombreCampo} es obligatorio.`
+                );
+
+
+                actualizarEstadoCampo(
+                    campo,
+                    false
+                );
+
+
+                return false;
+
+            }
+
+
+            campo.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            return true;
+        }
+
+
+        /* ----------------------------------------------------
+           MÍNIMO
+        ---------------------------------------------------- */
+
+        if (
+            valor.length <
+            2
+        ) {
+
+            campo.setCustomValidity(
+                `${nombreCampo} debe tener mínimo 2 caracteres.`
+            );
+
+
+            actualizarEstadoCampo(
+                campo,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           FORMATO
+        ---------------------------------------------------- */
+
+        if (
+            !REGEX_NOMBRE.test(
+                valor
+            )
+        ) {
+
+            campo.setCustomValidity(
+                `${nombreCampo} solo puede contener letras, espacios, guiones y apóstrofes.`
+            );
+
+
+            actualizarEstadoCampo(
+                campo,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            campo,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    /* ========================================================
+       CONFIGURAR NOMBRE
+    ======================================================== */
+
+    function configurarNombre(
+        campo,
+        nombreCampo,
+        obligatorio
+    ) {
+
+        if (!campo) {
+
+            return;
+        }
+
+
+        campo.addEventListener(
+            "input",
+            function () {
+
+                campo.value =
+                    campo.value
+
+                        .replace(
+                            /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ '\-]/g,
+                            ""
+                        )
+
+                        .replace(
+                            /\s{2,}/g,
+                            " "
+                        );
+
+
+                validarNombre(
+                    campo,
+                    nombreCampo,
+                    obligatorio
+                );
+
+            }
+        );
+
+
+        campo.addEventListener(
+            "blur",
+            function () {
+
+                campo.value =
+                    campo.value
+
+                        .trim()
+
+                        .replace(
+                            /\s{2,}/g,
+                            " "
+                        );
+
+
+                if (
+                    !validarNombre(
+                        campo,
+                        nombreCampo,
+                        obligatorio
+                    )
+                ) {
+
+                    campo.reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       CAMPOS DE NOMBRE
+    ======================================================== */
+
+    const configuracionNombres = [
+
+        {
+            campo:
+                campos.primerNombre,
+
+            texto:
+                "El primer nombre",
+
+            obligatorio:
+                true
+        },
+
+        {
+            campo:
+                campos.segundoNombre,
+
+            texto:
+                "El segundo nombre",
+
+            obligatorio:
+                false
+        },
+
+        {
+            campo:
+                campos.primerApellido,
+
+            texto:
+                "El primer apellido",
+
+            obligatorio:
+                true
+        },
+
+        {
+            campo:
+                campos.segundoApellido,
+
+            texto:
+                "El segundo apellido",
+
+            obligatorio:
+                false
+        }
+
+    ];
+
+
+    configuracionNombres.forEach(
+        function (configuracion) {
+
+            configurarNombre(
+                configuracion.campo,
+                configuracion.texto,
+                configuracion.obligatorio
+            );
+
+        }
+    );
+
+
+    /* ========================================================
+       CELULAR
+    ======================================================== */
+
+    function validarCelular() {
+
+        const celular =
+            campos.celular;
+
+
+        if (!celular) {
+
+            return true;
+        }
+
+
+        const valor =
+            celular.value.trim();
+
+
+        celular.setCustomValidity(
+            ""
+        );
+
+
+        /*
+         * Actualmente en tu HTML el celular
+         * no es obligatorio.
+         */
+
+        if (!valor) {
+
+            celular.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            return true;
+        }
+
+
+        if (
+            !/^[0-9]+$/.test(
+                valor
+            )
+        ) {
+
+            celular.setCustomValidity(
+                "El celular solo puede contener números."
+            );
+
+
+            actualizarEstadoCampo(
+                celular,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            valor.length !==
+            10
+        ) {
+
+            celular.setCustomValidity(
+                "El celular debe contener exactamente 10 números."
+            );
+
+
+            actualizarEstadoCampo(
+                celular,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            !REGEX_CELULAR.test(
+                valor
+            )
+        ) {
+
+            celular.setCustomValidity(
+                "Ingresa un número de celular válido. Debe comenzar por 3."
+            );
+
+
+            actualizarEstadoCampo(
+                celular,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            celular,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.celular) {
+
+        campos.celular.addEventListener(
+            "input",
+            function () {
+
+                campos.celular.value =
+                    campos.celular.value
+
+                        .replace(
+                            /[^0-9]/g,
+                            ""
+                        )
+
+                        .slice(
+                            0,
+                            10
+                        );
+
+
+                validarCelular();
+
+            }
+        );
+
+
+        campos.celular.addEventListener(
+            "blur",
+            function () {
+
+                if (!validarCelular()) {
+
+                    campos.celular
+                        .reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       IDENTIFICACIÓN
+       Solo se usa si agregas ese campo al HTML.
+    ======================================================== */
+
+    function validarIdentificacion() {
+
+        const identificacion =
+            campos.identificacion;
+
+
+        if (!identificacion) {
+
+            return true;
+        }
+
+
+        const valor =
+            identificacion.value.trim();
+
+
+        identificacion.setCustomValidity(
+            ""
+        );
+
+
+        if (!valor) {
+
+            identificacion.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            return true;
+        }
+
+
+        if (
+            !/^[0-9]+$/.test(
+                valor
+            )
+        ) {
+
+            identificacion.setCustomValidity(
+                "El número de identificación solo puede contener números."
+            );
+
+
+            actualizarEstadoCampo(
+                identificacion,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            valor.length <
+                6 ||
+            valor.length >
+                15
+        ) {
+
+            identificacion.setCustomValidity(
+                "El número de identificación debe contener entre 6 y 15 números."
+            );
+
+
+            actualizarEstadoCampo(
+                identificacion,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            identificacion,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.identificacion) {
+
+        campos.identificacion.addEventListener(
+            "input",
+            function () {
+
+                campos.identificacion.value =
+                    campos.identificacion.value
+
+                        .replace(
+                            /[^0-9]/g,
+                            ""
+                        )
+
+                        .slice(
+                            0,
+                            15
+                        );
+
+
+                validarIdentificacion();
+
+            }
+        );
+
+
+        campos.identificacion.addEventListener(
+            "blur",
+            function () {
+
+                if (
+                    !validarIdentificacion()
+                ) {
+
+                    campos.identificacion
+                        .reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       CORREO
+    ======================================================== */
+
+    function validarCorreo() {
+
+        const correo =
+            campos.correo;
+
+
+        if (!correo) {
+
+            return true;
+        }
+
+
+        const valor =
+            correo.value.trim();
+
+
+        correo.setCustomValidity(
+            ""
+        );
+
+
+        /* ----------------------------------------------------
+           OBLIGATORIO
+        ---------------------------------------------------- */
+
+        if (!valor) {
+
+            correo.setCustomValidity(
+                "El correo electrónico es obligatorio."
+            );
+
+
+            actualizarEstadoCampo(
+                correo,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           ESPACIOS
+        ---------------------------------------------------- */
+
+        if (
+            /\s/.test(
+                valor
+            )
+        ) {
+
+            correo.setCustomValidity(
+                "El correo electrónico no puede contener espacios."
+            );
+
+
+            actualizarEstadoCampo(
+                correo,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           FORMATO
+        ---------------------------------------------------- */
+
+        if (
+            !REGEX_CORREO.test(
+                valor
+            )
+        ) {
+
+            correo.setCustomValidity(
+                "Ingresa un correo electrónico válido. Ejemplo: usuario@correo.com"
+            );
+
+
+            actualizarEstadoCampo(
+                correo,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           LONGITUD
+        ---------------------------------------------------- */
+
+        if (
+            valor.length >
+            254
+        ) {
+
+            correo.setCustomValidity(
+                "El correo electrónico no puede superar los 254 caracteres."
+            );
+
+
+            actualizarEstadoCampo(
+                correo,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            correo,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.correo) {
+
+        campos.correo.addEventListener(
+            "input",
+            function () {
+
+                campos.correo.value =
+                    campos.correo.value.replace(
+                        /\s/g,
+                        ""
+                    );
+
+
+                validarCorreo();
+
+            }
+        );
+
+
+        campos.correo.addEventListener(
+            "blur",
+            function () {
+
+                campos.correo.value =
+                    campos.correo.value.trim();
+
+
+                if (!validarCorreo()) {
+
+                    campos.correo
+                        .reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       USERNAME
+    ======================================================== */
+
+    function validarUsername() {
+
+        const username =
+            campos.username;
+
+
+        if (!username) {
+
+            return true;
+        }
+
+
+        const valor =
+            username.value.trim();
+
+
+        username.setCustomValidity(
+            ""
+        );
+
+
+        if (!valor) {
+
+            username.setCustomValidity(
+                "El nombre de usuario es obligatorio."
+            );
+
+
+            actualizarEstadoCampo(
+                username,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            valor.length <
+            4
+        ) {
+
+            username.setCustomValidity(
+                "El nombre de usuario debe tener mínimo 4 caracteres."
+            );
+
+
+            actualizarEstadoCampo(
+                username,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            valor.length >
+            150
+        ) {
+
+            username.setCustomValidity(
+                "El nombre de usuario no puede superar los 150 caracteres."
+            );
+
+
+            actualizarEstadoCampo(
+                username,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            !REGEX_USERNAME.test(
+                valor
+            )
+        ) {
+
+            username.setCustomValidity(
+                "El nombre de usuario solo puede contener letras, números y los símbolos _ @ . + -"
+            );
+
+
+            actualizarEstadoCampo(
+                username,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            !/[A-Za-z0-9]/.test(
+                valor
+            )
+        ) {
+
+            username.setCustomValidity(
+                "El nombre de usuario debe contener al menos una letra o un número."
+            );
+
+
+            actualizarEstadoCampo(
+                username,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            username,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.username) {
+
+        campos.username.addEventListener(
+            "input",
+            function () {
+
+                campos.username.value =
+                    campos.username.value.replace(
+                        /\s/g,
+                        ""
+                    );
+
+
+                validarUsername();
+
+            }
+        );
+
+
+        campos.username.addEventListener(
+            "blur",
+            function () {
+
+                campos.username.value =
+                    campos.username.value.trim();
+
+
+                if (!validarUsername()) {
+
+                    campos.username
+                        .reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       CONTRASEÑA
+    ======================================================== */
+
+    function validarPassword() {
+
+        const password =
+            campos.password;
+
+
+        if (!password) {
+
+            return true;
+        }
+
+
+        const valor =
+            password.value;
+
+
+        password.setCustomValidity(
+            ""
+        );
+
+
+        /* ----------------------------------------------------
+           OBLIGATORIA
+        ---------------------------------------------------- */
+
+        if (!valor) {
+
+            password.setCustomValidity(
+                "La contraseña es obligatoria."
+            );
+
+
+            actualizarEstadoCampo(
+                password,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           MÍNIMO 8
+        ---------------------------------------------------- */
+
+        if (
+            valor.length <
+            8
+        ) {
+
+            password.setCustomValidity(
+                "La contraseña debe tener mínimo 8 caracteres."
+            );
+
+
+            actualizarEstadoCampo(
+                password,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           LETRA
+        ---------------------------------------------------- */
+
+        if (
+            !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(
+                valor
+            )
+        ) {
+
+            password.setCustomValidity(
+                "La contraseña debe contener al menos una letra."
+            );
+
+
+            actualizarEstadoCampo(
+                password,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           NÚMERO
+        ---------------------------------------------------- */
+
+        if (
+            !/[0-9]/.test(
+                valor
+            )
+        ) {
+
+            password.setCustomValidity(
+                "La contraseña debe contener al menos un número."
+            );
+
+
+            actualizarEstadoCampo(
+                password,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            password,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    /* ========================================================
+       CONFIRMAR CONTRASEÑA
+    ======================================================== */
+
+    function validarConfirmacionPassword() {
+
+        const password =
+            campos.password;
+
+
+        const confirmar =
+            campos.confirmarPassword;
+
+
+        if (!confirmar) {
+
+            return true;
+        }
+
+
+        confirmar.setCustomValidity(
+            ""
+        );
+
+
+        const valor =
+            confirmar.value;
+
+
+        /* ----------------------------------------------------
+           OBLIGATORIA
+        ---------------------------------------------------- */
+
+        if (!valor) {
+
+            confirmar.setCustomValidity(
+                "Debes confirmar la contraseña."
+            );
+
+
+            actualizarEstadoCampo(
+                confirmar,
+                false
+            );
+
+
+            mostrarMensajePasswords(
+                campos,
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           COINCIDENCIA
+        ---------------------------------------------------- */
+
+        if (
+            password &&
+            valor !==
+                password.value
+        ) {
+
+            confirmar.setCustomValidity(
+                "Las contraseñas no coinciden."
+            );
+
+
+            actualizarEstadoCampo(
+                confirmar,
+                false
+            );
+
+
+            mostrarMensajePasswords(
+                campos,
+                true
+            );
+
+
+            return false;
+        }
+
+
+        actualizarEstadoCampo(
+            confirmar,
+            true
+        );
+
+
+        mostrarMensajePasswords(
+            campos,
+            false
+        );
+
+
+        return true;
+    }
+
+
+    /* ========================================================
+       EVENTOS PASSWORD
+    ======================================================== */
+
+    if (campos.password) {
+
+        campos.password.addEventListener(
+            "input",
+            function () {
+
+                validarPassword();
+
+
+                if (
+                    campos.confirmarPassword &&
+                    campos.confirmarPassword.value
+                ) {
+
+                    validarConfirmacionPassword();
+
+                }
+
+            }
+        );
+
+
+        campos.password.addEventListener(
+            "blur",
+            function () {
+
+                if (!validarPassword()) {
+
+                    campos.password
+                        .reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    if (campos.confirmarPassword) {
+
+        campos.confirmarPassword.addEventListener(
+            "input",
+            validarConfirmacionPassword
+        );
+
+
+        campos.confirmarPassword.addEventListener(
+            "blur",
+            function () {
+
+                if (
+                    !validarConfirmacionPassword()
+                ) {
+
+                    campos.confirmarPassword
+                        .reportValidity();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       SUBMIT
+    ======================================================== */
 
     formulario.addEventListener(
         "submit",
         function (evento) {
 
-            const contrasenasValidas =
-                validarContrasenasAdministrador(
-                    elementos
+            normalizarRegistroAdministrador(
+                campos
+            );
+
+
+            const nombresValidos =
+                configuracionNombres.every(
+                    function (configuracion) {
+
+                        return validarNombre(
+                            configuracion.campo,
+                            configuracion.texto,
+                            configuracion.obligatorio
+                        );
+
+                    }
                 );
+
+
+            const celularValido =
+                validarCelular();
+
+
+            const identificacionValida =
+                validarIdentificacion();
+
+
+            const correoValido =
+                validarCorreo();
+
+
+            const usernameValido =
+                validarUsername();
+
+
+            const passwordValido =
+                validarPassword();
+
+
+            const confirmacionValida =
+                validarConfirmacionPassword();
 
 
             const formularioValido =
@@ -1216,7 +2660,13 @@ function inicializarSubmitAdministrador(
 
 
             if (
-                !contrasenasValidas ||
+                !nombresValidos ||
+                !celularValido ||
+                !identificacionValida ||
+                !correoValido ||
+                !usernameValido ||
+                !passwordValido ||
+                !confirmacionValida ||
                 !formularioValido
             ) {
 
@@ -1230,21 +2680,93 @@ function inicializarSubmitAdministrador(
                 );
 
 
-                /*
-                Mostrar mensajes nativos
-                del navegador.
-                */
-
                 formulario.reportValidity();
 
 
                 return;
-
             }
 
 
-            activarEstadoRegistrando(
-                elementos.botonGuardar
+            activarBotonRegistrando(
+                campos.botonGuardar
+            );
+
+        },
+        true
+    );
+
+
+    /* ========================================================
+       RESET
+    ======================================================== */
+
+    formulario.addEventListener(
+        "reset",
+        function () {
+
+            const listaCampos = [
+
+                campos.primerNombre,
+
+                campos.segundoNombre,
+
+                campos.primerApellido,
+
+                campos.segundoApellido,
+
+                campos.celular,
+
+                campos.identificacion,
+
+                campos.correo,
+
+                campos.username,
+
+                campos.password,
+
+                campos.confirmarPassword
+
+            ];
+
+
+            listaCampos.forEach(
+                function (campo) {
+
+                    if (!campo) {
+
+                        return;
+                    }
+
+
+                    campo.setCustomValidity(
+                        ""
+                    );
+
+
+                    campo.classList.remove(
+                        "is-valid",
+                        "is-invalid"
+                    );
+
+                }
+            );
+
+
+            mostrarMensajePasswords(
+                campos,
+                false
+            );
+
+
+            const modal =
+                document.getElementById(
+                    "modalAgregarAdministrador"
+                );
+
+
+            restaurarOjosPassword(
+                modal,
+                ".btn-password-administrador"
             );
 
         }
@@ -1253,15 +2775,171 @@ function inicializarSubmitAdministrador(
 }
 
 
-/* ------------------------------------------------------------
-   Estado visual mientras se registra
------------------------------------------------------------- */
+/* ============================================================
+   MENSAJE DE PASSWORD
+============================================================ */
 
-function activarEstadoRegistrando(
+function mostrarMensajePasswords(
+    campos,
+    mostrar
+) {
+
+    if (!campos.mensajePassword) {
+
+        return;
+    }
+
+
+    campos.mensajePassword
+        .classList
+        .toggle(
+            "d-none",
+            !mostrar
+        );
+
+}
+
+
+/* ============================================================
+   NORMALIZAR CAMPOS
+============================================================ */
+
+function normalizarRegistroAdministrador(
+    campos
+) {
+
+    const camposNombre = [
+
+        campos.primerNombre,
+
+        campos.segundoNombre,
+
+        campos.primerApellido,
+
+        campos.segundoApellido
+
+    ];
+
+
+    camposNombre.forEach(
+        function (campo) {
+
+            if (!campo) {
+
+                return;
+            }
+
+
+            campo.value =
+                campo.value
+
+                    .trim()
+
+                    .replace(
+                        /\s{2,}/g,
+                        " "
+                    );
+
+        }
+    );
+
+
+    if (campos.correo) {
+
+        campos.correo.value =
+            campos.correo.value.trim();
+
+    }
+
+
+    if (campos.username) {
+
+        campos.username.value =
+            campos.username.value.trim();
+
+    }
+
+
+    if (campos.celular) {
+
+        campos.celular.value =
+            campos.celular.value.trim();
+
+    }
+
+
+    if (campos.identificacion) {
+
+        campos.identificacion.value =
+            campos.identificacion.value.trim();
+
+    }
+
+}
+
+
+/* ============================================================
+   LIMPIAR PASSWORDS DEL REGISTRO
+============================================================ */
+
+function limpiarEstadoPasswordsRegistroAdministrador(
+    campos
+) {
+
+    const passwords = [
+
+        campos.password,
+
+        campos.confirmarPassword
+
+    ];
+
+
+    passwords.forEach(
+        function (campo) {
+
+            if (!campo) {
+
+                return;
+            }
+
+
+            campo.type =
+                "password";
+
+
+            campo.setCustomValidity(
+                ""
+            );
+
+
+            campo.classList.remove(
+                "is-invalid",
+                "is-valid"
+            );
+
+        }
+    );
+
+
+    mostrarMensajePasswords(
+        campos,
+        false
+    );
+
+}
+
+
+/* ============================================================
+   BOTÓN REGISTRANDO
+============================================================ */
+
+function activarBotonRegistrando(
     boton
 ) {
 
     if (!boton) {
+
         return;
     }
 
@@ -1287,207 +2965,15 @@ function activarEstadoRegistrando(
 
 
 /* ============================================================
-   9. LIMPIAR MODAL ADMINISTRADOR
+   RESTAURAR BOTÓN REGISTRAR
 ============================================================ */
 
-function limpiarModalAdministrador(
-    modalElemento,
-    formulario,
-    elementos
-) {
-
-    /* --------------------------------------------------------
-       Formulario
-    -------------------------------------------------------- */
-
-    formulario.reset();
-
-
-    formulario.classList.remove(
-        "was-validated"
-    );
-
-
-    /* --------------------------------------------------------
-       Foto
-    -------------------------------------------------------- */
-
-    limpiarFotoAdministrador(
-        elementos
-    );
-
-
-    /* --------------------------------------------------------
-       Contraseñas
-    -------------------------------------------------------- */
-
-    limpiarEstadoContrasenas(
-        elementos
-    );
-
-
-    /* --------------------------------------------------------
-       Botones de mostrar contraseña
-    -------------------------------------------------------- */
-
-    restaurarBotonesPassword(
-        modalElemento
-    );
-
-
-    /* --------------------------------------------------------
-       Botón guardar
-    -------------------------------------------------------- */
-
-    restaurarBotonGuardarAdministrador(
-        elementos.botonGuardar
-    );
-
-}
-
-
-/* ------------------------------------------------------------
-   Limpiar estado de los passwords
------------------------------------------------------------- */
-
-function limpiarEstadoContrasenas(
-    elementos
-) {
-
-    const {
-        password,
-        confirmarPassword,
-        mensajePassword
-    } = elementos;
-
-
-    if (password) {
-
-        password.type =
-            "password";
-
-
-        password.setCustomValidity(
-            ""
-        );
-
-    }
-
-
-    if (confirmarPassword) {
-
-        confirmarPassword.type =
-            "password";
-
-
-        confirmarPassword.setCustomValidity(
-            ""
-        );
-
-
-        confirmarPassword.classList.remove(
-            "is-invalid",
-            "is-valid"
-        );
-
-    }
-
-
-    if (mensajePassword) {
-
-        mensajePassword.classList.add(
-            "d-none"
-        );
-
-    }
-
-}
-
-
-/* ------------------------------------------------------------
-   Restaurar ojitos
------------------------------------------------------------- */
-
-function restaurarBotonesPassword(
-    modalElemento
-) {
-
-    const botones =
-        modalElemento.querySelectorAll(
-            ".btn-password-administrador"
-        );
-
-
-    botones.forEach(
-        function (boton) {
-
-            const idInput =
-                boton.dataset
-                    .passwordTarget;
-
-
-            const input =
-                idInput
-                    ? modalElemento.querySelector(
-                        `#${idInput}`
-                    )
-                    : null;
-
-
-            const icono =
-                boton.querySelector(
-                    "i"
-                );
-
-
-            if (input) {
-
-                input.type =
-                    "password";
-
-            }
-
-
-            if (icono) {
-
-                icono.classList.remove(
-                    "bi-eye-slash-fill"
-                );
-
-
-                icono.classList.add(
-                    "bi-eye-fill"
-                );
-
-            }
-
-
-            boton.setAttribute(
-                "aria-label",
-                "Mostrar contraseña"
-            );
-
-
-            boton.setAttribute(
-                "title",
-                "Mostrar contraseña"
-            );
-
-        }
-    );
-
-}
-
-
-/* ------------------------------------------------------------
-   Restaurar botón registrar
------------------------------------------------------------- */
-
-function restaurarBotonGuardarAdministrador(
+function restaurarBotonRegistrarAdministrador(
     boton
 ) {
 
     if (!boton) {
+
         return;
     }
 
@@ -1512,12 +2998,12 @@ function restaurarBotonGuardarAdministrador(
 
 
 /* ============================================================
-   10. MODAL EDITAR ADMINISTRADOR
+   6. EDITAR ADMINISTRADOR
 ============================================================ */
 
 function inicializarModalEditarAdministrador() {
 
-    const modalElemento =
+    const modal =
         document.getElementById(
             "modalEditarAdministrador"
         );
@@ -1530,9 +3016,10 @@ function inicializarModalEditarAdministrador() {
 
 
     if (
-        !modalElemento ||
+        !modal ||
         !formulario
     ) {
+
         return;
     }
 
@@ -1541,120 +3028,105 @@ function inicializarModalEditarAdministrador() {
        CAMPOS
     ======================================================== */
 
-    const nombres =
-        document.getElementById(
-            "nombresEditarAdministrador"
-        );
+    const campos = {
 
-    const apellidos =
-        document.getElementById(
-            "apellidosEditarAdministrador"
-        );
+        nombres:
+            document.getElementById(
+                "nombresEditarAdministrador"
+            ),
 
-    const celular =
-        document.getElementById(
-            "celularEditarAdministrador"
-        );
+        apellidos:
+            document.getElementById(
+                "apellidosEditarAdministrador"
+            ),
 
-    const correo =
-        document.getElementById(
-            "correoEditarAdministrador"
-        );
+        celular:
+            document.getElementById(
+                "celularEditarAdministrador"
+            ),
 
-    const nivelAcceso =
-        document.getElementById(
-            "nivelAccesoEditarAdministrador"
-        );
+        correo:
+            document.getElementById(
+                "correoEditarAdministrador"
+            ),
 
-    const username =
-        document.getElementById(
-            "usernameEditarAdministrador"
-        );
+        nivelAcceso:
+            document.getElementById(
+                "nivelAccesoEditarAdministrador"
+            ),
 
+        username:
+            document.getElementById(
+                "usernameEditarAdministrador"
+            ),
 
-    /* --------------------------------------------------------
-       Estado
-    -------------------------------------------------------- */
+        usuarioActivo:
+            document.getElementById(
+                "usuarioActivoEditarAdministrador"
+            ),
 
-    const usuarioActivo =
-        document.getElementById(
-            "usuarioActivoEditarAdministrador"
-        );
+        textoEstado:
+            document.getElementById(
+                "textoEstadoEditarAdministrador"
+            ),
 
-    const textoEstado =
-        document.getElementById(
-            "textoEstadoEditarAdministrador"
-        );
+        inputFoto:
+            document.getElementById(
+                "fotoperfilEditarAdministrador"
+            ),
 
+        imagenPreview:
+            document.getElementById(
+                "imagenPreviewEditarAdministrador"
+            ),
 
-    /* --------------------------------------------------------
-       Foto
-    -------------------------------------------------------- */
+        iconoPreview:
+            document.getElementById(
+                "iconoPreviewEditarAdministrador"
+            ),
 
-    const inputFoto =
-        document.getElementById(
-            "fotoperfilEditarAdministrador"
-        );
+        botonQuitarFoto:
+            document.getElementById(
+                "btnQuitarFotoEditarAdministrador"
+            ),
 
-    const imagenPreview =
-        document.getElementById(
-            "imagenPreviewEditarAdministrador"
-        );
+        eliminarFoto:
+            document.getElementById(
+                "eliminarFotoEditarAdministrador"
+            ),
 
-    const iconoPreview =
-        document.getElementById(
-            "iconoPreviewEditarAdministrador"
-        );
+        password:
+            document.getElementById(
+                "passwordEditarAdministrador"
+            ),
 
-    const botonQuitarFoto =
-        document.getElementById(
-            "btnQuitarFotoEditarAdministrador"
-        );
+        confirmarPassword:
+            document.getElementById(
+                "confirmarPasswordEditarAdministrador"
+            ),
 
-    const eliminarFoto =
-        document.getElementById(
-            "eliminarFotoEditarAdministrador"
-        );
+        mensajePassword:
+            document.getElementById(
+                "mensajePasswordEditarAdministrador"
+            ),
 
+        botonGuardar:
+            document.getElementById(
+                "btnGuardarEdicionAdministrador"
+            )
 
-    /* --------------------------------------------------------
-       Contraseña
-    -------------------------------------------------------- */
-
-    const password =
-        document.getElementById(
-            "passwordEditarAdministrador"
-        );
-
-    const confirmarPassword =
-        document.getElementById(
-            "confirmarPasswordEditarAdministrador"
-        );
-
-    const mensajePassword =
-        document.getElementById(
-            "mensajePasswordEditarAdministrador"
-        );
+    };
 
 
-    /* --------------------------------------------------------
-       Guardar
-    -------------------------------------------------------- */
-
-    const botonGuardar =
-        document.getElementById(
-            "btnGuardarEdicionAdministrador"
-        );
-
-
-    let fotoOriginal = "";
+    let fotoOriginal =
+        "";
 
 
     /* ========================================================
-       ABRIR MODAL Y CARGAR DATOS
+       CARGAR INFORMACIÓN AL ABRIR
     ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "show.bs.modal",
         function (evento) {
 
@@ -1663,157 +3135,113 @@ function inicializarModalEditarAdministrador() {
 
 
             if (!boton) {
+
                 return;
             }
 
 
-            /* ------------------------------------------------
-               URL DEL FORMULARIO
-            ------------------------------------------------ */
-
             formulario.action =
-                boton.dataset.url
-                || "";
+                boton.dataset.url ||
+                "";
 
 
-            /* ------------------------------------------------
-               DATOS PERSONALES
-            ------------------------------------------------ */
-
-            asignarValorCampo(
-                nombres,
+            asignarValor(
+                campos.nombres,
                 boton.dataset.nombres
             );
 
 
-            asignarValorCampo(
-                apellidos,
+            asignarValor(
+                campos.apellidos,
                 boton.dataset.apellidos
             );
 
 
-            asignarValorCampo(
-                celular,
+            asignarValor(
+                campos.celular,
                 boton.dataset.celular
             );
 
 
-            asignarValorCampo(
-                correo,
+            asignarValor(
+                campos.correo,
                 boton.dataset.correo
             );
 
 
-            asignarValorCampo(
-                username,
+            asignarValor(
+                campos.username,
                 boton.dataset.username
             );
 
 
-            if (nivelAcceso) {
+            if (campos.nivelAcceso) {
 
-                nivelAcceso.value =
-                    boton.dataset.nivelAcceso
-                    || "Alto";
-
-            }
-
-
-            /* ------------------------------------------------
-               ESTADO
-            ------------------------------------------------ */
-
-            if (usuarioActivo) {
-
-                usuarioActivo.checked =
-                    boton.dataset.activo
-                    === "1";
+                campos.nivelAcceso.value =
+                    boton.dataset.nivelAcceso ||
+                    "Alto";
 
             }
 
 
-            actualizarTextoEstadoAdministrador();
+            if (campos.usuarioActivo) {
+
+                campos.usuarioActivo.checked =
+                    boton.dataset.activo ===
+                    "1";
+
+            }
 
 
-            /* ------------------------------------------------
+            actualizarTextoEstadoEditarAdministrador(
+                campos
+            );
+
+
+            /* =================================================
                FOTO
-            ------------------------------------------------ */
+            ================================================= */
 
             fotoOriginal =
-                boton.dataset.foto
-                || "";
+                boton.dataset.foto ||
+                "";
 
 
-            if (eliminarFoto) {
+            if (campos.eliminarFoto) {
 
-                eliminarFoto.value =
+                campos.eliminarFoto.value =
                     "0";
 
             }
 
 
-            if (inputFoto) {
+            if (campos.inputFoto) {
 
-                inputFoto.value =
+                campos.inputFoto.value =
                     "";
 
             }
 
 
             mostrarFotoEditarAdministrador(
+                campos,
                 fotoOriginal
             );
 
 
-            /* ------------------------------------------------
-               CONTRASEÑAS
-            ------------------------------------------------ */
+            /* =================================================
+               PASSWORDS
+            ================================================= */
 
-            if (password) {
-
-                password.value =
-                    "";
-
-                password.type =
-                    "password";
-
-            }
+            limpiarPasswordsEditarAdministrador(
+                campos
+            );
 
 
-            if (confirmarPassword) {
-
-                confirmarPassword.value =
-                    "";
-
-                confirmarPassword.type =
-                    "password";
-
-                confirmarPassword
-                    .setCustomValidity(
-                        ""
-                    );
-
-
-                confirmarPassword
-                    .classList.remove(
-                        "is-invalid",
-                        "is-valid"
-                    );
-
-            }
-
-
-            if (mensajePassword) {
-
-                mensajePassword
-                    .classList.add(
-                        "d-none"
-                    );
-
-            }
-
-
-            restaurarBotonesPasswordEditarAdministrador();
+            restaurarOjosPassword(
+                modal,
+                ".btn-password-editar-administrador"
+            );
 
         }
     );
@@ -1823,148 +3251,57 @@ function inicializarModalEditarAdministrador() {
        ESTADO ACTIVO
     ======================================================== */
 
-    function actualizarTextoEstadoAdministrador() {
+    if (campos.usuarioActivo) {
 
-        if (
-            !usuarioActivo ||
-            !textoEstado
-        ) {
-            return;
-        }
-
-
-        textoEstado.textContent =
-            usuarioActivo.checked
-                ? "Usuario activo"
-                : "Usuario inactivo";
-
-    }
-
-
-    if (usuarioActivo) {
-
-        usuarioActivo.addEventListener(
+        campos.usuarioActivo.addEventListener(
             "change",
-            actualizarTextoEstadoAdministrador
+            function () {
+
+                actualizarTextoEstadoEditarAdministrador(
+                    campos
+                );
+
+            }
         );
 
     }
 
 
     /* ========================================================
-       FOTO
+       NUEVA FOTO
     ======================================================== */
 
-    function mostrarFotoEditarAdministrador(
-        urlFoto
-    ) {
+    if (campos.inputFoto) {
 
-        if (urlFoto) {
-
-            if (imagenPreview) {
-
-                imagenPreview.src =
-                    urlFoto;
-
-                imagenPreview
-                    .classList.remove(
-                        "d-none"
-                    );
-
-            }
-
-
-            if (iconoPreview) {
-
-                iconoPreview
-                    .classList.add(
-                        "d-none"
-                    );
-
-            }
-
-
-            if (botonQuitarFoto) {
-
-                botonQuitarFoto
-                    .classList.remove(
-                        "d-none"
-                    );
-
-            }
-
-
-            return;
-        }
-
-
-        if (imagenPreview) {
-
-            imagenPreview
-                .removeAttribute(
-                    "src"
-                );
-
-            imagenPreview
-                .classList.add(
-                    "d-none"
-                );
-
-        }
-
-
-        if (iconoPreview) {
-
-            iconoPreview
-                .classList.remove(
-                    "d-none"
-                );
-
-        }
-
-
-        if (botonQuitarFoto) {
-
-            botonQuitarFoto
-                .classList.add(
-                    "d-none"
-                );
-
-        }
-
-    }
-
-
-    /* --------------------------------------------------------
-       Seleccionar nueva foto
-    -------------------------------------------------------- */
-
-    if (inputFoto) {
-
-        inputFoto.addEventListener(
+        campos.inputFoto.addEventListener(
             "change",
             function () {
 
                 const archivo =
-                    inputFoto.files &&
-                    inputFoto.files[0];
+                    campos.inputFoto.files &&
+                    campos.inputFoto.files[0];
 
 
                 if (!archivo) {
 
                     mostrarFotoEditarAdministrador(
+                        campos,
                         fotoOriginal
                     );
 
-                    return;
 
+                    return;
                 }
 
 
                 const tiposPermitidos = [
+
                     "image/jpeg",
+
                     "image/png",
+
                     "image/webp"
+
                 ];
 
 
@@ -1979,17 +3316,17 @@ function inicializarModalEditarAdministrador() {
                     );
 
 
-                    inputFoto.value =
+                    campos.inputFoto.value =
                         "";
 
 
                     mostrarFotoEditarAdministrador(
+                        campos,
                         fotoOriginal
                     );
 
 
                     return;
-
                 }
 
 
@@ -2007,17 +3344,17 @@ function inicializarModalEditarAdministrador() {
                     );
 
 
-                    inputFoto.value =
+                    campos.inputFoto.value =
                         "";
 
 
                     mostrarFotoEditarAdministrador(
+                        campos,
                         fotoOriginal
                     );
 
 
                     return;
-
                 }
 
 
@@ -2027,16 +3364,23 @@ function inicializarModalEditarAdministrador() {
 
                 lector.addEventListener(
                     "load",
-                    function (eventoLectura) {
+                    function (
+                        eventoLectura
+                    ) {
 
                         mostrarFotoEditarAdministrador(
-                            eventoLectura.target.result
+                            campos,
+                            eventoLectura
+                                .target
+                                .result
                         );
 
 
-                        if (eliminarFoto) {
+                        if (
+                            campos.eliminarFoto
+                        ) {
 
-                            eliminarFoto.value =
+                            campos.eliminarFoto.value =
                                 "0";
 
                         }
@@ -2054,11 +3398,12 @@ function inicializarModalEditarAdministrador() {
                         );
 
 
-                        inputFoto.value =
+                        campos.inputFoto.value =
                             "";
 
 
                         mostrarFotoEditarAdministrador(
+                            campos,
                             fotoOriginal
                         );
 
@@ -2076,126 +3421,67 @@ function inicializarModalEditarAdministrador() {
     }
 
 
-    /* --------------------------------------------------------
-       Quitar foto
-    -------------------------------------------------------- */
+    /* ========================================================
+       QUITAR FOTO
+    ======================================================== */
 
-    if (botonQuitarFoto) {
+    if (campos.botonQuitarFoto) {
 
-        botonQuitarFoto.addEventListener(
-            "click",
-            function () {
+        campos.botonQuitarFoto
+            .addEventListener(
+                "click",
+                function () {
 
-                if (inputFoto) {
+                    if (
+                        campos.inputFoto
+                    ) {
 
-                    inputFoto.value =
-                        "";
+                        campos.inputFoto.value =
+                            "";
+
+                    }
+
+
+                    if (
+                        campos.eliminarFoto
+                    ) {
+
+                        campos.eliminarFoto.value =
+                            "1";
+
+                    }
+
+
+                    mostrarFotoEditarAdministrador(
+                        campos,
+                        ""
+                    );
 
                 }
-
-
-                if (eliminarFoto) {
-
-                    eliminarFoto.value =
-                        "1";
-
-                }
-
-
-                mostrarFotoEditarAdministrador(
-                    ""
-                );
-
-            }
-        );
+            );
 
     }
 
 
     /* ========================================================
-       MOSTRAR / OCULTAR CONTRASEÑA
+       VALIDAR PASSWORD EDITAR
     ======================================================== */
 
-    modalElemento.addEventListener(
-        "click",
-        function (evento) {
+    function validarPasswordEditar() {
 
-            const boton =
-                evento.target.closest(
-                    ".btn-password-editar-administrador"
-                );
+        const password =
+            campos.password;
 
 
-            if (!boton) {
-                return;
-            }
+        const confirmar =
+            campos.confirmarPassword;
 
-
-            evento.preventDefault();
-
-
-            const idInput =
-                boton.dataset
-                    .passwordTarget;
-
-
-            const input =
-                document.getElementById(
-                    idInput
-                );
-
-
-            if (!input) {
-                return;
-            }
-
-
-            const icono =
-                boton.querySelector(
-                    "i"
-                );
-
-
-            const estaOculta =
-                input.type ===
-                "password";
-
-
-            input.type =
-                estaOculta
-                    ? "text"
-                    : "password";
-
-
-            if (icono) {
-
-                icono.classList.toggle(
-                    "bi-eye-fill",
-                    !estaOculta
-                );
-
-
-                icono.classList.toggle(
-                    "bi-eye-slash-fill",
-                    estaOculta
-                );
-
-            }
-
-        }
-    );
-
-
-    /* ========================================================
-       VALIDAR CONTRASEÑAS
-    ======================================================== */
-
-    function validarPasswordEditarAdministrador() {
 
         if (
             !password ||
-            !confirmarPassword
+            !confirmar
         ) {
+
             return true;
         }
 
@@ -2205,7 +3491,7 @@ function inicializarModalEditarAdministrador() {
 
 
         const confirmacion =
-            confirmarPassword.value;
+            confirmar.value;
 
 
         password.setCustomValidity(
@@ -2213,46 +3499,39 @@ function inicializarModalEditarAdministrador() {
         );
 
 
-        confirmarPassword
-            .setCustomValidity(
-                ""
-            );
+        confirmar.setCustomValidity(
+            ""
+        );
 
 
-        confirmarPassword
-            .classList.remove(
-                "is-invalid",
-                "is-valid"
-            );
+        confirmar.classList.remove(
+            "is-invalid",
+            "is-valid"
+        );
 
 
-        /*
-        No desea cambiar contraseña.
-        */
+        /* ----------------------------------------------------
+           NO QUIERE CAMBIAR PASSWORD
+        ---------------------------------------------------- */
 
         if (
             !clave &&
             !confirmacion
         ) {
 
-            if (mensajePassword) {
-
-                mensajePassword
-                    .classList.add(
-                        "d-none"
-                    );
-
-            }
+            mostrarMensajePasswordEditar(
+                campos,
+                false
+            );
 
 
             return true;
-
         }
 
 
-        /*
-        Contraseña demasiado corta.
-        */
+        /* ----------------------------------------------------
+           MÍNIMO
+        ---------------------------------------------------- */
 
         if (
             clave.length <
@@ -2265,84 +3544,75 @@ function inicializarModalEditarAdministrador() {
 
 
             return false;
-
         }
 
 
-        /*
-        No coinciden.
-        */
+        /* ----------------------------------------------------
+           COINCIDENCIA
+        ---------------------------------------------------- */
 
         if (
             !confirmacion ||
             clave !==
-            confirmacion
+                confirmacion
         ) {
 
-            confirmarPassword
-                .setCustomValidity(
-                    "Las contraseñas no coinciden."
-                );
-
-
-            confirmarPassword
-                .classList.add(
-                    "is-invalid"
-                );
-
-
-            if (mensajePassword) {
-
-                mensajePassword
-                    .classList.remove(
-                        "d-none"
-                    );
-
-            }
-
-
-            return false;
-
-        }
-
-
-        confirmarPassword
-            .classList.add(
-                "is-valid"
+            confirmar.setCustomValidity(
+                "Las contraseñas no coinciden."
             );
 
 
-        if (mensajePassword) {
+            confirmar.classList.add(
+                "is-invalid"
+            );
 
-            mensajePassword
-                .classList.add(
-                    "d-none"
-                );
 
+            mostrarMensajePasswordEditar(
+                campos,
+                true
+            );
+
+
+            return false;
         }
 
 
+        confirmar.classList.add(
+            "is-valid"
+        );
+
+
+        mostrarMensajePasswordEditar(
+            campos,
+            false
+        );
+
+
         return true;
-
     }
 
 
-    if (password) {
+    /* ========================================================
+       EVENTOS PASSWORD
+    ======================================================== */
 
-        password.addEventListener(
+    if (campos.password) {
+
+        campos.password.addEventListener(
             "input",
-            validarPasswordEditarAdministrador
+            validarPasswordEditar
         );
 
     }
 
 
-    if (confirmarPassword) {
+    if (campos.confirmarPassword) {
 
-        confirmarPassword.addEventListener(
-            "input",
-            validarPasswordEditarAdministrador
-        );
+        campos.confirmarPassword
+            .addEventListener(
+                "input",
+                validarPasswordEditar
+            );
 
     }
 
@@ -2356,7 +3626,7 @@ function inicializarModalEditarAdministrador() {
         function (evento) {
 
             const passwordValido =
-                validarPasswordEditarAdministrador();
+                validarPasswordEditar();
 
 
             if (
@@ -2378,17 +3648,16 @@ function inicializarModalEditarAdministrador() {
 
 
                 return;
-
             }
 
 
-            if (botonGuardar) {
+            if (campos.botonGuardar) {
 
-                botonGuardar.disabled =
+                campos.botonGuardar.disabled =
                     true;
 
 
-                botonGuardar.innerHTML = `
+                campos.botonGuardar.innerHTML = `
                     <span
                         class="
                             spinner-border
@@ -2411,11 +3680,12 @@ function inicializarModalEditarAdministrador() {
        LIMPIAR AL CERRAR
     ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "hidden.bs.modal",
         function () {
 
             formulario.reset();
+
 
             formulario.action =
                 "";
@@ -2430,90 +3700,45 @@ function inicializarModalEditarAdministrador() {
                 "";
 
 
-            if (inputFoto) {
+            if (campos.eliminarFoto) {
 
-                inputFoto.value =
-                    "";
-
-            }
-
-
-            if (eliminarFoto) {
-
-                eliminarFoto.value =
+                campos.eliminarFoto.value =
                     "0";
 
             }
 
 
             mostrarFotoEditarAdministrador(
+                campos,
                 ""
             );
 
 
-            if (password) {
-
-                password.value =
-                    "";
-
-                password.type =
-                    "password";
-
-                password.setCustomValidity(
-                    ""
-                );
-
-            }
+            limpiarPasswordsEditarAdministrador(
+                campos
+            );
 
 
-            if (confirmarPassword) {
-
-                confirmarPassword.value =
-                    "";
-
-                confirmarPassword.type =
-                    "password";
-
-                confirmarPassword
-                    .setCustomValidity(
-                        ""
-                    );
+            restaurarOjosPassword(
+                modal,
+                ".btn-password-editar-administrador"
+            );
 
 
-                confirmarPassword
-                    .classList.remove(
-                        "is-invalid",
-                        "is-valid"
-                    );
+            if (campos.botonGuardar) {
 
-            }
-
-
-            if (mensajePassword) {
-
-                mensajePassword
-                    .classList.add(
-                        "d-none"
-                    );
-
-            }
-
-
-            restaurarBotonesPasswordEditarAdministrador();
-
-
-            if (botonGuardar) {
-
-                botonGuardar.disabled =
+                campos.botonGuardar.disabled =
                     false;
 
 
-                botonGuardar.innerHTML = `
-                    <i class="
-                        bi
-                        bi-floppy-fill
-                        me-2
-                    "></i>
+                campos.botonGuardar.innerHTML = `
+                    <i
+                        class="
+                            bi
+                            bi-floppy-fill
+                            me-2
+                        "
+                    ></i>
 
                     Guardar cambios
                 `;
@@ -2523,72 +3748,237 @@ function inicializarModalEditarAdministrador() {
         }
     );
 
+}
 
-    /* ========================================================
-       FUNCIONES AUXILIARES
-    ======================================================== */
 
-    function asignarValorCampo(
-        elemento,
-        valor
+/* ============================================================
+   ASIGNAR VALOR
+============================================================ */
+
+function asignarValor(
+    elemento,
+    valor
+) {
+
+    if (!elemento) {
+
+        return;
+    }
+
+
+    elemento.value =
+        valor ||
+        "";
+
+}
+
+
+/* ============================================================
+   TEXTO ESTADO EDITAR
+============================================================ */
+
+function actualizarTextoEstadoEditarAdministrador(
+    campos
+) {
+
+    if (
+        !campos.usuarioActivo ||
+        !campos.textoEstado
     ) {
 
-        if (!elemento) {
-            return;
+        return;
+    }
+
+
+    campos.textoEstado.textContent =
+        campos.usuarioActivo.checked
+            ? "Usuario activo"
+            : "Usuario inactivo";
+
+}
+
+
+/* ============================================================
+   FOTO EDITAR
+============================================================ */
+
+function mostrarFotoEditarAdministrador(
+    campos,
+    urlFoto
+) {
+
+    if (urlFoto) {
+
+        if (campos.imagenPreview) {
+
+            campos.imagenPreview.src =
+                urlFoto;
+
+
+            campos.imagenPreview
+                .classList
+                .remove(
+                    "d-none"
+                );
+
         }
 
 
-        elemento.value =
-            valor || "";
+        if (campos.iconoPreview) {
+
+            campos.iconoPreview
+                .classList
+                .add(
+                    "d-none"
+                );
+
+        }
+
+
+        if (campos.botonQuitarFoto) {
+
+            campos.botonQuitarFoto
+                .classList
+                .remove(
+                    "d-none"
+                );
+
+        }
+
+
+        return;
+    }
+
+
+    if (campos.imagenPreview) {
+
+        campos.imagenPreview
+            .removeAttribute(
+                "src"
+            );
+
+
+        campos.imagenPreview
+            .classList
+            .add(
+                "d-none"
+            );
 
     }
 
 
-    function restaurarBotonesPasswordEditarAdministrador() {
+    if (campos.iconoPreview) {
 
-        const botones =
-            modalElemento
-                .querySelectorAll(
-                    ".btn-password-editar-administrador"
-                );
+        campos.iconoPreview
+            .classList
+            .remove(
+                "d-none"
+            );
 
-
-        botones.forEach(
-            function (boton) {
-
-                const icono =
-                    boton.querySelector(
-                        "i"
-                    );
+    }
 
 
-                if (icono) {
+    if (campos.botonQuitarFoto) {
 
-                    icono.classList.remove(
-                        "bi-eye-slash-fill"
-                    );
-
-
-                    icono.classList.add(
-                        "bi-eye-fill"
-                    );
-
-                }
-
-            }
-        );
+        campos.botonQuitarFoto
+            .classList
+            .add(
+                "d-none"
+            );
 
     }
 
 }
 
+
 /* ============================================================
-   11. ACTIVAR / DESACTIVAR ADMINISTRADOR
+   MENSAJE PASSWORD EDITAR
+============================================================ */
+
+function mostrarMensajePasswordEditar(
+    campos,
+    mostrar
+) {
+
+    if (!campos.mensajePassword) {
+
+        return;
+    }
+
+
+    campos.mensajePassword
+        .classList
+        .toggle(
+            "d-none",
+            !mostrar
+        );
+
+}
+
+
+/* ============================================================
+   LIMPIAR PASSWORDS EDITAR
+============================================================ */
+
+function limpiarPasswordsEditarAdministrador(
+    campos
+) {
+
+    const passwords = [
+
+        campos.password,
+
+        campos.confirmarPassword
+
+    ];
+
+
+    passwords.forEach(
+        function (campo) {
+
+            if (!campo) {
+
+                return;
+            }
+
+
+            campo.value =
+                "";
+
+
+            campo.type =
+                "password";
+
+
+            campo.setCustomValidity(
+                ""
+            );
+
+
+            campo.classList.remove(
+                "is-invalid",
+                "is-valid"
+            );
+
+        }
+    );
+
+
+    mostrarMensajePasswordEditar(
+        campos,
+        false
+    );
+
+}
+
+
+/* ============================================================
+   7. ACTIVAR / DESACTIVAR ADMINISTRADOR
 ============================================================ */
 
 function inicializarModalEstadoAdministrador() {
 
-    const modalElemento =
+    const modal =
         document.getElementById(
             "modalEstadoAdministrador"
         );
@@ -2601,9 +3991,10 @@ function inicializarModalEstadoAdministrador() {
 
 
     if (
-        !modalElemento ||
+        !modal ||
         !formulario
     ) {
+
         return;
     }
 
@@ -2642,7 +4033,7 @@ function inicializarModalEstadoAdministrador() {
        ABRIR MODAL
     ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "show.bs.modal",
         function (evento) {
 
@@ -2651,32 +4042,25 @@ function inicializarModalEstadoAdministrador() {
 
 
             if (!boton) {
+
                 return;
             }
 
 
             const url =
-                boton.dataset.url
-                || "";
+                boton.dataset.url ||
+                "";
 
 
             const nombre =
-                boton.dataset.nombre
-                || "Administrador";
+                boton.dataset.nombre ||
+                "Administrador";
 
 
             const actualmenteActivo =
-                boton.dataset.activo
-                === "1";
+                boton.dataset.activo ===
+                "1";
 
-
-            /*
-            Si actualmente está activo,
-            la acción será desactivarlo.
-
-            Si actualmente está inactivo,
-            la acción será activarlo.
-            */
 
             const nuevoEstado =
                 actualmenteActivo
@@ -2755,7 +4139,6 @@ function inicializarModalEstadoAdministrador() {
 
 
                 return;
-
             }
 
 
@@ -2827,6 +4210,7 @@ function inicializarModalEstadoAdministrador() {
         function () {
 
             if (!botonConfirmar) {
+
                 return;
             }
 
@@ -2856,7 +4240,7 @@ function inicializarModalEstadoAdministrador() {
        LIMPIAR
     ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "hidden.bs.modal",
         function () {
 
@@ -2886,12 +4270,12 @@ function inicializarModalEstadoAdministrador() {
 
 
 /* ============================================================
-   12. ELIMINAR ADMINISTRADOR
+   8. ELIMINAR ADMINISTRADOR
 ============================================================ */
 
 function inicializarModalEliminarAdministrador() {
 
-    const modalElemento =
+    const modal =
         document.getElementById(
             "modalEliminarAdministrador"
         );
@@ -2904,9 +4288,10 @@ function inicializarModalEliminarAdministrador() {
 
 
     if (
-        !modalElemento ||
+        !modal ||
         !formulario
     ) {
+
         return;
     }
 
@@ -2933,7 +4318,7 @@ function inicializarModalEliminarAdministrador() {
        ABRIR MODAL
     ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "show.bs.modal",
         function (evento) {
 
@@ -2942,23 +4327,24 @@ function inicializarModalEliminarAdministrador() {
 
 
             if (!boton) {
+
                 return;
             }
 
 
             const url =
-                boton.dataset.url
-                || "";
+                boton.dataset.url ||
+                "";
 
 
             const nombre =
-                boton.dataset.nombre
-                || "Administrador";
+                boton.dataset.nombre ||
+                "Administrador";
 
 
             const username =
-                boton.dataset.username
-                || "";
+                boton.dataset.username ||
+                "";
 
 
             formulario.action =
@@ -2995,6 +4381,7 @@ function inicializarModalEliminarAdministrador() {
         function () {
 
             if (!botonConfirmar) {
+
                 return;
             }
 
@@ -3024,7 +4411,7 @@ function inicializarModalEliminarAdministrador() {
        LIMPIAR
     ======================================================== */
 
-    modalElemento.addEventListener(
+    modal.addEventListener(
         "hidden.bs.modal",
         function () {
 
