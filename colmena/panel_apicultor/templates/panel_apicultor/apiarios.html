@@ -1,0 +1,509 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Mis Apiarios | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Mis Apiarios
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Consulta los apiarios que tienes asignados
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/apiarios.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="apiarios-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="apiarios-encabezado">
+
+        <div>
+
+            <h1>
+                Mis Apiarios
+            </h1>
+
+            <p>
+                Consulta el estado y la información
+                de los apiarios que tienes asignados.
+            </p>
+
+        </div>
+
+
+        <div class="apiarios-total">
+
+            <i class="bi bi-flower1"></i>
+
+            <div>
+
+                <strong>
+                    {{ total_resultados|default:0 }}
+                </strong>
+
+                <span>
+                    Apiarios
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <section class="apiarios-filtros">
+
+
+        <form
+            method="GET"
+            class="apiarios-form-filtros"
+        >
+
+
+            <!-- BUSCADOR -->
+
+            <div class="apiarios-buscador">
+
+                <i class="bi bi-search"></i>
+
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ busqueda }}"
+                    placeholder="Buscar por nombre o ubicación..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+
+            <!-- ESTADO -->
+
+            <select
+                name="estado"
+                class="apiarios-select"
+            >
+
+                <option value="">
+                    Todos los estados
+                </option>
+
+
+                <option
+                    value="Bueno"
+
+                    {% if estado_seleccionado == "Bueno" %}
+                        selected
+                    {% endif %}
+                >
+
+                    Bueno
+
+                </option>
+
+
+                <option
+                    value="Precaución"
+
+                    {% if estado_seleccionado == "Precaución" %}
+                        selected
+                    {% endif %}
+                >
+
+                    Precaución
+
+                </option>
+
+
+                <option
+                    value="Deficiente"
+
+                    {% if estado_seleccionado == "Deficiente" %}
+                        selected
+                    {% endif %}
+                >
+
+                    Deficiente
+
+                </option>
+
+            </select>
+
+
+
+            <!-- BOTÓN -->
+
+            <button
+                type="submit"
+                class="btn-filtrar-apiarios"
+            >
+
+                <i class="bi bi-funnel"></i>
+
+                Filtrar
+
+            </button>
+
+
+
+            {% if busqueda or estado_seleccionado %}
+
+                <a
+                    href="{% url 'apiarios_apicultor' %}"
+                    class="btn-limpiar-apiarios"
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                    Limpiar
+
+                </a>
+
+            {% endif %}
+
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         APIARIOS
+    ====================================================== -->
+
+    {% if apiarios %}
+
+
+        <section class="apiarios-grid">
+
+
+            {% for apiario in apiarios %}
+
+
+                <article class="apiario-card">
+
+
+                    <!-- =====================================
+                         IMAGEN
+                    ====================================== -->
+
+                    <div class="apiario-imagen">
+
+
+                        {% if apiario.imagen %}
+
+                            <img
+                                src="{{ apiario.imagen.url }}"
+                                alt="{{ apiario.nombreapiario }}"
+                            >
+
+                        {% else %}
+
+                            <div class="apiario-imagen-vacia">
+
+                                <i class="bi bi-flower1"></i>
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        <!-- ESTADO -->
+
+                        <span
+                            class="
+                                apiario-estado
+
+                                {% if apiario.estadoapiario == 'Bueno' %}
+                                    bueno
+
+                                {% elif apiario.estadoapiario == 'Precaución' %}
+                                    precaucion
+
+                                {% else %}
+                                    deficiente
+
+                                {% endif %}
+                            "
+                        >
+
+                            {{ apiario.estadoapiario }}
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         INFORMACIÓN
+                    ====================================== -->
+
+                    <div class="apiario-card-body">
+
+
+                        <h2>
+
+                            {{ apiario.nombreapiario }}
+
+                        </h2>
+
+
+
+                        <div class="apiario-dato">
+
+                            <i class="bi bi-geo-alt"></i>
+
+                            <span>
+
+                                {% if apiario.ubicacion %}
+
+                                    {{ apiario.ubicacion }}
+
+                                {% else %}
+
+                                    Sin ubicación registrada
+
+                                {% endif %}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="apiario-dato">
+
+                            <i class="bi bi-hexagon"></i>
+
+                            <span>
+
+                                {{ apiario.cantidadcolmenas|default:0 }}
+
+                                colmenas
+
+                            </span>
+
+                        </div>
+
+
+
+                        {% if apiario.descripcion %}
+
+                            <p class="apiario-descripcion">
+
+                                {{ apiario.descripcion|truncatechars:130 }}
+
+                            </p>
+
+                        {% else %}
+
+                            <p class="apiario-descripcion sin-descripcion">
+
+                                Este apiario no tiene
+                                una descripción registrada.
+
+                            </p>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </article>
+
+
+            {% endfor %}
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PAGINACIÓN
+        ================================================== -->
+
+        {% if apiarios.paginator.num_pages > 1 %}
+
+
+            <nav class="apiarios-paginacion">
+
+
+                {% if apiarios.has_previous %}
+
+                    <a
+                        href="?page={{ apiarios.previous_page_number }}&q={{ busqueda }}&estado={{ estado_seleccionado }}"
+                        class="paginacion-btn"
+                    >
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </a>
+
+                {% endif %}
+
+
+
+                {% for numero in apiarios.paginator.page_range %}
+
+
+                    {% if numero == apiarios.number %}
+
+                        <span
+                            class="
+                                paginacion-btn
+                                active
+                            "
+                        >
+
+                            {{ numero }}
+
+                        </span>
+
+                    {% else %}
+
+                        <a
+                            href="?page={{ numero }}&q={{ busqueda }}&estado={{ estado_seleccionado }}"
+                            class="paginacion-btn"
+                        >
+
+                            {{ numero }}
+
+                        </a>
+
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+
+                {% if apiarios.has_next %}
+
+                    <a
+                        href="?page={{ apiarios.next_page_number }}&q={{ busqueda }}&estado={{ estado_seleccionado }}"
+                        class="paginacion-btn"
+                    >
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                {% endif %}
+
+
+            </nav>
+
+
+        {% endif %}
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             SIN APIARIOS
+        ================================================== -->
+
+        <section class="apiarios-vacio">
+
+
+            <div class="apiarios-vacio-icono">
+
+                <i class="bi bi-flower1"></i>
+
+            </div>
+
+
+            <h2>
+
+                {% if busqueda or estado_seleccionado %}
+
+                    No encontramos apiarios
+
+                {% else %}
+
+                    No tienes apiarios asignados
+
+                {% endif %}
+
+            </h2>
+
+
+            <p>
+
+                {% if busqueda or estado_seleccionado %}
+
+                    Intenta cambiar los criterios
+                    de búsqueda o limpiar los filtros.
+
+                {% else %}
+
+                    Cuando un administrador te asigne
+                    un apiario aparecerá en esta sección.
+
+                {% endif %}
+
+            </p>
+
+
+            {% if busqueda or estado_seleccionado %}
+
+                <a
+                    href="{% url 'apiarios_apicultor' %}"
+                    class="btn-ver-apiarios"
+                >
+
+                    Ver todos mis apiarios
+
+                </a>
+
+            {% endif %}
+
+
+        </section>
+
+
+    {% endif %}
+
+
+</div>
+
+
+{% endblock %}

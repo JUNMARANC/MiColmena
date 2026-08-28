@@ -199,6 +199,8 @@
                                                 id="primerNombreAgregar"
                                                 name="primer_nombre"
                                                 maxlength="75"
+                                                pattern="[A-Za-zÀ-ÿ\s]+"
+                                                title="Escribe solamente letras"
                                                 placeholder="Ejemplo: Juan"
                                                 autocomplete="given-name"
                                                 required
@@ -233,6 +235,8 @@
                                                 id="segundoNombreAgregar"
                                                 name="segundo_nombre"
                                                 maxlength="75"
+                                                pattern="[A-Za-zÀ-ÿ\s]+"
+                                                title="Escribe solamente letras"
                                                 placeholder="Ejemplo: Manuel"
                                                 autocomplete="additional-name"
                                             >
@@ -264,6 +268,8 @@
                                                 id="primerApellidoAgregar"
                                                 name="primer_apellido"
                                                 maxlength="75"
+                                                pattern="[A-Za-zÀ-ÿ\s]+"
+                                                title="Escribe solamente letras"
                                                 placeholder="Ejemplo: Herrera"
                                                 autocomplete="family-name"
                                                 required
@@ -298,6 +304,8 @@
                                                 id="segundoApellidoAgregar"
                                                 name="segundo_apellido"
                                                 maxlength="75"
+                                                pattern="[A-Za-zÀ-ÿ\s]+"
+                                                title="Escribe solamente letras"
                                                 placeholder="Ejemplo: Jiménez"
                                                 autocomplete="family-name"
                                             >
@@ -365,7 +373,9 @@
                                                 id="telefonoAgregar"
                                                 name="telefono"
                                                 maxlength="20"
-                                                inputmode="tel"
+                                                inputmode="numeric"
+                                                pattern="[0-9]+"
+                                                title="Escribe solamente números"
                                                 placeholder="Ejemplo: 3101234567"
                                                 autocomplete="tel"
                                             >

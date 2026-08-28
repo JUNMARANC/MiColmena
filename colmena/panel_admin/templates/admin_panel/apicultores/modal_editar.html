@@ -207,6 +207,8 @@
                                                 id="nombresEditar"
                                                 name="nombres"
                                                 maxlength="150"
+                                                pattern="[A-Za-zÀ-ÿ\s]+"
+                                                title="Escribe solamente letras"
                                                 placeholder="Nombres del apicultor"
                                                 autocomplete="given-name"
                                                 required
@@ -239,6 +241,8 @@
                                                 id="apellidosEditar"
                                                 name="apellidos"
                                                 maxlength="150"
+                                                pattern="[A-Za-zÀ-ÿ\s]+"
+                                                title="Escribe solamente letras"
                                                 placeholder="Apellidos del apicultor"
                                                 autocomplete="family-name"
                                                 required
@@ -308,7 +312,9 @@
                                                 id="telefonoEditar"
                                                 name="telefono"
                                                 maxlength="20"
-                                                inputmode="tel"
+                                                inputmode="numeric"
+                                                pattern="[0-9]+"
+                                                title="Escribe solamente números"
                                                 placeholder="Número de teléfono"
                                                 autocomplete="tel"
                                             >

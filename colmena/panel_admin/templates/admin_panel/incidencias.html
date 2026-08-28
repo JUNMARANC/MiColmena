@@ -588,7 +588,8 @@
             <form
                 method="POST"
                 action="{% url 'crear_incidencia' %}"
-                enctype="multipart/form-data">
+                enctype="multipart/form-data"
+                class="form-incidencia">
 
                 {% csrf_token %}
 
@@ -715,7 +716,8 @@
                             <input
                                 type="date"
                                 name="fechadeteccion"
-                                class="form-control"
+                                class="form-control fecha-incidencia"
+                                max="{% now 'Y-m-d' %}"
                                 required>
                         </div>
 
@@ -941,7 +943,7 @@
 
     <!-- EDITAR -->
     <div
-        class="modal fade"
+        class="modal fade modal-editar-incidencia"
         id="modalEditar{{ incidencia.pk }}"
         tabindex="-1">
 
@@ -951,7 +953,8 @@
                 <form
                     method="POST"
                     action="{% url 'editar_incidencia' incidencia.pk %}"
-                    enctype="multipart/form-data">
+                    enctype="multipart/form-data"
+                    class="form-incidencia">
 
                     {% csrf_token %}
 
@@ -1088,8 +1091,9 @@
                                 <input
                                     type="date"
                                     name="fechadeteccion"
-                                    class="form-control"
+                                    class="form-control fecha-incidencia"
                                     value="{{ incidencia.fechadeteccion|date:'Y-m-d' }}"
+                                    max="{% now 'Y-m-d' %}"
                                     required>
                             </div>
 

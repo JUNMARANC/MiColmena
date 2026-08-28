@@ -347,7 +347,7 @@
                     <div class="modal-dialog modal-xl modal-dialog-centered">
                         <div class="modal-content border-0 shadow rounded-4">
 
-                            <form method="POST" action="{% url 'editar_colmena' colmena.id_colmena %}" enctype="multipart/form-data">
+                            <form method="POST" action="{% url 'editar_colmena' colmena.id_colmena %}" enctype="multipart/form-data" class="form-validar-colmena">
                                 {% csrf_token %}
 
                                 <div class="modal-header border-0" style="background:#E8F7E9;">
@@ -405,6 +405,7 @@
                                                    name="fecha_registro"
                                                    class="form-control"
                                                    value="{{ colmena.fecharegistro|date:'Y-m-d' }}"
+                                                   max="{% now 'Y-m-d' %}"
                                                    required>
                                         </div>
 
@@ -694,7 +695,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 shadow rounded-4">
 
-            <form method="POST" action="{% url 'crear_colmena' %}" enctype="multipart/form-data">
+            <form method="POST" action="{% url 'crear_colmena' %}" enctype="multipart/form-data" class="form-validar-colmena">
                 {% csrf_token %}
 
                 <div class="modal-header border-0" style="background:#E8F7E9;">
@@ -752,6 +753,7 @@
                             <input type="date"
                                    name="fecha_registro"
                                    class="form-control"
+                                   max="{% now 'Y-m-d' %}"
                                    required>
                         </div>
 

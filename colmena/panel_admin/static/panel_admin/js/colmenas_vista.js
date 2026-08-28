@@ -156,3 +156,129 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+ 
+    // =========================================================
+    // VALIDACIONES DE FORMULARIO - MÓDULO COLMENAS
+    // =========================================================
+    //
+    // Refuerza en el navegador las mismas reglas que debe aplicar
+    // el backend (nunca reemplaza la validación del servidor,
+    // solo evita envíos inválidos y da feedback inmediato).
+    // Aplica al modal "Agregar" y a cada modal "Editar" (ambos
+    // comparten la clase .form-validar-colmena).
+ 
+    const AÑO_MINIMO_FECHA = 1900;
+    const ESTADOS_VALIDOS = ["Activa", "Riesgo", "Inactiva", "Revisión"];
+ 
+    function limpiarValidez(campo) {
+        if (campo) {
+            campo.setCustomValidity("");
+        }
+    }
+ 
+    function marcarInvalido(campo, mensaje) {
+        if (!campo) {
+            return;
+        }
+        campo.setCustomValidity(mensaje);
+    }
+ 
+    function validarFormularioColmena(formulario) {
+ 
+        let esValido = true;
+ 
+        // ---------- APIARIO ----------
+        const apiario = formulario.querySelector('[name="id_apiario"]');
+        if (apiario) {
+            limpiarValidez(apiario);
+ 
+            if (!apiario.value) {
+                marcarInvalido(apiario, "Debes seleccionar un apiario.");
+                esValido = false;
+            }
+        }
+ 
+        // ---------- ESTADO ----------
+        const estado = formulario.querySelector('[name="estado_colmena"]');
+        if (estado) {
+            limpiarValidez(estado);
+ 
+            if (!ESTADOS_VALIDOS.includes(estado.value)) {
+                marcarInvalido(estado, "Selecciona un estado válido.");
+                esValido = false;
+            }
+        }
+ 
+        // ---------- FECHA DE REGISTRO ----------
+        const fecha = formulario.querySelector('[name="fecha_registro"]');
+        if (fecha) {
+            limpiarValidez(fecha);
+            const valorTexto = fecha.value;
+ 
+            if (!valorTexto) {
+                marcarInvalido(fecha, "La fecha de registro es obligatoria.");
+                esValido = false;
+            } else {
+                const fechaSeleccionada = new Date(valorTexto + "T00:00:00");
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+ 
+                if (fechaSeleccionada > hoy) {
+                    marcarInvalido(fecha, "La fecha de registro no puede ser una fecha futura.");
+                    esValido = false;
+                } else if (fechaSeleccionada.getFullYear() < AÑO_MINIMO_FECHA) {
+                    marcarInvalido(fecha, "La fecha de registro no es válida.");
+                    esValido = false;
+                }
+            }
+        }
+ 
+        // ---------- DESCRIPCIÓN (opcional, solo límite de longitud) ----------
+        const descripcion = formulario.querySelector('[name="descripcion"]');
+        if (descripcion) {
+            limpiarValidez(descripcion);
+ 
+            if (descripcion.value.trim().length > 1000) {
+                marcarInvalido(descripcion, "La descripción no puede superar los 1000 caracteres.");
+                esValido = false;
+            }
+        }
+ 
+        // ---------- IMAGEN (solo si se seleccionó una nueva) ----------
+        const imagen = formulario.querySelector('[name="imagen"]');
+        if (imagen && imagen.files && imagen.files.length > 0) {
+            limpiarValidez(imagen);
+ 
+            const archivo = imagen.files[0];
+            const tiposPermitidos = ["image/jpeg", "image/png", "image/webp"];
+            const tamanoMaximo = 5 * 1024 * 1024; // 5 MB
+ 
+            if (!tiposPermitidos.includes(archivo.type)) {
+                marcarInvalido(imagen, "La imagen debe estar en formato JPG, PNG o WEBP.");
+                esValido = false;
+            } else if (archivo.size > tamanoMaximo) {
+                marcarInvalido(imagen, "La imagen no puede superar los 5 MB.");
+                esValido = false;
+            }
+        }
+ 
+        return esValido;
+    }
+ 
+    document.querySelectorAll(".form-validar-colmena").forEach(function (formulario) {
+ 
+        formulario.addEventListener("submit", function (evento) {
+ 
+            const esValido = validarFormularioColmena(formulario);
+ 
+            if (!esValido || !formulario.checkValidity()) {
+                evento.preventDefault();
+                evento.stopPropagation();
+                formulario.reportValidity();
+            }
+        });
+    });
+ 
+});

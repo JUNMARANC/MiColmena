@@ -249,3 +249,160 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+ 
+    // =========================================================
+    // VALIDACIONES DE FORMULARIO - MÓDULO APIARIOS
+    // =========================================================
+    //
+    // Refuerza en el navegador las mismas reglas que debe aplicar
+    // el backend (nunca reemplaza la validación del servidor,
+    // solo evita envíos inválidos y da feedback inmediato al
+    // usuario). Aplica tanto al modal "Agregar" como a cada
+    // modal "Editar" (todos comparten la clase .form-validar-apiario).
+ 
+    const CANTIDAD_MAXIMA_COLMENAS = 20;
+    const AÑO_MINIMO_FECHA = 1900;
+ 
+    function limpiarValidez(campo) {
+        if (campo) {
+            campo.setCustomValidity("");
+        }
+    }
+ 
+    function marcarInvalido(campo, mensaje) {
+        if (!campo) {
+            return;
+        }
+        campo.setCustomValidity(mensaje);
+    }
+ 
+    function validarFormularioApiario(formulario) {
+ 
+        let esValido = true;
+ 
+        // ---------- NOMBRE DEL APIARIO ----------
+        const nombre = formulario.querySelector('[name="nombre_apiario"]');
+        if (nombre) {
+            limpiarValidez(nombre);
+            const valor = nombre.value.trim();
+ 
+            if (!valor) {
+                marcarInvalido(nombre, "El nombre del apiario es obligatorio.");
+                esValido = false;
+            } else if (valor.length > 100) {
+                marcarInvalido(nombre, "El nombre no puede superar los 100 caracteres.");
+                esValido = false;
+            }
+        }
+ 
+        // ---------- UBICACIÓN ----------
+        const ubicacion = formulario.querySelector('[name="ubicacion"]');
+        if (ubicacion) {
+            limpiarValidez(ubicacion);
+            const valor = ubicacion.value.trim();
+ 
+            if (!valor) {
+                marcarInvalido(ubicacion, "La ubicación es obligatoria.");
+                esValido = false;
+            } else if (valor.length > 150) {
+                marcarInvalido(ubicacion, "La ubicación no puede superar los 150 caracteres.");
+                esValido = false;
+            }
+        }
+ 
+        // ---------- CANTIDAD DE COLMENAS ----------
+        const cantidad = formulario.querySelector('[name="cantidad_colmenas"]');
+        if (cantidad) {
+            limpiarValidez(cantidad);
+            const valorTexto = cantidad.value.trim();
+            const valorNumero = Number(valorTexto);
+ 
+            if (!valorTexto) {
+                marcarInvalido(cantidad, "La cantidad de colmenas es obligatoria.");
+                esValido = false;
+            } else if (!Number.isInteger(valorNumero)) {
+                marcarInvalido(cantidad, "La cantidad de colmenas debe ser un número entero.");
+                esValido = false;
+            } else if (valorNumero < 0) {
+                marcarInvalido(cantidad, "La cantidad de colmenas no puede ser negativa.");
+                esValido = false;
+            } else if (valorNumero > CANTIDAD_MAXIMA_COLMENAS) {
+                marcarInvalido(cantidad, `La cantidad de colmenas no puede superar ${CANTIDAD_MAXIMA_COLMENAS} por apiario.`);
+                esValido = false;
+            }
+        }
+ 
+        // ---------- FECHA DE REGISTRO ----------
+        const fecha = formulario.querySelector('[name="fecha_registro"]');
+        if (fecha) {
+            limpiarValidez(fecha);
+            const valorTexto = fecha.value;
+ 
+            if (!valorTexto) {
+                marcarInvalido(fecha, "La fecha de registro es obligatoria.");
+                esValido = false;
+            } else {
+                const fechaSeleccionada = new Date(valorTexto + "T00:00:00");
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+ 
+                if (fechaSeleccionada > hoy) {
+                    marcarInvalido(fecha, "La fecha de registro no puede ser una fecha futura.");
+                    esValido = false;
+                } else if (fechaSeleccionada.getFullYear() < AÑO_MINIMO_FECHA) {
+                    marcarInvalido(fecha, "La fecha de registro no es válida.");
+                    esValido = false;
+                }
+            }
+        }
+ 
+        // ---------- APICULTOR RESPONSABLE ----------
+        const apicultor = formulario.querySelector('[name="id_apicultor"]');
+        if (apicultor) {
+            limpiarValidez(apicultor);
+ 
+            if (!apicultor.value) {
+                marcarInvalido(apicultor, "Debes seleccionar un apicultor responsable.");
+                esValido = false;
+            }
+        }
+ 
+        // ---------- IMAGEN (solo si se seleccionó una nueva) ----------
+        const imagen = formulario.querySelector('[name="imagen"]');
+        if (imagen && imagen.files && imagen.files.length > 0) {
+            limpiarValidez(imagen);
+ 
+            const archivo = imagen.files[0];
+            const tiposPermitidos = ["image/jpeg", "image/png", "image/webp"];
+            const tamanoMaximo = 5 * 1024 * 1024; // 5 MB
+ 
+            if (!tiposPermitidos.includes(archivo.type)) {
+                marcarInvalido(imagen, "La imagen debe estar en formato JPG, PNG o WEBP.");
+                esValido = false;
+            } else if (archivo.size > tamanoMaximo) {
+                marcarInvalido(imagen, "La imagen no puede superar los 5 MB.");
+                esValido = false;
+            }
+        }
+ 
+        return esValido;
+    }
+ 
+    document.querySelectorAll(".form-validar-apiario").forEach(function (formulario) {
+ 
+        formulario.addEventListener("submit", function (evento) {
+ 
+            const esValido = validarFormularioApiario(formulario);
+ 
+            // checkValidity() también evalúa los setCustomValidity de arriba
+            if (!esValido || !formulario.checkValidity()) {
+                evento.preventDefault();
+                evento.stopPropagation();
+                formulario.reportValidity();
+            }
+        });
+    });
+ 
+});
