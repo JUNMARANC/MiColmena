@@ -26,6 +26,8 @@ document.addEventListener(
 
         inicializarFormularioPassword();
 
+        inicializarAvisoCambiosPerfil();
+
     }
 );
 
@@ -183,6 +185,28 @@ function inicializarFotoPerfil() {
                         iconoPrincipal,
                         resultado
                     );
+
+
+                    if (fotoPrincipal) {
+
+                        const contenedorAvatar =
+                            fotoPrincipal.closest(".perfil-avatar-principal");
+
+                        if (contenedorAvatar) {
+
+                            contenedorAvatar.classList.remove(
+                                "avatar-actualizado"
+                            );
+
+                            void contenedorAvatar.offsetWidth;
+
+                            contenedorAvatar.classList.add(
+                                "avatar-actualizado"
+                            );
+
+                        }
+
+                    }
 
 
                     if (botonQuitar) {
@@ -552,6 +576,65 @@ function validarPasswordPerfil() {
         clave !== "" &&
         confirmacion !== "" &&
         clave === confirmacion;
+
+
+    /* --------------------------------------------------------
+       Medidor de fuerza
+    -------------------------------------------------------- */
+
+    const medidorFuerza =
+        document.getElementById(
+            "medidorFuerzaPassword"
+        );
+
+    const textoFuerza =
+        document.getElementById(
+            "perfilFuerzaTexto"
+        );
+
+    if (medidorFuerza) {
+
+        if (!clave) {
+
+            medidorFuerza.classList.add("d-none");
+
+        } else {
+
+            medidorFuerza.classList.remove("d-none");
+
+            let puntos = 0;
+
+            if (clave.length >= 8) puntos++;
+            if (clave.length >= 12) puntos++;
+            if (/[A-Z]/.test(clave) && /[a-z]/.test(clave)) puntos++;
+            if (/[0-9]/.test(clave)) puntos++;
+            if (/[^A-Za-z0-9]/.test(clave)) puntos++;
+
+            medidorFuerza.classList.remove(
+                "fuerza-debil",
+                "fuerza-media",
+                "fuerza-fuerte"
+            );
+
+            const abejaFuerte = document.getElementById("perfilAbejaFuerte");
+
+            if (puntos <= 2) {
+                medidorFuerza.classList.add("fuerza-debil");
+                if (textoFuerza) textoFuerza.textContent = "Contraseña débil";
+                if (abejaFuerte) abejaFuerte.classList.add("d-none");
+            } else if (puntos <= 3) {
+                medidorFuerza.classList.add("fuerza-media");
+                if (textoFuerza) textoFuerza.textContent = "Contraseña media";
+                if (abejaFuerte) abejaFuerte.classList.add("d-none");
+            } else {
+                medidorFuerza.classList.add("fuerza-fuerte");
+                if (textoFuerza) textoFuerza.textContent = "Contraseña fuerte";
+                if (abejaFuerte) abejaFuerte.classList.remove("d-none");
+            }
+
+        }
+
+    }
 
 
     /* --------------------------------------------------------
@@ -925,3 +1008,107 @@ function inicializarFormularioPassword() {
     );
 
 }
+
+/* ============================================================
+   6. AVISO DE CAMBIOS SIN GUARDAR (info personal)
+============================================================ */
+
+function inicializarAvisoCambiosPerfil() {
+
+    const formulario =
+        document.getElementById(
+            "formActualizarPerfil"
+        );
+
+    const aviso =
+        document.getElementById(
+            "avisoCambiosPerfil"
+        );
+
+    if (!formulario || !aviso) {
+        return;
+    }
+
+    const valoresIniciales = new FormData(formulario);
+
+    function formularioCambio() {
+
+        const valoresActuales = new FormData(formulario);
+        let huboCambio = false;
+
+        for (const [nombre, valor] of valoresActuales.entries()) {
+            if (valoresIniciales.get(nombre) !== valor) {
+                huboCambio = true;
+                break;
+            }
+        }
+
+        aviso.classList.toggle("d-none", !huboCambio);
+
+    }
+
+    formulario.addEventListener("input", formularioCambio);
+    formulario.addEventListener("change", formularioCambio);
+
+    formulario.addEventListener("submit", function () {
+        aviso.classList.add("d-none");
+    });
+
+}
+
+/* ============================================================
+   7. SISTEMA DE PESTAÑAS (Información personal / Seguridad,
+      y las sub-pestañas dentro de Seguridad)
+============================================================ */
+
+function inicializarPestanasPerfil() {
+
+    // Cada grupo de botones [data-tab-target] controla los paneles
+    // [data-tab-panel] que existen en el MISMO contenedor padre
+    // inmediato de ese grupo de botones (para que el grupo principal
+    // y el de Seguridad no se pisen entre sí).
+
+    document
+        .querySelectorAll(".perfil-tabs-principales, .perfil-subtabs")
+        .forEach(function (grupoBotones) {
+
+            const contenedor = grupoBotones.parentElement;
+
+            if (!contenedor) {
+                return;
+            }
+
+            const botones = grupoBotones.querySelectorAll("[data-tab-target]");
+
+            botones.forEach(function (boton) {
+
+                boton.addEventListener("click", function () {
+
+                    const destino = boton.dataset.tabTarget;
+
+                    botones.forEach(function (b) {
+                        b.classList.remove("activo");
+                        b.setAttribute("aria-selected", "false");
+                    });
+
+                    boton.classList.add("activo");
+                    boton.setAttribute("aria-selected", "true");
+
+                    contenedor
+                        .querySelectorAll(":scope > [data-tab-panel]")
+                        .forEach(function (panel) {
+                            panel.classList.toggle(
+                                "d-none",
+                                panel.dataset.tabPanel !== destino
+                            );
+                        });
+
+                });
+
+            });
+
+        });
+
+}
+
+document.addEventListener("DOMContentLoaded", inicializarPestanasPerfil);

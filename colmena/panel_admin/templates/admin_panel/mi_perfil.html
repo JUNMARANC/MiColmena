@@ -16,7 +16,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=4"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=6"
 >
 
 {% endblock %}
@@ -85,49 +85,66 @@
 
             <article class="perfil-card perfil-card-identidad">
 
+                <i class="bi bi-hexagon-fill perfil-panal-decorativo" aria-hidden="true"></i>
 
                 <!-- FOTO -->
 
                 <div class="perfil-avatar-principal">
 
-                    {% if foto %}
+                    <div class="perfil-avatar-circulo">
 
-                        <img
-                            src="{{ foto }}"
-                            alt="Foto de perfil de {{ usuario.get_full_name|default:usuario.username }}"
-                            id="fotoPerfilPrincipal"
-                        >
+                        {% if foto %}
 
+                            <img
+                                src="{{ foto }}"
+                                alt="Foto de perfil de {{ usuario.get_full_name|default:usuario.username }}"
+                                id="fotoPerfilPrincipal"
+                            >
 
-                        <div
-                            class="perfil-avatar-sin-foto d-none"
-                            id="iconoPerfilPrincipal"
-                        >
+                            <div
+                                class="perfil-avatar-sin-foto d-none"
+                                id="iconoPerfilPrincipal"
+                            >
 
-                            <i class="bi bi-person-fill"></i>
+                                <i class="bi bi-person-fill"></i>
 
-                        </div>
+                            </div>
 
-                    {% else %}
+                        {% else %}
 
-                        <img
-                            src=""
-                            alt="Vista previa de foto"
-                            id="fotoPerfilPrincipal"
-                            class="d-none"
-                        >
+                            <img
+                                src=""
+                                alt="Vista previa de foto"
+                                id="fotoPerfilPrincipal"
+                                class="d-none"
+                            >
 
+                            <div
+                                class="perfil-avatar-sin-foto"
+                                id="iconoPerfilPrincipal"
+                            >
 
-                        <div
-                            class="perfil-avatar-sin-foto"
-                            id="iconoPerfilPrincipal"
-                        >
+                                <i class="bi bi-person-fill"></i>
 
-                            <i class="bi bi-person-fill"></i>
+                            </div>
 
-                        </div>
+                        {% endif %}
 
-                    {% endif %}
+                        <label for="fotoperfil" class="perfil-avatar-overlay" title="Cambiar foto">
+                            <i class="bi bi-camera-fill"></i>
+                            <span>Cambiar foto</span>
+                        </label>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btnQuitarFotoPerfil"
+                        class="perfil-avatar-quitar {% if not foto %}d-none{% endif %}"
+                        title="Quitar foto"
+                    >
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
 
                 </div>
 
@@ -535,6 +552,16 @@
                  INFORMACIÓN PERSONAL
             ============================================== -->
 
+                <div class="perfil-tabs-principales" role="tablist">
+                    <button type="button" class="perfil-tab-btn activo" data-tab-target="perfil-tab-info" role="tab" aria-selected="true">
+                        <i class="bi bi-person-vcard-fill"></i> Información personal
+                    </button>
+                    <button type="button" class="perfil-tab-btn" data-tab-target="perfil-tab-seguridad" role="tab" aria-selected="false">
+                        <i class="bi bi-shield-lock-fill"></i> Seguridad
+                    </button>
+                </div>
+
+                <div class="perfil-tab-panel" data-tab-panel="perfil-tab-info">
             <article class="perfil-card perfil-card-formulario">
 
 
@@ -595,119 +622,19 @@
 
 
                     <!-- =====================================
-                         FOTO
+                         FOTO (el control visible vive en el
+                         avatar de la tarjeta izquierda; aquí solo
+                         se mantiene el input real para que viaje
+                         con este formulario al enviarlo)
                     ====================================== -->
 
-                    <div class="perfil-foto-edicion">
-
-
-                        <div class="perfil-foto-preview">
-
-                            {% if foto %}
-
-                                <img
-                                    src="{{ foto }}"
-                                    alt="Foto de perfil"
-                                    id="imagenPreviewPerfil"
-                                >
-
-
-                                <div
-                                    class="perfil-preview-icono d-none"
-                                    id="iconoPreviewPerfil"
-                                >
-
-                                    <i class="bi bi-person-fill"></i>
-
-                                </div>
-
-                            {% else %}
-
-                                <img
-                                    src=""
-                                    alt="Vista previa"
-                                    id="imagenPreviewPerfil"
-                                    class="d-none"
-                                >
-
-
-                                <div
-                                    class="perfil-preview-icono"
-                                    id="iconoPreviewPerfil"
-                                >
-
-                                    <i class="bi bi-person-fill"></i>
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-
-
-                        <div class="perfil-foto-controles">
-
-                            <h6>
-                                Foto de perfil
-                            </h6>
-
-
-                            <p>
-                                JPG, PNG o WEBP.
-                                Máximo 5 MB.
-                            </p>
-
-
-                            <div class="perfil-foto-botones">
-
-                                <label
-                                    for="fotoperfil"
-                                    class="btn btn-outline-success"
-                                >
-
-                                    <i class="bi bi-camera-fill me-2"></i>
-
-                                    Cambiar foto
-
-                                </label>
-
-
-                                <input
-                                    type="file"
-                                    class="d-none"
-                                    id="fotoperfil"
-                                    name="fotoperfil"
-                                    accept="image/jpeg,image/png,image/webp"
-                                >
-
-
-                                <button
-                                    type="button"
-                                    class="
-                                        btn
-                                        btn-outline-danger
-
-                                        {% if not foto %}
-                                            d-none
-                                        {% endif %}
-                                    "
-                                    id="btnQuitarFotoPerfil"
-                                >
-
-                                    <i class="bi bi-trash3-fill me-2"></i>
-
-                                    Quitar
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
+                    <input
+                        type="file"
+                        class="d-none"
+                        id="fotoperfil"
+                        name="fotoperfil"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
 
                     <hr class="perfil-separador">
 
@@ -976,6 +903,11 @@
 
                     <div class="perfil-form-footer">
 
+                        <span class="perfil-cambios-pendientes d-none" id="avisoCambiosPerfil">
+                            <i class="bi bi-record-circle-fill"></i>
+                            Tienes cambios sin guardar
+                        </span>
+
                         <button
                             type="submit"
                             class="btn btn-success"
@@ -994,6 +926,9 @@
                 </form>
 
             </article>
+                </div>
+
+                <div class="perfil-tab-panel d-none" data-tab-panel="perfil-tab-seguridad">
 
 
 
@@ -1036,12 +971,28 @@
 
                 </div>
 
+                <div class="perfil-subtabs" role="tablist">
+                    <button type="button" class="perfil-subtab-btn activo" data-tab-target="sub-password" role="tab" aria-selected="true">
+                        <i class="bi bi-key-fill"></i> Contraseña
+                    </button>
+                    <button type="button" class="perfil-subtab-btn" data-tab-target="sub-2fa" role="tab" aria-selected="false">
+                        <i class="bi bi-shield-check"></i> Verificación en 2 pasos
+                    </button>
+                    <button type="button" class="perfil-subtab-btn" data-tab-target="sub-sesiones" role="tab" aria-selected="false">
+                        <i class="bi bi-laptop"></i> Sesiones activas
+                    </button>
+                    <button type="button" class="perfil-subtab-btn" data-tab-target="sub-historial" role="tab" aria-selected="false">
+                        <i class="bi bi-clock-history"></i> Historial de accesos
+                    </button>
+                </div>
+
 
 
                 <!-- =================================================
                      CAMBIO DE CONTRASEÑA
                 ================================================== -->
 
+                <div data-tab-panel="sub-password">
                 <section class="perfil-bloque-seguridad">
 
 
@@ -1063,6 +1014,23 @@
                     </div>
 
 
+
+                    <!-- =====================================
+                         MEDIDOR DE FUERZA
+                    ====================================== -->
+
+                    <div class="perfil-fuerza-password d-none" id="medidorFuerzaPassword">
+                        <div class="perfil-fuerza-barra">
+                            <span id="perfilFuerzaRelleno"></span>
+                        </div>
+                        <small id="perfilFuerzaTexto">Contraseña débil</small>
+                        <i class="bi bi-bug-fill perfil-abeja-fuerte d-none" id="perfilAbejaFuerte" aria-hidden="true"></i>
+                    </div>
+
+
+                    <!-- =====================================
+                         INDICADOR DE CONTRASEÑA
+                    ====================================== -->
 
                     <!-- AVISO -->
 
@@ -1358,6 +1326,9 @@
                     </form>
 
                 </section>
+                </div>
+
+                <div class="d-none" data-tab-panel="sub-2fa">
 
                 <!-- =========================================================
                     AUTENTICACIÓN EN DOS PASOS
@@ -1516,6 +1487,9 @@
 
 
                 </section>
+                </div>
+
+                <div class="d-none" data-tab-panel="sub-sesiones">
 
 
                 <!-- =================================================
@@ -1880,6 +1854,9 @@
 
 
                 </section>
+                </div>
+
+                <div class="d-none" data-tab-panel="sub-historial">
 
                 <!-- =========================================================
                     HISTORIAL DE ACCESOS
@@ -2264,9 +2241,11 @@
 
 
                 </section>
+                </div>
 
 
             </article>
+                </div>
 
 
         </div>
@@ -2283,7 +2262,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=3"
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=6"
 ></script>
 
 {% endblock %}
