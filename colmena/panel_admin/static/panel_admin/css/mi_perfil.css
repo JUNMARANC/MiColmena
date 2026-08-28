@@ -952,6 +952,135 @@
 }
 
 /* =========================================================
+   SISTEMA DE PESTAÑAS
+========================================================= */
+
+.perfil-tabs-principales {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-bottom: 20px;
+    padding: 6px;
+
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='42' height='74' viewBox='0 0 42 74'%3E%3Cpath d='M21 0 L42 12 L42 37 L21 49 L0 37 L0 12 Z' fill='none' stroke='rgba(33,79,59,0.06)' stroke-width='1'/%3E%3Cpath d='M21 25 L42 37 L42 62 L21 74 L0 62 L0 37 Z' fill='none' stroke='rgba(33,79,59,0.06)' stroke-width='1'/%3E%3C/svg%3E"),
+        #eef6f0;
+    background-repeat: repeat;
+    border-radius: 14px;
+}
+
+.perfil-tab-btn {
+    flex: 1 1 auto;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+
+    color: #47665a;
+    font-weight: 700;
+    font-size: 14px;
+
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+
+.perfil-tab-btn:hover {
+    background: rgba(95, 151, 129, .12);
+}
+
+.perfil-tab-btn.activo {
+    background: #ffffff;
+    color: #214f3b;
+    box-shadow: 0 3px 10px rgba(33, 79, 59, .12);
+}
+
+.perfil-tab-btn.activo i {
+    color: #f0a000;
+}
+
+.perfil-tab-panel {
+    animation: perfilTabAparecer .35s ease;
+}
+
+@keyframes perfilTabAparecer {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* sub-pestañas dentro de Seguridad, más compactas */
+.perfil-subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin: 18px 0 22px;
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #e5eee8;
+}
+
+.perfil-subtab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 14px;
+
+    border: 1px solid #dfeae4;
+    border-radius: 999px;
+    background: #ffffff;
+
+    color: #56695f;
+    font-weight: 600;
+    font-size: 12.5px;
+
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.perfil-subtab-btn:hover {
+    transform: translateY(-1px);
+    border-color: #c0f1ca;
+}
+
+.perfil-subtab-btn.activo {
+    background: #214f3b;
+    border-color: #214f3b;
+    color: #ffffff;
+}
+
+.perfil-subtab-btn.activo i {
+    color: #f6de87;
+}
+
+@media (max-width: 576px) {
+    .perfil-tabs-principales {
+        flex-direction: column;
+    }
+
+    .perfil-subtabs {
+        flex-wrap: wrap;
+    }
+
+    .perfil-subtab-btn {
+        flex: 1 1 calc(50% - 6px);
+        justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .perfil-tab-panel { animation: none; }
+}
+
+/* =========================================================
    MEDIDOR DE FUERZA DE CONTRASEÑA
 ========================================================= */
 
@@ -1008,6 +1137,27 @@
 
 .perfil-fuerza-password.fuerza-media small { color: #a5761f; }
 .perfil-fuerza-password.fuerza-fuerte small { color: #31835d; }
+
+.perfil-fuerza-password {
+    position: relative;
+}
+
+.perfil-abeja-fuerte {
+    color: #f0a000;
+    font-size: 15px;
+    margin-left: 6px;
+    animation: abejaFesteja .6s ease;
+}
+
+@keyframes abejaFesteja {
+    0%   { transform: translateY(4px) scale(.4) rotate(-20deg); opacity: 0; }
+    60%  { transform: translateY(-3px) scale(1.15) rotate(8deg); opacity: 1; }
+    100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .perfil-abeja-fuerte { animation: none; }
+}
 
 /* =========================================================
    BOTONES

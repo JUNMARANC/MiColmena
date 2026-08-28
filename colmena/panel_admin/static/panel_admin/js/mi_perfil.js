@@ -616,15 +616,20 @@ function validarPasswordPerfil() {
                 "fuerza-fuerte"
             );
 
+            const abejaFuerte = document.getElementById("perfilAbejaFuerte");
+
             if (puntos <= 2) {
                 medidorFuerza.classList.add("fuerza-debil");
                 if (textoFuerza) textoFuerza.textContent = "Contraseña débil";
+                if (abejaFuerte) abejaFuerte.classList.add("d-none");
             } else if (puntos <= 3) {
                 medidorFuerza.classList.add("fuerza-media");
                 if (textoFuerza) textoFuerza.textContent = "Contraseña media";
+                if (abejaFuerte) abejaFuerte.classList.add("d-none");
             } else {
                 medidorFuerza.classList.add("fuerza-fuerte");
                 if (textoFuerza) textoFuerza.textContent = "Contraseña fuerte";
+                if (abejaFuerte) abejaFuerte.classList.remove("d-none");
             }
 
         }
@@ -1050,3 +1055,60 @@ function inicializarAvisoCambiosPerfil() {
     });
 
 }
+
+/* ============================================================
+   7. SISTEMA DE PESTAÑAS (Información personal / Seguridad,
+      y las sub-pestañas dentro de Seguridad)
+============================================================ */
+
+function inicializarPestanasPerfil() {
+
+    // Cada grupo de botones [data-tab-target] controla los paneles
+    // [data-tab-panel] que existen en el MISMO contenedor padre
+    // inmediato de ese grupo de botones (para que el grupo principal
+    // y el de Seguridad no se pisen entre sí).
+
+    document
+        .querySelectorAll(".perfil-tabs-principales, .perfil-subtabs")
+        .forEach(function (grupoBotones) {
+
+            const contenedor = grupoBotones.parentElement;
+
+            if (!contenedor) {
+                return;
+            }
+
+            const botones = grupoBotones.querySelectorAll("[data-tab-target]");
+
+            botones.forEach(function (boton) {
+
+                boton.addEventListener("click", function () {
+
+                    const destino = boton.dataset.tabTarget;
+
+                    botones.forEach(function (b) {
+                        b.classList.remove("activo");
+                        b.setAttribute("aria-selected", "false");
+                    });
+
+                    boton.classList.add("activo");
+                    boton.setAttribute("aria-selected", "true");
+
+                    contenedor
+                        .querySelectorAll(":scope > [data-tab-panel]")
+                        .forEach(function (panel) {
+                            panel.classList.toggle(
+                                "d-none",
+                                panel.dataset.tabPanel !== destino
+                            );
+                        });
+
+                });
+
+            });
+
+        });
+
+}
+
+document.addEventListener("DOMContentLoaded", inicializarPestanasPerfil);
