@@ -1007,7 +1007,7 @@
 }
 
 .perfil-tab-panel {
-    animation: perfilTabAparecer .35s ease;
+    animation: perfilTabAparecer .35s ease forwards;
 }
 
 @keyframes perfilTabAparecer {
