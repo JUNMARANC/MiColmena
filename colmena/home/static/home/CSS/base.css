@@ -488,14 +488,17 @@ FOOTER
 .footer{
     width: 100%;
     position: relative;
-    background: linear-gradient(
-        to bottom,
-        #ffffff,
-        #f7fbf8,
-        #edf6f0,
-        #dff0e4,
-        #d8f8e6
-    );
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(240,160,0,0.08)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(240,160,0,0.08)' stroke-width='1'/%3E%3C/svg%3E"),
+        linear-gradient(
+            to bottom,
+            #ffffff,
+            #f7fbf8,
+            #edf6f0,
+            #dff0e4,
+            #d8f8e6
+        );
+    background-repeat: repeat, no-repeat;
     padding: 30px 60px;
 }
 
@@ -521,9 +524,27 @@ FOOTER
 }
 
 .footer-col h3{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     font-size: 16px;
     margin-bottom: 12px;
     color: #333;
+}
+
+.footer-col h3::before{
+    content: "";
+    width: 14px;
+    height: 14px;
+    flex: none;
+    background: linear-gradient(155deg, #f0a000, #2CAE76);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    transition: transform .35s ease;
+}
+
+.footer-col:hover h3::before{
+    transform: rotate(90deg);
 }
 
 .footer-col p,
@@ -568,8 +589,8 @@ FOOTER
 .ubicacion img{
     width: 95px;
     height: 95px;
-    border-radius: 50%;
     object-fit: cover;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 }
 
 .footer-abajo{
@@ -586,7 +607,9 @@ FOOTER
 .logo-footer{
     width: 65px;
     height: 65px;
-    border-radius: 50%;
+    padding: 6px;
+    background: #fff;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 }
 
 .logo-sena{
@@ -863,9 +886,40 @@ CELULARES PEQUEÑOS
     box-shadow: 0 8px 18px rgba(0,0,0,.18);
 }
 
+.nombres-apicultores{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 16px;
+}
+
+.nombres-apicultores span{
+    position: relative;
+    padding-left: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #7a4a00;
+}
+
+.nombres-apicultores span::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: #f0a000;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+}
+
 /* TEXTO DERECHO */
 
 .titulo-pequeno{
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: 1px;
     margin-bottom: 20px;
@@ -888,7 +942,7 @@ CELULARES PEQUEÑOS
 .titulo-kemi h1{
     margin: 0;
     color: #004b8d;
-    font-size: 38px;
+    font-size: 44px;
     font-weight: 800;
     letter-spacing: 4px;
 }
