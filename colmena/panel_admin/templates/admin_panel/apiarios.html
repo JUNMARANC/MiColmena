@@ -276,7 +276,7 @@
                     <div class="modal-dialog modal-xl modal-dialog-centered">
                         <div class="modal-content border-0 shadow rounded-4">
 
-                            <form method="POST" action="{% url 'editar_apiario' apiario.id_apiario %}" enctype="multipart/form-data" class="form-validar-apiario">
+                            <form method="POST" action="{% url 'editar_apiario' apiario.id_apiario %}" enctype="multipart/form-data" class="form-validar-apiario" data-id-apiario="{{ apiario.id_apiario }}">
                                 {% csrf_token %}
 
                                 <div class="modal-header border-0" style="background:#E8F7E9;">
@@ -300,10 +300,12 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Nombre del Apiario</label>
                                             <input type="text"
-                                                   name="nombre_apiario"
-                                                   class="form-control"
-                                                   value="{{ apiario.nombreapiario }}"
-                                                   required>
+                                                name="nombre_apiario"
+                                                class="form-control"
+                                                value="{{ apiario.nombreapiario }}"
+                                                required>
+                                            <div class="valid-feedback">Nombre disponible.</div>
+                                            <div class="invalid-feedback"></div>
                                         </div>
 
                                         <div class="col-md-6">
@@ -318,12 +320,14 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Cantidad de Colmenas</label>
                                             <input type="number"
-                                                   name="cantidad_colmenas"
-                                                   class="form-control"
-                                                   value="{{ apiario.cantidadcolmenas }}"
-                                                   min="0"
-                                                   max="20"
-                                                   required>
+                                                name="cantidad_colmenas"
+                                                class="form-control"
+                                                value="{{ apiario.cantidadcolmenas }}"
+                                                min="0"
+                                                max="20"
+                                                required>
+                                            <div class="valid-feedback">Cantidad válida.</div>
+                                            <div class="invalid-feedback"></div>
                                         </div>
 
                                         <div class="col-md-6">
@@ -639,10 +643,12 @@
                         <div class="col-md-6">
                             <label class="form-label">Nombre del Apiario</label>
                             <input type="text"
-                                   name="nombre_apiario"
-                                   class="form-control"
-                                   placeholder="Ej: Prado del Sol"
-                                   required>
+                                name="nombre_apiario"
+                                class="form-control"
+                                placeholder="Ej: Prado del Sol"
+                                required>
+                            <div class="valid-feedback">Nombre disponible.</div>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="col-md-6">
@@ -657,11 +663,13 @@
                         <div class="col-md-6">
                             <label class="form-label">Cantidad de Colmenas</label>
                             <input type="number"
-                                   name="cantidad_colmenas"
-                                   class="form-control"
-                                   min="0"
-                                   max="20"
-                                   required>
+                                name="cantidad_colmenas"
+                                class="form-control"
+                                min="0"
+                                max="20"
+                                required>
+                            <div class="valid-feedback">Cantidad válida.</div>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="col-md-6">
@@ -733,5 +741,8 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    const URL_VERIFICAR_NOMBRE_APIARIO = "{% url 'verificar_nombre_apiario' %}";
+</script>
 <script src="{% static 'panel_admin/js/apiarios_vista.js' %}"></script>
 {% endblock %}

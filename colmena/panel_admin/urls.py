@@ -11,6 +11,7 @@ urlpatterns = [
 
     # Apiarios
     path('apiarios/', views.apiarios_admin, name='apiarios_admin'),
+    path("apiarios/verificar-nombre/", views.verificar_nombre_apiario, name="verificar_nombre_apiario"),
     path('apiarios/crear/', views.crear_apiario, name='crear_apiario'),
     path('apiarios/editar/<int:id>/', views.editar_apiario, name='editar_apiario'),
     path('apiarios/eliminar/<int:id>/', views.eliminar_apiario, name='eliminar_apiario'),
@@ -35,6 +36,7 @@ urlpatterns = [
 
     # Apicultores
     path('apicultores/', views.apicultores_admin, name='apicultores_admin'),
+    path("apicultores/verificar-dato/", views.verificar_dato_apicultor, name="verificar_dato_apicultor"),
     path("apicultores/crear/",views.crear_apicultor,name="crear_apicultor"),
     path("apicultores/editar/<int:id_apicultor>/",views.editar_apicultor,name="editar_apicultor"),
     path("apicultores/eliminar/<int:id_apicultor>/",views.eliminar_apicultor,name="eliminar_apicultor"),
@@ -57,6 +59,7 @@ urlpatterns = [
     # Usuarios
     path('usuarios-roles/', views.usuarios_roles_admin, name='usuarios_roles_admin'),
     path('usuarios-roles/permisos/guardar/',views.guardar_permisos_roles,name='guardar_permisos_roles'),
+    path("usuarios/verificar-dato-administrador/", views.verificar_dato_administrador, name="verificar_dato_administrador"),
     path("usuarios-roles/administrador/crear/",views.crear_administrador,name="crear_administrador",),
     path("usuarios-roles/administrador/editar/<int:id_usuario>/",views.editar_administrador,name="editar_administrador",),
     path("usuarios-roles/administrador/estado/<int:id_usuario>/",views.cambiar_estado_administrador,name="cambiar_estado_administrador",),

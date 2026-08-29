@@ -75,6 +75,7 @@
 
             inicializarModalEliminarAdministrador();
 
+            inicializarVerificacionDuplicadosAdministrador();
 
             console.log(
                 "[usuarios_roles] Módulo inicializado correctamente."
@@ -1016,6 +1017,16 @@ function inicializarModalAdministrador() {
             restaurarBotonRegistrarAdministrador(
                 campos.botonGuardar
             );
+
+            const feedbackUser = document.getElementById("feedbackUsernameAdministrador");
+            const feedbackCorreo = document.getElementById("feedbackCorreoAdministrador");
+            if (feedbackUser) feedbackUser.textContent = "";
+            if (feedbackCorreo) feedbackCorreo.textContent = "";
+
+            const inputUserReg = formulario.querySelector('[name="username"]');
+            const inputCorreoReg = formulario.querySelector('[name="correo"]');
+            if (inputUserReg) { inputUserReg.dataset.duplicado = "0"; inputUserReg.dataset.verificando = "0"; }
+            if (inputCorreoReg) { inputCorreoReg.dataset.duplicado = "0"; inputCorreoReg.dataset.verificando = "0"; }
 
         }
     );
@@ -3745,6 +3756,16 @@ function inicializarModalEditarAdministrador() {
 
             }
 
+            const feedbackUserEditar = document.getElementById("feedbackUsernameEditarAdministrador");
+            const feedbackCorreoEditar = document.getElementById("feedbackCorreoEditarAdministrador");
+            if (feedbackUserEditar) feedbackUserEditar.textContent = "";
+            if (feedbackCorreoEditar) feedbackCorreoEditar.textContent = "";
+
+            const inputUserEdit = document.getElementById("usernameEditarAdministrador");
+            const inputCorreoEdit = document.getElementById("correoEditarAdministrador");
+            if (inputUserEdit) { inputUserEdit.dataset.duplicado = "0"; inputUserEdit.dataset.verificando = "0"; }
+            if (inputCorreoEdit) { inputCorreoEdit.dataset.duplicado = "0"; inputCorreoEdit.dataset.verificando = "0"; }
+
         }
     );
 
@@ -4458,4 +4479,182 @@ function inicializarModalEliminarAdministrador() {
         }
     );
 
+}
+
+/* ============================================================
+   9. VERIFICACIÓN EN VIVO - DATOS DUPLICADOS (ADMINISTRADOR)
+
+   Mientras se escribe el username o el correo (en Agregar o en
+   Editar), se le pregunta al backend si ese dato ya existe, en
+   vez de esperar a que se le dé "Guardar" y perder lo escrito
+   con un mensaje de error.
+
+   Se integra con lo que ya existe: en vez de un bloqueo propio
+   en el submit, usa setCustomValidity() sobre el mismo campo —
+   los submit handlers de Agregar/Editar ya llaman a
+   formulario.checkValidity(), así que lo detectan solos.
+============================================================ */
+
+function inicializarVerificacionDuplicadosAdministrador() {
+
+    if (typeof URL_VERIFICAR_DATO_ADMINISTRADOR === "undefined") {
+        return;
+    }
+
+    const RETRASO_DEBOUNCE_MS = 400;
+
+    function debounce(funcion, espera) {
+        let temporizador = null;
+        return function (...args) {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(function () {
+                funcion.apply(this, args);
+            }, espera);
+        };
+    }
+
+    function actualizarBotonSegunVerificacion(boton, formulario) {
+
+        if (!boton || !formulario) return;
+
+        const hayVerificando = formulario.querySelector('[data-verificando="1"]');
+        const hayDuplicado = formulario.querySelector('[data-duplicado="1"]');
+
+        boton.disabled = !!hayVerificando || !!hayDuplicado;
+    }
+
+    function marcarDuplicado(campo, existe, mensaje, feedbackEl, boton) {
+
+        if (existe) {
+            campo.setCustomValidity(mensaje);
+            campo.classList.remove("is-valid");
+            campo.classList.add("is-invalid");
+            campo.dataset.duplicado = "1";
+            if (feedbackEl) feedbackEl.textContent = mensaje;
+        } else {
+            if (campo.validationMessage === mensaje || campo.validationMessage === "") {
+                campo.setCustomValidity("");
+            }
+            campo.classList.remove("is-invalid");
+            campo.dataset.duplicado = "0";
+            if (feedbackEl) feedbackEl.textContent = "";
+        }
+
+        campo.dataset.verificando = "0";
+        actualizarBotonSegunVerificacion(boton, campo.closest("form"));
+    }
+
+    function verificar(campo, tipoCampo, idUsuarioActual, mensajeDuplicado, feedbackEl, boton) {
+
+        const valor = campo.value.trim();
+        const formulario = campo.closest("form");
+
+        if (!valor) {
+            campo.setCustomValidity("");
+            campo.dataset.duplicado = "0";
+            campo.dataset.verificando = "0";
+            if (feedbackEl) feedbackEl.textContent = "";
+            actualizarBotonSegunVerificacion(boton, formulario);
+            return;
+        }
+
+        campo.dataset.verificando = "1";
+        actualizarBotonSegunVerificacion(boton, formulario);
+
+        let url = URL_VERIFICAR_DATO_ADMINISTRADOR
+            + "?campo=" + encodeURIComponent(tipoCampo)
+            + "&valor=" + encodeURIComponent(valor);
+
+        if (idUsuarioActual) {
+            url += "&id_usuario=" + encodeURIComponent(idUsuarioActual);
+        }
+
+        fetch(url)
+            .then(function (respuesta) { return respuesta.json(); })
+            .then(function (datos) {
+                marcarDuplicado(campo, datos.existe, mensajeDuplicado, feedbackEl, boton);
+            })
+            .catch(function (error) {
+                console.error("[usuarios_roles] No fue posible verificar el dato:", error);
+                campo.dataset.verificando = "0";
+                actualizarBotonSegunVerificacion(boton, formulario);
+            });
+    }
+
+    function activar(campo, tipoCampo, obtenerIdUsuario, mensajeDuplicado, feedbackEl, boton) {
+
+        if (!campo) return;
+
+        campo.dataset.duplicado = "0";
+        campo.dataset.verificando = "0";
+
+        const verificarConRetraso = debounce(function () {
+            verificar(campo, tipoCampo, obtenerIdUsuario(), mensajeDuplicado, feedbackEl, boton);
+        }, RETRASO_DEBOUNCE_MS);
+
+        campo.addEventListener("input", verificarConRetraso);
+
+        // Verificación inmediata al salir del campo (sin esperar el debounce)
+        campo.addEventListener("blur", function () {
+            verificar(campo, tipoCampo, obtenerIdUsuario(), mensajeDuplicado, feedbackEl, boton);
+        });
+    }
+
+    /* ====================================================
+       REGISTRAR ADMINISTRADOR
+    ==================================================== */
+
+    const formAgregar = document.getElementById("formAgregarAdministrador");
+    const botonAgregar = document.getElementById("btnGuardarAdministrador");
+
+    activar(
+        formAgregar ? formAgregar.querySelector('[name="username"]') : null,
+        "username",
+        function () { return ""; },
+        "Ese nombre de usuario ya está registrado.",
+        document.getElementById("feedbackUsernameAdministrador"),
+        botonAgregar
+    );
+
+    activar(
+        formAgregar ? formAgregar.querySelector('[name="correo"]') : null,
+        "correo",
+        function () { return ""; },
+        "Ese correo electrónico ya está registrado.",
+        document.getElementById("feedbackCorreoAdministrador"),
+        botonAgregar
+    );
+
+    /* ====================================================
+       EDITAR ADMINISTRADOR
+    ==================================================== */
+
+    const formEditar = document.getElementById("formEditarAdministrador");
+    const botonEditar = document.getElementById("btnGuardarEdicionAdministrador");
+    const modalEditarElemento = document.getElementById("modalEditarAdministrador");
+
+    if (modalEditarElemento && formEditar) {
+        modalEditarElemento.addEventListener("show.bs.modal", function (evento) {
+            const boton = evento.relatedTarget;
+            formEditar.dataset.idUsuario = boton ? (boton.dataset.id || "") : "";
+        });
+    }
+
+    activar(
+        document.getElementById("usernameEditarAdministrador"),
+        "username",
+        function () { return formEditar ? (formEditar.dataset.idUsuario || "") : ""; },
+        "Ese nombre de usuario ya está registrado.",
+        document.getElementById("feedbackUsernameEditarAdministrador"),
+        botonEditar
+    );
+
+    activar(
+        document.getElementById("correoEditarAdministrador"),
+        "correo",
+        function () { return formEditar ? (formEditar.dataset.idUsuario || "") : ""; },
+        "Ese correo electrónico ya está registrado.",
+        document.getElementById("feedbackCorreoEditarAdministrador"),
+        botonEditar
+    );
 }

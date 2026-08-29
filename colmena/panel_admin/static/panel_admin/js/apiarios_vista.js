@@ -406,3 +406,184 @@ document.addEventListener("DOMContentLoaded", function () {
     });
  
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+ 
+    // =========================================================
+    // VALIDACIÓN EN VIVO - NOMBRE DEL APIARIO (estilo Gmail)
+    // =========================================================
+    //
+    // Mientras el usuario escribe, se le pregunta al backend
+    // (endpoint de solo consulta) si ya existe un apiario con
+    // ese nombre. Usa "debounce" (espera 400ms después de la
+    // última tecla) para no disparar una petición por cada letra.
+ 
+    const RETRASO_DEBOUNCE_MS = 200;
+    const CANTIDAD_MAXIMA_COLMENAS = 20;
+ 
+    function marcarCampo(campo, esValido, mensajeError) {
+ 
+        campo.classList.remove("is-valid", "is-invalid");
+ 
+        if (esValido === null) {
+            // Estado neutro (vacío o "verificando..."): no mostramos ni check ni error
+            return;
+        }
+ 
+        if (esValido) {
+            campo.classList.add("is-valid");
+            campo.setCustomValidity("");
+        } else {
+            campo.classList.add("is-invalid");
+            campo.setCustomValidity(mensajeError || "Dato inválido.");
+ 
+            const feedback = campo.parentElement.querySelector(".invalid-feedback");
+            if (feedback) {
+                feedback.textContent = mensajeError || "";
+            }
+        }
+    }
+ 
+    function debounce(funcion, espera) {
+        let temporizador = null;
+ 
+        return function (...args) {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(function () {
+                funcion.apply(this, args);
+            }, espera);
+        };
+    }
+ 
+    function verificarNombreApiario(campoNombre, idApiarioActual) {
+ 
+        const nombre = campoNombre.value.trim();
+ 
+        if (!nombre) {
+            marcarCampo(campoNombre, null);
+            campoNombre.dataset.nombreDuplicado = "0";
+            return;
+        }
+ 
+        if (typeof URL_VERIFICAR_NOMBRE_APIARIO === "undefined") {
+            // Si el endpoint todavía no existe (por ejemplo, mientras
+            // el equipo de vistas lo termina de implementar), no
+            // rompemos el formulario: simplemente no se hace el
+            // chequeo en vivo y queda solo la validación de longitud.
+            return;
+        }
+ 
+        let url = URL_VERIFICAR_NOMBRE_APIARIO
+            + "?nombre=" + encodeURIComponent(nombre);
+ 
+        if (idApiarioActual) {
+            url += "&id_apiario=" + encodeURIComponent(idApiarioActual);
+        }
+ 
+        fetch(url)
+            .then(function (respuesta) {
+                return respuesta.json();
+            })
+            .then(function (datos) {
+ 
+                if (datos.existe) {
+                    marcarCampo(campoNombre, false, "Ya existe un apiario con ese nombre.");
+                    campoNombre.dataset.nombreDuplicado = "1";
+                } else {
+                    marcarCampo(campoNombre, true);
+                    campoNombre.dataset.nombreDuplicado = "0";
+                }
+            })
+            .catch(function (error) {
+                console.error("No fue posible verificar el nombre del apiario:", error);
+                // Ante un fallo de red, no bloqueamos al usuario;
+                // el backend sigue siendo la validación final al guardar.
+                campoNombre.dataset.nombreDuplicado = "0";
+            });
+    }
+ 
+    document.querySelectorAll('.form-validar-apiario [name="nombre_apiario"]').forEach(function (campoNombre) {
+ 
+        const formulario = campoNombre.closest("form");
+        const idApiarioActual = formulario ? formulario.dataset.idApiario : "";
+ 
+        const verificarConRetraso = debounce(function () {
+            verificarNombreApiario(campoNombre, idApiarioActual);
+        }, RETRASO_DEBOUNCE_MS);
+ 
+        campoNombre.addEventListener("input", function () {
+ 
+            const valor = campoNombre.value.trim();
+ 
+            if (!valor) {
+                marcarCampo(campoNombre, null);
+                campoNombre.dataset.nombreDuplicado = "0";
+                return;
+            }
+ 
+            if (valor.length > 100) {
+                marcarCampo(campoNombre, false, "El nombre no puede superar los 100 caracteres.");
+                campoNombre.dataset.nombreDuplicado = "0";
+                return;
+            }
+ 
+            verificarConRetraso();
+        });
+    });
+ 
+ 
+    // =========================================================
+    // VALIDACIÓN EN VIVO - CANTIDAD DE COLMENAS
+    // =========================================================
+    //
+    // Esta sí es 100% local (no necesita backend): solo confirma
+    // en el momento que el número esté entre 0 y 20.
+ 
+    document.querySelectorAll('.form-validar-apiario [name="cantidad_colmenas"]').forEach(function (campoCantidad) {
+ 
+        campoCantidad.addEventListener("input", function () {
+ 
+            const valorTexto = campoCantidad.value.trim();
+ 
+            if (!valorTexto) {
+                marcarCampo(campoCantidad, null);
+                return;
+            }
+ 
+            const valorNumero = Number(valorTexto);
+ 
+            if (!Number.isInteger(valorNumero)) {
+                marcarCampo(campoCantidad, false, "Debe ser un número entero.");
+            } else if (valorNumero < 0) {
+                marcarCampo(campoCantidad, false, "No puede ser negativo.");
+            } else if (valorNumero > CANTIDAD_MAXIMA_COLMENAS) {
+                marcarCampo(campoCantidad, false, `No puede superar ${CANTIDAD_MAXIMA_COLMENAS} colmenas.`);
+            } else {
+                marcarCampo(campoCantidad, true);
+            }
+        });
+    });
+ 
+ 
+    // =========================================================
+    // BLOQUEAR EL ENVÍO SI EL NOMBRE QUEDÓ MARCADO COMO DUPLICADO
+    // =========================================================
+    //
+    // Esto se suma (no reemplaza) a las validaciones que ya
+    // existen en el bloque anterior de "VALIDACIONES DE FORMULARIO".
+ 
+    document.querySelectorAll(".form-validar-apiario").forEach(function (formulario) {
+ 
+        formulario.addEventListener("submit", function (evento) {
+ 
+            const campoNombre = formulario.querySelector('[name="nombre_apiario"]');
+ 
+            if (campoNombre && campoNombre.dataset.nombreDuplicado === "1") {
+                evento.preventDefault();
+                evento.stopPropagation();
+                campoNombre.reportValidity();
+            }
+        });
+    });
+ 
+});

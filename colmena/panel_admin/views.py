@@ -522,12 +522,41 @@ def apiarios_admin(request):
         'apicultores': apicultores,
     })
 
+#Verificar mientras se escribe si el apiario existe o no en la database
+@administrador_requerido
+@permiso_requerido("av")
+def verificar_nombre_apiario(request):
+    """
+    Endpoint de solo consulta (no modifica nada) usado para
+    validar en tiempo real si un nombre de apiario ya existe.
+    Se usa desde apiarios_vista.js mientras el usuario escribe.
+    """
+    nombre = request.GET.get("nombre", "").strip()
+    id_apiario_actual = request.GET.get("id_apiario", "").strip()
+
+    if not nombre:
+        return JsonResponse({"existe": False})
+
+    consulta = Apiario.objects.filter(nombreapiario__iexact=nombre)
+
+    if id_apiario_actual:
+        consulta = consulta.exclude(id_apiario=id_apiario_actual)
+
+    return JsonResponse({"existe": consulta.exists()})
+
 @administrador_requerido
 @permiso_requerido("ag",redireccion="apiarios_admin")
 def crear_apiario(request):
     if request.method == "POST":
+
+        nombre = request.POST.get("nombre_apiario", "").strip()
+
+        if Apiario.objects.filter(nombreapiario__iexact=nombre).exists():
+            messages.error(request, "Ya existe un apiario con ese nombre.")
+            return redirect("apiarios_admin")
+
         Apiario.objects.create(
-            nombreapiario=request.POST.get("nombre_apiario"),
+            nombreapiario=nombre,
             ubicacion=request.POST.get("ubicacion"),
             cantidadcolmenas=request.POST.get("cantidad_colmenas"),
             estadoapiario=request.POST.get("estado_apiario"),
@@ -545,7 +574,21 @@ def editar_apiario(request, id):
     apiario = get_object_or_404(Apiario, id_apiario=id)
 
     if request.method == "POST":
-        apiario.nombreapiario = request.POST.get("nombre_apiario")
+
+        nombre = request.POST.get("nombre_apiario", "").strip()
+
+        nombre_duplicado = (
+            Apiario.objects
+            .filter(nombreapiario__iexact=nombre)
+            .exclude(id_apiario=apiario.id_apiario)
+            .exists()
+        )
+
+        if nombre_duplicado:
+            messages.error(request, "Ya existe un apiario con ese nombre.")
+            return redirect("apiarios_admin")
+
+        apiario.nombreapiario = nombre
         apiario.ubicacion = request.POST.get("ubicacion")
         apiario.cantidadcolmenas = request.POST.get("cantidad_colmenas")
         apiario.estadoapiario = request.POST.get("estado_apiario")
@@ -1024,9 +1067,7 @@ def crear_mantenimiento(request):
                     "fecha_ejecucion"
                 ),
 
-                estado=request.POST.get(
-                    "estado"
-                ),
+                estado="Pendiente",
 
                 prioridad=request.POST.get(
                     "prioridad"
@@ -1209,7 +1250,7 @@ def crear_incidencia(request):
     titulo = request.POST.get("titulo", "").strip()
     prioridad = request.POST.get("prioridad", "").strip()
     fecha_deteccion = request.POST.get("fechadeteccion", "").strip()
-    estado = request.POST.get("estado", "").strip()
+    estado = "Pendiente"  # toda incidencia nace como Pendiente, sin importar el POST
     observaciones = request.POST.get("observaciones", "").strip()
     responsable = request.POST.get("responsable", "").strip()
     imagen = request.FILES.get("imagen")
@@ -1578,6 +1619,52 @@ def apicultores_admin(request):
             "busqueda": busqueda,
         }
     )
+
+#Verificar en vivo si username, correo o identificación ya existen
+@administrador_requerido
+def verificar_dato_apicultor(request):
+    """
+    Endpoint de solo consulta (no modifica nada) usado para
+    validar en tiempo real si un username, correo o identificación
+    ya están en uso. Se usa desde apicultor.js mientras el usuario
+    escribe, tanto en Agregar como en Editar.
+    """
+    campo = request.GET.get("campo", "").strip()
+    valor = request.GET.get("valor", "").strip()
+    id_apicultor_actual = request.GET.get("id_apicultor", "").strip()
+
+    if not campo or not valor:
+        return JsonResponse({"existe": False})
+
+    if campo == "username":
+        consulta = User.objects.filter(username__iexact=valor)
+
+        if id_apicultor_actual:
+            apicultor_actual = Apicultor.objects.filter(pk=id_apicultor_actual).first()
+            if apicultor_actual and apicultor_actual.user:
+                consulta = consulta.exclude(pk=apicultor_actual.user_id)
+
+        return JsonResponse({"existe": consulta.exists()})
+
+    if campo == "correo":
+        consulta = User.objects.filter(email__iexact=valor)
+
+        if id_apicultor_actual:
+            apicultor_actual = Apicultor.objects.filter(pk=id_apicultor_actual).first()
+            if apicultor_actual and apicultor_actual.user:
+                consulta = consulta.exclude(pk=apicultor_actual.user_id)
+
+        return JsonResponse({"existe": consulta.exists()})
+
+    if campo == "identificacion":
+        consulta = Apicultor.objects.filter(identificacion=valor)
+
+        if id_apicultor_actual:
+            consulta = consulta.exclude(pk=id_apicultor_actual)
+
+        return JsonResponse({"existe": consulta.exists()})
+
+    return JsonResponse({"existe": False})
 
 #CREAR APICULTOR
 
@@ -5118,6 +5205,42 @@ def guardar_permisos_roles(request):
         f"{url}?tab=roles"
     )
 
+# ============================================================
+# VERIFICAR EN VIVO SI USERNAME O CORREO YA EXISTEN
+# ============================================================
+
+@administrador_requerido
+def verificar_dato_administrador(request):
+    """
+    Endpoint de solo consulta (no modifica nada) usado para
+    validar en tiempo real si un username o correo ya están
+    en uso. Se usa desde usuarios_roles.js mientras se escribe
+    en el formulario de Agregar/Editar administrador.
+    """
+    campo = request.GET.get("campo", "").strip()
+    valor = request.GET.get("valor", "").strip()
+    id_usuario_actual = request.GET.get("id_usuario", "").strip()
+
+    if not campo or not valor:
+        return JsonResponse({"existe": False})
+
+    if campo == "username":
+        consulta = User.objects.filter(username__iexact=valor)
+
+        if id_usuario_actual:
+            consulta = consulta.exclude(pk=id_usuario_actual)
+
+        return JsonResponse({"existe": consulta.exists()})
+
+    if campo == "correo":
+        consulta = User.objects.filter(email__iexact=valor)
+
+        if id_usuario_actual:
+            consulta = consulta.exclude(pk=id_usuario_actual)
+
+        return JsonResponse({"existe": consulta.exists()})
+
+    return JsonResponse({"existe": False})
 
 # ============================================================
 # CREAR ADMINISTRADOR

@@ -1237,10 +1237,13 @@
                                         <input
                                             type="email"
                                             class="form-control"
+                                            id="correoAdministrador"
                                             name="correo"
                                             maxlength="254"
                                             required
                                         >
+
+                                        <div class="invalid-feedback" id="feedbackCorreoAdministrador"></div>
 
                                     </div>
 
@@ -1295,11 +1298,14 @@
                                         <input
                                             type="text"
                                             class="form-control"
+                                            id="usernameAdministrador"
                                             name="username"
                                             maxlength="150"
                                             pattern="[A-Za-z0-9_@.+-]+"
                                             required
                                         >
+
+                                        <div class="invalid-feedback" id="feedbackUsernameAdministrador"></div>
 
                                     </div>
 
@@ -1722,6 +1728,8 @@
                                             required
                                         >
 
+                                        <div class="invalid-feedback" id="feedbackCorreoEditarAdministrador"></div>
+
                                     </div>
 
 
@@ -1834,6 +1842,8 @@
                                             pattern="[A-Za-z0-9_@.+-]+"
                                             required
                                         >
+
+                                        <div class="invalid-feedback" id="feedbackUsernameEditarAdministrador"></div>
 
                                     </div>
 
@@ -2409,7 +2419,11 @@
 
 {% block extra_js %}
 
-<script src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=16"></script>
+<script>
+    const URL_VERIFICAR_DATO_ADMINISTRADOR = "{% url 'verificar_dato_administrador' %}";
+</script>
+
+<script src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=18"></script>
 <script src="{% static 'panel_admin/js/usuarios_roles_vista.js' %}"></script>
 
 {% endblock %}

@@ -724,11 +724,13 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Estado</label>
-                            <select name="estado" class="form-select" required>
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Completado">Completado</option>
-                                <option value="Cancelado">Cancelado</option>
+                            <select name="estado" class="form-select" required disabled>
+                                <option value="Pendiente" selected>Pendiente</option>
                             </select>
+                            <input type="hidden" name="estado" value="Pendiente">
+                            <div class="form-text">
+                                Todo mantenimiento nuevo inicia como Pendiente. El estado se cambia desde Editar.
+                            </div>
                         </div>
 
                         <div class="col-md-6">

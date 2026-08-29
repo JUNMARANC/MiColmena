@@ -1934,3 +1934,217 @@ document.addEventListener("DOMContentLoaded", function () {
     restringirExperiencia(document.getElementById("experienciaEditar"));
  
 });
+ 
+/* ==========================================================
+   VERIFICACIÓN EN VIVO - DATOS DUPLICADOS (estilo Gmail)
+   ==========================================================
+   Mientras el usuario escribe usuario/correo/identificación,
+   se le pregunta al backend (endpoint de solo consulta) si ese
+   dato ya existe, en vez de esperar a que le dé "Guardar" y
+   perder todo lo que ya había escrito con un mensaje de error.
+   ========================================================== */
+document.addEventListener("DOMContentLoaded", function () {
+ 
+    if (typeof URL_VERIFICAR_DATO_APICULTOR === "undefined") {
+        // Si la vista/URL todavía no existe, no rompemos el
+        // formulario: simplemente no se hace el chequeo en vivo
+        // y queda solo la validación del servidor al guardar.
+        return;
+    }
+ 
+    const RETRASO_DEBOUNCE_MS = 400;
+ 
+    function debounce(funcion, espera) {
+        let temporizador = null;
+ 
+        return function (...args) {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(function () {
+                funcion.apply(this, args);
+            }, espera);
+        };
+    }
+ 
+    function marcarCampo(campo, esValido, mensajeError) {
+ 
+        campo.classList.remove("is-valid", "is-invalid");
+ 
+        if (esValido === null) {
+            // Estado neutro (campo vacío): sin check ni error
+            campo.setCustomValidity("");
+            return;
+        }
+ 
+        if (esValido) {
+            campo.classList.add("is-valid");
+            campo.setCustomValidity("");
+        } else {
+            campo.classList.add("is-invalid");
+            campo.setCustomValidity(mensajeError || "Este dato ya está en uso.");
+        }
+    }
+ 
+    // El id del apicultor en Editar no viene en ningún atributo
+    // fijo del HTML, así que lo extraemos de la URL de acción que
+    // agenda.js ya arma (".../editar/<id>/"), sin depender de que
+    // exista un data-id concreto en el botón.
+    function extraerIdDesdeUrl(url) {
+        if (!url) return "";
+        const coincidencia = url.match(/(\d+)\/?$/);
+        return coincidencia ? coincidencia[1] : "";
+    }
+ 
+    function verificarDato(campo, tipoCampo, idApicultorActual, mensajeDuplicado) {
+ 
+        const valor = campo.value.trim();
+ 
+        if (!valor) {
+            marcarCampo(campo, null);
+            campo.dataset.duplicado = "0";
+            return;
+        }
+ 
+        let url = URL_VERIFICAR_DATO_APICULTOR
+            + "?campo=" + encodeURIComponent(tipoCampo)
+            + "&valor=" + encodeURIComponent(valor);
+ 
+        if (idApicultorActual) {
+            url += "&id_apicultor=" + encodeURIComponent(idApicultorActual);
+        }
+ 
+        fetch(url)
+            .then(function (respuesta) {
+                return respuesta.json();
+            })
+            .then(function (datos) {
+ 
+                if (datos.existe) {
+                    marcarCampo(campo, false, mensajeDuplicado);
+                    campo.dataset.duplicado = "1";
+                } else {
+                    marcarCampo(campo, true);
+                    campo.dataset.duplicado = "0";
+                }
+            })
+            .catch(function (error) {
+                console.error("No fue posible verificar el dato:", error);
+                // Ante un fallo de red, no bloqueamos al usuario;
+                // el backend sigue siendo la validación final.
+                campo.dataset.duplicado = "0";
+            });
+    }
+ 
+    function activarVerificacionEnVivo(campo, tipoCampo, formulario, mensajeDuplicado) {
+ 
+        if (!campo) return;
+ 
+        const verificarConRetraso = debounce(function () {
+ 
+            const idApicultorActual =
+                formulario && formulario.id === "formEditarApicultor"
+                    ? (formulario.dataset.idApicultor || "")
+                    : "";
+ 
+            verificarDato(campo, tipoCampo, idApicultorActual, mensajeDuplicado);
+ 
+        }, RETRASO_DEBOUNCE_MS);
+ 
+        campo.addEventListener("input", function () {
+ 
+            const valor = campo.value.trim();
+ 
+            if (!valor) {
+                marcarCampo(campo, null);
+                campo.dataset.duplicado = "0";
+                return;
+            }
+ 
+            verificarConRetraso();
+        });
+    }
+ 
+    // ---- Modal Agregar Apicultor ----
+    const formAgregar = document.getElementById("formAgregarApicultor");
+ 
+    activarVerificacionEnVivo(
+        document.getElementById("usernameAgregar"),
+        "username",
+        formAgregar,
+        "Ese nombre de usuario ya está registrado."
+    );
+ 
+    activarVerificacionEnVivo(
+        document.getElementById("correoAgregar"),
+        "correo",
+        formAgregar,
+        "Ese correo electrónico ya está registrado."
+    );
+ 
+    activarVerificacionEnVivo(
+        document.getElementById("identificacionAgregar"),
+        "identificacion",
+        formAgregar,
+        "Ya existe un apicultor con esa identificación."
+    );
+ 
+    // ---- Modal Editar Apicultor ----
+    const formEditar = document.getElementById("formEditarApicultor");
+    const modalEditarApicultorElemento = document.getElementById("modalEditarApicultor");
+ 
+    // Guardamos el id del apicultor que se está editando (extraído
+    // de la URL de acción) para poder excluirlo de la búsqueda de
+    // duplicados; si no, el propio registro se marcaría como
+    // "duplicado de sí mismo" apenas se abre el modal.
+    if (modalEditarApicultorElemento && formEditar) {
+ 
+        modalEditarApicultorElemento.addEventListener("show.bs.modal", function (evento) {
+ 
+            const boton = evento.relatedTarget;
+ 
+            formEditar.dataset.idApicultor = extraerIdDesdeUrl(
+                boton ? boton.dataset.url : ""
+            );
+        });
+    }
+ 
+    activarVerificacionEnVivo(
+        document.getElementById("usernameEditar"),
+        "username",
+        formEditar,
+        "Ese nombre de usuario ya pertenece a otra persona."
+    );
+ 
+    activarVerificacionEnVivo(
+        document.getElementById("correoEditar"),
+        "correo",
+        formEditar,
+        "Ese correo electrónico ya pertenece a otro usuario."
+    );
+ 
+    activarVerificacionEnVivo(
+        document.getElementById("identificacionEditar"),
+        "identificacion",
+        formEditar,
+        "Esa identificación ya pertenece a otro apicultor."
+    );
+ 
+    // ---- Bloquear el envío si algún campo quedó marcado como duplicado ----
+    [formAgregar, formEditar].forEach(function (formulario) {
+ 
+        if (!formulario) return;
+ 
+        formulario.addEventListener("submit", function (evento) {
+ 
+            const camposDuplicados = formulario.querySelectorAll(
+                '[data-duplicado="1"]'
+            );
+ 
+            if (camposDuplicados.length > 0) {
+                evento.preventDefault();
+                evento.stopPropagation();
+                camposDuplicados[0].reportValidity();
+            }
+        });
+    });
+ 
+});
