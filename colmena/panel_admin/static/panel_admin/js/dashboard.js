@@ -76,6 +76,114 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
+    // ===========================================================
+    // ESTELA DE POLEN AL MOVER EL MOUSE
+    // ===========================================================
+
+    (function () {
+        var contenedor = document.querySelector(".dashboard-fondo-panal-contenido");
+        if (!contenedor) return;
+
+        var prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefiereMenosMovimiento) return;
+
+        var ultimoTiempo = 0;
+        var intervaloMinimo = 70; // ms entre partículas, para no saturar
+
+        contenedor.addEventListener("mousemove", function (evento) {
+            var ahora = performance.now();
+            if (ahora - ultimoTiempo < intervaloMinimo) return;
+            ultimoTiempo = ahora;
+
+            var particula = document.createElement("span");
+            particula.className = "estela-polen";
+            particula.style.left = evento.clientX + "px";
+            particula.style.top = evento.clientY + "px";
+
+            document.body.appendChild(particula);
+
+            particula.addEventListener("animationend", function () {
+                particula.remove();
+            });
+        });
+    })();
+
+
+    // ===========================================================
+    // SONIDO DE NOTIFICACIONES (apagado por defecto)
+    // ===========================================================
+
+    (function () {
+        var boton = document.getElementById("btnSonidoNotificaciones");
+        if (!boton) return;
+
+        var CLAVE_SONIDO = "sonidoNotificacionesActivo";
+        var activo = false;
+
+        try {
+            activo = localStorage.getItem(CLAVE_SONIDO) === "1";
+        } catch (error) {}
+
+        var audioCtx = null;
+
+        function reproducirSonido() {
+            if (!activo) return;
+
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                var ahora = audioCtx.currentTime;
+
+                [880, 1320].forEach(function (frecuencia, indice) {
+                    var osc = audioCtx.createOscillator();
+                    var ganancia = audioCtx.createGain();
+
+                    osc.type = "sine";
+                    osc.frequency.value = frecuencia;
+
+                    ganancia.gain.setValueAtTime(0, ahora);
+                    ganancia.gain.linearRampToValueAtTime(0.06, ahora + 0.02 + indice * 0.09);
+                    ganancia.gain.exponentialRampToValueAtTime(0.0001, ahora + 0.35 + indice * 0.09);
+
+                    osc.connect(ganancia).connect(audioCtx.destination);
+                    osc.start(ahora + indice * 0.09);
+                    osc.stop(ahora + 0.4 + indice * 0.09);
+                });
+            } catch (error) {
+                // Web Audio no disponible en este navegador: no rompe nada
+            }
+        }
+
+        function actualizarBoton() {
+            boton.setAttribute("aria-pressed", activo ? "true" : "false");
+            boton.classList.toggle("sonido-activo", activo);
+            boton.innerHTML = activo
+                ? '<i class="bi bi-volume-up-fill"></i>'
+                : '<i class="bi bi-volume-mute"></i>';
+            boton.title = activo
+                ? "Silenciar notificaciones"
+                : "Activar sonido de notificaciones";
+        }
+
+        actualizarBoton();
+
+        boton.addEventListener("click", function () {
+            activo = !activo;
+
+            try {
+                localStorage.setItem(CLAVE_SONIDO, activo ? "1" : "0");
+            } catch (error) {}
+
+            actualizarBoton();
+
+            if (activo) {
+                reproducirSonido(); // vista previa al activarlo
+            }
+        });
+
+        window.reproducirSonidoNotificacionDashboard = reproducirSonido;
+    })();
+
+
     // ===========================
     // GRÁFICA ACTIVIDAD
     // ===========================
@@ -397,6 +505,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return div;
     }
 
+    function mostrarAbejaFugaz(elemento) {
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return;
+        }
+
+        var abeja = document.createElement("span");
+        abeja.className = "abeja-fugaz";
+        abeja.textContent = "🐝";
+        abeja.setAttribute("aria-hidden", "true");
+
+        elemento.parentElement.appendChild(abeja);
+
+        abeja.addEventListener("animationend", function () {
+            abeja.remove();
+        });
+    }
+
     function actualizarTarjetas(datos) {
 
         const mapa = {
@@ -416,6 +542,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Cuenta suavemente desde el valor anterior hasta el nuevo,
                 // en vez de reemplazar el texto de golpe
                 animarNumero(elemento, valorNuevo, 700);
+
+                mostrarAbejaFugaz(elemento);
 
                 elemento.classList.remove("valor-actualizado");
                 // Forzar reflow para poder re-disparar la animación CSS
@@ -447,6 +575,10 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        var hayNotificacionesNuevas = idsNuevos.some(function (id) {
+            return idsActuales.indexOf(id) === -1;
+        });
+
         contenedor.innerHTML = "";
 
         if (nuevasNotificaciones.length === 0) {
@@ -465,6 +597,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             contenedor.appendChild(item);
         });
+
+        if (hayNotificacionesNuevas && typeof window.reproducirSonidoNotificacionDashboard === "function") {
+            window.reproducirSonidoNotificacionDashboard();
+        }
     }
 
     function actualizarDashboardEnVivo() {

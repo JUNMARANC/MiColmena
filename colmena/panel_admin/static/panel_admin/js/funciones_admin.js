@@ -56,6 +56,46 @@ if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
     }
 })();
 
+/* EASTER EGG DEL LOGO: aletea rápido y suelta polen si el mouse se queda encima */
+(function () {
+    var logo = document.querySelector(".logo-circle");
+    if (!logo) return;
+
+    var prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefiereMenosMovimiento) return;
+
+    var temporizador = null;
+
+    function lanzarParticulaPolen() {
+        var rect = logo.getBoundingClientRect();
+        var particula = document.createElement("span");
+        particula.className = "estela-polen";
+        particula.style.left = (rect.left + rect.width / 2 + (Math.random() * 20 - 10)) + "px";
+        particula.style.top = (rect.top + rect.height / 2) + "px";
+
+        document.body.appendChild(particula);
+
+        particula.addEventListener("animationend", function () {
+            particula.remove();
+        });
+    }
+
+    logo.addEventListener("mouseenter", function () {
+        temporizador = setTimeout(function () {
+            logo.classList.add("aleteo-rapido");
+
+            for (var i = 0; i < 5; i++) {
+                setTimeout(lanzarParticulaPolen, i * 90);
+            }
+        }, 1200);
+    });
+
+    logo.addEventListener("mouseleave", function () {
+        clearTimeout(temporizador);
+        logo.classList.remove("aleteo-rapido");
+    });
+})();
+
 /* =========================================================
    BARRA DE CARGA AL NAVEGAR ENTRE PÁGINAS
    ========================================================= */

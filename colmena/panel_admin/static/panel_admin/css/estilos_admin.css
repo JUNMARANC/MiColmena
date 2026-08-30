@@ -7,6 +7,7 @@ VARIABLES
     --verde-medio: #5f9781;
     --verde-oscuro: #214f3b;
     --amarillo: #F6DE87;
+    --miel: #f0a000;
     --blanco: #ffffff;
     --fondo: #f7fbf8;
     --texto: #163324;
@@ -131,6 +132,12 @@ SIDEBAR
     color: var(--verde-oscuro);
     display: inline-block;
     animation: flotarLogoSidebar 3.2s ease-in-out infinite;
+    transition: animation-duration .3s ease;
+}
+
+.logo-circle.aleteo-rapido i {
+    animation-name: flotarLogoSidebar;
+    animation-duration: .5s;
 }
 
 @keyframes flotarLogoSidebar {
@@ -5148,7 +5155,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     height:54px;
 
-    border-radius:50%;
+    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     display:flex;
 
@@ -5251,6 +5258,10 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 .dashboard-card{
 
+    position:relative;
+
+    overflow:hidden;
+
     background:#FFFFFF;
 
     border:1px solid #E8EFEA;
@@ -5260,6 +5271,56 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     padding:18px 20px;
 
     box-shadow:0 5px 16px rgba(33,79,59,.05);
+
+}
+
+.dashboard-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:0;
+
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(33,79,59,0.03)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(33,79,59,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+
+    pointer-events:none;
+
+}
+
+.dashboard-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    bottom:-22px;
+
+    right:-22px;
+
+    width:64px;
+
+    height:64px;
+
+    z-index:0;
+
+    background:linear-gradient(155deg, var(--amarillo), var(--verde-medio));
+
+    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+
+    opacity:.10;
+
+    pointer-events:none;
+
+}
+
+.dashboard-card > *{
+
+    position:relative;
+
+    z-index:1;
 
 }
 
@@ -5331,7 +5392,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     min-width:48px;
 
-    border-radius:50%;
+    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     display:flex;
 
@@ -6075,19 +6136,19 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 .pulso-en-vivo {
     position: relative;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #2F7D4F;
+    width: 9px;
+    height: 9px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    background: var(--miel);
     flex-shrink: 0;
 }
 
 .pulso-en-vivo::after {
     content: "";
     position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: #2F7D4F;
+    inset: -1px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    background: var(--miel);
     animation: latidoEnVivo 1.8s ease-out infinite;
 }
 
@@ -6106,15 +6167,62 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 @keyframes destelloValorActualizado {
     0% {
-        color: #2F7D4F;
+        color: var(--miel);
+        transform: scale(1.1);
     }
     100% {
         color: inherit;
+        transform: scale(1);
     }
 }
 
 .valor-actualizado {
+    display: inline-block;
     animation: destelloValorActualizado .8s ease;
+}
+
+/* ---------- ABEJA FUGAZ AL ACTUALIZAR UN NÚMERO ---------- */
+
+.abeja-fugaz {
+    position: absolute;
+    top: -4px;
+    right: 2px;
+    font-size: 15px;
+    line-height: 1;
+    animation: abejaFugaz 1s ease forwards;
+    pointer-events: none;
+}
+
+@keyframes abejaFugaz {
+    0%   { opacity: 0; transform: translate(0, 6px) scale(.6) rotate(0deg); }
+    22%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(20px, -30px) scale(1) rotate(18deg); }
+}
+
+/* ---------- ABEJA QUE VUELA EN LA BIENVENIDA ---------- */
+
+.bienvenida-dashboard {
+    position: relative;
+    overflow: visible;
+}
+
+.abeja-bienvenida {
+    position: absolute;
+    top: -4px;
+    left: -48px;
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    pointer-events: none;
+    animation: vueloBienvenidaAbeja 1.7s cubic-bezier(.25, .7, .3, 1) .3s forwards;
+}
+
+@keyframes vueloBienvenidaAbeja {
+    0%   { opacity: 0;  transform: translate(0, 12px) rotate(-10deg) scale(.6); }
+    12%  { opacity: 1; }
+    50%  { transform: translate(170px, -16px) rotate(8deg) scale(1); }
+    80%  { transform: translate(320px, 6px) rotate(-6deg) scale(1); }
+    100% { opacity: 0;  transform: translate(400px, -10px) rotate(4deg) scale(.85); }
 }
 
 /* ---------- RESPETAR PREFERENCIA DE "REDUCIR MOVIMIENTO" ---------- */
@@ -6131,6 +6239,166 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
         animation: none !important;
         opacity: 0;
     }
+
+    .abeja-fugaz,
+    .abeja-bienvenida {
+        display: none !important;
+    }
+}
+
+/* ---------- ESTELA DE POLEN (uso global: cursor del dashboard + logo) ---------- */
+
+.estela-polen {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--miel);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    animation: desvanecerEstelaPolen .7s ease forwards;
+}
+
+@keyframes desvanecerEstelaPolen {
+    0%   { opacity: .55; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0;   transform: translate(-50%, -70%) scale(.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .estela-polen {
+        display: none;
+    }
+}
+
+/* ---------- PARTÍCULAS FLOTANTES DE FONDO (polen / hexágonos) ---------- */
+
+.dashboard-fondo-panal {
+    position: relative;
+}
+
+.particulas-flotantes {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.dashboard-fondo-panal-contenido {
+    position: relative;
+    z-index: 1;
+}
+
+.particulas-flotantes span {
+    position: absolute;
+    bottom: -24px;
+    width: 7px;
+    height: 7px;
+    background: var(--miel);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    opacity: 0;
+    animation: flotarParticulaPanal linear infinite;
+}
+
+@keyframes flotarParticulaPanal {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    8%   { opacity: .35; }
+    92%  { opacity: .3; }
+    100% { transform: translate(var(--deriva, 30px), -640px) rotate(200deg); opacity: 0; }
+}
+
+.particulas-flotantes span:nth-child(1)  { left: 3%;   width: 6px; height: 6px;  animation-duration: 24s; animation-delay: 0s;   --deriva: 40px; }
+.particulas-flotantes span:nth-child(2)  { left: 11%;  width: 4px; height: 4px;  border-radius: 50%; clip-path: none; animation-duration: 19s; animation-delay: 2s;   --deriva: -25px; }
+.particulas-flotantes span:nth-child(3)  { left: 21%;  width: 8px; height: 8px;  animation-duration: 30s; animation-delay: 5s;   --deriva: 20px; }
+.particulas-flotantes span:nth-child(4)  { left: 32%;  width: 5px; height: 5px;  border-radius: 50%; clip-path: none; animation-duration: 21s; animation-delay: 1s;   --deriva: -40px; }
+.particulas-flotantes span:nth-child(5)  { left: 44%;  width: 7px; height: 7px;  animation-duration: 27s; animation-delay: 7s;   --deriva: 30px; }
+.particulas-flotantes span:nth-child(6)  { left: 55%;  width: 4px; height: 4px;  border-radius: 50%; clip-path: none; animation-duration: 18s; animation-delay: 3.5s; --deriva: -20px; }
+.particulas-flotantes span:nth-child(7)  { left: 64%;  width: 9px; height: 9px;  animation-duration: 32s; animation-delay: 0.5s; --deriva: -35px; }
+.particulas-flotantes span:nth-child(8)  { left: 74%;  width: 5px; height: 5px;  border-radius: 50%; clip-path: none; animation-duration: 22s; animation-delay: 6s;   --deriva: 25px; }
+.particulas-flotantes span:nth-child(9)  { left: 82%;  width: 7px; height: 7px;  animation-duration: 26s; animation-delay: 4s;   --deriva: -15px; }
+.particulas-flotantes span:nth-child(10) { left: 90%;  width: 4px; height: 4px;  border-radius: 50%; clip-path: none; animation-duration: 20s; animation-delay: 8s;   --deriva: 30px; }
+.particulas-flotantes span:nth-child(11) { left: 96%;  width: 6px; height: 6px;  animation-duration: 29s; animation-delay: 2.5s; --deriva: -30px; }
+.particulas-flotantes span:nth-child(12) { left: 60%;  width: 6px; height: 6px;  animation-duration: 23s; animation-delay: 9s;   --deriva: 15px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .particulas-flotantes {
+        display: none;
+    }
+}
+
+/* ---------- BARRA "PANAL LLENO" (componente reutilizable) ----------
+   Uso: <div class="barra-panal"><div class="barra-panal-relleno" id="miBarra"></div></div>
+   Luego en JS: estableceBarraPanal(document.getElementById("miBarra"), 72);
+------------------------------------------------------------------- */
+
+.barra-panal {
+    width: 100%;
+    height: 14px;
+    background: #f3ead2;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.barra-panal-relleno {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--miel), #ffcf4d);
+    border-radius: 999px;
+    position: relative;
+    transition: width 1.1s cubic-bezier(.2, .8, .2, 1);
+}
+
+.barra-panal-relleno::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: brilloMiel 2.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .barra-panal-relleno {
+        transition: none;
+    }
+
+    .barra-panal-relleno::after {
+        animation: none;
+    }
+}
+
+@keyframes brilloMiel {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---------- BOTÓN DE SONIDO DE NOTIFICACIONES ---------- */
+
+.btn-sonido-notificaciones {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: #909A95;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.btn-sonido-notificaciones:hover {
+    background: #edf7f0;
+    color: var(--verde-oscuro);
+    transform: scale(1.08);
+}
+
+.btn-sonido-notificaciones.sonido-activo {
+    color: var(--miel);
 }
 
 /* =========================================================

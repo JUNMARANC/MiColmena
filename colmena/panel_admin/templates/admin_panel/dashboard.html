@@ -1,15 +1,28 @@
 {% extends 'admin_panel/base_admin.html' %}
 
+{% load static %}
+
 {% block title %}Inicio | Panel Administrador{% endblock %}
 {% block page_title %}Panel Administrador{% endblock %}
 
 {% block content %}
 
+<div class="dashboard-fondo-panal">
+
+<div class="particulas-flotantes" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="dashboard-fondo-panal-contenido">
+
 <!-- =======================================================
 BIENVENIDA
 ======================================================= -->
 
-<div class="mb-4">
+<div class="mb-4 bienvenida-dashboard">
+
+    <img src="{% static 'home/img/abejita_contanos.png' %}" alt="" class="abeja-bienvenida" aria-hidden="true">
 
     <h2 class="mb-1">
         Bienvenido, {{ nombre_usuario }}
@@ -153,6 +166,16 @@ ACTIVIDAD RECIENTE (distribuida horizontalmente)
         <small class="dashboard-subtitle d-flex align-items-center gap-2">
             <span class="pulso-en-vivo" title="Actualización en vivo"></span>
             Últimos registros
+
+            <button
+                type="button"
+                id="btnSonidoNotificaciones"
+                class="btn-sonido-notificaciones"
+                aria-pressed="false"
+                title="Activar sonido de notificaciones"
+            >
+                <i class="bi bi-volume-mute"></i>
+            </button>
         </small>
     </div>
 
@@ -193,9 +216,11 @@ ACTIVIDAD RECIENTE (distribuida horizontalmente)
 
 </div>
 
-{% endblock %}
+</div>
 
-{% load static %}
+</div>
+
+{% endblock %}
 
 {% block extra_js %}
 
