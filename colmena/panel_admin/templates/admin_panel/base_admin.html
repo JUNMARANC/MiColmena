@@ -20,11 +20,26 @@
 
 <body>
 
+<div class="barra-carga-admin" id="barraCargaAdmin" aria-hidden="true"></div>
+
 <div class="overlay-sidebar" id="overlaySidebar"></div>
 
 <div class="admin-layout">
 
     <aside class="sidebar-admin" id="sidebarAdmin">
+
+        <script>
+            // Aplica el estado guardado (colapsado/expandido) antes de pintar
+            // el sidebar, para que no se vea un "flash" del menú expandido
+            // que luego se colapsa.
+            (function () {
+                try {
+                    if (localStorage.getItem("sidebarColapsado") === "1") {
+                        document.getElementById("sidebarAdmin").classList.add("collapsed");
+                    }
+                } catch (error) {}
+            })();
+        </script>
 
         <div class="sidebar-header">
             <div class="logo-circle">
@@ -50,69 +65,69 @@
 
         <nav class="sidebar-menu">
 
-            <a href="{% url 'dashboard_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
+            <a href="{% url 'dashboard_admin' %}" data-tooltip="Inicio" class="menu-link {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
                 <i class="bi bi-house-door"></i>
                 <span>Inicio</span>
             </a>
 
             {% if "av" in permisos_usuario %}
-                <a href="{% url 'apiarios_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'apiarios_admin' %}active{% endif %}">
+                <a href="{% url 'apiarios_admin' %}" data-tooltip="Apiarios" class="menu-link {% if request.resolver_match.url_name == 'apiarios_admin' %}active{% endif %}">
                     <i class="bi bi-geo-alt"></i>
                     <span>Apiarios</span>
                 </a>
             {% endif %}
 
             {% if "cv" in permisos_usuario %}
-                <a href="{% url 'colmenas_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'colmenas_admin' %}active{% endif %}">
+                <a href="{% url 'colmenas_admin' %}" data-tooltip="Colmenas" class="menu-link {% if request.resolver_match.url_name == 'colmenas_admin' %}active{% endif %}">
                     <i class="bi bi-hexagon"></i>
                     <span>Colmenas</span>
                 </a>
             {% endif %}
 
             {% if "mg" in permisos_usuario or "mr" in permisos_usuario %}
-                <a href="{% url 'mantenimientos_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'mantenimientos_admin' %}active{% endif %}">
+                <a href="{% url 'mantenimientos_admin' %}" data-tooltip="Mantenimientos" class="menu-link {% if request.resolver_match.url_name == 'mantenimientos_admin' %}active{% endif %}">
                     <i class="bi bi-tools"></i>
                     <span>Mantenimientos</span>
                 </a>
             {% endif %}
 
             {% if "ig" in permisos_usuario or "ir" in permisos_usuario %}
-                <a href="{% url 'incidencias_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'incidencias_admin' %}active{% endif %}">
+                <a href="{% url 'incidencias_admin' %}" data-tooltip="Incidencias" class="menu-link {% if request.resolver_match.url_name == 'incidencias_admin' %}active{% endif %}">
                     <i class="bi bi-exclamation-triangle"></i>
                     <span>Incidencias</span>
                 </a>
             {% endif %}
 
 
-            <a href="{% url 'apicultores_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'apicultores_admin' %}active{% endif %}">
+            <a href="{% url 'apicultores_admin' %}" data-tooltip="Apicultores" class="menu-link {% if request.resolver_match.url_name == 'apicultores_admin' %}active{% endif %}">
                 <i class="bi bi-person-badge"></i>
                 <span>Apicultores</span>
             </a>
             
 
             {% if "agenda" in permisos_usuario %}
-                <a href="{% url 'agenda_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}">
+                <a href="{% url 'agenda_admin' %}" data-tooltip="Agenda" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}">
                     <i class="bi bi-calendar-event"></i>
                     <span>Agenda</span>
                 </a>
             {% endif %}
 
             {% if "rv" in permisos_usuario %}
-                <a href="{% url 'reportes_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'reportes_admin' %}active{% endif %}">
+                <a href="{% url 'reportes_admin' %}" data-tooltip="Reportes" class="menu-link {% if request.resolver_match.url_name == 'reportes_admin' %}active{% endif %}">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                     <span>Reportes</span>
                 </a>
             {% endif %}
 
             {% if "ug" in permisos_usuario or "roles" in permisos_usuario %}
-                <a href="{% url 'usuarios_roles_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}active{% endif %}">
+                <a href="{% url 'usuarios_roles_admin' %}" data-tooltip="Usuarios y Roles" class="menu-link {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}active{% endif %}">
                     <i class="bi bi-people"></i>
                     <span>Usuarios y Roles</span>
                 </a>
             {% endif %}
 
             {% if "cfg" in permisos_usuario %}
-                <a href="{% url 'configuracion_admin' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_admin' %}active{% endif %}">
+                <a href="{% url 'configuracion_admin' %}" data-tooltip="Configuración" class="menu-link {% if request.resolver_match.url_name == 'configuracion_admin' %}active{% endif %}">
                     <i class="bi bi-gear"></i>
                     <span>Configuración</span>
                 </a>

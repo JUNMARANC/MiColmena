@@ -3,10 +3,34 @@ const sidebarAdmin = document.getElementById("sidebarAdmin");
 const btnCollapseSidebar = document.getElementById("btnCollapseSidebar");
 const btnMobileSidebar = document.getElementById("btnMobileSidebar");
 const overlaySidebar = document.getElementById("overlaySidebar");
- 
+
+const CLAVE_SIDEBAR_COLAPSADO = "sidebarColapsado";
+
 if (btnCollapseSidebar && sidebarAdmin) {
+
+    // Refleja en el botón el estado ya aplicado al cargar la página
+    // (el estado inicial lo aplica un script embebido en base_admin.html
+    // antes de que se pinte el sidebar, para evitar el "parpadeo").
+    btnCollapseSidebar.setAttribute(
+        "aria-expanded",
+        sidebarAdmin.classList.contains("collapsed") ? "false" : "true"
+    );
+
     btnCollapseSidebar.addEventListener("click", () => {
-        sidebarAdmin.classList.toggle("collapsed");
+        const colapsado = sidebarAdmin.classList.toggle("collapsed");
+
+        btnCollapseSidebar.setAttribute("aria-expanded", colapsado ? "false" : "true");
+
+        // pequeño "golpe" en el botón para reforzar la animación del clic
+        btnCollapseSidebar.classList.remove("btn-collapse-clic");
+        void btnCollapseSidebar.offsetWidth; // fuerza reinicio de la animación
+        btnCollapseSidebar.classList.add("btn-collapse-clic");
+
+        try {
+            localStorage.setItem(CLAVE_SIDEBAR_COLAPSADO, colapsado ? "1" : "0");
+        } catch (error) {
+            // localStorage no disponible (navegación privada, etc.): no rompe nada
+        }
     });
 }
  
@@ -21,6 +45,75 @@ if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
         overlaySidebar.classList.remove("active");
     });
 }
+
+/* CAMPANA DE NOTIFICACIONES */
+(function () {
+    var btnNotificaciones = document.getElementById("btnNotificaciones");
+    var contador = document.getElementById("contadorNotificaciones");
+
+    if (btnNotificaciones && contador) {
+        btnNotificaciones.classList.add("campana-activa");
+    }
+})();
+
+/* =========================================================
+   BARRA DE CARGA AL NAVEGAR ENTRE PÁGINAS
+   ========================================================= */
+(function () {
+    var barra = document.getElementById("barraCargaAdmin");
+    if (!barra) return;
+
+    var prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function iniciarCarga() {
+        barra.style.transition = "none";
+        barra.style.width = "0%";
+        barra.style.opacity = "1";
+        void barra.offsetWidth; // fuerza reinicio antes de animar
+
+        if (prefiereMenosMovimiento) {
+            barra.style.width = "80%";
+            return;
+        }
+
+        barra.style.transition = "width 4s cubic-bezier(.1,.6,.2,1)";
+        barra.style.width = "80%";
+    }
+
+    function terminarCarga() {
+        barra.style.transition = "width .25s ease";
+        barra.style.width = "100%";
+
+        setTimeout(function () {
+            barra.style.transition = "opacity .3s ease";
+            barra.style.opacity = "0";
+
+            setTimeout(function () {
+                barra.style.width = "0%";
+            }, 300);
+        }, 180);
+    }
+
+    window.addEventListener("load", terminarCarga);
+
+    document.addEventListener("click", function (evento) {
+        var enlace = evento.target.closest("a[href]");
+        if (!enlace) return;
+        if (enlace.target === "_blank") return;
+        if (enlace.hasAttribute("download")) return;
+        if (evento.ctrlKey || evento.metaKey || evento.shiftKey) return;
+
+        var href = enlace.getAttribute("href");
+        if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+
+        iniciarCarga();
+    });
+
+    document.addEventListener("submit", function (evento) {
+        if (evento.defaultPrevented) return;
+        iniciarCarga();
+    });
+})();
  
 /*mantenimientos */
  

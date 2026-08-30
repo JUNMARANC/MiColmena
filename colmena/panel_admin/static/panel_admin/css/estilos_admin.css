@@ -35,9 +35,53 @@ a {
     text-decoration: none;
 }
 
+/*==================================================
+SCROLLBAR
+==================================================*/
+
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--verde-medio) #eaf3ec;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #eaf3ec;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--verde-medio), var(--verde-oscuro));
+    border-radius: 999px;
+    border: 2px solid #eaf3ec;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--verde-oscuro);
+}
+
 .admin-layout {
     display: flex;
     min-height: 100vh;
+}
+
+/*==================================================
+BARRA DE CARGA
+==================================================*/
+
+.barra-carga-admin {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--amarillo), var(--verde-medio));
+    box-shadow: 0 0 8px rgba(240, 160, 0, .55);
+    z-index: 99999;
+    opacity: 0;
 }
 
 /*==================================================
@@ -47,7 +91,10 @@ SIDEBAR
 .sidebar-admin {
     width: 260px;
     height: 100vh;
-    background: var(--verde-claro);
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(33,79,59,0.055)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(33,79,59,0.055)' stroke-width='1'/%3E%3C/svg%3E"),
+        var(--verde-claro);
+    background-repeat: repeat, no-repeat;
     border-right: 1px solid rgba(33, 79, 59, .25);
     padding: 18px 14px;
     position: fixed;
@@ -82,6 +129,13 @@ SIDEBAR
 .logo-circle i {
     font-size: 30px;
     color: var(--verde-oscuro);
+    display: inline-block;
+    animation: flotarLogoSidebar 3.2s ease-in-out infinite;
+}
+
+@keyframes flotarLogoSidebar {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-3px) rotate(-8deg); }
 }
 
 .brand-text h4 {
@@ -99,22 +153,45 @@ SIDEBAR
 .btn-collapse-sidebar {
     position: absolute;
     top: 22px;
-    right: -16px;
-    width: 32px;
-    height: 32px;
+    right: -17px;
+    width: 34px;
+    height: 34px;
     border: none;
-    border-radius: 50%;
-    background: var(--verde-medio);
-    color: white;
+    background: linear-gradient(155deg, var(--amarillo), var(--verde-medio));
+    color: var(--verde-oscuro);
     display: flex;
     align-items: center;
     justify-content: center;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
     box-shadow: 0 8px 18px rgba(0,0,0,.18);
-    transition: .3s;
+    transition:
+        transform .4s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s ease,
+        box-shadow .25s ease;
 }
 
 .btn-collapse-sidebar:hover {
-    background: var(--verde-oscuro);
+    background: linear-gradient(155deg, var(--verde-oscuro), var(--verde-medio));
+    color: #fff8d8;
+    box-shadow: 0 10px 22px rgba(0,0,0,.26);
+    transform: scale(1.14);
+}
+
+.btn-collapse-sidebar:active {
+    transform: scale(.92);
+}
+
+.btn-collapse-sidebar i {
+    transition: transform .45s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-collapse-clic {
+    animation: golpeBtnCollapse .35s ease;
+}
+
+@keyframes golpeBtnCollapse {
+    0%   { box-shadow: 0 0 0 0 rgba(95, 151, 129, .55); }
+    100% { box-shadow: 0 0 0 12px rgba(95, 151, 129, 0); }
 }
 
 /*==================================================
@@ -147,6 +224,8 @@ MENÚ SIDEBAR
     font-size: 18px;
     min-width: 22px;
     text-align: center;
+    display: inline-block;
+    transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), color .25s ease;
 }
 
 .menu-link:hover {
@@ -155,20 +234,88 @@ MENÚ SIDEBAR
     color: var(--texto);
 }
 
+.menu-link:hover i {
+    transform: scale(1.22) rotate(-8deg);
+}
+
 .menu-link.active {
     background: var(--verde-medio);
     color: #10251a;
     font-weight: 600;
 }
 
+.menu-link.active i {
+    animation: iconoActivoSidebar .5s ease;
+}
+
+@keyframes iconoActivoSidebar {
+    0%   { transform: scale(1) rotate(0); }
+    45%  { transform: scale(1.35) rotate(10deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
 .menu-link.active::before {
     content: "";
     position: absolute;
-    left: -7px;
-    width: 4px;
-    height: 24px;
+    left: -9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
     background: var(--amarillo);
-    border-radius: 20px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+}
+
+/* Entrada escalonada del menú al cargar la página */
+.sidebar-menu .menu-link {
+    opacity: 0;
+    animation: entradaMenuLateral .5s ease forwards;
+}
+
+.sidebar-menu .menu-link:nth-child(1)  { animation-delay: .03s; }
+.sidebar-menu .menu-link:nth-child(2)  { animation-delay: .07s; }
+.sidebar-menu .menu-link:nth-child(3)  { animation-delay: .11s; }
+.sidebar-menu .menu-link:nth-child(4)  { animation-delay: .15s; }
+.sidebar-menu .menu-link:nth-child(5)  { animation-delay: .19s; }
+.sidebar-menu .menu-link:nth-child(6)  { animation-delay: .23s; }
+.sidebar-menu .menu-link:nth-child(7)  { animation-delay: .27s; }
+.sidebar-menu .menu-link:nth-child(8)  { animation-delay: .31s; }
+.sidebar-menu .menu-link:nth-child(9)  { animation-delay: .35s; }
+.sidebar-menu .menu-link:nth-child(10) { animation-delay: .39s; }
+
+@keyframes entradaMenuLateral {
+    from { opacity: 0; transform: translateX(-14px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Tooltip con el nombre de la sección cuando el menú está colapsado */
+.sidebar-admin.collapsed .menu-link {
+    position: relative;
+}
+
+.sidebar-admin.collapsed .menu-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-6px);
+    background: var(--verde-oscuro);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 8px 18px rgba(0,0,0,.22);
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 1200;
+}
+
+.sidebar-admin.collapsed .menu-link:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
 }
 
 /*==================================================
@@ -180,8 +327,9 @@ USUARIO SIDEBAR
     padding-top: 16px;
     border-top: 1px solid rgba(33, 79, 59, .25);
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
 }
 
 .user-avatar {
@@ -257,9 +405,12 @@ SIDEBAR COLAPSADO
     display: none;
 }
 
-.sidebar-admin.collapsed .sidebar-header,
-.sidebar-admin.collapsed .sidebar-user {
+.sidebar-admin.collapsed .sidebar-header {
     justify-content: center;
+}
+
+.sidebar-admin.collapsed .sidebar-user {
+    align-items: center;
 }
 
 .sidebar-admin.collapsed .menu-link {
@@ -278,6 +429,99 @@ SIDEBAR COLAPSADO
 
 .sidebar-admin.collapsed .btn-collapse-sidebar i {
     transform: rotate(180deg);
+}
+
+/*==================================================
+SIDEBAR COLAPSADO: SE ASOMA AL ACERCAR EL MOUSE
+==================================================*/
+
+.sidebar-admin.collapsed:hover {
+    width: 260px;
+    padding: 18px 14px;
+    z-index: 1100;
+    box-shadow: 14px 0 34px rgba(0,0,0,.22);
+}
+
+.sidebar-admin.collapsed:hover .brand-text {
+    display: block;
+}
+
+.sidebar-admin.collapsed:hover .menu-link span,
+.sidebar-admin.collapsed:hover .sidebar-profile-logout span {
+    display: inline;
+}
+
+.sidebar-admin.collapsed:hover .sidebar-profile-info,
+.sidebar-admin.collapsed:hover .sidebar-profile-arrow {
+    display: flex;
+}
+
+.sidebar-admin.collapsed:hover .sidebar-header {
+    justify-content: flex-start;
+}
+
+.sidebar-admin.collapsed:hover .sidebar-user {
+    align-items: stretch;
+}
+
+.sidebar-admin.collapsed:hover .menu-link {
+    justify-content: flex-start;
+    padding: 10px 13px;
+}
+
+.sidebar-admin.collapsed:hover .menu-link:hover {
+    transform: translateX(3px);
+}
+
+.sidebar-admin.collapsed:hover .sidebar-profile-link {
+    justify-content: flex-start;
+    padding: 8px;
+}
+
+.sidebar-admin.collapsed:hover .sidebar-user {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.sidebar-admin.collapsed:hover .sidebar-profile-logout {
+    justify-content: flex-start;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/* Mientras está expandido por el mouse ya se ve el texto, así que el tooltip sobra */
+.sidebar-admin.collapsed:hover .menu-link::after {
+    display: none;
+}
+
+/*==================================================
+REDUCIR MOVIMIENTO (accesibilidad)
+==================================================*/
+
+@media (prefers-reduced-motion: reduce) {
+    .logo-circle i,
+    .btn-collapse-clic,
+    .menu-link.active i,
+    .sidebar-menu .menu-link {
+        animation: none !important;
+    }
+
+    .sidebar-menu .menu-link {
+        opacity: 1;
+    }
+
+    .menu-link,
+    .menu-link i,
+    .btn-collapse-sidebar,
+    .btn-collapse-sidebar i,
+    .sidebar-admin.collapsed .menu-link::after {
+        transition: none !important;
+    }
+
+    .menu-link:hover i,
+    .btn-collapse-sidebar:hover {
+        transform: none;
+    }
 }
 
 /*==================================================
@@ -4819,6 +5063,10 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 .tarjeta-dashboard{
 
+    position:relative;
+
+    overflow:hidden;
+
     background:#FFFFFF;
 
     border:1px solid #E6EEE9;
@@ -4845,6 +5093,32 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 }
 
+.tarjeta-dashboard::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:-16px;
+
+    right:-16px;
+
+    width:48px;
+
+    height:48px;
+
+    background:linear-gradient(155deg, var(--amarillo), var(--verde-medio));
+
+    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+
+    opacity:0;
+
+    transform:scale(.55) rotate(-25deg);
+
+    transition:opacity .3s ease, transform .4s cubic-bezier(.34, 1.56, .64, 1);
+
+}
+
 .tarjeta-dashboard:hover{
 
     transform:translateY(-4px);
@@ -4852,6 +5126,14 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     box-shadow:0 12px 22px rgba(33,79,59,.10);
 
     border-color:#D4E8DB;
+
+}
+
+.tarjeta-dashboard:hover::after{
+
+    opacity:.20;
+
+    transform:scale(1) rotate(0deg);
 
 }
 
@@ -4875,6 +5157,14 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     justify-content:center;
 
     margin-bottom:12px;
+
+    transition:transform .35s cubic-bezier(.34, 1.56, .64, 1);
+
+}
+
+.tarjeta-dashboard:hover .icono-dashboard{
+
+    transform:scale(1.12) rotate(-6deg);
 
 }
 
@@ -6059,7 +6349,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     height: 100vh;
 
-    overflow: hidden;
+    overflow: visible;
 }
 
 
@@ -6179,7 +6469,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     overflow: hidden;
 
-    border-radius: 50%;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     background: #ffffff;
 
@@ -6415,7 +6705,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     padding: 0;
 
     border: 1px solid #d9e6de;
-    border-radius: 13px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     background: #ffffff;
 
@@ -6434,7 +6724,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 
 .btn-notificaciones:hover {
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.06);
 
     background: #edf7f0;
 
@@ -6443,6 +6733,21 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     box-shadow:
         0 5px 15px
         rgba(33, 79, 59, 0.08);
+}
+
+.btn-notificaciones.campana-activa i {
+    animation: tintineoCampana 2.6s ease-in-out infinite;
+    transform-origin: top center;
+}
+
+@keyframes tintineoCampana {
+    0%, 78%, 100% { transform: rotate(0deg); }
+    80%  { transform: rotate(-14deg); }
+    83%  { transform: rotate(11deg); }
+    86%  { transform: rotate(-8deg); }
+    89%  { transform: rotate(5deg); }
+    92%  { transform: rotate(-3deg); }
+    95%  { transform: rotate(0deg); }
 }
 
 
@@ -6476,7 +6781,28 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     font-weight: 700;
 
     line-height: 1;
+
+    animation: pulsoContadorNotificaciones 1.8s ease-in-out infinite;
 }
+
+@keyframes pulsoContadorNotificaciones {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(214, 69, 69, .55); }
+    50%      { box-shadow: 0 0 0 5px rgba(214, 69, 69, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-notificaciones.campana-activa i,
+    .notificaciones-contador {
+        animation: none !important;
+    }
+
+    .btn-notificaciones,
+    .icono-dashboard,
+    .tarjeta-dashboard::after {
+        transition: none !important;
+    }
+}
+
 
 
 /* =========================================================
@@ -6545,7 +6871,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     align-items: center;
     justify-content: center;
 
-    border-radius: 10px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     background: #edf7f0;
 
@@ -6630,7 +6956,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     align-items: center;
     justify-content: center;
 
-    border-radius: 12px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     background: #edf7f0;
 
@@ -6765,7 +7091,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     align-items: center;
     justify-content: center;
 
-    border-radius: 50%;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
     background: #edf7f0;
 
