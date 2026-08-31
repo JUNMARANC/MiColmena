@@ -282,3 +282,298 @@ document.addEventListener("DOMContentLoaded", function () {
     });
  
 });
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        // =====================================================
+        // CAPACIDAD DE APIARIOS
+        // =====================================================
+
+        document
+            .querySelectorAll(
+                ".form-validar-colmena"
+            )
+            .forEach(
+                function (formulario) {
+
+                    const selectApiario = (
+                        formulario.querySelector(
+                            '[name="id_apiario"]'
+                        )
+                    );
+
+
+                    if (!selectApiario) {
+                        return;
+                    }
+
+
+                    const ayuda = (
+                        formulario.querySelector(
+                            ".ayuda-capacidad-apiario"
+                        )
+                    );
+
+
+                    const apiarioOriginal = (
+                        formulario.dataset
+                            .apiarioOriginal
+                        ||
+                        ""
+                    );
+
+
+                    // =========================================
+                    // VALIDAR CAPACIDAD
+                    // =========================================
+
+                    function validarCapacidadApiario() {
+
+                        selectApiario
+                            .setCustomValidity(
+                                ""
+                            );
+
+
+                        const opcion = (
+                            selectApiario
+                                .options[
+                                    selectApiario
+                                        .selectedIndex
+                                ]
+                        );
+
+
+                        // -------------------------------------
+                        // SIN APIARIO
+                        // -------------------------------------
+
+                        if (
+                            !selectApiario.value
+                            ||
+                            !opcion
+                        ) {
+
+                            if (ayuda) {
+
+                                ayuda.textContent =
+                                    "";
+
+                                ayuda.classList.remove(
+                                    "disponible",
+                                    "completo"
+                                );
+
+                            }
+
+
+                            return true;
+
+                        }
+
+
+                        // -------------------------------------
+                        // DATOS
+                        // -------------------------------------
+
+                        const actual = (
+                            Number.parseInt(
+                                opcion.dataset.actual
+                                ||
+                                "0",
+                                10
+                            )
+                        );
+
+
+                        const maximo = (
+                            Number.parseInt(
+                                opcion.dataset.maximo
+                                ||
+                                "0",
+                                10
+                            )
+                        );
+
+
+                        const esApiarioOriginal = (
+                            apiarioOriginal
+                            &&
+                            String(
+                                selectApiario.value
+                            )
+                            ===
+                            String(
+                                apiarioOriginal
+                            )
+                        );
+
+
+                        // -------------------------------------
+                        // EDITANDO LA MISMA COLMENA
+                        // -------------------------------------
+
+                        if (esApiarioOriginal) {
+
+                            if (ayuda) {
+
+                                ayuda.textContent =
+                                    `${actual} de ${maximo} colmenas registradas. Esta colmena ya pertenece a este apiario.`;
+
+
+                                ayuda.classList.remove(
+                                    "completo"
+                                );
+
+
+                                ayuda.classList.add(
+                                    "disponible"
+                                );
+
+                            }
+
+
+                            return true;
+
+                        }
+
+
+                        // -------------------------------------
+                        // APIARIO COMPLETO
+                        // -------------------------------------
+
+                        if (
+                            actual >= maximo
+                        ) {
+
+                            const mensaje = (
+                                `Este apiario ya alcanzó `
+                                +
+                                `su capacidad máxima de `
+                                +
+                                `${maximo} colmena(s).`
+                            );
+
+
+                            selectApiario
+                                .setCustomValidity(
+                                    mensaje
+                                );
+
+
+                            if (ayuda) {
+
+                                ayuda.textContent =
+                                    mensaje;
+
+
+                                ayuda.classList.remove(
+                                    "disponible"
+                                );
+
+
+                                ayuda.classList.add(
+                                    "completo"
+                                );
+
+                            }
+
+
+                            return false;
+
+                        }
+
+
+                        // -------------------------------------
+                        // CUPOS DISPONIBLES
+                        // -------------------------------------
+
+                        const disponibles = (
+                            maximo
+                            -
+                            actual
+                        );
+
+
+                        if (ayuda) {
+
+                            ayuda.textContent =
+                                (
+                                    `${actual} de ${maximo} `
+                                    +
+                                    `colmenas registradas. `
+                                    +
+                                    `${disponibles} cupo(s) `
+                                    +
+                                    `disponible(s).`
+                                );
+
+
+                            ayuda.classList.remove(
+                                "completo"
+                            );
+
+
+                            ayuda.classList.add(
+                                "disponible"
+                            );
+
+                        }
+
+
+                        return true;
+
+                    }
+
+
+                    // =========================================
+                    // CAMBIO DE APIARIO
+                    // =========================================
+
+                    selectApiario.addEventListener(
+                        "change",
+                        validarCapacidadApiario
+                    );
+
+
+                    // =========================================
+                    // VALIDACIÓN INICIAL
+                    // =========================================
+
+                    validarCapacidadApiario();
+
+
+                    // =========================================
+                    // VALIDAR AL ENVIAR
+                    // =========================================
+
+                    formulario.addEventListener(
+                        "submit",
+                        function (evento) {
+
+                            const valido = (
+                                validarCapacidadApiario()
+                            );
+
+
+                            if (!valido) {
+
+                                evento.preventDefault();
+
+                                evento.stopPropagation();
+
+                                selectApiario
+                                    .reportValidity();
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+);

@@ -1151,8 +1151,17 @@
                                         <input
                                             type="text"
                                             class="form-control"
+                                            id="primerNombreAdministrador"
                                             name="primer_nombre"
+
+                                            minlength="2"
                                             maxlength="75"
+
+                                            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]{2,75}"
+
+                                            title="Usa solamente letras, espacios, apóstrofes o guiones"
+
+                                            autocomplete="given-name"
                                             required
                                         >
 
@@ -1168,8 +1177,17 @@
                                         <input
                                             type="text"
                                             class="form-control"
+                                            id="segundoNombreAdministrador"
                                             name="segundo_nombre"
+
+                                            minlength="2"
                                             maxlength="75"
+
+                                            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]{2,75}"
+
+                                            title="Usa solamente letras, espacios, apóstrofes o guiones"
+
+                                            autocomplete="additional-name"
                                         >
 
                                     </div>
@@ -1185,8 +1203,17 @@
                                         <input
                                             type="text"
                                             class="form-control"
+                                            id="primerApellidoAdministrador"
                                             name="primer_apellido"
+
+                                            minlength="2"
                                             maxlength="75"
+
+                                            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]{2,75}"
+
+                                            title="Usa solamente letras, espacios, apóstrofes o guiones"
+
+                                            autocomplete="family-name"
                                             required
                                         >
 
@@ -1202,8 +1229,17 @@
                                         <input
                                             type="text"
                                             class="form-control"
+                                            id="segundoApellidoAdministrador"
                                             name="segundo_apellido"
+
+                                            minlength="2"
                                             maxlength="75"
+
+                                            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]{2,75}"
+
+                                            title="Usa solamente letras, espacios, apóstrofes o guiones"
+
+                                            autocomplete="additional-name"
                                         >
 
                                     </div>
@@ -1218,10 +1254,19 @@
                                         <input
                                             type="tel"
                                             class="form-control"
+                                            id="celularAdministrador"
                                             name="celular"
-                                            maxlength="20"
+
+                                            minlength="10"
+                                            maxlength="10"
+
                                             inputmode="numeric"
+                                            pattern="3[0-9]{9}"
+
+                                            title="El celular debe tener exactamente 10 números y comenzar por 3"
+
                                             placeholder="Ejemplo: 3101234567"
+                                            autocomplete="tel"
                                         >
 
                                     </div>
@@ -1239,11 +1284,24 @@
                                             class="form-control"
                                             id="correoAdministrador"
                                             name="correo"
+
                                             maxlength="254"
+
+                                            pattern="[A-Za-z0-9._%+-]+@[Gg][Mm][Aa][Ii][Ll][.][Cc][Oo][Mm]"
+
+                                            title="Debes ingresar una dirección válida de Gmail"
+
+                                            placeholder="Ejemplo: administrador@gmail.com"
+
+                                            autocomplete="email"
+                                            spellcheck="false"
                                             required
                                         >
 
-                                        <div class="invalid-feedback" id="feedbackCorreoAdministrador"></div>
+                                        <div
+                                            class="invalid-feedback"
+                                            id="feedbackCorreoAdministrador"
+                                        ></div>
 
                                     </div>
 
@@ -1300,12 +1358,23 @@
                                             class="form-control"
                                             id="usernameAdministrador"
                                             name="username"
+
+                                            minlength="1"
                                             maxlength="150"
+
                                             pattern="[A-Za-z0-9_@.+-]+"
+
+                                            title="Solo se permiten letras, números y los caracteres @ . + - _"
+
+                                            autocomplete="username"
+                                            spellcheck="false"
                                             required
                                         >
 
-                                        <div class="invalid-feedback" id="feedbackUsernameAdministrador"></div>
+                                        <div
+                                            class="invalid-feedback"
+                                            id="feedbackUsernameAdministrador"
+                                        ></div>
 
                                     </div>
 
@@ -1324,7 +1393,11 @@
                                                 class="form-control"
                                                 id="passwordAdministrador"
                                                 name="password"
+
                                                 minlength="8"
+                                                maxlength="128"
+
+                                                autocomplete="new-password"
                                                 required
                                             >
 
@@ -1359,7 +1432,11 @@
                                                 class="form-control"
                                                 id="confirmarPasswordAdministrador"
                                                 name="confirmar_password"
+
                                                 minlength="8"
+                                                maxlength="128"
+
+                                                autocomplete="new-password"
                                                 required
                                             >
 
@@ -1507,7 +1584,6 @@
                 action=""
                 enctype="multipart/form-data"
                 id="formEditarAdministrador"
-                novalidate
             >
 
                 {% csrf_token %}
@@ -1660,7 +1736,15 @@
                                             class="form-control"
                                             id="nombresEditarAdministrador"
                                             name="nombres"
+
+                                            minlength="2"
                                             maxlength="150"
+
+                                            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]{2,150}"
+
+                                            title="Usa solamente letras, espacios, apóstrofes o guiones"
+
+                                            autocomplete="given-name"
                                             required
                                         >
 
@@ -1682,7 +1766,15 @@
                                             class="form-control"
                                             id="apellidosEditarAdministrador"
                                             name="apellidos"
+
+                                            minlength="2"
                                             maxlength="150"
+
+                                            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]{2,150}"
+
+                                            title="Usa solamente letras, espacios, apóstrofes o guiones"
+
+                                            autocomplete="family-name"
                                             required
                                         >
 
@@ -1702,8 +1794,17 @@
                                             class="form-control"
                                             id="celularEditarAdministrador"
                                             name="celular"
-                                            maxlength="20"
+
+                                            minlength="10"
+                                            maxlength="10"
+
                                             inputmode="numeric"
+                                            pattern="3[0-9]{9}"
+
+                                            title="El celular debe tener exactamente 10 números y comenzar por 3"
+
+                                            placeholder="Ejemplo: 3101234567"
+                                            autocomplete="tel"
                                         >
 
                                     </div>
@@ -1724,11 +1825,24 @@
                                             class="form-control"
                                             id="correoEditarAdministrador"
                                             name="correo"
+
                                             maxlength="254"
+
+                                            pattern="[A-Za-z0-9._%+-]+@[Gg][Mm][Aa][Ii][Ll][.][Cc][Oo][Mm]"
+
+                                            title="Debes ingresar una dirección válida de Gmail"
+
+                                            placeholder="Ejemplo: administrador@gmail.com"
+
+                                            autocomplete="email"
+                                            spellcheck="false"
                                             required
                                         >
 
-                                        <div class="invalid-feedback" id="feedbackCorreoEditarAdministrador"></div>
+                                        <div
+                                            class="invalid-feedback"
+                                            id="feedbackCorreoEditarAdministrador"
+                                        ></div>
 
                                     </div>
 
@@ -1838,12 +1952,23 @@
                                             class="form-control"
                                             id="usernameEditarAdministrador"
                                             name="username"
+
+                                            minlength="1"
                                             maxlength="150"
+
                                             pattern="[A-Za-z0-9_@.+-]+"
+
+                                            title="Solo se permiten letras, números y los caracteres @ . + - _"
+
+                                            autocomplete="username"
+                                            spellcheck="false"
                                             required
                                         >
 
-                                        <div class="invalid-feedback" id="feedbackUsernameEditarAdministrador"></div>
+                                        <div
+                                            class="invalid-feedback"
+                                            id="feedbackUsernameEditarAdministrador"
+                                        ></div>
 
                                     </div>
 
@@ -1864,7 +1989,11 @@
                                                 class="form-control"
                                                 id="passwordEditarAdministrador"
                                                 name="password"
+
                                                 minlength="8"
+                                                maxlength="128"
+
+                                                autocomplete="new-password"
                                             >
 
 
@@ -1912,7 +2041,11 @@
                                                 class="form-control"
                                                 id="confirmarPasswordEditarAdministrador"
                                                 name="confirmar_password"
+
                                                 minlength="8"
+                                                maxlength="128"
+
+                                                autocomplete="new-password"
                                             >
 
 

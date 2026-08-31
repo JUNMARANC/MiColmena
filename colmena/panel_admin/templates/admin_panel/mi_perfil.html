@@ -756,8 +756,15 @@
                                     id="correoPerfil"
                                     name="correo"
                                     value="{{ usuario.email }}"
+
                                     maxlength="254"
+
+                                    pattern="[A-Za-z0-9._%+-]+@gmail[.]com"
+
+                                    title="Debes ingresar una dirección de Gmail válida"
+
                                     autocomplete="email"
+                                    spellcheck="false"
                                     required
                                 >
 
@@ -800,8 +807,15 @@
                                     id="telefonoPerfil"
                                     name="telefono"
                                     value="{{ telefono }}"
-                                    maxlength="20"
+
+                                    minlength="10"
+                                    maxlength="10"
+
                                     inputmode="numeric"
+                                    pattern="3[0-9]{9}"
+
+                                    title="El celular debe tener exactamente 10 números y comenzar por 3"
+
                                     autocomplete="tel"
                                     placeholder="Ejemplo: 3101234567"
                                 >

@@ -834,6 +834,475 @@ MODALES
     padding: 15px;
 }
 
+/* =========================================================
+   MODAL ELIMINAR APIARIO
+========================================================= */
+
+.modal-eliminar-apiario {
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.modal-header-eliminar-apiario {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-apiario .modal-title,
+.modal-header-eliminar-apiario p,
+.modal-header-eliminar-apiario i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-apiario p {
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO DEL HEADER
+========================================================= */
+
+.icono-header-eliminar-apiario {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.contenido-eliminar-apiario {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO DE ADVERTENCIA
+========================================================= */
+
+.icono-advertencia-eliminar-apiario {
+
+    width: 78px;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        5px
+        auto
+        18px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 2rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO Y DESCRIPCIÓN
+========================================================= */
+
+.contenido-eliminar-apiario h5 {
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-apiario > p {
+
+    margin-bottom: 14px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+}
+
+
+/* =========================================================
+   NOMBRE DEL APIARIO
+========================================================= */
+
+.nombre-apiario-eliminar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        17px;
+
+    border-radius: 12px;
+
+    background: #f4f7f5;
+
+    color:
+        var(--verde-oscuro);
+
+}
+
+
+.nombre-apiario-eliminar i {
+
+    color:
+        var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida,
+.alerta-eliminacion-apiario-bloqueada {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin-top: 22px;
+
+    padding: 14px;
+
+    border-radius: 13px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   PERMITIDO
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+/* =========================================================
+   BLOQUEADO
+========================================================= */
+
+.alerta-eliminacion-apiario-bloqueada {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+/* =========================================================
+   ICONOS DE ALERTA
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida > i,
+.alerta-eliminacion-apiario-bloqueada > i {
+
+    margin-top: 2px;
+
+    font-size: 1rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DE ALERTAS
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida div,
+.alerta-eliminacion-apiario-bloqueada div {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.alerta-eliminacion-apiario-permitida strong,
+.alerta-eliminacion-apiario-bloqueada strong {
+
+    font-size: 0.8rem;
+
+}
+
+
+.alerta-eliminacion-apiario-permitida span,
+.alerta-eliminacion-apiario-bloqueada span {
+
+    margin-top: 3px;
+
+    font-size: 0.72rem;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-apiario {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-apiario,
+.btn-confirmar-eliminacion-apiario {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CANCELAR
+========================================================= */
+
+.btn-cancelar-eliminacion-apiario {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-apiario:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR ELIMINACIÓN
+========================================================= */
+
+.btn-confirmar-eliminacion-apiario {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-apiario:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   BOTÓN DESHABILITADO
+========================================================= */
+
+.btn-confirmar-eliminacion-apiario:disabled,
+.btn-confirmar-eliminacion-apiario.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-header-eliminar-apiario {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-footer-eliminar-apiario {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-apiario,
+    .btn-confirmar-eliminacion-apiario {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-apiario {
+
+        width: 68px;
+
+        height: 68px;
+
+        font-size: 1.7rem;
+
+    }
+
+}
+
 /*==================================================
 BADGES
 ==================================================*/
@@ -7744,6 +8213,34 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 .notificaciones-ver-todas:hover {
     background: #eef8f1;
     color: var(--verde-oscuro, #214f3b);
+}
+
+/*Limite de colmeas segun lo definido en los apiarios*/
+.ayuda-capacidad-apiario {
+
+    display: block;
+
+    min-height: 18px;
+
+    margin-top: 6px;
+
+    font-size: 0.72rem;
+
+    font-weight: 600;
+
+}
+
+
+.ayuda-capacidad-apiario.disponible {
+
+    color: #4f7b61;
+
+}
+
+
+.ayuda-capacidad-apiario.completo {
+
+    color: #b6424c;
 }
 
 .notificaciones-ver-todas:hover i {
