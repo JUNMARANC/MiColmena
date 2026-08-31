@@ -177,11 +177,17 @@
 {% block scripts %}
 
 <script>
-    const URL_VERIFICAR_DATO_APICULTOR = "{% url 'verificar_dato_apicultor' %}";
+    const URL_VERIFICAR_DATO_APICULTOR =
+        "{% url 'verificar_dato_apicultor' %}";
 </script>
 
-<script src="{% static 'panel_admin/js/apicultor.js' %}"></script>
-<script src="{% static 'panel_admin/js/apicultores_vista.js' %}"></script>
+<script
+    src="{% static 'panel_admin/js/apicultor.js' %}?v=4"
+></script>
+
+<script
+    src="{% static 'panel_admin/js/apicultores_vista.js' %}?v=4"
+></script>
 
 {% endblock %}
 

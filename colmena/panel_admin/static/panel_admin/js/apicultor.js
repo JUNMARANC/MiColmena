@@ -1936,215 +1936,1329 @@ document.addEventListener("DOMContentLoaded", function () {
 });
  
 /* ==========================================================
-   VERIFICACIÓN EN VIVO - DATOS DUPLICADOS (estilo Gmail)
-   ==========================================================
-   Mientras el usuario escribe usuario/correo/identificación,
-   se le pregunta al backend (endpoint de solo consulta) si ese
-   dato ya existe, en vez de esperar a que le dé "Guardar" y
-   perder todo lo que ya había escrito con un mensaje de error.
-   ========================================================== */
-document.addEventListener("DOMContentLoaded", function () {
- 
-    if (typeof URL_VERIFICAR_DATO_APICULTOR === "undefined") {
-        // Si la vista/URL todavía no existe, no rompemos el
-        // formulario: simplemente no se hace el chequeo en vivo
-        // y queda solo la validación del servidor al guardar.
-        return;
-    }
- 
-    const RETRASO_DEBOUNCE_MS = 400;
- 
-    function debounce(funcion, espera) {
-        let temporizador = null;
- 
-        return function (...args) {
-            clearTimeout(temporizador);
-            temporizador = setTimeout(function () {
-                funcion.apply(this, args);
-            }, espera);
-        };
-    }
- 
-    function marcarCampo(campo, esValido, mensajeError) {
- 
-        campo.classList.remove("is-valid", "is-invalid");
- 
-        if (esValido === null) {
-            // Estado neutro (campo vacío): sin check ni error
-            campo.setCustomValidity("");
-            return;
+   VALIDACIONES COMPLETAS EN VIVO - APICULTORES
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        // =====================================================
+        // CONFIGURACIÓN
+        // =====================================================
+
+        const RETRASO_DEBOUNCE_MS = 300;
+
+        const REGEX_IDENTIFICACION =
+            /^[0-9]{6,10}$/;
+
+        const REGEX_TELEFONO =
+            /^3[0-9]{9}$/;
+
+        const REGEX_GMAIL =
+            /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+
+        const REGEX_USERNAME =
+            /^[A-Za-z0-9_@.+-]{1,150}$/;
+
+        const REGEX_NOMBRE =
+            /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+
+
+        // =====================================================
+        // OBTENER / CREAR MENSAJE DE VALIDACIÓN
+        // =====================================================
+
+        function obtenerFeedback(
+            campo
+        ) {
+
+            if (!campo) {
+                return null;
+            }
+
+
+            const idFeedback =
+                `feedback-${campo.id}`;
+
+
+            let feedback = (
+                document.getElementById(
+                    idFeedback
+                )
+            );
+
+
+            if (feedback) {
+                return feedback;
+            }
+
+
+            feedback = (
+                document.createElement(
+                    "small"
+                )
+            );
+
+
+            feedback.id =
+                idFeedback;
+
+
+            feedback.className =
+                "d-block mt-1";
+
+
+            const grupo = (
+                campo.closest(
+                    ".input-group-apicultor"
+                )
+            );
+
+
+            if (grupo) {
+
+                grupo.insertAdjacentElement(
+                    "afterend",
+                    feedback
+                );
+
+            } else {
+
+                campo.insertAdjacentElement(
+                    "afterend",
+                    feedback
+                );
+
+            }
+
+
+            return feedback;
+
         }
- 
-        if (esValido) {
-            campo.classList.add("is-valid");
-            campo.setCustomValidity("");
-        } else {
-            campo.classList.add("is-invalid");
-            campo.setCustomValidity(mensajeError || "Este dato ya está en uso.");
-        }
-    }
- 
-    // El id del apicultor en Editar no viene en ningún atributo
-    // fijo del HTML, así que lo extraemos de la URL de acción que
-    // agenda.js ya arma (".../editar/<id>/"), sin depender de que
-    // exista un data-id concreto en el botón.
-    function extraerIdDesdeUrl(url) {
-        if (!url) return "";
-        const coincidencia = url.match(/(\d+)\/?$/);
-        return coincidencia ? coincidencia[1] : "";
-    }
- 
-    function verificarDato(campo, tipoCampo, idApicultorActual, mensajeDuplicado) {
- 
-        const valor = campo.value.trim();
- 
-        if (!valor) {
-            marcarCampo(campo, null);
-            campo.dataset.duplicado = "0";
-            return;
-        }
- 
-        let url = URL_VERIFICAR_DATO_APICULTOR
-            + "?campo=" + encodeURIComponent(tipoCampo)
-            + "&valor=" + encodeURIComponent(valor);
- 
-        if (idApicultorActual) {
-            url += "&id_apicultor=" + encodeURIComponent(idApicultorActual);
-        }
- 
-        fetch(url)
-            .then(function (respuesta) {
-                return respuesta.json();
-            })
-            .then(function (datos) {
- 
-                if (datos.existe) {
-                    marcarCampo(campo, false, mensajeDuplicado);
-                    campo.dataset.duplicado = "1";
-                } else {
-                    marcarCampo(campo, true);
-                    campo.dataset.duplicado = "0";
-                }
-            })
-            .catch(function (error) {
-                console.error("No fue posible verificar el dato:", error);
-                // Ante un fallo de red, no bloqueamos al usuario;
-                // el backend sigue siendo la validación final.
-                campo.dataset.duplicado = "0";
-            });
-    }
- 
-    function activarVerificacionEnVivo(campo, tipoCampo, formulario, mensajeDuplicado) {
- 
-        if (!campo) return;
- 
-        const verificarConRetraso = debounce(function () {
- 
-            const idApicultorActual =
-                formulario && formulario.id === "formEditarApicultor"
-                    ? (formulario.dataset.idApicultor || "")
-                    : "";
- 
-            verificarDato(campo, tipoCampo, idApicultorActual, mensajeDuplicado);
- 
-        }, RETRASO_DEBOUNCE_MS);
- 
-        campo.addEventListener("input", function () {
- 
-            const valor = campo.value.trim();
- 
-            if (!valor) {
-                marcarCampo(campo, null);
-                campo.dataset.duplicado = "0";
+
+
+        // =====================================================
+        // MOSTRAR ESTADO
+        // =====================================================
+
+        function mostrarEstado(
+            campo,
+            estado,
+            mensaje
+        ) {
+
+            if (!campo) {
                 return;
             }
- 
-            verificarConRetraso();
-        });
-    }
- 
-    // ---- Modal Agregar Apicultor ----
-    const formAgregar = document.getElementById("formAgregarApicultor");
- 
-    activarVerificacionEnVivo(
-        document.getElementById("usernameAgregar"),
-        "username",
-        formAgregar,
-        "Ese nombre de usuario ya está registrado."
-    );
- 
-    activarVerificacionEnVivo(
-        document.getElementById("correoAgregar"),
-        "correo",
-        formAgregar,
-        "Ese correo electrónico ya está registrado."
-    );
- 
-    activarVerificacionEnVivo(
-        document.getElementById("identificacionAgregar"),
-        "identificacion",
-        formAgregar,
-        "Ya existe un apicultor con esa identificación."
-    );
- 
-    // ---- Modal Editar Apicultor ----
-    const formEditar = document.getElementById("formEditarApicultor");
-    const modalEditarApicultorElemento = document.getElementById("modalEditarApicultor");
- 
-    // Guardamos el id del apicultor que se está editando (extraído
-    // de la URL de acción) para poder excluirlo de la búsqueda de
-    // duplicados; si no, el propio registro se marcaría como
-    // "duplicado de sí mismo" apenas se abre el modal.
-    if (modalEditarApicultorElemento && formEditar) {
- 
-        modalEditarApicultorElemento.addEventListener("show.bs.modal", function (evento) {
- 
-            const boton = evento.relatedTarget;
- 
-            formEditar.dataset.idApicultor = extraerIdDesdeUrl(
-                boton ? boton.dataset.url : ""
+
+
+            campo.classList.remove(
+                "is-valid",
+                "is-invalid"
             );
-        });
-    }
- 
-    activarVerificacionEnVivo(
-        document.getElementById("usernameEditar"),
-        "username",
-        formEditar,
-        "Ese nombre de usuario ya pertenece a otra persona."
-    );
- 
-    activarVerificacionEnVivo(
-        document.getElementById("correoEditar"),
-        "correo",
-        formEditar,
-        "Ese correo electrónico ya pertenece a otro usuario."
-    );
- 
-    activarVerificacionEnVivo(
-        document.getElementById("identificacionEditar"),
-        "identificacion",
-        formEditar,
-        "Esa identificación ya pertenece a otro apicultor."
-    );
- 
-    // ---- Bloquear el envío si algún campo quedó marcado como duplicado ----
-    [formAgregar, formEditar].forEach(function (formulario) {
- 
-        if (!formulario) return;
- 
-        formulario.addEventListener("submit", function (evento) {
- 
-            const camposDuplicados = formulario.querySelectorAll(
-                '[data-duplicado="1"]'
+
+
+            const feedback = (
+                obtenerFeedback(
+                    campo
+                )
             );
- 
-            if (camposDuplicados.length > 0) {
-                evento.preventDefault();
-                evento.stopPropagation();
-                camposDuplicados[0].reportValidity();
+
+
+            if (feedback) {
+
+                feedback.classList.remove(
+                    "text-success",
+                    "text-danger",
+                    "text-muted"
+                );
+
             }
-        });
-    });
- 
-});
+
+
+            // -------------------------------------------------
+            // NEUTRO
+            // -------------------------------------------------
+
+            if (
+                estado === "neutro"
+            ) {
+
+                campo.setCustomValidity(
+                    ""
+                );
+
+
+                if (feedback) {
+
+                    feedback.textContent =
+                        mensaje || "";
+
+
+                    if (mensaje) {
+
+                        feedback.classList.add(
+                            "text-muted"
+                        );
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // VÁLIDO
+            // -------------------------------------------------
+
+            if (
+                estado === "valido"
+            ) {
+
+                campo.classList.add(
+                    "is-valid"
+                );
+
+
+                campo.setCustomValidity(
+                    ""
+                );
+
+
+                if (feedback) {
+
+                    feedback.textContent =
+                        mensaje || "Dato válido.";
+
+
+                    feedback.classList.add(
+                        "text-success"
+                    );
+
+                }
+
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // INVÁLIDO
+            // -------------------------------------------------
+
+            campo.classList.add(
+                "is-invalid"
+            );
+
+
+            campo.setCustomValidity(
+                mensaje || "Dato inválido."
+            );
+
+
+            if (feedback) {
+
+                feedback.textContent =
+                    mensaje || "Dato inválido.";
+
+
+                feedback.classList.add(
+                    "text-danger"
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // DEBOUNCE
+        // =====================================================
+
+        function debounce(
+            funcion,
+            espera
+        ) {
+
+            let temporizador = null;
+
+
+            return function (...args) {
+
+                const contexto = this;
+
+
+                clearTimeout(
+                    temporizador
+                );
+
+
+                temporizador = setTimeout(
+                    function () {
+
+                        funcion.apply(
+                            contexto,
+                            args
+                        );
+
+                    },
+                    espera
+                );
+
+            };
+
+        }
+
+
+        // =====================================================
+        // SOLO NÚMEROS + LONGITUD MÁXIMA
+        // =====================================================
+
+        function limitarNumeros(
+            campo,
+            maximo
+        ) {
+
+            if (!campo) {
+                return;
+            }
+
+
+            campo.addEventListener(
+                "input",
+                function () {
+
+                    campo.value = (
+                        campo.value
+                            .replace(
+                                /\D/g,
+                                ""
+                            )
+                            .slice(
+                                0,
+                                maximo
+                            )
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // NOMBRES Y APELLIDOS
+        // =====================================================
+
+        function configurarNombre(
+            campo,
+            obligatorio = false
+        ) {
+
+            if (!campo) {
+                return;
+            }
+
+
+            campo.addEventListener(
+                "input",
+                function () {
+
+                    // Eliminar caracteres
+                    // que no pertenecen a nombres.
+                    campo.value = (
+                        campo.value.replace(
+                            /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]/g,
+                            ""
+                        )
+                    );
+
+
+                    const valor =
+                        campo.value.trim();
+
+
+                    if (!valor) {
+
+                        mostrarEstado(
+                            campo,
+                            obligatorio
+                                ? "invalido"
+                                : "neutro",
+                            obligatorio
+                                ? "Este campo es obligatorio."
+                                : ""
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        valor.length < 2
+                    ) {
+
+                        mostrarEstado(
+                            campo,
+                            "invalido",
+                            "Debe contener al menos 2 caracteres."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !REGEX_NOMBRE.test(
+                            valor
+                        )
+                    ) {
+
+                        mostrarEstado(
+                            campo,
+                            "invalido",
+                            "Usa solamente letras, espacios, apóstrofes o guiones."
+                        );
+
+                        return;
+
+                    }
+
+
+                    mostrarEstado(
+                        campo,
+                        "valido",
+                        "Nombre válido."
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // TELÉFONO COLOMBIANO
+        // =====================================================
+
+        function configurarTelefono(
+            campo
+        ) {
+
+            if (!campo) {
+                return;
+            }
+
+
+            limitarNumeros(
+                campo,
+                10
+            );
+
+
+            campo.addEventListener(
+                "input",
+                function () {
+
+                    const valor =
+                        campo.value.trim();
+
+
+                    // Sigue siendo opcional
+                    if (!valor) {
+
+                        mostrarEstado(
+                            campo,
+                            "neutro",
+                            ""
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        valor.charAt(0) !== "3"
+                    ) {
+
+                        mostrarEstado(
+                            campo,
+                            "invalido",
+                            "El número celular debe comenzar por 3."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        valor.length < 10
+                    ) {
+
+                        const faltan =
+                            10 - valor.length;
+
+
+                        mostrarEstado(
+                            campo,
+                            "invalido",
+                            `Faltan ${faltan} número(s). Debe tener exactamente 10.`
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !REGEX_TELEFONO.test(
+                            valor
+                        )
+                    ) {
+
+                        mostrarEstado(
+                            campo,
+                            "invalido",
+                            "El teléfono no es válido."
+                        );
+
+                        return;
+
+                    }
+
+
+                    mostrarEstado(
+                        campo,
+                        "valido",
+                        "Número celular válido."
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // IDENTIFICACIÓN
+        // =====================================================
+
+        function validarIdentificacionLocal(
+            campo
+        ) {
+
+            const valor =
+                campo.value.trim();
+
+
+            if (!valor) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "La identificación es obligatoria."
+                );
+
+                return false;
+
+            }
+
+
+            if (
+                valor.length < 6
+            ) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "La identificación debe tener mínimo 6 números."
+                );
+
+                return false;
+
+            }
+
+
+            if (
+                !REGEX_IDENTIFICACION.test(
+                    valor
+                )
+            ) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "La identificación debe contener entre 6 y 10 números."
+                );
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+        // =====================================================
+        // GMAIL
+        // =====================================================
+
+        function validarGmailLocal(
+            campo
+        ) {
+
+            let valor =
+                campo.value.trim();
+
+
+            // Normalizar a minúsculas
+            valor =
+                valor.toLowerCase();
+
+
+            campo.value =
+                valor;
+
+
+            if (!valor) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "El correo electrónico es obligatorio."
+                );
+
+                return false;
+
+            }
+
+
+            if (
+                !REGEX_GMAIL.test(
+                    valor
+                )
+            ) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "Debe ser una dirección válida terminada en @gmail.com."
+                );
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+        // =====================================================
+        // USERNAME
+        // =====================================================
+
+        function validarUsernameLocal(
+            campo
+        ) {
+
+            const valor =
+                campo.value.trim();
+
+
+            if (!valor) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "El nombre de usuario es obligatorio."
+                );
+
+                return false;
+
+            }
+
+
+            if (
+                !REGEX_USERNAME.test(
+                    valor
+                )
+            ) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "Solo se permiten letras, números y @ . + - _"
+                );
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+        // =====================================================
+        // EXTRAER ID DEL APICULTOR EDITADO
+        // =====================================================
+
+        const formEditar = (
+            document.getElementById(
+                "formEditarApicultor"
+            )
+        );
+
+
+        const modalEditar = (
+            document.getElementById(
+                "modalEditarApicultor"
+            )
+        );
+
+
+        if (
+            modalEditar
+            &&
+            formEditar
+        ) {
+
+            modalEditar.addEventListener(
+                "show.bs.modal",
+                function (evento) {
+
+                    const boton =
+                        evento.relatedTarget;
+
+
+                    formEditar.dataset
+                        .idApicultor = (
+                            boton
+                            ?
+                            (
+                                boton.dataset.id
+                                ||
+                                ""
+                            )
+                            :
+                            ""
+                        );
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // CONSULTAR DUPLICADOS
+        // =====================================================
+
+        function verificarEnServidor(
+            campo,
+            tipoCampo,
+            formulario,
+            mensajeDisponible
+        ) {
+
+            const valorOriginal =
+                campo.value.trim();
+
+
+            if (!valorOriginal) {
+                return;
+            }
+
+
+            const idApicultor = (
+                formulario
+                &&
+                formulario.id ===
+                    "formEditarApicultor"
+            )
+                ?
+                (
+                    formulario.dataset
+                        .idApicultor
+                    ||
+                    ""
+                )
+                :
+                "";
+
+
+            let url =
+                URL_VERIFICAR_DATO_APICULTOR
+                +
+                "?campo="
+                +
+                encodeURIComponent(
+                    tipoCampo
+                )
+                +
+                "&valor="
+                +
+                encodeURIComponent(
+                    valorOriginal
+                );
+
+
+            if (idApicultor) {
+
+                url += (
+                    "&id_apicultor="
+                    +
+                    encodeURIComponent(
+                        idApicultor
+                    )
+                );
+
+            }
+
+
+            mostrarEstado(
+                campo,
+                "neutro",
+                "Verificando disponibilidad..."
+            );
+
+
+            fetch(
+                url
+            )
+                .then(
+                    function (
+                        respuesta
+                    ) {
+
+                        if (
+                            !respuesta.ok
+                        ) {
+
+                            throw new Error(
+                                "Error HTTP."
+                            );
+
+                        }
+
+
+                        return respuesta.json();
+
+                    }
+                )
+                .then(
+                    function (
+                        datos
+                    ) {
+
+                        // El usuario siguió escribiendo
+                        // mientras llegaba la respuesta.
+                        if (
+                            campo.value.trim()
+                            !==
+                            valorOriginal
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        if (
+                            datos.valido === false
+                        ) {
+
+                            campo.dataset.duplicado =
+                                "0";
+
+
+                            mostrarEstado(
+                                campo,
+                                "invalido",
+                                datos.mensaje
+                                ||
+                                "Dato inválido."
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        if (
+                            datos.existe
+                        ) {
+
+                            campo.dataset.duplicado =
+                                "1";
+
+
+                            mostrarEstado(
+                                campo,
+                                "invalido",
+                                datos.mensaje
+                                ||
+                                "Este dato ya está registrado."
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        campo.dataset.duplicado =
+                            "0";
+
+
+                        mostrarEstado(
+                            campo,
+                            "valido",
+                            datos.mensaje
+                            ||
+                            mensajeDisponible
+                        );
+
+                    }
+                )
+                .catch(
+                    function (
+                        error
+                    ) {
+
+                        console.error(
+                            "Error verificando dato:",
+                            error
+                        );
+
+
+                        // No afirmamos que está disponible
+                        // si no pudimos consultar el servidor.
+                        campo.dataset.duplicado =
+                            "0";
+
+
+                        mostrarEstado(
+                            campo,
+                            "neutro",
+                            "No fue posible comprobar disponibilidad."
+                        );
+
+                    }
+                );
+
+        }
+
+
+        // =====================================================
+        // ACTIVAR VALIDACIÓN ÚNICA EN VIVO
+        // =====================================================
+
+        function configurarCampoUnico(
+            campo,
+            tipoCampo,
+            formulario,
+            validarLocal,
+            mensajeDisponible
+        ) {
+
+            if (!campo) {
+                return;
+            }
+
+
+            const consultarConRetraso =
+                debounce(
+                    function () {
+
+                        verificarEnServidor(
+                            campo,
+                            tipoCampo,
+                            formulario,
+                            mensajeDisponible
+                        );
+
+                    },
+                    RETRASO_DEBOUNCE_MS
+                );
+
+
+            campo.addEventListener(
+                "input",
+                function () {
+
+                    campo.dataset.duplicado =
+                        "0";
+
+
+                    const esValido =
+                        validarLocal(
+                            campo
+                        );
+
+
+                    if (!esValido) {
+                        return;
+                    }
+
+
+                    mostrarEstado(
+                        campo,
+                        "neutro",
+                        "Formato válido. Verificando..."
+                    );
+
+
+                    consultarConRetraso();
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // FORMULARIOS
+        // =====================================================
+
+        const formAgregar = (
+            document.getElementById(
+                "formAgregarApicultor"
+            )
+        );
+
+
+        // =====================================================
+        // NOMBRES - AGREGAR
+        // =====================================================
+
+        configurarNombre(
+            document.getElementById(
+                "primerNombreAgregar"
+            ),
+            true
+        );
+
+
+        configurarNombre(
+            document.getElementById(
+                "segundoNombreAgregar"
+            ),
+            false
+        );
+
+
+        configurarNombre(
+            document.getElementById(
+                "primerApellidoAgregar"
+            ),
+            true
+        );
+
+
+        configurarNombre(
+            document.getElementById(
+                "segundoApellidoAgregar"
+            ),
+            false
+        );
+
+
+        // =====================================================
+        // NOMBRES - EDITAR
+        // =====================================================
+
+        configurarNombre(
+            document.getElementById(
+                "nombresEditar"
+            ),
+            true
+        );
+
+
+        configurarNombre(
+            document.getElementById(
+                "apellidosEditar"
+            ),
+            true
+        );
+
+
+        // =====================================================
+        // TELÉFONO
+        // =====================================================
+
+        configurarTelefono(
+            document.getElementById(
+                "telefonoAgregar"
+            )
+        );
+
+
+        configurarTelefono(
+            document.getElementById(
+                "telefonoEditar"
+            )
+        );
+
+
+        // =====================================================
+        // IDENTIFICACIÓN
+        // =====================================================
+
+        const identificacionAgregar =
+            document.getElementById(
+                "identificacionAgregar"
+            );
+
+
+        const identificacionEditar =
+            document.getElementById(
+                "identificacionEditar"
+            );
+
+
+        limitarNumeros(
+            identificacionAgregar,
+            10
+        );
+
+
+        limitarNumeros(
+            identificacionEditar,
+            10
+        );
+
+
+        configurarCampoUnico(
+            identificacionAgregar,
+            "identificacion",
+            formAgregar,
+            validarIdentificacionLocal,
+            "Identificación disponible."
+        );
+
+
+        configurarCampoUnico(
+            identificacionEditar,
+            "identificacion",
+            formEditar,
+            validarIdentificacionLocal,
+            "Identificación disponible."
+        );
+
+
+        // =====================================================
+        // GMAIL
+        // =====================================================
+
+        configurarCampoUnico(
+            document.getElementById(
+                "correoAgregar"
+            ),
+            "correo",
+            formAgregar,
+            validarGmailLocal,
+            "Correo Gmail disponible."
+        );
+
+
+        configurarCampoUnico(
+            document.getElementById(
+                "correoEditar"
+            ),
+            "correo",
+            formEditar,
+            validarGmailLocal,
+            "Correo Gmail disponible."
+        );
+
+
+        // =====================================================
+        // USERNAME
+        // =====================================================
+
+        configurarCampoUnico(
+            document.getElementById(
+                "usernameAgregar"
+            ),
+            "username",
+            formAgregar,
+            validarUsernameLocal,
+            "Nombre de usuario disponible."
+        );
+
+
+        configurarCampoUnico(
+            document.getElementById(
+                "usernameEditar"
+            ),
+            "username",
+            formEditar,
+            validarUsernameLocal,
+            "Nombre de usuario disponible."
+        );
+
+
+        // =====================================================
+        // EXPERIENCIA
+        // =====================================================
+
+        [
+            document.getElementById(
+                "experienciaAgregar"
+            ),
+            document.getElementById(
+                "experienciaEditar"
+            )
+        ]
+        .forEach(
+            function (
+                campo
+            ) {
+
+                if (!campo) {
+                    return;
+                }
+
+
+                campo.addEventListener(
+                    "input",
+                    function () {
+
+                        campo.value = (
+                            campo.value
+                                .replace(
+                                    /\D/g,
+                                    ""
+                                )
+                        );
+
+
+                        if (!campo.value) {
+
+                            mostrarEstado(
+                                campo,
+                                "neutro",
+                                ""
+                            );
+
+                            return;
+
+                        }
+
+
+                        const numero =
+                            Number(
+                                campo.value
+                            );
+
+
+                        if (
+                            numero < 0
+                            ||
+                            numero > 80
+                        ) {
+
+                            mostrarEstado(
+                                campo,
+                                "invalido",
+                                "La experiencia debe estar entre 0 y 80 años."
+                            );
+
+                            return;
+
+                        }
+
+
+                        mostrarEstado(
+                            campo,
+                            "valido",
+                            "Experiencia válida."
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        // =====================================================
+        // BLOQUEAR ENVÍO CON DATOS INVÁLIDOS
+        // =====================================================
+
+        [
+            formAgregar,
+            formEditar
+        ]
+        .forEach(
+            function (
+                formulario
+            ) {
+
+                if (!formulario) {
+                    return;
+                }
+
+
+                formulario.addEventListener(
+                    "submit",
+                    function (
+                        evento
+                    ) {
+
+                        const duplicado = (
+                            formulario.querySelector(
+                                '[data-duplicado="1"]'
+                            )
+                        );
+
+
+                        if (
+                            duplicado
+                            ||
+                            !formulario.checkValidity()
+                        ) {
+
+                            evento.preventDefault();
+
+                            evento.stopPropagation();
+
+
+                            if (duplicado) {
+
+                                duplicado.reportValidity();
+
+                            } else {
+
+                                formulario.reportValidity();
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);

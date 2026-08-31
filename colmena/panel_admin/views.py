@@ -10,6 +10,7 @@ from functools import wraps
 from django.contrib.auth import update_session_auth_hash
 import traceback
 import json
+import re
 from calendar import monthrange
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -94,6 +95,132 @@ from usuarios.models import (
     HistorialAcceso,
     Configuracion2FA,
 )
+
+# ============================================================
+# VALIDACIONES GENERALES DE PERSONAS
+# ============================================================
+
+REGEX_CELULAR_COLOMBIA = re.compile(
+    r"^3[0-9]{9}$"
+)
+
+
+REGEX_USERNAME = re.compile(
+    r"^[A-Za-z0-9_@.+-]{1,150}$"
+)
+
+
+REGEX_NOMBRE_PERSONA = re.compile(
+    r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$"
+)
+
+
+def validar_celular_colombia(
+    celular
+):
+
+    # El celular puede ser opcional.
+    if not celular:
+        return True
+
+    return bool(
+        REGEX_CELULAR_COLOMBIA.fullmatch(
+            celular
+        )
+    )
+
+
+def normalizar_correo(
+    correo
+):
+
+    return (
+        (correo or "")
+        .strip()
+        .lower()
+    )
+
+
+def validar_correo_gmail(
+    correo
+):
+
+    correo = normalizar_correo(
+        correo
+    )
+
+
+    try:
+
+        validate_email(
+            correo
+        )
+
+    except ValidationError:
+
+        return False
+
+
+    try:
+
+        dominio = (
+            correo
+            .rsplit(
+                "@",
+                1
+            )[1]
+        )
+
+    except IndexError:
+
+        return False
+
+
+    return (
+        dominio ==
+        "gmail.com"
+    )
+
+
+def validar_nombre_persona(
+    valor,
+    maximo=150
+):
+
+    valor = (
+        valor or ""
+    ).strip()
+
+
+    if not valor:
+        return False
+
+
+    if (
+        len(valor) < 2
+        or
+        len(valor) > maximo
+    ):
+
+        return False
+
+
+    return bool(
+        REGEX_NOMBRE_PERSONA.fullmatch(
+            valor
+        )
+    )
+
+
+def validar_username_usuario(
+    username
+):
+
+    return bool(
+        REGEX_USERNAME.fullmatch(
+            username or ""
+        )
+    )
 
 
 def administrador_requerido(vista):
@@ -2285,6 +2412,132 @@ def eliminar_incidencia(request, id_incidencia):
 
 #LOGICA DE APICULTORES
 
+# ============================================================
+# VALIDACIONES CENTRALIZADAS DE APICULTOR
+# ============================================================
+
+REGEX_IDENTIFICACION = re.compile(
+    r"^[0-9]{6,10}$"
+)
+
+REGEX_TELEFONO_COLOMBIA = re.compile(
+    r"^3[0-9]{9}$"
+)
+
+REGEX_USERNAME = re.compile(
+    r"^[A-Za-z0-9_@.+-]{1,150}$"
+)
+
+REGEX_NOMBRE = re.compile(
+    r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$"
+)
+
+
+def validar_identificacion_apicultor(
+    identificacion
+):
+
+    return bool(
+        REGEX_IDENTIFICACION.fullmatch(
+            identificacion or ""
+        )
+    )
+
+
+def validar_telefono_apicultor(
+    telefono
+):
+
+    # El teléfono sigue siendo opcional.
+    if not telefono:
+        return True
+
+    return bool(
+        REGEX_TELEFONO_COLOMBIA.fullmatch(
+            telefono
+        )
+    )
+
+
+def validar_nombre_apicultor(
+    valor,
+    maximo
+):
+
+    if not valor:
+        return False
+
+    if len(valor) > maximo:
+        return False
+
+    return bool(
+        REGEX_NOMBRE.fullmatch(
+            valor
+        )
+    )
+
+
+def validar_username_apicultor(
+    username
+):
+
+    return bool(
+        REGEX_USERNAME.fullmatch(
+            username or ""
+        )
+    )
+
+
+def normalizar_correo(
+    correo
+):
+
+    return (
+        (correo or "")
+        .strip()
+        .lower()
+    )
+
+
+def validar_gmail_apicultor(
+    correo
+):
+
+    correo = normalizar_correo(
+        correo
+    )
+
+    try:
+
+        validate_email(
+            correo
+        )
+
+    except ValidationError:
+
+        return False
+
+
+    try:
+
+        dominio = (
+            correo
+            .rsplit(
+                "@",
+                1
+            )[1]
+        )
+
+    except IndexError:
+
+        return False
+
+
+    return (
+        dominio ==
+        "gmail.com"
+    )
+
 @administrador_requerido
 def apicultores_admin(request):
 
@@ -2354,51 +2607,283 @@ def apicultores_admin(request):
         }
     )
 
-#Verificar en vivo si username, correo o identificación ya existen
+# ============================================================
+# VERIFICAR DATOS DEL APICULTOR EN TIEMPO REAL
+# ============================================================
+
 @administrador_requerido
 def verificar_dato_apicultor(request):
-    """
-    Endpoint de solo consulta (no modifica nada) usado para
-    validar en tiempo real si un username, correo o identificación
-    ya están en uso. Se usa desde apicultor.js mientras el usuario
-    escribe, tanto en Agregar como en Editar.
-    """
-    campo = request.GET.get("campo", "").strip()
-    valor = request.GET.get("valor", "").strip()
-    id_apicultor_actual = request.GET.get("id_apicultor", "").strip()
+
+    campo = (
+        request.GET.get(
+            "campo",
+            ""
+        )
+        .strip()
+    )
+
+    valor = (
+        request.GET.get(
+            "valor",
+            ""
+        )
+        .strip()
+    )
+
+    id_apicultor_actual = (
+        request.GET.get(
+            "id_apicultor",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # SIN DATOS
+    # ========================================================
 
     if not campo or not valor:
-        return JsonResponse({"existe": False})
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "existe": False,
+                "mensaje": "El valor está vacío.",
+            }
+        )
+
+
+    # ========================================================
+    # USERNAME
+    # ========================================================
 
     if campo == "username":
-        consulta = User.objects.filter(username__iexact=valor)
+
+        if not validar_username_apicultor(
+            valor
+        ):
+
+            return JsonResponse(
+                {
+                    "valido": False,
+                    "existe": False,
+                    "mensaje": (
+                        "El nombre de usuario contiene "
+                        "caracteres no permitidos."
+                    ),
+                }
+            )
+
+
+        consulta = (
+            User.objects
+            .filter(
+                username__iexact=
+                    valor
+            )
+        )
+
 
         if id_apicultor_actual:
-            apicultor_actual = Apicultor.objects.filter(pk=id_apicultor_actual).first()
-            if apicultor_actual and apicultor_actual.user:
-                consulta = consulta.exclude(pk=apicultor_actual.user_id)
 
-        return JsonResponse({"existe": consulta.exists()})
+            apicultor_actual = (
+                Apicultor.objects
+                .filter(
+                    pk=id_apicultor_actual
+                )
+                .select_related(
+                    "user"
+                )
+                .first()
+            )
+
+
+            if (
+                apicultor_actual
+                and
+                apicultor_actual.user
+            ):
+
+                consulta = (
+                    consulta.exclude(
+                        pk=
+                            apicultor_actual.user_id
+                    )
+                )
+
+
+        existe = consulta.exists()
+
+
+        return JsonResponse(
+            {
+                "valido": True,
+                "existe": existe,
+
+                "mensaje": (
+                    "Ese nombre de usuario ya está registrado."
+                    if existe
+                    else
+                    "Nombre de usuario disponible."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # CORREO GMAIL
+    # ========================================================
 
     if campo == "correo":
-        consulta = User.objects.filter(email__iexact=valor)
+
+        valor = normalizar_correo(
+            valor
+        )
+
+
+        if not validar_gmail_apicultor(
+            valor
+        ):
+
+            return JsonResponse(
+                {
+                    "valido": False,
+                    "existe": False,
+                    "mensaje": (
+                        "Debes ingresar una dirección "
+                        "válida terminada en @gmail.com."
+                    ),
+                }
+            )
+
+
+        consulta = (
+            User.objects
+            .filter(
+                email__iexact=
+                    valor
+            )
+        )
+
 
         if id_apicultor_actual:
-            apicultor_actual = Apicultor.objects.filter(pk=id_apicultor_actual).first()
-            if apicultor_actual and apicultor_actual.user:
-                consulta = consulta.exclude(pk=apicultor_actual.user_id)
 
-        return JsonResponse({"existe": consulta.exists()})
+            apicultor_actual = (
+                Apicultor.objects
+                .filter(
+                    pk=id_apicultor_actual
+                )
+                .select_related(
+                    "user"
+                )
+                .first()
+            )
+
+
+            if (
+                apicultor_actual
+                and
+                apicultor_actual.user
+            ):
+
+                consulta = (
+                    consulta.exclude(
+                        pk=
+                            apicultor_actual.user_id
+                    )
+                )
+
+
+        existe = consulta.exists()
+
+
+        return JsonResponse(
+            {
+                "valido": True,
+                "existe": existe,
+
+                "mensaje": (
+                    "Ese correo electrónico ya está registrado."
+                    if existe
+                    else
+                    "Correo Gmail disponible."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # IDENTIFICACIÓN
+    # ========================================================
 
     if campo == "identificacion":
-        consulta = Apicultor.objects.filter(identificacion=valor)
+
+        if not validar_identificacion_apicultor(
+            valor
+        ):
+
+            return JsonResponse(
+                {
+                    "valido": False,
+                    "existe": False,
+                    "mensaje": (
+                        "La identificación debe contener "
+                        "entre 6 y 10 números."
+                    ),
+                }
+            )
+
+
+        consulta = (
+            Apicultor.objects
+            .filter(
+                identificacion=
+                    valor
+            )
+        )
+
 
         if id_apicultor_actual:
-            consulta = consulta.exclude(pk=id_apicultor_actual)
 
-        return JsonResponse({"existe": consulta.exists()})
+            consulta = (
+                consulta.exclude(
+                    pk=
+                        id_apicultor_actual
+                )
+            )
 
-    return JsonResponse({"existe": False})
+
+        existe = consulta.exists()
+
+
+        return JsonResponse(
+            {
+                "valido": True,
+                "existe": existe,
+
+                "mensaje": (
+                    "Ya existe un apicultor con esa identificación."
+                    if existe
+                    else
+                    "Identificación disponible."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # CAMPO NO PERMITIDO
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "valido": False,
+            "existe": False,
+            "mensaje": "Campo de validación no permitido.",
+        },
+        status=400
+    )
 
 #CREAR APICULTOR
 
@@ -2541,25 +3026,139 @@ def crear_apicultor(request):
         )
         return redirect("apicultores_admin")
 
-    # =========================================================
-    # VALIDAR IDENTIFICACIÓN
-    # =========================================================
+    # ============================================================
+    # VALIDAR NOMBRES
+    # ============================================================
 
-    if not identificacion.isdigit():
+    if not validar_nombre_apicultor(
+        primer_nombre,
+        75
+    ):
         messages.error(
             request,
-            "La identificación debe contener solamente números."
+            "El primer nombre contiene caracteres no permitidos."
         )
         return redirect("apicultores_admin")
 
-    # =========================================================
-    # VALIDAR TELÉFONO
-    # =========================================================
 
-    if telefono and not telefono.isdigit():
+    if (
+        segundo_nombre
+        and
+        not validar_nombre_apicultor(
+            segundo_nombre,
+            75
+        )
+    ):
         messages.error(
             request,
-            "El teléfono debe contener solamente números."
+            "El segundo nombre contiene caracteres no permitidos."
+        )
+        return redirect("apicultores_admin")
+
+
+    if not validar_nombre_apicultor(
+        primer_apellido,
+        75
+    ):
+        messages.error(
+            request,
+            "El primer apellido contiene caracteres no permitidos."
+        )
+        return redirect("apicultores_admin")
+
+
+    if (
+        segundo_apellido
+        and
+        not validar_nombre_apicultor(
+            segundo_apellido,
+            75
+        )
+    ):
+        messages.error(
+            request,
+            "El segundo apellido contiene caracteres no permitidos."
+        )
+        return redirect("apicultores_admin")
+
+
+    # ============================================================
+    # IDENTIFICACIÓN
+    # ============================================================
+
+    if not validar_identificacion_apicultor(
+        identificacion
+    ):
+        messages.error(
+            request,
+            "La identificación debe contener entre 6 y 10 números."
+        )
+        return redirect("apicultores_admin")
+
+
+    # ============================================================
+    # TELÉFONO
+    # ============================================================
+
+    if not validar_telefono_apicultor(
+        telefono
+    ):
+        messages.error(
+            request,
+            (
+                "El teléfono debe contener exactamente "
+                "10 números y comenzar por 3."
+            )
+        )
+        return redirect("apicultores_admin")
+
+
+    # ============================================================
+    # CORREO GMAIL
+    # ============================================================
+
+    correo = normalizar_correo(
+        correo
+    )
+
+    if not validar_gmail_apicultor(
+        correo
+    ):
+        messages.error(
+            request,
+            (
+                "El correo debe ser una dirección "
+                "válida de Gmail (@gmail.com)."
+            )
+        )
+        return redirect("apicultores_admin")
+
+
+    # ============================================================
+    # USERNAME
+    # ============================================================
+
+    if not validar_username_apicultor(
+        username
+    ):
+        messages.error(
+            request,
+            (
+                "El nombre de usuario contiene "
+                "caracteres no permitidos."
+            )
+        )
+        return redirect("apicultores_admin")
+
+
+    # ============================================================
+    # ZONA DE TRABAJO
+    # ============================================================
+
+    if len(zona_trabajo) > 100:
+        messages.error(
+            request,
+            "La zona de trabajo no puede superar los 100 caracteres."
         )
         return redirect("apicultores_admin")
 
@@ -2593,19 +3192,50 @@ def crear_apicultor(request):
     # VALIDAR CONTRASEÑAS
     # =========================================================
 
-    if len(password) < 8:
-        messages.error(
-            request,
-            "La contraseña debe tener como mínimo 8 caracteres."
-        )
-        return redirect("apicultores_admin")
-
     if password != confirmar_password:
+
         messages.error(
             request,
             "Las contraseñas no coinciden."
         )
-        return redirect("apicultores_admin")
+
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # =========================================================
+    # VALIDADORES REALES DE DJANGO
+    # =========================================================
+
+    usuario_temporal = User(
+        username=username,
+        email=correo,
+        first_name=primer_nombre,
+        last_name=primer_apellido
+    )
+
+
+    try:
+
+        validate_password(
+            password,
+            user=usuario_temporal
+        )
+
+
+    except ValidationError as error:
+
+        messages.error(
+            request,
+            " ".join(
+                error.messages
+            )
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
 
     # =========================================================
     # VALIDAR FOTO
@@ -2884,23 +3514,134 @@ def editar_apicultor(request, id_apicultor):
         )
         return redirect("apicultores_admin")
 
-    # =========================================================
-    # IDENTIFICACIÓN Y TELÉFONO
-    # =========================================================
+    # ============================================================
+    # NOMBRES
+    # ============================================================
 
-    if not identificacion.isdigit():
+    if not validar_nombre_apicultor(
+        nombres,
+        150
+    ):
         messages.error(
             request,
-            "La identificación debe contener solamente números."
+            "Los nombres contienen caracteres no permitidos."
         )
-        return redirect("apicultores_admin")
 
-    if telefono and not telefono.isdigit():
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # ============================================================
+    # APELLIDOS
+    # ============================================================
+
+    if not validar_nombre_apicultor(
+        apellidos,
+        150
+    ):
         messages.error(
             request,
-            "El teléfono debe contener solamente números."
+            "Los apellidos contienen caracteres no permitidos."
         )
-        return redirect("apicultores_admin")
+
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # ============================================================
+    # IDENTIFICACIÓN
+    # ============================================================
+
+    if not validar_identificacion_apicultor(
+        identificacion
+    ):
+        messages.error(
+            request,
+            "La identificación debe contener entre 6 y 10 números."
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # ============================================================
+    # TELÉFONO
+    # ============================================================
+
+    if not validar_telefono_apicultor(
+        telefono
+    ):
+        messages.error(
+            request,
+            (
+                "El teléfono debe contener exactamente "
+                "10 números y comenzar por 3."
+            )
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # ============================================================
+    # CORREO
+    # ============================================================
+
+    correo = normalizar_correo(
+        correo
+    )
+
+
+    if not validar_gmail_apicultor(
+        correo
+    ):
+        messages.error(
+            request,
+            (
+                "El correo debe ser una dirección "
+                "válida de Gmail (@gmail.com)."
+            )
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # ============================================================
+    # USERNAME
+    # ============================================================
+
+    if not validar_username_apicultor(
+        username
+    ):
+        messages.error(
+            request,
+            "El nombre de usuario contiene caracteres no permitidos."
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
+
+
+    # ============================================================
+    # ZONA DE TRABAJO
+    # ============================================================
+
+    if len(zona_trabajo) > 100:
+        messages.error(
+            request,
+            "La zona de trabajo no puede superar los 100 caracteres."
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
 
     # =========================================================
     # EXPERIENCIA
@@ -2938,19 +3679,46 @@ def editar_apicultor(request, id_apicultor):
 
     if nueva_password or confirmar_password:
 
-        if len(nueva_password) < 8:
-            messages.error(
-                request,
-                "La nueva contraseña debe tener como mínimo 8 caracteres."
-            )
-            return redirect("apicultores_admin")
+        # -----------------------------------------------------
+        # Deben coincidir
+        # -----------------------------------------------------
 
         if nueva_password != confirmar_password:
+
             messages.error(
                 request,
                 "Las nuevas contraseñas no coinciden."
             )
-            return redirect("apicultores_admin")
+
+            return redirect(
+                "apicultores_admin"
+            )
+
+
+        # -----------------------------------------------------
+        # Validadores reales de Django
+        # -----------------------------------------------------
+
+        try:
+
+            validate_password(
+                nueva_password,
+                user=usuario
+            )
+
+
+        except ValidationError as error:
+
+            messages.error(
+                request,
+                " ".join(
+                    error.messages
+                )
+            )
+
+            return redirect(
+                "apicultores_admin"
+            )
 
     # =========================================================
     # VALIDAR FOTO
@@ -4196,9 +4964,35 @@ def agenda_admin(request):
 @require_POST
 def crear_evento_agenda(request):
 
-    formulario = EventoAgendaForm(
-        request.POST
+    # =========================================================
+    # COPIAR DATOS DEL POST
+    # =========================================================
+
+    datos = request.POST.copy()
+
+
+    # =========================================================
+    # TODO EVENTO NUEVO NACE COMO PROGRAMADO
+    # =========================================================
+    #
+    # No confiamos en lo que venga desde el navegador.
+    # Aunque alguien intente enviar "Completado" o "Cancelado",
+    # Django lo reemplaza por Programado.
+    # =========================================================
+
+    datos["estado"] = (
+        EventoAgenda.EstadoEvento.PROGRAMADO
     )
+
+
+    # =========================================================
+    # VALIDAR FORMULARIO
+    # =========================================================
+
+    formulario = EventoAgendaForm(
+        datos
+    )
+
 
     if formulario.is_valid():
 
@@ -4206,16 +5000,31 @@ def crear_evento_agenda(request):
             commit=False
         )
 
+
+        # =====================================================
+        # REFUERZO DE SEGURIDAD
+        # =====================================================
+        #
+        # Incluso después de validar el formulario volvemos
+        # a establecer explícitamente el estado.
+        # =====================================================
+
+        evento.estado = (
+            EventoAgenda.EstadoEvento.PROGRAMADO
+        )
+
+
         evento.creado_por = (
             request.user
         )
 
+
         evento.save()
 
 
-        # ========================================================
+        # =====================================================
         # GENERAR RECORDATORIO SI ES HOY O MAÑANA
-        # ========================================================
+        # =====================================================
 
         try:
 
@@ -4230,12 +5039,19 @@ def crear_evento_agenda(request):
                 error
             )
 
+
         messages.success(
             request,
             "El evento fue creado correctamente."
         )
 
-        mes = evento.fecha.strftime("%Y-%m")
+
+        mes = (
+            evento.fecha.strftime(
+                "%Y-%m"
+            )
+        )
+
 
     else:
 
@@ -4244,10 +5060,14 @@ def crear_evento_agenda(request):
             formulario
         )
 
-        mes = request.POST.get(
-            "mes_retorno",
-            ""
+
+        mes = (
+            request.POST.get(
+                "mes_retorno",
+                ""
+            )
         )
+
 
     return redirect(
         f"{reverse('agenda_admin')}?mes={mes}"
@@ -5940,41 +6760,217 @@ def guardar_permisos_roles(request):
     )
 
 # ============================================================
-# VERIFICAR EN VIVO SI USERNAME O CORREO YA EXISTEN
+# VERIFICAR EN VIVO USERNAME / CORREO DE ADMINISTRADOR
 # ============================================================
 
 @administrador_requerido
 def verificar_dato_administrador(request):
-    """
-    Endpoint de solo consulta (no modifica nada) usado para
-    validar en tiempo real si un username o correo ya están
-    en uso. Se usa desde usuarios_roles.js mientras se escribe
-    en el formulario de Agregar/Editar administrador.
-    """
-    campo = request.GET.get("campo", "").strip()
-    valor = request.GET.get("valor", "").strip()
-    id_usuario_actual = request.GET.get("id_usuario", "").strip()
+
+    campo = (
+        request.GET.get(
+            "campo",
+            ""
+        )
+        .strip()
+    )
+
+    valor = (
+        request.GET.get(
+            "valor",
+            ""
+        )
+        .strip()
+    )
+
+    id_usuario_actual = (
+        request.GET.get(
+            "id_usuario",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # VALIDAR PETICIÓN
+    # ========================================================
 
     if not campo or not valor:
-        return JsonResponse({"existe": False})
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "existe": False,
+                "mensaje": "El valor está vacío.",
+            }
+        )
+
+
+    # ========================================================
+    # USERNAME
+    # ========================================================
 
     if campo == "username":
-        consulta = User.objects.filter(username__iexact=valor)
+
+        if not validar_username_usuario(
+            valor
+        ):
+
+            return JsonResponse(
+                {
+                    "valido": False,
+                    "existe": False,
+                    "mensaje": (
+                        "El nombre de usuario contiene "
+                        "caracteres no permitidos."
+                    ),
+                }
+            )
+
+
+        consulta = (
+            User.objects
+            .filter(
+                username__iexact=valor
+            )
+        )
+
+
+        # ----------------------------------------------------
+        # EDITAR:
+        # excluir al mismo usuario
+        # ----------------------------------------------------
 
         if id_usuario_actual:
-            consulta = consulta.exclude(pk=id_usuario_actual)
 
-        return JsonResponse({"existe": consulta.exists()})
+            if id_usuario_actual.isdigit():
+
+                consulta = (
+                    consulta.exclude(
+                        pk=int(
+                            id_usuario_actual
+                        )
+                    )
+                )
+
+
+        existe = (
+            consulta.exists()
+        )
+
+
+        return JsonResponse(
+            {
+                "valido": True,
+                "existe": existe,
+
+                "mensaje": (
+                    "Ese nombre de usuario ya está registrado."
+                    if existe
+                    else
+                    "Nombre de usuario disponible."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # CORREO
+    # ========================================================
 
     if campo == "correo":
-        consulta = User.objects.filter(email__iexact=valor)
+
+        # ----------------------------------------------------
+        # NORMALIZAR
+        # ----------------------------------------------------
+
+        valor = normalizar_correo(
+            valor
+        )
+
+
+        # ----------------------------------------------------
+        # SOLO GMAIL
+        # ----------------------------------------------------
+
+        if not validar_correo_gmail(
+            valor
+        ):
+
+            return JsonResponse(
+                {
+                    "valido": False,
+                    "existe": False,
+                    "mensaje": (
+                        "Debes ingresar una dirección "
+                        "válida terminada en @gmail.com."
+                    ),
+                }
+            )
+
+
+        # ----------------------------------------------------
+        # BUSCAR DUPLICADO
+        # ----------------------------------------------------
+
+        consulta = (
+            User.objects
+            .filter(
+                email__iexact=valor
+            )
+        )
+
+
+        # ----------------------------------------------------
+        # EDITAR:
+        # excluir al mismo usuario
+        # ----------------------------------------------------
 
         if id_usuario_actual:
-            consulta = consulta.exclude(pk=id_usuario_actual)
 
-        return JsonResponse({"existe": consulta.exists()})
+            if id_usuario_actual.isdigit():
 
-    return JsonResponse({"existe": False})
+                consulta = (
+                    consulta.exclude(
+                        pk=int(
+                            id_usuario_actual
+                        )
+                    )
+                )
+
+
+        existe = (
+            consulta.exists()
+        )
+
+
+        return JsonResponse(
+            {
+                "valido": True,
+                "existe": existe,
+
+                "mensaje": (
+                    "Ese correo electrónico ya está registrado."
+                    if existe
+                    else
+                    "Correo Gmail disponible."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # CAMPO NO PERMITIDO
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "valido": False,
+            "existe": False,
+            "mensaje": "Campo de validación no permitido.",
+        },
+        status=400
+    )
 
 # ============================================================
 # CREAR ADMINISTRADOR
@@ -5988,65 +6984,104 @@ def verificar_dato_administrador(request):
 def crear_administrador(request):
 
     if request.method != "POST":
-        return redirect("usuarios_roles_admin")
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
 
     # =========================================================
     # DATOS PERSONALES
     # =========================================================
 
-    primer_nombre = request.POST.get(
-        "primer_nombre",
-        ""
-    ).strip()
+    primer_nombre = (
+        request.POST.get(
+            "primer_nombre",
+            ""
+        )
+        .strip()
+    )
 
-    segundo_nombre = request.POST.get(
-        "segundo_nombre",
-        ""
-    ).strip()
 
-    primer_apellido = request.POST.get(
-        "primer_apellido",
-        ""
-    ).strip()
+    segundo_nombre = (
+        request.POST.get(
+            "segundo_nombre",
+            ""
+        )
+        .strip()
+    )
 
-    segundo_apellido = request.POST.get(
-        "segundo_apellido",
-        ""
-    ).strip()
 
-    celular = request.POST.get(
-        "celular",
-        ""
-    ).strip()
+    primer_apellido = (
+        request.POST.get(
+            "primer_apellido",
+            ""
+        )
+        .strip()
+    )
 
-    correo = request.POST.get(
-        "correo",
-        ""
-    ).strip().lower()
 
-    nivel_acceso = request.POST.get(
-        "nivel_acceso",
-        "Alto"
-    ).strip()
+    segundo_apellido = (
+        request.POST.get(
+            "segundo_apellido",
+            ""
+        )
+        .strip()
+    )
+
+
+    celular = (
+        request.POST.get(
+            "celular",
+            ""
+        )
+        .strip()
+    )
+
+
+    correo = normalizar_correo(
+        request.POST.get(
+            "correo",
+            ""
+        )
+    )
+
+
+    nivel_acceso = (
+        request.POST.get(
+            "nivel_acceso",
+            "Alto"
+        )
+        .strip()
+    )
+
 
     # =========================================================
     # CREDENCIALES
     # =========================================================
 
-    username = request.POST.get(
-        "username",
-        ""
-    ).strip()
+    username = (
+        request.POST.get(
+            "username",
+            ""
+        )
+        .strip()
+    )
+
 
     password = request.POST.get(
         "password",
         ""
     )
 
-    confirmar_password = request.POST.get(
-        "confirmar_password",
-        ""
+
+    confirmar_password = (
+        request.POST.get(
+            "confirmar_password",
+            ""
+        )
     )
+
 
     # =========================================================
     # FOTO
@@ -6056,8 +7091,9 @@ def crear_administrador(request):
         "fotoperfil"
     )
 
+
     # =========================================================
-    # VALIDACIONES
+    # CAMPOS OBLIGATORIOS
     # =========================================================
 
     if not primer_nombre:
@@ -6071,6 +7107,7 @@ def crear_administrador(request):
             "usuarios_roles_admin"
         )
 
+
     if not primer_apellido:
 
         messages.error(
@@ -6081,6 +7118,7 @@ def crear_administrador(request):
         return redirect(
             "usuarios_roles_admin"
         )
+
 
     if not correo:
 
@@ -6093,6 +7131,7 @@ def crear_administrador(request):
             "usuarios_roles_admin"
         )
 
+
     if not username:
 
         messages.error(
@@ -6103,6 +7142,7 @@ def crear_administrador(request):
         return redirect(
             "usuarios_roles_admin"
         )
+
 
     if not password:
 
@@ -6115,42 +7155,181 @@ def crear_administrador(request):
             "usuarios_roles_admin"
         )
 
-    if len(password) < 8:
+
+    if not confirmar_password:
 
         messages.error(
             request,
-            "La contraseña debe tener como mínimo 8 caracteres."
+            "Debes confirmar la contraseña."
         )
 
         return redirect(
             "usuarios_roles_admin"
         )
 
-    if password != confirmar_password:
-
-        messages.error(
-            request,
-            "Las contraseñas no coinciden."
-        )
-
-        return redirect(
-            "usuarios_roles_admin"
-        )
 
     # =========================================================
-    # VALIDAR CELULAR
+    # VALIDAR PRIMER NOMBRE
     # =========================================================
 
-    if celular and not celular.isdigit():
+    if not validar_nombre_persona(
+        primer_nombre,
+        75
+    ):
 
         messages.error(
             request,
-            "El celular debe contener solamente números."
+            (
+                "El primer nombre no es válido. "
+                "Usa solamente letras, espacios, "
+                "apóstrofes o guiones."
+            )
         )
 
         return redirect(
             "usuarios_roles_admin"
         )
+
+
+    # =========================================================
+    # VALIDAR SEGUNDO NOMBRE
+    # =========================================================
+
+    if (
+        segundo_nombre
+        and
+        not validar_nombre_persona(
+            segundo_nombre,
+            75
+        )
+    ):
+
+        messages.error(
+            request,
+            (
+                "El segundo nombre no es válido. "
+                "Usa solamente letras, espacios, "
+                "apóstrofes o guiones."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDAR PRIMER APELLIDO
+    # =========================================================
+
+    if not validar_nombre_persona(
+        primer_apellido,
+        75
+    ):
+
+        messages.error(
+            request,
+            (
+                "El primer apellido no es válido. "
+                "Usa solamente letras, espacios, "
+                "apóstrofes o guiones."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDAR SEGUNDO APELLIDO
+    # =========================================================
+
+    if (
+        segundo_apellido
+        and
+        not validar_nombre_persona(
+            segundo_apellido,
+            75
+        )
+    ):
+
+        messages.error(
+            request,
+            (
+                "El segundo apellido no es válido. "
+                "Usa solamente letras, espacios, "
+                "apóstrofes o guiones."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDAR CELULAR COLOMBIANO
+    # =========================================================
+
+    if not validar_celular_colombia(
+        celular
+    ):
+
+        messages.error(
+            request,
+            (
+                "El celular debe contener exactamente "
+                "10 números y comenzar por 3."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDAR CORREO GMAIL
+    # =========================================================
+
+    if not validar_correo_gmail(
+        correo
+    ):
+
+        messages.error(
+            request,
+            (
+                "El correo electrónico debe ser una "
+                "dirección válida de Gmail (@gmail.com)."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDAR USERNAME
+    # =========================================================
+
+    if not validar_username_usuario(
+        username
+    ):
+
+        messages.error(
+            request,
+            (
+                "El nombre de usuario contiene "
+                "caracteres no permitidos."
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
 
     # =========================================================
     # VALIDAR NIVEL DE ACCESO
@@ -6160,6 +7339,7 @@ def crear_administrador(request):
         "Alto",
         "Medio",
     }
+
 
     if nivel_acceso not in niveles_permitidos:
 
@@ -6172,17 +7352,93 @@ def crear_administrador(request):
             "usuarios_roles_admin"
         )
 
+
     # =========================================================
-    # FOTO
+    # CONSTRUIR NOMBRES Y APELLIDOS
+    # =========================================================
+
+    nombres = " ".join(
+        valor
+        for valor in [
+            primer_nombre,
+            segundo_nombre,
+        ]
+        if valor
+    )
+
+
+    apellidos = " ".join(
+        valor
+        for valor in [
+            primer_apellido,
+            segundo_apellido,
+        ]
+        if valor
+    )
+
+
+    # =========================================================
+    # VALIDAR COINCIDENCIA DE CONTRASEÑAS
+    # =========================================================
+
+    if password != confirmar_password:
+
+        messages.error(
+            request,
+            "Las contraseñas no coinciden."
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDADORES REALES DE CONTRASEÑA DE DJANGO
+    # =========================================================
+
+    usuario_temporal = User(
+        username=username,
+        email=correo,
+        first_name=nombres,
+        last_name=apellidos,
+    )
+
+
+    try:
+
+        validate_password(
+            password,
+            user=usuario_temporal
+        )
+
+
+    except ValidationError as error:
+
+        messages.error(
+            request,
+            " ".join(
+                error.messages
+            )
+        )
+
+        return redirect(
+            "usuarios_roles_admin"
+        )
+
+
+    # =========================================================
+    # VALIDAR FOTO
     # =========================================================
 
     if fotoperfil:
 
-        tipos_permitidos = [
+        tipos_permitidos = {
             "image/jpeg",
             "image/png",
             "image/webp",
-        ]
+        }
+
 
         if (
             fotoperfil.content_type
@@ -6201,11 +7457,17 @@ def crear_administrador(request):
                 "usuarios_roles_admin"
             )
 
+
         tamano_maximo = (
             5 * 1024 * 1024
         )
 
-        if fotoperfil.size > tamano_maximo:
+
+        if (
+            fotoperfil.size
+            >
+            tamano_maximo
+        ):
 
             messages.error(
                 request,
@@ -6219,13 +7481,18 @@ def crear_administrador(request):
                 "usuarios_roles_admin"
             )
 
+
     # =========================================================
-    # DUPLICADOS
+    # VALIDAR USERNAME DUPLICADO
     # =========================================================
 
-    if User.objects.filter(
-        username__iexact=username
-    ).exists():
+    if (
+        User.objects
+        .filter(
+            username__iexact=username
+        )
+        .exists()
+    ):
 
         messages.error(
             request,
@@ -6239,9 +7506,18 @@ def crear_administrador(request):
             "usuarios_roles_admin"
         )
 
-    if User.objects.filter(
-        email__iexact=correo
-    ).exists():
+
+    # =========================================================
+    # VALIDAR CORREO DUPLICADO
+    # =========================================================
+
+    if (
+        User.objects
+        .filter(
+            email__iexact=correo
+        )
+        .exists()
+    ):
 
         messages.error(
             request,
@@ -6255,43 +7531,30 @@ def crear_administrador(request):
             "usuarios_roles_admin"
         )
 
-    # =========================================================
-    # NOMBRES
-    # =========================================================
-
-    nombres = " ".join(
-        valor
-        for valor in [
-            primer_nombre,
-            segundo_nombre,
-        ]
-        if valor
-    )
-
-    apellidos = " ".join(
-        valor
-        for valor in [
-            primer_apellido,
-            segundo_apellido,
-        ]
-        if valor
-    )
 
     # =========================================================
-    # CREACIÓN
+    # CREAR ADMINISTRADOR
     # =========================================================
 
     try:
 
         with transaction.atomic():
 
+            # -------------------------------------------------
+            # ROL ADMINISTRADOR
+            # -------------------------------------------------
+
             rol_administrador = (
                 Rol.objects.get(
-                    nombrerol__iexact=(
+                    nombrerol__iexact=
                         "Administrador"
-                    )
                 )
             )
+
+
+            # -------------------------------------------------
+            # USUARIO DJANGO
+            # -------------------------------------------------
 
             usuario = (
                 User.objects.create_user(
@@ -6306,16 +7569,23 @@ def crear_administrador(request):
                 )
             )
 
+
+            # -------------------------------------------------
+            # PERFIL ADMINISTRADOR
+            # -------------------------------------------------
+
             Administrador.objects.create(
                 user=usuario,
                 id_rol=rol_administrador,
-                celular=celular or None,
-                fecharegistro=date.today(),
-                nivelacceso=(
-                    nivel_acceso
+                celular=(
+                    celular
+                    or None
                 ),
+                fecharegistro=date.today(),
+                nivelacceso=nivel_acceso,
                 fotoperfil=fotoperfil,
             )
+
 
         messages.success(
             request,
@@ -6324,6 +7594,7 @@ def crear_administrador(request):
                 "registrado correctamente."
             )
         )
+
 
     except Rol.DoesNotExist:
 
@@ -6335,6 +7606,7 @@ def crear_administrador(request):
             )
         )
 
+
     except IntegrityError:
 
         messages.error(
@@ -6344,6 +7616,7 @@ def crear_administrador(request):
                 "porque alguno de los datos ya existe."
             )
         )
+
 
     except Exception as error:
 
@@ -6373,6 +7646,7 @@ def crear_administrador(request):
             + "\n"
         )
 
+
         messages.error(
             request,
             (
@@ -6382,10 +7656,15 @@ def crear_administrador(request):
             )
         )
 
+
     return redirect(
         "usuarios_roles_admin"
     )
 
+
+# ============================================================
+# EDITAR ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
 @permiso_requerido(
@@ -6409,7 +7688,18 @@ def editar_administrador(
         user_id=id_usuario
     )
 
+
     usuario = administrador.user
+
+
+    if not usuario:
+
+        messages.error(
+            request,
+            "Este administrador no tiene un usuario asociado."
+        )
+
+        return _redirigir_usuarios()
 
 
     # =========================================================
@@ -6424,6 +7714,7 @@ def editar_administrador(
         .strip()
     )
 
+
     apellidos = (
         request.POST.get(
             "apellidos",
@@ -6431,6 +7722,7 @@ def editar_administrador(
         )
         .strip()
     )
+
 
     celular = (
         request.POST.get(
@@ -6440,13 +7732,14 @@ def editar_administrador(
         .strip()
     )
 
-    correo = (
+
+    correo = normalizar_correo(
         request.POST.get(
             "correo",
             ""
         )
-        .strip()
     )
+
 
     nivel_acceso = (
         request.POST.get(
@@ -6456,6 +7749,7 @@ def editar_administrador(
         .strip()
     )
 
+
     username = (
         request.POST.get(
             "username",
@@ -6464,15 +7758,20 @@ def editar_administrador(
         .strip()
     )
 
+
     password = request.POST.get(
         "password",
         ""
     )
 
-    confirmar_password = request.POST.get(
-        "confirmar_password",
-        ""
+
+    confirmar_password = (
+        request.POST.get(
+            "confirmar_password",
+            ""
+        )
     )
+
 
     usuario_activo = (
         request.POST.get(
@@ -6480,6 +7779,7 @@ def editar_administrador(
         )
         == "on"
     )
+
 
     eliminar_foto = (
         request.POST.get(
@@ -6489,13 +7789,14 @@ def editar_administrador(
         == "1"
     )
 
+
     nueva_foto = request.FILES.get(
         "fotoperfil"
     )
 
 
     # =========================================================
-    # VALIDAR CAMPOS OBLIGATORIOS
+    # CAMPOS OBLIGATORIOS
     # =========================================================
 
     if not nombres:
@@ -6539,14 +7840,99 @@ def editar_administrador(
 
 
     # =========================================================
-    # VALIDAR CELULAR
+    # VALIDAR NOMBRES
     # =========================================================
 
-    if celular and not celular.isdigit():
+    if not validar_nombre_persona(
+        nombres,
+        150
+    ):
 
         messages.error(
             request,
-            "El celular solo puede contener números."
+            (
+                "Los nombres contienen caracteres no permitidos. "
+                "Usa solamente letras, espacios, "
+                "apóstrofes o guiones."
+            )
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR APELLIDOS
+    # =========================================================
+
+    if not validar_nombre_persona(
+        apellidos,
+        150
+    ):
+
+        messages.error(
+            request,
+            (
+                "Los apellidos contienen caracteres no permitidos. "
+                "Usa solamente letras, espacios, "
+                "apóstrofes o guiones."
+            )
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR CELULAR COLOMBIANO
+    # =========================================================
+
+    if not validar_celular_colombia(
+        celular
+    ):
+
+        messages.error(
+            request,
+            (
+                "El celular debe contener exactamente "
+                "10 números y comenzar por 3."
+            )
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR CORREO GMAIL
+    # =========================================================
+
+    if not validar_correo_gmail(
+        correo
+    ):
+
+        messages.error(
+            request,
+            (
+                "El correo electrónico debe ser una "
+                "dirección válida de Gmail (@gmail.com)."
+            )
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # VALIDAR USERNAME
+    # =========================================================
+
+    if not validar_username_usuario(
+        username
+    ):
+
+        messages.error(
+            request,
+            (
+                "El nombre de usuario contiene "
+                "caracteres no permitidos."
+            )
         )
 
         return _redirigir_usuarios()
@@ -6558,7 +7944,7 @@ def editar_administrador(
 
     niveles_permitidos = {
         "Alto",
-        "Medio"
+        "Medio",
     }
 
 
@@ -6570,6 +7956,62 @@ def editar_administrador(
         )
 
         return _redirigir_usuarios()
+
+
+    # =========================================================
+    # PROTEGER DESACTIVACIÓN DE LA PROPIA CUENTA
+    # =========================================================
+
+    if (
+        usuario.pk == request.user.pk
+        and
+        not usuario_activo
+    ):
+
+        messages.error(
+            request,
+            (
+                "No puedes desactivar tu propia cuenta "
+                "desde la edición de administrador."
+            )
+        )
+
+        return _redirigir_usuarios()
+
+
+    # =========================================================
+    # PROTEGER AL ÚLTIMO ADMINISTRADOR ACTIVO
+    # =========================================================
+
+    if (
+        usuario.is_active
+        and
+        not usuario_activo
+    ):
+
+        administradores_activos = (
+            Administrador.objects
+            .filter(
+                user__is_active=True
+            )
+            .exclude(
+                user__isnull=True
+            )
+            .count()
+        )
+
+
+        if administradores_activos <= 1:
+
+            messages.error(
+                request,
+                (
+                    "No puedes desactivar este administrador "
+                    "porque es el último administrador activo."
+                )
+            )
+
+            return _redirigir_usuarios()
 
 
     # =========================================================
@@ -6625,26 +8067,76 @@ def editar_administrador(
 
 
     # =========================================================
-    # VALIDAR CONTRASEÑA
+    # CONTRASEÑA OPCIONAL
     # =========================================================
 
     if password or confirmar_password:
 
-        if len(password) < 8:
+        # -----------------------------------------------------
+        # AMBOS CAMPOS DEBEN ESTAR COMPLETOS
+        # -----------------------------------------------------
+
+        if not password:
 
             messages.error(
                 request,
-                "La nueva contraseña debe tener mínimo 8 caracteres."
+                "Debes ingresar la nueva contraseña."
             )
 
             return _redirigir_usuarios()
 
 
+        if not confirmar_password:
+
+            messages.error(
+                request,
+                "Debes confirmar la nueva contraseña."
+            )
+
+            return _redirigir_usuarios()
+
+
+        # -----------------------------------------------------
+        # DEBEN COINCIDIR
+        # -----------------------------------------------------
+
         if password != confirmar_password:
 
             messages.error(
                 request,
-                "Las contraseñas no coinciden."
+                "Las nuevas contraseñas no coinciden."
+            )
+
+            return _redirigir_usuarios()
+
+
+        # -----------------------------------------------------
+        # VALIDADORES REALES DE DJANGO
+        # -----------------------------------------------------
+
+        usuario_temporal = User(
+            username=username,
+            email=correo,
+            first_name=nombres,
+            last_name=apellidos,
+        )
+
+
+        try:
+
+            validate_password(
+                password,
+                user=usuario_temporal
+            )
+
+
+        except ValidationError as error:
+
+            messages.error(
+                request,
+                " ".join(
+                    error.messages
+                )
             )
 
             return _redirigir_usuarios()
@@ -6659,11 +8151,14 @@ def editar_administrador(
         tipos_permitidos = {
             "image/jpeg",
             "image/png",
-            "image/webp"
+            "image/webp",
         }
 
 
-        if nueva_foto.content_type not in tipos_permitidos:
+        if (
+            nueva_foto.content_type
+            not in tipos_permitidos
+        ):
 
             messages.error(
                 request,
@@ -6678,7 +8173,11 @@ def editar_administrador(
         )
 
 
-        if nueva_foto.size > tamano_maximo:
+        if (
+            nueva_foto.size
+            >
+            tamano_maximo
+        ):
 
             messages.error(
                 request,
@@ -6700,16 +8199,34 @@ def editar_administrador(
             # USER DE DJANGO
             # -------------------------------------------------
 
-            usuario.first_name = nombres
+            usuario.first_name = (
+                nombres
+            )
 
-            usuario.last_name = apellidos
 
-            usuario.email = correo
+            usuario.last_name = (
+                apellidos
+            )
 
-            usuario.username = username
 
-            usuario.is_active = usuario_activo
+            usuario.email = (
+                correo
+            )
 
+
+            usuario.username = (
+                username
+            )
+
+
+            usuario.is_active = (
+                usuario_activo
+            )
+
+
+            # -------------------------------------------------
+            # CAMBIAR CONTRASEÑA SOLO SI SE INGRESÓ UNA NUEVA
+            # -------------------------------------------------
 
             if password:
 
@@ -6726,8 +8243,10 @@ def editar_administrador(
             # -------------------------------------------------
 
             administrador.celular = (
-                celular or None
+                celular
+                or None
             )
+
 
             administrador.nivelacceso = (
                 nivel_acceso
@@ -6746,7 +8265,10 @@ def editar_administrador(
                         save=False
                     )
 
-                administrador.fotoperfil = None
+
+                administrador.fotoperfil = (
+                    None
+                )
 
 
             # -------------------------------------------------
@@ -6760,6 +8282,7 @@ def editar_administrador(
                     administrador.fotoperfil.delete(
                         save=False
                     )
+
 
                 administrador.fotoperfil = (
                     nueva_foto
@@ -6779,7 +8302,10 @@ def editar_administrador(
 
         messages.error(
             request,
-            "No fue posible actualizar el administrador porque existe información duplicada."
+            (
+                "No fue posible actualizar el administrador "
+                "porque existe información duplicada."
+            )
         )
 
 
@@ -6789,6 +8315,7 @@ def editar_administrador(
             "ERROR EDITANDO ADMINISTRADOR:",
             error
         )
+
 
         messages.error(
             request,
@@ -7440,6 +8967,10 @@ def actualizar_mi_perfil(request):
     # VALIDACIONES
     # ========================================================
 
+    # ========================================================
+    # NOMBRES
+    # ========================================================
+
     if not nombres:
 
         messages.error(
@@ -7451,6 +8982,28 @@ def actualizar_mi_perfil(request):
             "mi_perfil"
         )
 
+
+    if not validar_nombre_persona(
+        nombres,
+        150
+    ):
+
+        messages.error(
+            request,
+            (
+                "Los nombres contienen caracteres no permitidos. "
+                "Usa solamente letras, espacios, apóstrofes o guiones."
+            )
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # APELLIDOS
+    # ========================================================
 
     if not apellidos:
 
@@ -7464,6 +9017,28 @@ def actualizar_mi_perfil(request):
         )
 
 
+    if not validar_nombre_persona(
+        apellidos,
+        150
+    ):
+
+        messages.error(
+            request,
+            (
+                "Los apellidos contienen caracteres no permitidos. "
+                "Usa solamente letras, espacios, apóstrofes o guiones."
+            )
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # CORREO
+    # ========================================================
+
     if not correo:
 
         messages.error(
@@ -7476,14 +9051,43 @@ def actualizar_mi_perfil(request):
         )
 
 
-    if (
-        telefono
-        and not telefono.isdigit()
+    # Normalizamos antes de validar y guardar.
+    correo = normalizar_correo(
+        correo
+    )
+
+
+    if not validar_correo_gmail(
+        correo
     ):
 
         messages.error(
             request,
-            "El teléfono solo puede contener números."
+            (
+                "El correo electrónico debe ser una "
+                "dirección válida de Gmail (@gmail.com)."
+            )
+        )
+
+        return redirect(
+            "mi_perfil"
+        )
+
+
+    # ========================================================
+    # TELÉFONO / CELULAR
+    # ========================================================
+
+    if not validar_celular_colombia(
+        telefono
+    ):
+
+        messages.error(
+            request,
+            (
+                "El número celular debe contener exactamente "
+                "10 números y comenzar por 3."
+            )
         )
 
         return redirect(
@@ -7511,7 +9115,10 @@ def actualizar_mi_perfil(request):
 
         messages.error(
             request,
-            "Este correo electrónico ya pertenece a otro usuario."
+            (
+                "Este correo electrónico ya pertenece "
+                "a otro usuario."
+            )
         )
 
         return redirect(

@@ -902,14 +902,6 @@ function inicializarModalAdministrador() {
                 '[name="celular"]'
             ),
 
-        identificacion:
-            formulario.querySelector(
-                '[name="identificacion"]'
-            ) ||
-            formulario.querySelector(
-                '[name="numero_identificacion"]'
-            ),
-
         correo:
             formulario.querySelector(
                 '[name="correo"]'
@@ -1319,76 +1311,195 @@ function inicializarValidacionesRegistroAdministrador(
     campos
 ) {
 
-    /* ========================================================
-       EXPRESIONES REGULARES
-    ======================================================== */
-
     const REGEX_NOMBRE =
         /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+(?:[ '\-][A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+)*$/;
-
 
     const REGEX_CELULAR =
         /^3[0-9]{9}$/;
 
-
-    const REGEX_CORREO =
-        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
+    const REGEX_GMAIL =
+        /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
 
     const REGEX_USERNAME =
         /^[A-Za-z0-9_@.+-]+$/;
 
 
     /* ========================================================
-       SABER SI HAY VALOR
+       FEEDBACK
     ======================================================== */
 
-    function tieneValor(
-        campo
-    ) {
+    function obtenerFeedback(campo) {
 
         if (!campo) {
-
-            return false;
+            return null;
         }
 
+        const mapa = {
+            usernameAdministrador:
+                "feedbackUsernameAdministrador",
 
-        /*
-         * Si es contraseña usamos value directamente.
-         */
+            correoAdministrador:
+                "feedbackCorreoAdministrador"
+        };
+
 
         if (
-            campo.name ===
-                "password" ||
-            campo.name ===
-                "confirmar_password"
+            campo.id &&
+            mapa[campo.id]
         ) {
 
-            return campo.value.length >
-                0;
+            const existente =
+                document.getElementById(
+                    mapa[campo.id]
+                );
+
+            if (existente) {
+                return existente;
+            }
+        }
+
+
+        const idFeedback =
+            campo.id
+                ? `feedbackLive_${campo.id}`
+                : "";
+
+
+        let feedback =
+            idFeedback
+                ? document.getElementById(
+                    idFeedback
+                )
+                : null;
+
+
+        if (!feedback) {
+
+            feedback =
+                document.createElement(
+                    "div"
+                );
+
+
+            feedback.className =
+                "small mt-1 d-none";
+
+
+            if (idFeedback) {
+
+                feedback.id =
+                    idFeedback;
+
+            }
+
+
+            const grupo =
+                campo.closest(
+                    ".input-group"
+                );
+
+
+            const referencia =
+                grupo ||
+                campo;
+
+
+            referencia.insertAdjacentElement(
+                "afterend",
+                feedback
+            );
 
         }
 
 
-        return campo.value
-            .trim()
-            .length >
-            0;
-
+        return feedback;
     }
 
 
-    /* ========================================================
-       ESTADO VERDE / ROJO
-    ======================================================== */
-
-    function actualizarEstadoCampo(
+    function mostrarFeedback(
         campo,
-        valido
+        estado,
+        mensaje
+    ) {
+
+        const feedback =
+            obtenerFeedback(
+                campo
+            );
+
+
+        if (!feedback) {
+            return;
+        }
+
+
+        feedback.classList.remove(
+            "invalid-feedback",
+            "text-danger",
+            "text-success",
+            "text-muted",
+            "d-none"
+        );
+
+
+        feedback.classList.add(
+            "small",
+            "mt-1"
+        );
+
+
+        if (!mensaje) {
+
+            feedback.textContent =
+                "";
+
+            feedback.classList.add(
+                "d-none"
+            );
+
+            return;
+        }
+
+
+        if (estado === "valido") {
+
+            feedback.classList.add(
+                "text-success"
+            );
+
+        }
+
+        else if (
+            estado === "invalido"
+        ) {
+
+            feedback.classList.add(
+                "text-danger"
+            );
+
+        }
+
+        else {
+
+            feedback.classList.add(
+                "text-muted"
+            );
+
+        }
+
+
+        feedback.textContent =
+            mensaje;
+    }
+
+
+    function marcarCampo(
+        campo,
+        valido,
+        mensaje = ""
     ) {
 
         if (!campo) {
-
             return;
         }
 
@@ -1399,23 +1510,64 @@ function inicializarValidacionesRegistroAdministrador(
         );
 
 
-        if (!tieneValor(campo)) {
+        if (valido === null) {
+
+            campo.setCustomValidity(
+                ""
+            );
+
+            mostrarFeedback(
+                campo,
+                null,
+                ""
+            );
 
             return;
         }
 
 
-        campo.classList.add(
-            valido
-                ? "is-valid"
-                : "is-invalid"
-        );
+        if (valido) {
+
+            campo.setCustomValidity(
+                ""
+            );
+
+            campo.classList.add(
+                "is-valid"
+            );
+
+            mostrarFeedback(
+                campo,
+                "valido",
+                mensaje
+            );
+
+        }
+
+        else {
+
+            campo.setCustomValidity(
+                mensaje ||
+                "El valor ingresado no es válido."
+            );
+
+            campo.classList.add(
+                "is-invalid"
+            );
+
+            mostrarFeedback(
+                campo,
+                "invalido",
+                mensaje
+            );
+
+        }
 
     }
 
 
     /* ========================================================
-       NOMBRES / APELLIDOS
+       NOMBRES Y APELLIDOS
     ======================================================== */
 
     function validarNombre(
@@ -1425,7 +1577,6 @@ function inicializarValidacionesRegistroAdministrador(
     ) {
 
         if (!campo) {
-
             return true;
         }
 
@@ -1434,72 +1585,64 @@ function inicializarValidacionesRegistroAdministrador(
             campo.value.trim();
 
 
-        campo.setCustomValidity(
-            ""
-        );
+        const maximo =
+            campo.maxLength > 0
+                ? campo.maxLength
+                : 150;
 
-
-        /* ----------------------------------------------------
-           VACÍO
-        ---------------------------------------------------- */
 
         if (!valor) {
 
             if (obligatorio) {
 
-                campo.setCustomValidity(
+                marcarCampo(
+                    campo,
+                    false,
                     `${nombreCampo} es obligatorio.`
                 );
 
-
-                actualizarEstadoCampo(
-                    campo,
-                    false
-                );
-
-
                 return false;
-
             }
 
 
-            campo.classList.remove(
-                "is-valid",
-                "is-invalid"
+            marcarCampo(
+                campo,
+                null
             );
-
 
             return true;
         }
 
-
-        /* ----------------------------------------------------
-           MÍNIMO
-        ---------------------------------------------------- */
 
         if (
             valor.length <
             2
         ) {
 
-            campo.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 `${nombreCampo} debe tener mínimo 2 caracteres.`
             );
-
-
-            actualizarEstadoCampo(
-                campo,
-                false
-            );
-
 
             return false;
         }
 
 
-        /* ----------------------------------------------------
-           FORMATO
-        ---------------------------------------------------- */
+        if (
+            valor.length >
+            maximo
+        ) {
+
+            marcarCampo(
+                campo,
+                false,
+                `${nombreCampo} no puede superar los ${maximo} caracteres.`
+            );
+
+            return false;
+        }
+
 
         if (
             !REGEX_NOMBRE.test(
@@ -1507,34 +1650,26 @@ function inicializarValidacionesRegistroAdministrador(
             )
         ) {
 
-            campo.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 `${nombreCampo} solo puede contener letras, espacios, guiones y apóstrofes.`
             );
-
-
-            actualizarEstadoCampo(
-                campo,
-                false
-            );
-
 
             return false;
         }
 
 
-        actualizarEstadoCampo(
+        marcarCampo(
             campo,
-            true
+            true,
+            `${nombreCampo} es válido.`
         );
 
 
         return true;
     }
 
-
-    /* ========================================================
-       CONFIGURAR NOMBRE
-    ======================================================== */
 
     function configurarNombre(
         campo,
@@ -1543,7 +1678,6 @@ function inicializarValidacionesRegistroAdministrador(
     ) {
 
         if (!campo) {
-
             return;
         }
 
@@ -1591,27 +1725,17 @@ function inicializarValidacionesRegistroAdministrador(
                         );
 
 
-                if (
-                    !validarNombre(
-                        campo,
-                        nombreCampo,
-                        obligatorio
-                    )
-                ) {
-
-                    campo.reportValidity();
-
-                }
+                validarNombre(
+                    campo,
+                    nombreCampo,
+                    obligatorio
+                );
 
             }
         );
 
     }
 
-
-    /* ========================================================
-       CAMPOS DE NOMBRE
-    ======================================================== */
 
     const configuracionNombres = [
 
@@ -1681,37 +1805,25 @@ function inicializarValidacionesRegistroAdministrador(
 
     function validarCelular() {
 
-        const celular =
+        const campo =
             campos.celular;
 
 
-        if (!celular) {
-
+        if (!campo) {
             return true;
         }
 
 
         const valor =
-            celular.value.trim();
+            campo.value.trim();
 
-
-        celular.setCustomValidity(
-            ""
-        );
-
-
-        /*
-         * Actualmente en tu HTML el celular
-         * no es obligatorio.
-         */
 
         if (!valor) {
 
-            celular.classList.remove(
-                "is-valid",
-                "is-invalid"
+            marcarCampo(
+                campo,
+                null
             );
-
 
             return true;
         }
@@ -1723,36 +1835,47 @@ function inicializarValidacionesRegistroAdministrador(
             )
         ) {
 
-            celular.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "El celular solo puede contener números."
             );
-
-
-            actualizarEstadoCampo(
-                celular,
-                false
-            );
-
 
             return false;
         }
 
 
         if (
-            valor.length !==
+            !valor.startsWith(
+                "3"
+            )
+        ) {
+
+            marcarCampo(
+                campo,
+                false,
+                "El celular debe comenzar por 3."
+            );
+
+            return false;
+        }
+
+
+        if (
+            valor.length <
             10
         ) {
 
-            celular.setCustomValidity(
-                "El celular debe contener exactamente 10 números."
+            const faltan =
+                10 -
+                valor.length;
+
+
+            marcarCampo(
+                campo,
+                false,
+                `Faltan ${faltan} número${faltan === 1 ? "" : "s"}.`
             );
-
-
-            actualizarEstadoCampo(
-                celular,
-                false
-            );
-
 
             return false;
         }
@@ -1764,24 +1887,23 @@ function inicializarValidacionesRegistroAdministrador(
             )
         ) {
 
-            celular.setCustomValidity(
-                "Ingresa un número de celular válido. Debe comenzar por 3."
+            marcarCampo(
+                campo,
+                false,
+                (
+                    "El celular debe tener exactamente "
+                    + "10 números y comenzar por 3."
+                )
             );
-
-
-            actualizarEstadoCampo(
-                celular,
-                false
-            );
-
 
             return false;
         }
 
 
-        actualizarEstadoCampo(
-            celular,
-            true
+        marcarCampo(
+            campo,
+            true,
+            "Número celular válido."
         );
 
 
@@ -1817,280 +1939,80 @@ function inicializarValidacionesRegistroAdministrador(
 
         campos.celular.addEventListener(
             "blur",
-            function () {
-
-                if (!validarCelular()) {
-
-                    campos.celular
-                        .reportValidity();
-
-                }
-
-            }
+            validarCelular
         );
 
     }
 
 
     /* ========================================================
-       IDENTIFICACIÓN
-       Solo se usa si agregas ese campo al HTML.
-    ======================================================== */
-
-    function validarIdentificacion() {
-
-        const identificacion =
-            campos.identificacion;
-
-
-        if (!identificacion) {
-
-            return true;
-        }
-
-
-        const valor =
-            identificacion.value.trim();
-
-
-        identificacion.setCustomValidity(
-            ""
-        );
-
-
-        if (!valor) {
-
-            identificacion.classList.remove(
-                "is-valid",
-                "is-invalid"
-            );
-
-
-            return true;
-        }
-
-
-        if (
-            !/^[0-9]+$/.test(
-                valor
-            )
-        ) {
-
-            identificacion.setCustomValidity(
-                "El número de identificación solo puede contener números."
-            );
-
-
-            actualizarEstadoCampo(
-                identificacion,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        if (
-            valor.length <
-                6 ||
-            valor.length >
-                15
-        ) {
-
-            identificacion.setCustomValidity(
-                "El número de identificación debe contener entre 6 y 15 números."
-            );
-
-
-            actualizarEstadoCampo(
-                identificacion,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        actualizarEstadoCampo(
-            identificacion,
-            true
-        );
-
-
-        return true;
-    }
-
-
-    if (campos.identificacion) {
-
-        campos.identificacion.addEventListener(
-            "input",
-            function () {
-
-                campos.identificacion.value =
-                    campos.identificacion.value
-
-                        .replace(
-                            /[^0-9]/g,
-                            ""
-                        )
-
-                        .slice(
-                            0,
-                            15
-                        );
-
-
-                validarIdentificacion();
-
-            }
-        );
-
-
-        campos.identificacion.addEventListener(
-            "blur",
-            function () {
-
-                if (
-                    !validarIdentificacion()
-                ) {
-
-                    campos.identificacion
-                        .reportValidity();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* ========================================================
-       CORREO
+       CORREO - SOLO GMAIL
     ======================================================== */
 
     function validarCorreo() {
 
-        const correo =
+        const campo =
             campos.correo;
 
 
-        if (!correo) {
-
+        if (!campo) {
             return true;
         }
 
 
         const valor =
-            correo.value.trim();
+            campo.value
+                .trim()
+                .toLowerCase();
 
-
-        correo.setCustomValidity(
-            ""
-        );
-
-
-        /* ----------------------------------------------------
-           OBLIGATORIO
-        ---------------------------------------------------- */
 
         if (!valor) {
 
-            correo.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "El correo electrónico es obligatorio."
             );
 
-
-            actualizarEstadoCampo(
-                correo,
-                false
-            );
-
-
             return false;
         }
 
-
-        /* ----------------------------------------------------
-           ESPACIOS
-        ---------------------------------------------------- */
-
-        if (
-            /\s/.test(
-                valor
-            )
-        ) {
-
-            correo.setCustomValidity(
-                "El correo electrónico no puede contener espacios."
-            );
-
-
-            actualizarEstadoCampo(
-                correo,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        /* ----------------------------------------------------
-           FORMATO
-        ---------------------------------------------------- */
-
-        if (
-            !REGEX_CORREO.test(
-                valor
-            )
-        ) {
-
-            correo.setCustomValidity(
-                "Ingresa un correo electrónico válido. Ejemplo: usuario@correo.com"
-            );
-
-
-            actualizarEstadoCampo(
-                correo,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        /* ----------------------------------------------------
-           LONGITUD
-        ---------------------------------------------------- */
 
         if (
             valor.length >
             254
         ) {
 
-            correo.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "El correo electrónico no puede superar los 254 caracteres."
             );
-
-
-            actualizarEstadoCampo(
-                correo,
-                false
-            );
-
 
             return false;
         }
 
 
-        actualizarEstadoCampo(
-            correo,
-            true
+        if (
+            !REGEX_GMAIL.test(
+                valor
+            )
+        ) {
+
+            marcarCampo(
+                campo,
+                false,
+                "Debes ingresar una dirección válida terminada en @gmail.com."
+            );
+
+            return false;
+        }
+
+
+        marcarCampo(
+            campo,
+            true,
+            "Formato de Gmail válido."
         );
 
 
@@ -2105,10 +2027,14 @@ function inicializarValidacionesRegistroAdministrador(
             function () {
 
                 campos.correo.value =
-                    campos.correo.value.replace(
-                        /\s/g,
-                        ""
-                    );
+                    campos.correo.value
+
+                        .replace(
+                            /\s/g,
+                            ""
+                        )
+
+                        .toLowerCase();
 
 
                 validarCorreo();
@@ -2122,15 +2048,14 @@ function inicializarValidacionesRegistroAdministrador(
             function () {
 
                 campos.correo.value =
-                    campos.correo.value.trim();
+                    campos.correo.value
+
+                        .trim()
+
+                        .toLowerCase();
 
 
-                if (!validarCorreo()) {
-
-                    campos.correo
-                        .reportValidity();
-
-                }
+                validarCorreo();
 
             }
         );
@@ -2144,57 +2069,26 @@ function inicializarValidacionesRegistroAdministrador(
 
     function validarUsername() {
 
-        const username =
+        const campo =
             campos.username;
 
 
-        if (!username) {
-
+        if (!campo) {
             return true;
         }
 
 
         const valor =
-            username.value.trim();
-
-
-        username.setCustomValidity(
-            ""
-        );
+            campo.value.trim();
 
 
         if (!valor) {
 
-            username.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "El nombre de usuario es obligatorio."
             );
-
-
-            actualizarEstadoCampo(
-                username,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        if (
-            valor.length <
-            4
-        ) {
-
-            username.setCustomValidity(
-                "El nombre de usuario debe tener mínimo 4 caracteres."
-            );
-
-
-            actualizarEstadoCampo(
-                username,
-                false
-            );
-
 
             return false;
         }
@@ -2205,16 +2099,11 @@ function inicializarValidacionesRegistroAdministrador(
             150
         ) {
 
-            username.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "El nombre de usuario no puede superar los 150 caracteres."
             );
-
-
-            actualizarEstadoCampo(
-                username,
-                false
-            );
-
 
             return false;
         }
@@ -2226,45 +2115,20 @@ function inicializarValidacionesRegistroAdministrador(
             )
         ) {
 
-            username.setCustomValidity(
-                "El nombre de usuario solo puede contener letras, números y los símbolos _ @ . + -"
+            marcarCampo(
+                campo,
+                false,
+                "Solo se permiten letras, números y los símbolos _ @ . + -."
             );
-
-
-            actualizarEstadoCampo(
-                username,
-                false
-            );
-
 
             return false;
         }
 
 
-        if (
-            !/[A-Za-z0-9]/.test(
-                valor
-            )
-        ) {
-
-            username.setCustomValidity(
-                "El nombre de usuario debe contener al menos una letra o un número."
-            );
-
-
-            actualizarEstadoCampo(
-                username,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        actualizarEstadoCampo(
-            username,
-            true
+        marcarCampo(
+            campo,
+            true,
+            "Formato de nombre de usuario válido."
         );
 
 
@@ -2279,10 +2143,17 @@ function inicializarValidacionesRegistroAdministrador(
             function () {
 
                 campos.username.value =
-                    campos.username.value.replace(
-                        /\s/g,
-                        ""
-                    );
+                    campos.username.value
+
+                        .replace(
+                            /\s/g,
+                            ""
+                        )
+
+                        .slice(
+                            0,
+                            150
+                        );
 
 
                 validarUsername();
@@ -2293,20 +2164,7 @@ function inicializarValidacionesRegistroAdministrador(
 
         campos.username.addEventListener(
             "blur",
-            function () {
-
-                campos.username.value =
-                    campos.username.value.trim();
-
-
-                if (!validarUsername()) {
-
-                    campos.username
-                        .reportValidity();
-
-                }
-
-            }
+            validarUsername
         );
 
     }
@@ -2318,133 +2176,71 @@ function inicializarValidacionesRegistroAdministrador(
 
     function validarPassword() {
 
-        const password =
+        const campo =
             campos.password;
 
 
-        if (!password) {
-
+        if (!campo) {
             return true;
         }
 
 
         const valor =
-            password.value;
+            campo.value;
 
-
-        password.setCustomValidity(
-            ""
-        );
-
-
-        /* ----------------------------------------------------
-           OBLIGATORIA
-        ---------------------------------------------------- */
 
         if (!valor) {
 
-            password.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "La contraseña es obligatoria."
             );
-
-
-            actualizarEstadoCampo(
-                password,
-                false
-            );
-
 
             return false;
         }
 
-
-        /* ----------------------------------------------------
-           MÍNIMO 8
-        ---------------------------------------------------- */
 
         if (
             valor.length <
             8
         ) {
 
-            password.setCustomValidity(
+            marcarCampo(
+                campo,
+                false,
                 "La contraseña debe tener mínimo 8 caracteres."
             );
 
-
-            actualizarEstadoCampo(
-                password,
-                false
-            );
-
-
             return false;
         }
 
-
-        /* ----------------------------------------------------
-           LETRA
-        ---------------------------------------------------- */
 
         if (
-            !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(
-                valor
-            )
+            valor.length >
+            128
         ) {
 
-            password.setCustomValidity(
-                "La contraseña debe contener al menos una letra."
+            marcarCampo(
+                campo,
+                false,
+                "La contraseña no puede superar los 128 caracteres."
             );
-
-
-            actualizarEstadoCampo(
-                password,
-                false
-            );
-
 
             return false;
         }
 
 
-        /* ----------------------------------------------------
-           NÚMERO
-        ---------------------------------------------------- */
-
-        if (
-            !/[0-9]/.test(
-                valor
-            )
-        ) {
-
-            password.setCustomValidity(
-                "La contraseña debe contener al menos un número."
-            );
-
-
-            actualizarEstadoCampo(
-                password,
-                false
-            );
-
-
-            return false;
-        }
-
-
-        actualizarEstadoCampo(
-            password,
-            true
+        marcarCampo(
+            campo,
+            true,
+            "Longitud de contraseña válida."
         );
 
 
         return true;
     }
 
-
-    /* ========================================================
-       CONFIRMAR CONTRASEÑA
-    ======================================================== */
 
     function validarConfirmacionPassword() {
 
@@ -2457,34 +2253,20 @@ function inicializarValidacionesRegistroAdministrador(
 
 
         if (!confirmar) {
-
             return true;
         }
-
-
-        confirmar.setCustomValidity(
-            ""
-        );
 
 
         const valor =
             confirmar.value;
 
 
-        /* ----------------------------------------------------
-           OBLIGATORIA
-        ---------------------------------------------------- */
-
         if (!valor) {
 
-            confirmar.setCustomValidity(
-                "Debes confirmar la contraseña."
-            );
-
-
-            actualizarEstadoCampo(
+            marcarCampo(
                 confirmar,
-                false
+                false,
+                "Debes confirmar la contraseña."
             );
 
 
@@ -2498,24 +2280,16 @@ function inicializarValidacionesRegistroAdministrador(
         }
 
 
-        /* ----------------------------------------------------
-           COINCIDENCIA
-        ---------------------------------------------------- */
-
         if (
             password &&
             valor !==
-                password.value
+            password.value
         ) {
 
-            confirmar.setCustomValidity(
-                "Las contraseñas no coinciden."
-            );
-
-
-            actualizarEstadoCampo(
+            marcarCampo(
                 confirmar,
-                false
+                false,
+                "Las contraseñas no coinciden."
             );
 
 
@@ -2529,9 +2303,10 @@ function inicializarValidacionesRegistroAdministrador(
         }
 
 
-        actualizarEstadoCampo(
+        marcarCampo(
             confirmar,
-            true
+            true,
+            "Las contraseñas coinciden."
         );
 
 
@@ -2544,10 +2319,6 @@ function inicializarValidacionesRegistroAdministrador(
         return true;
     }
 
-
-    /* ========================================================
-       EVENTOS PASSWORD
-    ======================================================== */
 
     if (campos.password) {
 
@@ -2570,47 +2341,18 @@ function inicializarValidacionesRegistroAdministrador(
             }
         );
 
-
-        campos.password.addEventListener(
-            "blur",
-            function () {
-
-                if (!validarPassword()) {
-
-                    campos.password
-                        .reportValidity();
-
-                }
-
-            }
-        );
-
     }
 
 
-    if (campos.confirmarPassword) {
+    if (
+        campos.confirmarPassword
+    ) {
 
-        campos.confirmarPassword.addEventListener(
-            "input",
-            validarConfirmacionPassword
-        );
-
-
-        campos.confirmarPassword.addEventListener(
-            "blur",
-            function () {
-
-                if (
-                    !validarConfirmacionPassword()
-                ) {
-
-                    campos.confirmarPassword
-                        .reportValidity();
-
-                }
-
-            }
-        );
+        campos.confirmarPassword
+            .addEventListener(
+                "input",
+                validarConfirmacionPassword
+            );
 
     }
 
@@ -2626,6 +2368,16 @@ function inicializarValidacionesRegistroAdministrador(
             normalizarRegistroAdministrador(
                 campos
             );
+
+
+            if (campos.correo) {
+
+                campos.correo.value =
+                    campos.correo.value
+                        .trim()
+                        .toLowerCase();
+
+            }
 
 
             const nombresValidos =
@@ -2646,10 +2398,6 @@ function inicializarValidacionesRegistroAdministrador(
                 validarCelular();
 
 
-            const identificacionValida =
-                validarIdentificacion();
-
-
             const correoValido =
                 validarCorreo();
 
@@ -2666,19 +2414,28 @@ function inicializarValidacionesRegistroAdministrador(
                 validarConfirmacionPassword();
 
 
-            const formularioValido =
-                formulario.checkValidity();
+            const hayVerificando =
+                formulario.querySelector(
+                    '[data-verificando="1"]'
+                );
+
+
+            const hayDuplicado =
+                formulario.querySelector(
+                    '[data-duplicado="1"]'
+                );
 
 
             if (
                 !nombresValidos ||
                 !celularValido ||
-                !identificacionValida ||
                 !correoValido ||
                 !usernameValido ||
                 !passwordValido ||
                 !confirmacionValida ||
-                !formularioValido
+                hayVerificando ||
+                hayDuplicado ||
+                !formulario.checkValidity()
             ) {
 
                 evento.preventDefault();
@@ -2718,23 +2475,13 @@ function inicializarValidacionesRegistroAdministrador(
             const listaCampos = [
 
                 campos.primerNombre,
-
                 campos.segundoNombre,
-
                 campos.primerApellido,
-
                 campos.segundoApellido,
-
                 campos.celular,
-
-                campos.identificacion,
-
                 campos.correo,
-
                 campos.username,
-
                 campos.password,
-
                 campos.confirmarPassword
 
             ];
@@ -2744,7 +2491,6 @@ function inicializarValidacionesRegistroAdministrador(
                 function (campo) {
 
                     if (!campo) {
-
                         return;
                     }
 
@@ -2766,18 +2512,6 @@ function inicializarValidacionesRegistroAdministrador(
             mostrarMensajePasswords(
                 campos,
                 false
-            );
-
-
-            const modal =
-                document.getElementById(
-                    "modalAgregarAdministrador"
-                );
-
-
-            restaurarOjosPassword(
-                modal,
-                ".btn-password-administrador"
             );
 
         }
@@ -2875,14 +2609,6 @@ function normalizarRegistroAdministrador(
 
         campos.celular.value =
             campos.celular.value.trim();
-
-    }
-
-
-    if (campos.identificacion) {
-
-        campos.identificacion.value =
-            campos.identificacion.value.trim();
 
     }
 
@@ -3475,7 +3201,581 @@ function inicializarModalEditarAdministrador() {
 
 
     /* ========================================================
-       VALIDAR PASSWORD EDITAR
+    VALIDACIONES - EDITAR ADMINISTRADOR
+    ======================================================== */
+
+    const REGEX_NOMBRE_EDITAR =
+        /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+(?:[ '\-][A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+)*$/;
+
+    const REGEX_CELULAR_EDITAR =
+        /^3[0-9]{9}$/;
+
+    const REGEX_GMAIL_EDITAR =
+        /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+
+    const REGEX_USERNAME_EDITAR =
+        /^[A-Za-z0-9_@.+-]+$/;
+
+
+    /* --------------------------------------------------------
+    ESTADO VISUAL
+    --------------------------------------------------------- */
+
+    function marcarEditar(
+        campo,
+        valido,
+        mensaje = ""
+    ) {
+
+        if (!campo) {
+            return;
+        }
+
+
+        campo.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        if (valido === null) {
+
+            campo.setCustomValidity(
+                ""
+            );
+
+            return;
+        }
+
+
+        if (valido) {
+
+            campo.setCustomValidity(
+                ""
+            );
+
+            campo.classList.add(
+                "is-valid"
+            );
+
+        }
+
+        else {
+
+            campo.setCustomValidity(
+                mensaje ||
+                "El valor ingresado no es válido."
+            );
+
+            campo.classList.add(
+                "is-invalid"
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+    NOMBRES
+    ======================================================== */
+
+    function validarNombreEditar(
+        campo,
+        nombreCampo
+    ) {
+
+        if (!campo) {
+            return true;
+        }
+
+
+        const valor =
+            campo.value.trim();
+
+
+        if (!valor) {
+
+            marcarEditar(
+                campo,
+                false,
+                `${nombreCampo} son obligatorios.`
+            );
+
+            return false;
+        }
+
+
+        if (
+            valor.length <
+            2
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                `${nombreCampo} deben tener mínimo 2 caracteres.`
+            );
+
+            return false;
+        }
+
+
+        if (
+            valor.length >
+            150
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                `${nombreCampo} no pueden superar los 150 caracteres.`
+            );
+
+            return false;
+        }
+
+
+        if (
+            !REGEX_NOMBRE_EDITAR.test(
+                valor
+            )
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                `${nombreCampo} solo pueden contener letras, espacios, guiones y apóstrofes.`
+            );
+
+            return false;
+        }
+
+
+        marcarEditar(
+            campo,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    function prepararNombreEditar(
+        campo,
+        nombreCampo
+    ) {
+
+        if (!campo) {
+            return;
+        }
+
+
+        campo.addEventListener(
+            "input",
+            function () {
+
+                campo.value =
+                    campo.value
+
+                        .replace(
+                            /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ '\-]/g,
+                            ""
+                        )
+
+                        .replace(
+                            /\s{2,}/g,
+                            " "
+                        );
+
+
+                validarNombreEditar(
+                    campo,
+                    nombreCampo
+                );
+
+            }
+        );
+
+
+        campo.addEventListener(
+            "blur",
+            function () {
+
+                campo.value =
+                    campo.value
+
+                        .trim()
+
+                        .replace(
+                            /\s{2,}/g,
+                            " "
+                        );
+
+
+                validarNombreEditar(
+                    campo,
+                    nombreCampo
+                );
+
+            }
+        );
+
+    }
+
+
+    prepararNombreEditar(
+        campos.nombres,
+        "Los nombres"
+    );
+
+
+    prepararNombreEditar(
+        campos.apellidos,
+        "Los apellidos"
+    );
+
+
+    /* ========================================================
+    CELULAR
+    ======================================================== */
+
+    function validarCelularEditar() {
+
+        const campo =
+            campos.celular;
+
+
+        if (!campo) {
+            return true;
+        }
+
+
+        const valor =
+            campo.value.trim();
+
+
+        if (!valor) {
+
+            marcarEditar(
+                campo,
+                null
+            );
+
+            return true;
+        }
+
+
+        if (
+            !valor.startsWith(
+                "3"
+            )
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                "El celular debe comenzar por 3."
+            );
+
+            return false;
+        }
+
+
+        if (
+            valor.length <
+            10
+        ) {
+
+            const faltan =
+                10 -
+                valor.length;
+
+
+            marcarEditar(
+                campo,
+                false,
+                `Faltan ${faltan} número${faltan === 1 ? "" : "s"}.`
+            );
+
+            return false;
+        }
+
+
+        if (
+            !REGEX_CELULAR_EDITAR.test(
+                valor
+            )
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                "El celular debe tener exactamente 10 números y comenzar por 3."
+            );
+
+            return false;
+        }
+
+
+        marcarEditar(
+            campo,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.celular) {
+
+        campos.celular.addEventListener(
+            "input",
+            function () {
+
+                campos.celular.value =
+                    campos.celular.value
+
+                        .replace(
+                            /[^0-9]/g,
+                            ""
+                        )
+
+                        .slice(
+                            0,
+                            10
+                        );
+
+
+                validarCelularEditar();
+
+            }
+        );
+
+
+        campos.celular.addEventListener(
+            "blur",
+            validarCelularEditar
+        );
+
+    }
+
+
+    /* ========================================================
+    CORREO GMAIL
+    ======================================================== */
+
+    function validarCorreoEditar() {
+
+        const campo =
+            campos.correo;
+
+
+        if (!campo) {
+            return true;
+        }
+
+
+        const valor =
+            campo.value
+                .trim()
+                .toLowerCase();
+
+
+        if (!valor) {
+
+            marcarEditar(
+                campo,
+                false,
+                "El correo electrónico es obligatorio."
+            );
+
+            return false;
+        }
+
+
+        if (
+            valor.length >
+            254
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                "El correo electrónico no puede superar los 254 caracteres."
+            );
+
+            return false;
+        }
+
+
+        if (
+            !REGEX_GMAIL_EDITAR.test(
+                valor
+            )
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                "Debes ingresar una dirección válida terminada en @gmail.com."
+            );
+
+            return false;
+        }
+
+
+        marcarEditar(
+            campo,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.correo) {
+
+        campos.correo.addEventListener(
+            "input",
+            function () {
+
+                campos.correo.value =
+                    campos.correo.value
+
+                        .replace(
+                            /\s/g,
+                            ""
+                        )
+
+                        .toLowerCase();
+
+
+                validarCorreoEditar();
+
+            }
+        );
+
+
+        campos.correo.addEventListener(
+            "blur",
+            validarCorreoEditar
+        );
+
+    }
+
+
+    /* ========================================================
+    USERNAME
+    ======================================================== */
+
+    function validarUsernameEditar() {
+
+        const campo =
+            campos.username;
+
+
+        if (!campo) {
+            return true;
+        }
+
+
+        const valor =
+            campo.value.trim();
+
+
+        if (!valor) {
+
+            marcarEditar(
+                campo,
+                false,
+                "El nombre de usuario es obligatorio."
+            );
+
+            return false;
+        }
+
+
+        if (
+            valor.length >
+            150
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                "El nombre de usuario no puede superar los 150 caracteres."
+            );
+
+            return false;
+        }
+
+
+        if (
+            !REGEX_USERNAME_EDITAR.test(
+                valor
+            )
+        ) {
+
+            marcarEditar(
+                campo,
+                false,
+                "Solo se permiten letras, números y los símbolos _ @ . + -."
+            );
+
+            return false;
+        }
+
+
+        marcarEditar(
+            campo,
+            true
+        );
+
+
+        return true;
+    }
+
+
+    if (campos.username) {
+
+        campos.username.addEventListener(
+            "input",
+            function () {
+
+                campos.username.value =
+                    campos.username.value
+
+                        .replace(
+                            /\s/g,
+                            ""
+                        )
+
+                        .slice(
+                            0,
+                            150
+                        );
+
+
+                validarUsernameEditar();
+
+            }
+        );
+
+
+        campos.username.addEventListener(
+            "blur",
+            validarUsernameEditar
+        );
+
+    }
+
+
+    /* ========================================================
+    CONTRASEÑA OPCIONAL
     ======================================================== */
 
     function validarPasswordEditar() {
@@ -3515,14 +3815,20 @@ function inicializarModalEditarAdministrador() {
         );
 
 
+        password.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
         confirmar.classList.remove(
-            "is-invalid",
-            "is-valid"
+            "is-valid",
+            "is-invalid"
         );
 
 
         /* ----------------------------------------------------
-           NO QUIERE CAMBIAR PASSWORD
+        NO QUIERE CAMBIAR CONTRASEÑA
         ---------------------------------------------------- */
 
         if (
@@ -3541,16 +3847,18 @@ function inicializarModalEditarAdministrador() {
 
 
         /* ----------------------------------------------------
-           MÍNIMO
+        FALTA NUEVA CONTRASEÑA
         ---------------------------------------------------- */
 
-        if (
-            clave.length <
-            8
-        ) {
+        if (!clave) {
 
             password.setCustomValidity(
-                "La contraseña debe tener mínimo 8 caracteres."
+                "Debes ingresar la nueva contraseña."
+            );
+
+
+            password.classList.add(
+                "is-invalid"
             );
 
 
@@ -3559,17 +3867,85 @@ function inicializarModalEditarAdministrador() {
 
 
         /* ----------------------------------------------------
-           COINCIDENCIA
+        LONGITUD
         ---------------------------------------------------- */
 
         if (
-            !confirmacion ||
+            clave.length <
+            8
+        ) {
+
+            password.setCustomValidity(
+                "La nueva contraseña debe tener mínimo 8 caracteres."
+            );
+
+
+            password.classList.add(
+                "is-invalid"
+            );
+
+
+            return false;
+        }
+
+
+        if (
+            clave.length >
+            128
+        ) {
+
+            password.setCustomValidity(
+                "La nueva contraseña no puede superar los 128 caracteres."
+            );
+
+
+            password.classList.add(
+                "is-invalid"
+            );
+
+
+            return false;
+        }
+
+
+        password.classList.add(
+            "is-valid"
+        );
+
+
+        /* ----------------------------------------------------
+        CONFIRMACIÓN
+        ---------------------------------------------------- */
+
+        if (!confirmacion) {
+
+            confirmar.setCustomValidity(
+                "Debes confirmar la nueva contraseña."
+            );
+
+
+            confirmar.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajePasswordEditar(
+                campos,
+                true
+            );
+
+
+            return false;
+        }
+
+
+        if (
             clave !==
-                confirmacion
+            confirmacion
         ) {
 
             confirmar.setCustomValidity(
-                "Las contraseñas no coinciden."
+                "Las nuevas contraseñas no coinciden."
             );
 
 
@@ -3603,10 +3979,6 @@ function inicializarModalEditarAdministrador() {
     }
 
 
-    /* ========================================================
-       EVENTOS PASSWORD
-    ======================================================== */
-
     if (campos.password) {
 
         campos.password.addEventListener(
@@ -3617,7 +3989,9 @@ function inicializarModalEditarAdministrador() {
     }
 
 
-    if (campos.confirmarPassword) {
+    if (
+        campos.confirmarPassword
+    ) {
 
         campos.confirmarPassword
             .addEventListener(
@@ -3629,19 +4003,114 @@ function inicializarModalEditarAdministrador() {
 
 
     /* ========================================================
-       SUBMIT
+    SUBMIT
     ======================================================== */
 
     formulario.addEventListener(
         "submit",
         function (evento) {
 
+            if (campos.nombres) {
+
+                campos.nombres.value =
+                    campos.nombres.value
+
+                        .trim()
+
+                        .replace(
+                            /\s{2,}/g,
+                            " "
+                        );
+
+            }
+
+
+            if (campos.apellidos) {
+
+                campos.apellidos.value =
+                    campos.apellidos.value
+
+                        .trim()
+
+                        .replace(
+                            /\s{2,}/g,
+                            " "
+                        );
+
+            }
+
+
+            if (campos.correo) {
+
+                campos.correo.value =
+                    campos.correo.value
+
+                        .trim()
+
+                        .toLowerCase();
+
+            }
+
+
+            if (campos.username) {
+
+                campos.username.value =
+                    campos.username.value.trim();
+
+            }
+
+
+            const nombresValidos =
+                validarNombreEditar(
+                    campos.nombres,
+                    "Los nombres"
+                );
+
+
+            const apellidosValidos =
+                validarNombreEditar(
+                    campos.apellidos,
+                    "Los apellidos"
+                );
+
+
+            const celularValido =
+                validarCelularEditar();
+
+
+            const correoValido =
+                validarCorreoEditar();
+
+
+            const usernameValido =
+                validarUsernameEditar();
+
+
             const passwordValido =
                 validarPasswordEditar();
 
 
+            const hayVerificando =
+                formulario.querySelector(
+                    '[data-verificando="1"]'
+                );
+
+
+            const hayDuplicado =
+                formulario.querySelector(
+                    '[data-duplicado="1"]'
+                );
+
+
             if (
+                !nombresValidos ||
+                !apellidosValidos ||
+                !celularValido ||
+                !correoValido ||
+                !usernameValido ||
                 !passwordValido ||
+                hayVerificando ||
+                hayDuplicado ||
                 !formulario.checkValidity()
             ) {
 
@@ -3683,7 +4152,8 @@ function inicializarModalEditarAdministrador() {
 
             }
 
-        }
+        },
+        true
     );
 
 
@@ -4497,164 +4967,1074 @@ function inicializarModalEliminarAdministrador() {
 
 function inicializarVerificacionDuplicadosAdministrador() {
 
-    if (typeof URL_VERIFICAR_DATO_ADMINISTRADOR === "undefined") {
+    if (
+        typeof URL_VERIFICAR_DATO_ADMINISTRADOR ===
+        "undefined"
+    ) {
+
         return;
     }
 
-    const RETRASO_DEBOUNCE_MS = 400;
 
-    function debounce(funcion, espera) {
-        let temporizador = null;
-        return function (...args) {
-            clearTimeout(temporizador);
-            temporizador = setTimeout(function () {
-                funcion.apply(this, args);
-            }, espera);
-        };
+    const RETRASO_DEBOUNCE_MS =
+        300;
+
+
+    const REGEX_GMAIL =
+        /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+
+
+    const REGEX_USERNAME =
+        /^[A-Za-z0-9_@.+-]+$/;
+
+
+    /* ========================================================
+       DEBOUNCE
+    ======================================================== */
+
+    function debounce(
+        funcion,
+        espera
+    ) {
+
+        let temporizador =
+            null;
+
+
+        const ejecutar =
+            function (...args) {
+
+                clearTimeout(
+                    temporizador
+                );
+
+
+                temporizador =
+                    setTimeout(
+                        function () {
+
+                            funcion.apply(
+                                this,
+                                args
+                            );
+
+                        },
+                        espera
+                    );
+
+            };
+
+
+        ejecutar.cancelar =
+            function () {
+
+                clearTimeout(
+                    temporizador
+                );
+
+            };
+
+
+        return ejecutar;
     }
 
-    function actualizarBotonSegunVerificacion(boton, formulario) {
 
-        if (!boton || !formulario) return;
+    /* ========================================================
+       FEEDBACK
+    ======================================================== */
 
-        const hayVerificando = formulario.querySelector('[data-verificando="1"]');
-        const hayDuplicado = formulario.querySelector('[data-duplicado="1"]');
+    function obtenerFeedback(
+        campo
+    ) {
 
-        boton.disabled = !!hayVerificando || !!hayDuplicado;
-    }
-
-    function marcarDuplicado(campo, existe, mensaje, feedbackEl, boton) {
-
-        if (existe) {
-            campo.setCustomValidity(mensaje);
-            campo.classList.remove("is-valid");
-            campo.classList.add("is-invalid");
-            campo.dataset.duplicado = "1";
-            if (feedbackEl) feedbackEl.textContent = mensaje;
-        } else {
-            if (campo.validationMessage === mensaje || campo.validationMessage === "") {
-                campo.setCustomValidity("");
-            }
-            campo.classList.remove("is-invalid");
-            campo.dataset.duplicado = "0";
-            if (feedbackEl) feedbackEl.textContent = "";
+        if (!campo) {
+            return null;
         }
 
-        campo.dataset.verificando = "0";
-        actualizarBotonSegunVerificacion(boton, campo.closest("form"));
+
+        const mapa = {
+
+            usernameAdministrador:
+                "feedbackUsernameAdministrador",
+
+            correoAdministrador:
+                "feedbackCorreoAdministrador",
+
+            usernameEditarAdministrador:
+                "feedbackUsernameEditarAdministrador",
+
+            correoEditarAdministrador:
+                "feedbackCorreoEditarAdministrador"
+
+        };
+
+
+        if (
+            campo.id &&
+            mapa[campo.id]
+        ) {
+
+            const existente =
+                document.getElementById(
+                    mapa[campo.id]
+                );
+
+
+            if (existente) {
+                return existente;
+            }
+
+        }
+
+
+        return null;
     }
 
-    function verificar(campo, tipoCampo, idUsuarioActual, mensajeDuplicado, feedbackEl, boton) {
 
-        const valor = campo.value.trim();
-        const formulario = campo.closest("form");
+    function mostrarFeedback(
+        campo,
+        estado,
+        mensaje
+    ) {
 
-        if (!valor) {
-            campo.setCustomValidity("");
-            campo.dataset.duplicado = "0";
-            campo.dataset.verificando = "0";
-            if (feedbackEl) feedbackEl.textContent = "";
-            actualizarBotonSegunVerificacion(boton, formulario);
+        const feedback =
+            obtenerFeedback(
+                campo
+            );
+
+
+        if (!feedback) {
             return;
         }
 
-        campo.dataset.verificando = "1";
-        actualizarBotonSegunVerificacion(boton, formulario);
 
-        let url = URL_VERIFICAR_DATO_ADMINISTRADOR
-            + "?campo=" + encodeURIComponent(tipoCampo)
-            + "&valor=" + encodeURIComponent(valor);
+        feedback.classList.remove(
+            "invalid-feedback",
+            "text-danger",
+            "text-success",
+            "text-muted",
+            "d-none"
+        );
 
-        if (idUsuarioActual) {
-            url += "&id_usuario=" + encodeURIComponent(idUsuarioActual);
+
+        feedback.classList.add(
+            "small",
+            "mt-1"
+        );
+
+
+        if (!mensaje) {
+
+            feedback.textContent =
+                "";
+
+            feedback.classList.add(
+                "d-none"
+            );
+
+            return;
         }
 
-        fetch(url)
-            .then(function (respuesta) { return respuesta.json(); })
-            .then(function (datos) {
-                marcarDuplicado(campo, datos.existe, mensajeDuplicado, feedbackEl, boton);
-            })
-            .catch(function (error) {
-                console.error("[usuarios_roles] No fue posible verificar el dato:", error);
-                campo.dataset.verificando = "0";
-                actualizarBotonSegunVerificacion(boton, formulario);
-            });
+
+        if (
+            estado ===
+            "valido"
+        ) {
+
+            feedback.classList.add(
+                "text-success"
+            );
+
+        }
+
+        else if (
+            estado ===
+            "invalido"
+        ) {
+
+            feedback.classList.add(
+                "text-danger"
+            );
+
+        }
+
+        else {
+
+            feedback.classList.add(
+                "text-muted"
+            );
+
+        }
+
+
+        feedback.textContent =
+            mensaje;
     }
 
-    function activar(campo, tipoCampo, obtenerIdUsuario, mensajeDuplicado, feedbackEl, boton) {
 
-        if (!campo) return;
+    /* ========================================================
+       BOTÓN
+    ======================================================== */
 
-        campo.dataset.duplicado = "0";
-        campo.dataset.verificando = "0";
+    function actualizarBoton(
+        boton,
+        formulario
+    ) {
 
-        const verificarConRetraso = debounce(function () {
-            verificar(campo, tipoCampo, obtenerIdUsuario(), mensajeDuplicado, feedbackEl, boton);
-        }, RETRASO_DEBOUNCE_MS);
+        if (
+            !boton ||
+            !formulario
+        ) {
 
-        campo.addEventListener("input", verificarConRetraso);
+            return;
+        }
 
-        // Verificación inmediata al salir del campo (sin esperar el debounce)
-        campo.addEventListener("blur", function () {
-            verificar(campo, tipoCampo, obtenerIdUsuario(), mensajeDuplicado, feedbackEl, boton);
-        });
+
+        const verificando =
+            formulario.querySelector(
+                '[data-verificando="1"]'
+            );
+
+
+        const duplicado =
+            formulario.querySelector(
+                '[data-duplicado="1"]'
+            );
+
+
+        boton.disabled =
+            Boolean(
+                verificando ||
+                duplicado
+            );
+
     }
 
-    /* ====================================================
-       REGISTRAR ADMINISTRADOR
-    ==================================================== */
 
-    const formAgregar = document.getElementById("formAgregarAdministrador");
-    const botonAgregar = document.getElementById("btnGuardarAdministrador");
+    /* ========================================================
+       VALIDAR FORMATO ANTES DE CONSULTAR DJANGO
+    ======================================================== */
+
+    function formatoLocalValido(
+        campo,
+        tipoCampo
+    ) {
+
+        const valor =
+            campo.value.trim();
+
+
+        if (!valor) {
+            return false;
+        }
+
+
+        if (
+            tipoCampo ===
+            "correo"
+        ) {
+
+            return (
+                valor.length <= 254 &&
+                REGEX_GMAIL.test(
+                    valor
+                )
+            );
+
+        }
+
+
+        if (
+            tipoCampo ===
+            "username"
+        ) {
+
+            return (
+                valor.length <= 150 &&
+                REGEX_USERNAME.test(
+                    valor
+                )
+            );
+
+        }
+
+
+        return false;
+    }
+
+
+    /* ========================================================
+       LIMPIAR SOLO ERROR PRODUCIDO POR AJAX
+    ======================================================== */
+
+    function limpiarErrorAjax(
+        campo
+    ) {
+
+        const mensajeAjax =
+            campo.dataset.mensajeErrorAjax ||
+            "";
+
+
+        /*
+        * Solo quitamos setCustomValidity()
+        * si el error actual realmente fue creado
+        * por la petición AJAX.
+        *
+        * Así evitamos borrar un error local de
+        * Gmail, username, required, etc.
+        */
+
+        if (
+            campo.dataset.errorAjax ===
+            "1"
+        ) {
+
+            if (
+                mensajeAjax &&
+                campo.validationMessage ===
+                mensajeAjax
+            ) {
+
+                campo.setCustomValidity(
+                    ""
+                );
+
+            }
+
+
+            campo.dataset.errorAjax =
+                "0";
+
+
+            campo.dataset.mensajeErrorAjax =
+                "";
+
+        }
+
+
+        campo.dataset.duplicado =
+            "0";
+    }
+
+
+    /* ========================================================
+       CONSULTA
+    ======================================================== */
+
+    async function verificar(
+        campo,
+        tipoCampo,
+        idUsuarioActual,
+        boton
+    ) {
+
+        const formulario =
+            campo.closest(
+                "form"
+            );
+
+
+        let valor =
+            campo.value.trim();
+
+
+        if (
+            tipoCampo ===
+            "correo"
+        ) {
+
+            valor =
+                valor.toLowerCase();
+
+        }
+
+
+        if (!valor) {
+
+            limpiarErrorAjax(
+                campo
+            );
+
+
+            campo.dataset.verificando =
+                "0";
+
+
+            mostrarFeedback(
+                campo,
+                null,
+                ""
+            );
+
+
+            actualizarBoton(
+                boton,
+                formulario
+            );
+
+
+            return;
+        }
+
+
+        /* ----------------------------------------------------
+           NO CONSULTAR SI EL FORMATO LOCAL ES MALO
+        ---------------------------------------------------- */
+
+        if (
+            !formatoLocalValido(
+                campo,
+                tipoCampo
+            )
+        ) {
+
+            campo.dataset.verificando =
+                "0";
+
+
+            campo.dataset.duplicado =
+                "0";
+
+
+            actualizarBoton(
+                boton,
+                formulario
+            );
+
+
+            return;
+        }
+
+
+        /* ----------------------------------------------------
+           IDENTIFICADOR DE PETICIÓN
+        ---------------------------------------------------- */
+
+        const secuencia =
+            Number(
+                campo.dataset.secuenciaAjax ||
+                "0"
+            ) +
+            1;
+
+
+        campo.dataset.secuenciaAjax =
+            String(
+                secuencia
+            );
+
+
+        campo.dataset.verificando =
+            "1";
+
+
+        campo.dataset.duplicado =
+            "0";
+
+
+        mostrarFeedback(
+            campo,
+            "verificando",
+            "Verificando disponibilidad..."
+        );
+
+
+        actualizarBoton(
+            boton,
+            formulario
+        );
+
+
+        let url =
+            URL_VERIFICAR_DATO_ADMINISTRADOR
+            +
+            "?campo="
+            +
+            encodeURIComponent(
+                tipoCampo
+            )
+            +
+            "&valor="
+            +
+            encodeURIComponent(
+                valor
+            );
+
+
+        if (idUsuarioActual) {
+
+            url +=
+                "&id_usuario="
+                +
+                encodeURIComponent(
+                    idUsuarioActual
+                );
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    url,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            /* ------------------------------------------------
+               IGNORAR RESPUESTAS VIEJAS
+            ------------------------------------------------ */
+
+            if (
+                Number(
+                    campo.dataset.secuenciaAjax ||
+                    "0"
+                )
+                !==
+                secuencia
+            ) {
+
+                return;
+            }
+
+
+            let valorActual =
+                campo.value.trim();
+
+
+            if (
+                tipoCampo ===
+                "correo"
+            ) {
+
+                valorActual =
+                    valorActual.toLowerCase();
+
+            }
+
+
+            if (
+                valorActual !==
+                valor
+            ) {
+
+                return;
+            }
+
+
+            campo.dataset.verificando =
+                "0";
+
+
+            /* ------------------------------------------------
+               BACKEND DICE: FORMATO INVÁLIDO
+            ------------------------------------------------ */
+
+            if (
+                datos.valido ===
+                false
+            ) {
+
+                const mensaje =
+                    datos.mensaje ||
+                    "El valor ingresado no es válido.";
+
+
+                campo.setCustomValidity(
+                    mensaje
+                );
+
+
+                campo.classList.remove(
+                    "is-valid"
+                );
+
+
+                campo.classList.add(
+                    "is-invalid"
+                );
+
+
+                campo.dataset.errorAjax =
+                    "1";
+
+
+                campo.dataset.mensajeErrorAjax =
+                    mensaje;
+
+
+                campo.dataset.duplicado =
+                    "0";
+
+
+                mostrarFeedback(
+                    campo,
+                    "invalido",
+                    mensaje
+                );
+
+
+                actualizarBoton(
+                    boton,
+                    formulario
+                );
+
+
+                return;
+            }
+
+
+            /* ------------------------------------------------
+               DUPLICADO
+            ------------------------------------------------ */
+
+            if (
+                datos.existe
+            ) {
+
+                const mensaje =
+                    datos.mensaje ||
+                    "Este dato ya está registrado.";
+
+
+                campo.setCustomValidity(
+                    mensaje
+                );
+
+
+                campo.classList.remove(
+                    "is-valid"
+                );
+
+
+                campo.classList.add(
+                    "is-invalid"
+                );
+
+
+                campo.dataset.errorAjax =
+                    "1";
+
+
+                campo.dataset.mensajeErrorAjax =
+                    mensaje;
+
+
+                campo.dataset.duplicado =
+                    "1";
+
+
+                mostrarFeedback(
+                    campo,
+                    "invalido",
+                    mensaje
+                );
+
+            }
+
+            else {
+
+                limpiarErrorAjax(
+                    campo
+                );
+
+
+                campo.classList.remove(
+                    "is-invalid"
+                );
+
+
+                campo.classList.add(
+                    "is-valid"
+                );
+
+
+                mostrarFeedback(
+                    campo,
+                    "valido",
+                    datos.mensaje ||
+                    "Dato disponible."
+                );
+
+            }
+
+
+            actualizarBoton(
+                boton,
+                formulario
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "[usuarios_roles] Error verificando disponibilidad:",
+                error
+            );
+
+
+            if (
+                Number(
+                    campo.dataset.secuenciaAjax ||
+                    "0"
+                )
+                !==
+                secuencia
+            ) {
+
+                return;
+            }
+
+
+            campo.dataset.verificando =
+                "0";
+
+
+            /*
+             * No marcamos disponible ni duplicado.
+             * Django hará la validación definitiva al guardar.
+             */
+
+            mostrarFeedback(
+                campo,
+                "verificando",
+                (
+                    "No se pudo verificar la disponibilidad "
+                    + "en este momento. Se comprobará al guardar."
+                )
+            );
+
+
+            actualizarBoton(
+                boton,
+                formulario
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       ACTIVAR CAMPO
+    ======================================================== */
+
+    function activar(
+        campo,
+        tipoCampo,
+        obtenerIdUsuario,
+        boton
+    ) {
+
+        if (!campo) {
+            return;
+        }
+
+
+        campo.dataset.duplicado =
+            "0";
+
+
+        campo.dataset.verificando =
+            "0";
+
+
+        campo.dataset.errorAjax =
+            "0";
+
+
+        campo.dataset.mensajeErrorAjax =
+            "";
+
+
+        campo.dataset.secuenciaAjax =
+            "0";
+
+
+        const verificarConRetraso =
+            debounce(
+                function () {
+
+                    verificar(
+                        campo,
+                        tipoCampo,
+                        obtenerIdUsuario(),
+                        boton
+                    );
+
+                },
+                RETRASO_DEBOUNCE_MS
+            );
+
+
+        campo.addEventListener(
+            "input",
+            function () {
+
+                /*
+                 * Invalida cualquier petición anterior.
+                 */
+
+                campo.dataset.secuenciaAjax =
+                    String(
+                        Number(
+                            campo.dataset.secuenciaAjax ||
+                            "0"
+                        )
+                        +
+                        1
+                    );
+
+
+                limpiarErrorAjax(
+                    campo
+                );
+
+
+                campo.dataset.verificando =
+                    "0";
+
+
+                if (
+                    !formatoLocalValido(
+                        campo,
+                        tipoCampo
+                    )
+                ) {
+
+                    actualizarBoton(
+                        boton,
+                        campo.closest(
+                            "form"
+                        )
+                    );
+
+
+                    return;
+                }
+
+
+                verificarConRetraso();
+
+            }
+        );
+
+
+        campo.addEventListener(
+            "blur",
+            function () {
+
+                verificarConRetraso.cancelar();
+
+
+                if (
+                    formatoLocalValido(
+                        campo,
+                        tipoCampo
+                    )
+                ) {
+
+                    verificar(
+                        campo,
+                        tipoCampo,
+                        obtenerIdUsuario(),
+                        boton
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       AGREGAR ADMINISTRADOR
+    ======================================================== */
+
+    const formAgregar =
+        document.getElementById(
+            "formAgregarAdministrador"
+        );
+
+
+    const botonAgregar =
+        document.getElementById(
+            "btnGuardarAdministrador"
+        );
+
 
     activar(
-        formAgregar ? formAgregar.querySelector('[name="username"]') : null,
+        formAgregar
+            ? formAgregar.querySelector(
+                '[name="username"]'
+            )
+            : null,
+
         "username",
-        function () { return ""; },
-        "Ese nombre de usuario ya está registrado.",
-        document.getElementById("feedbackUsernameAdministrador"),
+
+        function () {
+            return "";
+        },
+
         botonAgregar
     );
+
 
     activar(
-        formAgregar ? formAgregar.querySelector('[name="correo"]') : null,
+        formAgregar
+            ? formAgregar.querySelector(
+                '[name="correo"]'
+            )
+            : null,
+
         "correo",
-        function () { return ""; },
-        "Ese correo electrónico ya está registrado.",
-        document.getElementById("feedbackCorreoAdministrador"),
+
+        function () {
+            return "";
+        },
+
         botonAgregar
     );
 
-    /* ====================================================
+
+    /* ========================================================
        EDITAR ADMINISTRADOR
-    ==================================================== */
+    ======================================================== */
 
-    const formEditar = document.getElementById("formEditarAdministrador");
-    const botonEditar = document.getElementById("btnGuardarEdicionAdministrador");
-    const modalEditarElemento = document.getElementById("modalEditarAdministrador");
+    const formEditar =
+        document.getElementById(
+            "formEditarAdministrador"
+        );
 
-    if (modalEditarElemento && formEditar) {
-        modalEditarElemento.addEventListener("show.bs.modal", function (evento) {
-            const boton = evento.relatedTarget;
-            formEditar.dataset.idUsuario = boton ? (boton.dataset.id || "") : "";
-        });
+
+    const botonEditar =
+        document.getElementById(
+            "btnGuardarEdicionAdministrador"
+        );
+
+
+    const modalEditar =
+        document.getElementById(
+            "modalEditarAdministrador"
+        );
+
+
+    if (
+        modalEditar &&
+        formEditar
+    ) {
+
+        modalEditar.addEventListener(
+            "show.bs.modal",
+            function (evento) {
+
+                const boton =
+                    evento.relatedTarget;
+
+
+                let idUsuario =
+                    boton
+                        ? (
+                            boton.dataset.id ||
+                            ""
+                        )
+                        : "";
+
+
+                /*
+                 * Respaldo:
+                 * si no hay data-id, intentar sacar el ID
+                 * desde la URL de edición.
+                 */
+
+                if (
+                    !idUsuario &&
+                    boton &&
+                    boton.dataset.url
+                ) {
+
+                    const coincidencias =
+                        boton.dataset.url.match(
+                            /\/(\d+)\/?$/
+                        );
+
+
+                    if (
+                        coincidencias
+                    ) {
+
+                        idUsuario =
+                            coincidencias[1];
+
+                    }
+
+                }
+
+
+                formEditar.dataset.idUsuario =
+                    idUsuario;
+
+            }
+        );
+
     }
 
+
     activar(
-        document.getElementById("usernameEditarAdministrador"),
+        document.getElementById(
+            "usernameEditarAdministrador"
+        ),
+
         "username",
-        function () { return formEditar ? (formEditar.dataset.idUsuario || "") : ""; },
-        "Ese nombre de usuario ya está registrado.",
-        document.getElementById("feedbackUsernameEditarAdministrador"),
+
+        function () {
+
+            return formEditar
+                ? (
+                    formEditar.dataset.idUsuario ||
+                    ""
+                )
+                : "";
+
+        },
+
         botonEditar
     );
 
+
     activar(
-        document.getElementById("correoEditarAdministrador"),
+        document.getElementById(
+            "correoEditarAdministrador"
+        ),
+
         "correo",
-        function () { return formEditar ? (formEditar.dataset.idUsuario || "") : ""; },
-        "Ese correo electrónico ya está registrado.",
-        document.getElementById("feedbackCorreoEditarAdministrador"),
+
+        function () {
+
+            return formEditar
+                ? (
+                    formEditar.dataset.idUsuario ||
+                    ""
+                )
+                : "";
+
+        },
+
         botonEditar
     );
+
 }
