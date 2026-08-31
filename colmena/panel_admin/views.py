@@ -517,10 +517,30 @@ def apiarios_admin(request):
     page_number = request.GET.get('page')
     apiarios = paginator.get_page(page_number)
 
-    return render(request, 'admin_panel/apiarios.html', {
-        'apiarios': apiarios,
-        'apicultores': apicultores,
-    })
+    # ============================================================
+    # CANTIDAD REAL DE COLMENAS
+    # ============================================================
+
+    for apiario in apiarios:
+
+        apiario.total_colmenas_reales = (
+            Colmena.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+    return render(
+        request,
+        "admin_panel/apiarios.html",
+        {
+            "apiarios": apiarios,
+            "apicultores": apicultores,
+        }
+    )
+
 
 #Verificar mientras se escribe si el apiario existe o no en la database
 @administrador_requerido
@@ -569,49 +589,347 @@ def crear_apiario(request):
     return redirect("apiarios_admin")
 
 @administrador_requerido
-@permiso_requerido("ag",redireccion="apiarios_admin")
+@permiso_requerido(
+    "ag",
+    redireccion="apiarios_admin"
+)
 def editar_apiario(request, id):
-    apiario = get_object_or_404(Apiario, id_apiario=id)
+
+    apiario = get_object_or_404(
+        Apiario,
+        id_apiario=id
+    )
+
 
     if request.method == "POST":
 
-        nombre = request.POST.get("nombre_apiario", "").strip()
+        nombre = (
+            request.POST.get(
+                "nombre_apiario",
+                ""
+            )
+            .strip()
+        )
+
+
+        # ====================================================
+        # VALIDAR NOMBRE DUPLICADO
+        # ====================================================
 
         nombre_duplicado = (
             Apiario.objects
-            .filter(nombreapiario__iexact=nombre)
-            .exclude(id_apiario=apiario.id_apiario)
+            .filter(
+                nombreapiario__iexact=nombre
+            )
+            .exclude(
+                id_apiario=apiario.id_apiario
+            )
             .exists()
         )
 
+
         if nombre_duplicado:
-            messages.error(request, "Ya existe un apiario con ese nombre.")
-            return redirect("apiarios_admin")
 
-        apiario.nombreapiario = nombre
-        apiario.ubicacion = request.POST.get("ubicacion")
-        apiario.cantidadcolmenas = request.POST.get("cantidad_colmenas")
-        apiario.estadoapiario = request.POST.get("estado_apiario")
-        apiario.fechaeclosionapiario = request.POST.get("fecha_registro")
-        apiario.id_apicultor_id = request.POST.get("id_apicultor")
-        apiario.descripcion = request.POST.get("descripcion")
+            messages.error(
+                request,
+                "Ya existe un apiario con ese nombre."
+            )
 
-        if request.FILES.get("imagen"):
-            apiario.imagen = request.FILES.get("imagen")
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # AQUÍ VA EL PASO 5
+        # VALIDAR CAPACIDAD DEL APIARIO
+        # ====================================================
+
+        try:
+
+            nueva_capacidad = int(
+                request.POST.get(
+                    "cantidad_colmenas",
+                    0
+                )
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            messages.error(
+                request,
+                "La capacidad de colmenas no es válida."
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # VALIDAR RANGO GENERAL
+        # ====================================================
+
+        if (
+            nueva_capacidad < 0
+            or
+            nueva_capacidad > 20
+        ):
+
+            messages.error(
+                request,
+                "La capacidad del apiario debe estar "
+                "entre 0 y 20 colmenas."
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # CONTAR COLMENAS REALES DEL APIARIO
+        # ====================================================
+
+        cantidad_actual = (
+            Colmena.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        # ====================================================
+        # NO REDUCIR POR DEBAJO DE LAS COLMENAS EXISTENTES
+        # ====================================================
+
+        if (
+            nueva_capacidad
+            <
+            cantidad_actual
+        ):
+
+            messages.warning(
+                request,
+                (
+                    f"No puedes establecer una capacidad "
+                    f"de {nueva_capacidad} colmena(s) porque "
+                    f"«{apiario.nombreapiario}» actualmente "
+                    f"tiene {cantidad_actual} colmena(s) "
+                    f"registrada(s)."
+                )
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # ACTUALIZAR DATOS
+        # ====================================================
+
+        apiario.nombreapiario = (
+            nombre
+        )
+
+
+        apiario.ubicacion = (
+            request.POST.get(
+                "ubicacion"
+            )
+        )
+
+
+        # IMPORTANTE:
+        # ya no usamos directamente request.POST aquí
+        apiario.cantidadcolmenas = (
+            nueva_capacidad
+        )
+
+
+        apiario.estadoapiario = (
+            request.POST.get(
+                "estado_apiario"
+            )
+        )
+
+
+        apiario.fechaeclosionapiario = (
+            request.POST.get(
+                "fecha_registro"
+            )
+        )
+
+
+        apiario.id_apicultor_id = (
+            request.POST.get(
+                "id_apicultor"
+            )
+        )
+
+
+        apiario.descripcion = (
+            request.POST.get(
+                "descripcion"
+            )
+        )
+
+
+        if request.FILES.get(
+            "imagen"
+        ):
+
+            apiario.imagen = (
+                request.FILES.get(
+                    "imagen"
+                )
+            )
+
 
         apiario.save()
 
-    return redirect("apiarios_admin")
+
+    return redirect(
+        "apiarios_admin"
+    )
 
 @administrador_requerido
-@permiso_requerido("ag",redireccion="apiarios_admin")
-def eliminar_apiario(request, id):
-    apiario = get_object_or_404(Apiario, id_apiario=id)
+@permiso_requerido(
+    "ag",
+    redireccion="apiarios_admin"
+)
+def eliminar_apiario(
+    request,
+    id
+):
 
-    if request.method == "POST":
+    # ========================================================
+    # OBTENER APIARIO
+    # ========================================================
+
+    apiario = get_object_or_404(
+        Apiario,
+        id_apiario=id
+    )
+
+
+    # ========================================================
+    # SOLO SE PERMITE ELIMINAR MEDIANTE POST
+    # ========================================================
+
+    if request.method != "POST":
+
+        messages.warning(
+            request,
+            "La solicitud para eliminar "
+            "el apiario no es válida."
+        )
+
+
+        return redirect(
+            "apiarios_admin"
+        )
+
+
+    # ========================================================
+    # COMPROBAR COLMENAS ASOCIADAS
+    # ========================================================
+
+    colmenas_asociadas = (
+        Colmena.objects
+        .filter(
+            id_apiario=apiario
+        )
+    )
+
+
+    cantidad_colmenas = (
+        colmenas_asociadas
+        .count()
+    )
+
+
+    # ========================================================
+    # NO PERMITIR ELIMINAR SI TIENE COLMENAS
+    # ========================================================
+
+    if cantidad_colmenas > 0:
+
+        messages.warning(
+            request,
+            (
+                f"No se puede eliminar el apiario "
+                f"«{apiario.nombreapiario}» porque "
+                f"tiene {cantidad_colmenas} "
+                f"colmena(s) asociada(s)."
+            )
+        )
+
+
+        return redirect(
+            "apiarios_admin"
+        )
+
+
+    # ========================================================
+    # GUARDAR NOMBRE ANTES DE ELIMINAR
+    # ========================================================
+
+    nombre_apiario = (
+        apiario.nombreapiario
+    )
+
+
+    # ========================================================
+    # INTENTAR ELIMINAR
+    #
+    # El try también nos protege si en el futuro aparece
+    # otra relación en la base de datos que impida borrar.
+    # ========================================================
+
+    try:
+
         apiario.delete()
 
-    return redirect("apiarios_admin")
+
+    except IntegrityError:
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar el apiario "
+                f"«{nombre_apiario}» porque tiene "
+                f"información relacionada en el sistema."
+            )
+        )
+
+
+        return redirect(
+            "apiarios_admin"
+        )
+
+
+    # ========================================================
+    # ELIMINADO CORRECTAMENTE
+    # ========================================================
+
+    messages.success(
+        request,
+        (
+            f"El apiario «{nombre_apiario}» "
+            f"fue eliminado correctamente."
+        )
+    )
+
+
+    return redirect(
+        "apiarios_admin"
+    )
 
 
 #LOGICA DE LOS COLMENAS
@@ -619,49 +937,171 @@ def eliminar_apiario(request, id):
 @permiso_requerido("cv")
 def colmenas_admin(request):
 
-    colmenas_lista = Colmena.objects.select_related(
-        'id_apiario'
-    ).all().order_by('id_colmena')
+    colmenas_lista = (
+        Colmena.objects
+        .select_related(
+            "id_apiario"
+        )
+        .all()
+        .order_by(
+            "id_colmena"
+        )
+    )
 
-    apiarios = Apiario.objects.all()
 
-    # ==========================
+    # ========================================================
+    # APIARIOS
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+        .all()
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    # ========================================================
+    # CAPACIDAD REAL DE CADA APIARIO
+    # ========================================================
+
+    for apiario_obj in apiarios:
+
+        total_actual = (
+            Colmena.objects
+            .filter(
+                id_apiario=apiario_obj
+            )
+            .count()
+        )
+
+
+        try:
+
+            capacidad_maxima = int(
+                apiario_obj.cantidadcolmenas
+                or 0
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            capacidad_maxima = 0
+
+
+        apiario_obj.total_colmenas_reales = (
+            total_actual
+        )
+
+
+        apiario_obj.capacidad_maxima = (
+            capacidad_maxima
+        )
+
+
+        apiario_obj.esta_completo = (
+            total_actual
+            >=
+            capacidad_maxima
+        )
+
+
+        apiario_obj.cupos_disponibles = max(
+            capacidad_maxima
+            -
+            total_actual,
+            0
+        )
+
+
+    # ========================================================
     # FILTROS
-    # ==========================
+    # ========================================================
 
-    codigo = request.GET.get("codigo")
-    apiario = request.GET.get("apiario")
-    estado = request.GET.get("estado")
+    codigo = request.GET.get(
+        "codigo"
+    )
+
+    apiario = request.GET.get(
+        "apiario"
+    )
+
+    estado = request.GET.get(
+        "estado"
+    )
+
 
     if codigo:
-        colmenas_lista = colmenas_lista.filter(
-            codigocolmena__icontains=codigo
+
+        colmenas_lista = (
+            colmenas_lista
+            .filter(
+                codigocolmena__icontains=
+                    codigo
+            )
         )
+
 
     if apiario:
-        colmenas_lista = colmenas_lista.filter(
-            id_apiario_id=apiario
+
+        colmenas_lista = (
+            colmenas_lista
+            .filter(
+                id_apiario_id=
+                    apiario
+            )
         )
+
 
     if estado:
-        colmenas_lista = colmenas_lista.filter(
-            estadocolmena=estado
+
+        colmenas_lista = (
+            colmenas_lista
+            .filter(
+                estadocolmena=
+                    estado
+            )
         )
 
-    # ==========================
-    # PAGINADOR
-    # ==========================
 
-    paginator = Paginator(colmenas_lista, 5)
+    # ========================================================
+    # PAGINACIÓN
+    # ========================================================
 
-    page_number = request.GET.get("page")
+    paginator = Paginator(
+        colmenas_lista,
+        5
+    )
 
-    colmenas = paginator.get_page(page_number)
 
-    return render(request, "admin_panel/colmenas.html", {
-        "colmenas": colmenas,
-        "apiarios": apiarios,
-    })
+    page_number = (
+        request.GET.get(
+            "page"
+        )
+    )
+
+
+    colmenas = (
+        paginator.get_page(
+            page_number
+        )
+    )
+
+
+    return render(
+        request,
+        "admin_panel/colmenas.html",
+        {
+            "colmenas":
+                colmenas,
+
+            "apiarios":
+                apiarios,
+        }
+    )
 
 
 
@@ -672,7 +1112,129 @@ def colmenas_admin(request):
 )
 def crear_colmena(request):
 
-    if request.method == "POST":
+    if request.method != "POST":
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # OBTENER APIARIO
+    # ========================================================
+
+    id_apiario = (
+        request.POST.get(
+            "id_apiario"
+        )
+    )
+
+
+    if not id_apiario:
+
+        messages.error(
+            request,
+            "Debes seleccionar un apiario."
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # TRANSACCIÓN
+    # ========================================================
+
+    with transaction.atomic():
+
+        # Bloqueamos temporalmente el apiario para evitar
+        # registros simultáneos que superen la capacidad.
+
+        apiario = (
+            Apiario.objects
+            .select_for_update()
+            .filter(
+                id_apiario=id_apiario
+            )
+            .first()
+        )
+
+
+        if not apiario:
+
+            messages.error(
+                request,
+                "El apiario seleccionado no existe."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # CAPACIDAD MÁXIMA
+        # ====================================================
+
+        try:
+
+            capacidad_maxima = int(
+                apiario.cantidadcolmenas
+                or 0
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            capacidad_maxima = 0
+
+
+        # ====================================================
+        # CANTIDAD REAL ACTUAL
+        # ====================================================
+
+        cantidad_actual = (
+            Colmena.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        # ====================================================
+        # VALIDAR CAPACIDAD
+        # ====================================================
+
+        if (
+            cantidad_actual
+            >=
+            capacidad_maxima
+        ):
+
+            messages.warning(
+                request,
+                (
+                    f"No se puede registrar otra colmena "
+                    f"en «{apiario.nombreapiario}». "
+                    f"El apiario ya alcanzó su capacidad "
+                    f"máxima de {capacidad_maxima} "
+                    f"colmena(s)."
+                )
+            )
+
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # GENERAR CÓDIGO
+        # ====================================================
 
         ultima_colmena = (
             Colmena.objects
@@ -687,7 +1249,8 @@ def crear_colmena(request):
 
             nuevo_numero = (
                 ultima_colmena.id_colmena
-                + 1
+                +
+                1
             )
 
         else:
@@ -705,12 +1268,11 @@ def crear_colmena(request):
         # ====================================================
 
         colmena = (
-            Colmena.objects.create(
+            Colmena.objects
+            .create(
 
-                id_apiario_id=
-                    request.POST.get(
-                        "id_apiario"
-                    ),
+                id_apiario=
+                    apiario,
 
                 codigocolmena=
                     codigo,
@@ -734,27 +1296,37 @@ def crear_colmena(request):
                     request.FILES.get(
                         "imagen"
                     )
-
             )
         )
 
 
-        # ====================================================
-        # NOTIFICAR SI NACE EN ESTADO RIESGO
-        # ====================================================
+    # ========================================================
+    # NOTIFICAR SI NACE EN RIESGO
+    # ========================================================
 
-        try:
+    try:
 
-            notificar_colmena_en_riesgo(
-                colmena
-            )
+        notificar_colmena_en_riesgo(
+            colmena
+        )
 
-        except Exception as error:
 
-            print(
-                "ERROR GENERANDO ALERTA DE COLMENA:",
-                error
-            )
+    except Exception as error:
+
+        print(
+            "ERROR GENERANDO ALERTA DE COLMENA:",
+            error
+        )
+
+
+    messages.success(
+        request,
+        (
+            f"La colmena «{codigo}» fue registrada "
+            f"correctamente en "
+            f"«{apiario.nombreapiario}»."
+        )
+    )
 
 
     return redirect(
@@ -767,18 +1339,172 @@ def crear_colmena(request):
     "cg",
     redireccion="colmenas_admin"
 )
-def editar_colmena(request, id):
+def editar_colmena(
+    request,
+    id
+):
 
-    colmena = get_object_or_404(
-        Colmena,
-        id_colmena=id
+    if request.method != "POST":
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    nuevo_id_apiario = (
+        request.POST.get(
+            "id_apiario"
+        )
     )
 
 
-    if request.method == "POST":
+    if not nuevo_id_apiario:
+
+        messages.error(
+            request,
+            "Debes seleccionar un apiario."
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    with transaction.atomic():
 
         # ====================================================
-        # GUARDAR ESTADO ANTERIOR
+        # OBTENER COLMENA
+        # ====================================================
+
+        colmena = (
+            Colmena.objects
+            .select_for_update()
+            .select_related(
+                "id_apiario"
+            )
+            .filter(
+                id_colmena=id
+            )
+            .first()
+        )
+
+
+        if not colmena:
+
+            messages.error(
+                request,
+                "La colmena seleccionada no existe."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # APIARIO DESTINO
+        # ====================================================
+
+        apiario_nuevo = (
+            Apiario.objects
+            .select_for_update()
+            .filter(
+                id_apiario=
+                    nuevo_id_apiario
+            )
+            .first()
+        )
+
+
+        if not apiario_nuevo:
+
+            messages.error(
+                request,
+                "El apiario seleccionado no existe."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # ¿SE ESTÁ CAMBIANDO DE APIARIO?
+        # ====================================================
+
+        apiario_anterior_id = (
+            colmena.id_apiario_id
+        )
+
+
+        cambiando_apiario = (
+            str(
+                apiario_anterior_id
+            )
+            !=
+            str(
+                apiario_nuevo.id_apiario
+            )
+        )
+
+
+        # ====================================================
+        # VALIDAR CAPACIDAD SOLO SI SE TRASLADA
+        # ====================================================
+
+        if cambiando_apiario:
+
+            cantidad_actual = (
+                Colmena.objects
+                .filter(
+                    id_apiario=
+                        apiario_nuevo
+                )
+                .count()
+            )
+
+
+            try:
+
+                capacidad_maxima = int(
+                    apiario_nuevo.cantidadcolmenas
+                    or 0
+                )
+
+            except (
+                TypeError,
+                ValueError
+            ):
+
+                capacidad_maxima = 0
+
+
+            if (
+                cantidad_actual
+                >=
+                capacidad_maxima
+            ):
+
+                messages.warning(
+                    request,
+                    (
+                        f"No puedes trasladar la colmena "
+                        f"«{colmena.codigocolmena}» a "
+                        f"«{apiario_nuevo.nombreapiario}» "
+                        f"porque ese apiario ya alcanzó "
+                        f"su capacidad máxima de "
+                        f"{capacidad_maxima} colmena(s)."
+                    )
+                )
+
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
+
+        # ====================================================
+        # ESTADO ANTERIOR
         # ====================================================
 
         estado_anterior = (
@@ -787,13 +1513,11 @@ def editar_colmena(request, id):
 
 
         # ====================================================
-        # ACTUALIZAR DATOS
+        # ACTUALIZAR
         # ====================================================
 
-        colmena.id_apiario_id = (
-            request.POST.get(
-                "id_apiario"
-            )
+        colmena.id_apiario = (
+            apiario_nuevo
         )
 
 
@@ -834,29 +1558,39 @@ def editar_colmena(request, id):
 
 
         # ====================================================
-        # GUARDAR COLMENA
+        # GUARDAR
         # ====================================================
 
         colmena.save()
 
 
-        # ====================================================
-        # REVISAR CAMBIO A ESTADO RIESGO
-        # ====================================================
+    # ========================================================
+    # REVISAR CAMBIO A ESTADO RIESGO
+    # ========================================================
 
-        try:
+    try:
 
-            revisar_cambio_estado_colmena(
-                colmena,
-                estado_anterior
-            )
+        revisar_cambio_estado_colmena(
+            colmena,
+            estado_anterior
+        )
 
-        except Exception as error:
 
-            print(
-                "ERROR REVISANDO ESTADO DE COLMENA:",
-                error
-            )
+    except Exception as error:
+
+        print(
+            "ERROR REVISANDO ESTADO DE COLMENA:",
+            error
+        )
+
+
+    messages.success(
+        request,
+        (
+            f"La colmena «{colmena.codigocolmena}» "
+            f"fue actualizada correctamente."
+        )
+    )
 
 
     return redirect(

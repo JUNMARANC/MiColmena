@@ -1,748 +1,2573 @@
 {% extends 'admin_panel/base_admin.html' %}
 {% load static %}
 
-{% block title %}Apiarios | Panel Administrador{% endblock %}
-{% block page_title %}Apiarios{% endblock %}
+
+{% block title %}
+    Apiarios | Panel Administrador
+{% endblock %}
+
+
+{% block page_title %}
+    Apiarios
+{% endblock %}
+
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <h2 class="titulo-panel mb-0">Gestión de Apiarios</h2>
+
+<!-- =========================================================
+     ENCABEZADO
+========================================================== -->
+
+<div
+    class="
+        d-flex
+        justify-content-between
+        align-items-center
+        mb-4
+        flex-wrap
+        gap-3
+    "
+>
+
+    <h2 class="titulo-panel mb-0">
+        Gestión de Apiarios
+    </h2>
+
 
     <div class="d-flex align-items-center gap-3">
 
-        <div class="selector-vista" role="group" aria-label="Modo de visualización">
-            <button type="button"
-                    id="btnVistaTabla"
-                    class="selector-vista-btn activo"
-                    title="Ver en tabla">
+
+        <!-- =================================================
+             SELECTOR DE VISTA
+        ================================================== -->
+
+        <div
+            class="selector-vista"
+            role="group"
+            aria-label="Modo de visualización"
+        >
+
+            <button
+                type="button"
+                id="btnVistaTabla"
+                class="selector-vista-btn activo"
+                title="Ver en tabla"
+            >
                 <i class="bi bi-table"></i>
             </button>
 
-            <button type="button"
-                    id="btnVistaTarjetas"
-                    class="selector-vista-btn"
-                    title="Ver en tarjetas">
+
+            <button
+                type="button"
+                id="btnVistaTarjetas"
+                class="selector-vista-btn"
+                title="Ver en tarjetas"
+            >
                 <i class="bi bi-grid-3x3-gap-fill"></i>
             </button>
+
         </div>
+
+
+
+        <!-- =================================================
+             AGREGAR APIARIO
+        ================================================== -->
 
         {% if "ag" in permisos_usuario %}
-            <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarApiario">
+
+            <button
+                class="
+                    btn
+                    btn-success
+                    rounded-3
+                    px-4
+                "
+                data-bs-toggle="modal"
+                data-bs-target="#modalAgregarApiario"
+            >
+
                 <i class="bi bi-plus-circle me-2"></i>
+
                 Agregar
+
             </button>
+
         {% endif %}
+
+
     </div>
+
 </div>
+
+
+
+<!-- =========================================================
+     FILTROS
+========================================================== -->
 
 <div class="card-admin mb-4">
-    <form method="GET" class="row g-3 align-items-end">
+
+    <form
+        method="GET"
+        class="row g-3 align-items-end"
+    >
+
+
+        <!-- =================================================
+             ESTADO
+        ================================================== -->
 
         <div class="col-12 col-md-4">
-            <label class="form-label">Filtrar por estado:</label>
 
-            <select name="estado" class="form-select">
-                <option value="">Todos</option>
-                <option value="Bueno" {% if request.GET.estado == "Bueno" %}selected{% endif %}>Bueno</option>
-                <option value="Precaución" {% if request.GET.estado == "Precaución" %}selected{% endif %}>Precaución</option>
-                <option value="Deficiente" {% if request.GET.estado == "Deficiente" %}selected{% endif %}>Deficiente</option>
+            <label class="form-label">
+                Filtrar por estado:
+            </label>
+
+
+            <select
+                name="estado"
+                class="form-select"
+            >
+
+                <option value="">
+                    Todos
+                </option>
+
+
+                <option
+                    value="Bueno"
+                    {% if request.GET.estado == "Bueno" %}
+                        selected
+                    {% endif %}
+                >
+                    Bueno
+                </option>
+
+
+                <option
+                    value="Precaución"
+                    {% if request.GET.estado == "Precaución" %}
+                        selected
+                    {% endif %}
+                >
+                    Precaución
+                </option>
+
+
+                <option
+                    value="Deficiente"
+                    {% if request.GET.estado == "Deficiente" %}
+                        selected
+                    {% endif %}
+                >
+                    Deficiente
+                </option>
+
             </select>
+
         </div>
+
+
+
+        <!-- =================================================
+             FILTRAR
+        ================================================== -->
 
         <div class="col-12 col-md-3">
-            <button type="submit" class="btn btn-outline-success w-100">
+
+            <button
+                type="submit"
+                class="btn btn-outline-success w-100"
+            >
+
                 <i class="bi bi-filter me-2"></i>
+
                 Filtrar
+
             </button>
+
         </div>
+
+
+
+        <!-- =================================================
+             LIMPIAR
+        ================================================== -->
 
         <div class="col-12 col-md-2">
-            <a href="{% url 'apiarios_admin' %}" class="btn btn-cancelar w-100">
+
+            <a
+                href="{% url 'apiarios_admin' %}"
+                class="btn btn-cancelar w-100"
+            >
+
                 Limpiar
+
             </a>
+
         </div>
+
 
     </form>
+
 </div>
 
-<div class="card-admin" id="vistaTablaApiarios">
+
+
+<!-- =========================================================
+     VISTA TABLA
+========================================================== -->
+
+<div
+    class="card-admin"
+    id="vistaTablaApiarios"
+>
+
     <div class="table-responsive">
+
         <table class="table align-middle mb-0">
+
+
+            <!-- =================================================
+                 CABECERA
+            ================================================== -->
+
             <thead>
+
                 <tr>
-                    <th>Imagen</th>
-                    <th>Apiario</th>
-                    <th>Ubicación</th>
-                    <th>Colmenas</th>
-                    <th>Estado</th>
-                    <th class="text-center">Acciones</th>
+
+                    <th>
+                        Imagen
+                    </th>
+
+                    <th>
+                        Apiario
+                    </th>
+
+                    <th>
+                        Ubicación
+                    </th>
+
+                    <th>
+                        Colmenas
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
+                    <th class="text-center">
+                        Acciones
+                    </th>
+
                 </tr>
+
             </thead>
 
+
+
+            <!-- =================================================
+                 CUERPO
+            ================================================== -->
+
             <tbody>
+
+
                 {% for apiario in apiarios %}
-                <tr>
-                    <td>
-                        {% if apiario.imagen %}
-                            <img src="{{ apiario.imagen.url }}"
-                                 alt="Imagen del apiario"
-                                 style="width:55px;height:55px;object-fit:cover;border-radius:12px;">
-                        {% else %}
-                            <div style="width:55px;height:55px;border-radius:12px;background:#E8F7E9;display:flex;align-items:center;justify-content:center;">
-                                <i class="bi bi-image text-success"></i>
-                            </div>
-                        {% endif %}
-                    </td>
 
-                    <td>{{ apiario.nombreapiario }}</td>
-                    <td>{{ apiario.ubicacion }}</td>
-                    <td>{{ apiario.cantidadcolmenas }}</td>
 
-                    <td>
-                        {% if apiario.estadoapiario == "Bueno" %}
-                            <span class="badge-estado badge-bueno">Bueno</span>
-                        {% elif apiario.estadoapiario == "Precaución" %}
-                            <span class="badge-estado badge-precaucion">Precaución</span>
-                        {% else %}
-                            <span class="badge-estado badge-deficiente">Deficiente</span>
-                        {% endif %}
-                    </td>
+                    <tr>
 
-                    <td>
-                        <div class="acciones">
-                            <button type="button"
-                                    class="btn-accion btn-ver"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalDetalleApiario{{ apiario.id_apiario }}">
-                                <i class="bi bi-eye"></i>
-                            </button>
 
-                            <button type="button"
-                                    class="btn-accion btn-editar"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarApiario{{ apiario.id_apiario }}">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
+                        <!-- =====================================
+                             IMAGEN
+                        ====================================== -->
 
-                            <button type="button"
-                                    class="btn-accion btn-borrar"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEliminarApiario{{ apiario.id_apiario }}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                        <td>
 
-                <!-- MODAL DETALLE -->
-                <div class="modal fade" id="modalDetalleApiario{{ apiario.id_apiario }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
+                            {% if apiario.imagen %}
 
-                            <div class="modal-header border-0" style="background:#E8F7E9;">
-                                <div>
-                                    <h4 class="fw-bold mb-1" style="color:#234F39;">
-                                        <i class="bi bi-eye-fill me-2"></i>
-                                        Detalles del Apiario
-                                    </h4>
-                                    <p class="text-muted mb-0">
-                                        Información completa del apiario seleccionado.
-                                    </p>
-                                </div>
+                                <img
+                                    src="{{ apiario.imagen.url }}"
+                                    alt="Imagen del apiario"
+                                    style="
+                                        width:55px;
+                                        height:55px;
+                                        object-fit:cover;
+                                        border-radius:12px;
+                                    "
+                                >
 
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
+                            {% else %}
 
-                            <div class="modal-body">
-                                <div class="row g-3">
+                                <div
+                                    style="
+                                        width:55px;
+                                        height:55px;
+                                        border-radius:12px;
+                                        background:#E8F7E9;
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                    "
+                                >
 
-                                    <div class="col-12">
-                                        <div class="modal-info-box text-center">
-                                            {% if apiario.imagen %}
-                                                <img src="{{ apiario.imagen.url }}"
-                                                     alt="Imagen del apiario"
-                                                     style="width:100%;max-height:260px;object-fit:cover;border-radius:18px;">
-                                            {% else %}
-                                                <div style="height:180px;border-radius:18px;background:#E8F7E9;display:flex;align-items:center;justify-content:center;">
-                                                    <span class="text-muted">
-                                                        <i class="bi bi-image me-2"></i>
-                                                        Sin imagen registrada
-                                                    </span>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box verde">
-                                            <small>
-                                                <i class="bi bi-house-heart-fill me-1"></i>
-                                                Nombre del Apiario
-                                            </small>
-                                            <h5>{{ apiario.nombreapiario }}</h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>
-                                                <i class="bi bi-geo-alt-fill me-1"></i>
-                                                Ubicación
-                                            </small>
-                                            <h5>{{ apiario.ubicacion }}</h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>
-                                                <i class="bi bi-box-seam me-1"></i>
-                                                Cantidad de Colmenas
-                                            </small>
-                                            <h5>{{ apiario.cantidadcolmenas }}</h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>
-                                                <i class="bi bi-shield-check me-1"></i>
-                                                Estado del Apiario
-                                            </small>
-                                            <h5>{{ apiario.estadoapiario }}</h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>
-                                                <i class="bi bi-calendar-event me-1"></i>
-                                                Fecha de Registro
-                                            </small>
-                                            <h5>{{ apiario.fechaeclosionapiario }}</h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>
-                                                <i class="bi bi-person-badge-fill me-1"></i>
-                                                Apicultor Responsable
-                                            </small>
-                                            <h5>
-                                                {% if apiario.id_apicultor %}
-                                                    {{ apiario.id_apicultor.nombre_completo }}
-                                                {% else %}
-                                                    Sin responsable
-                                                {% endif %}
-                                            </h5>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <div class="modal-info-box">
-                                            <small>
-                                                <i class="bi bi-card-text me-1"></i>
-                                                Descripción
-                                            </small>
-
-                                            <p class="mb-0">
-                                                {% if apiario.descripcion %}
-                                                    {{ apiario.descripcion }}
-                                                {% else %}
-                                                    Sin descripción registrada.
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <i
+                                        class="
+                                            bi
+                                            bi-image
+                                            text-success
+                                        "
+                                    ></i>
 
                                 </div>
-                            </div>
 
-                            <div class="modal-footer border-0">
-                                <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                    <i class="bi bi-x-circle me-2"></i>
-                                    Cerrar
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- =====================================
+                             NOMBRE
+                        ====================================== -->
+
+                        <td>
+
+                            {{ apiario.nombreapiario }}
+
+                        </td>
+
+
+
+                        <!-- =====================================
+                             UBICACIÓN
+                        ====================================== -->
+
+                        <td>
+
+                            {{ apiario.ubicacion }}
+
+                        </td>
+
+
+
+                        <!-- =====================================
+                             COLMENAS
+                        ====================================== -->
+
+                        <td>
+
+                            {{ apiario.cantidadcolmenas }}
+
+                        </td>
+
+
+
+                        <!-- =====================================
+                             ESTADO
+                        ====================================== -->
+
+                        <td>
+
+
+                            {% if apiario.estadoapiario == "Bueno" %}
+
+                                <span
+                                    class="
+                                        badge-estado
+                                        badge-bueno
+                                    "
+                                >
+                                    Bueno
+                                </span>
+
+
+                            {% elif apiario.estadoapiario == "Precaución" %}
+
+                                <span
+                                    class="
+                                        badge-estado
+                                        badge-precaucion
+                                    "
+                                >
+                                    Precaución
+                                </span>
+
+
+                            {% else %}
+
+                                <span
+                                    class="
+                                        badge-estado
+                                        badge-deficiente
+                                    "
+                                >
+                                    Deficiente
+                                </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+                        <!-- =====================================
+                             ACCIONES
+                        ====================================== -->
+
+                        <td>
+
+                            <div class="acciones">
+
+
+                                <!-- VER -->
+
+                                <button
+                                    type="button"
+                                    class="
+                                        btn-accion
+                                        btn-ver
+                                    "
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalleApiario{{ apiario.id_apiario }}"
+                                    title="Ver apiario"
+                                >
+
+                                    <i class="bi bi-eye"></i>
+
                                 </button>
+
+
+
+                                <!-- EDITAR -->
+
+                                {% if "ag" in permisos_usuario %}
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn-accion
+                                            btn-editar
+                                        "
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarApiario{{ apiario.id_apiario }}"
+                                        title="Editar apiario"
+                                    >
+
+                                        <i class="bi bi-pencil-square"></i>
+
+                                    </button>
+
+
+
+                                    <!-- =========================
+                                         ELIMINAR
+                                    ========================== -->
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn-accion
+                                            btn-borrar
+                                            btn-eliminar-apiario
+                                        "
+
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarApiario"
+
+                                        data-nombre="{{ apiario.nombreapiario }}"
+                                        data-colmenas="{{ apiario.total_colmenas_reales }}"
+                                        data-url="{% url 'eliminar_apiario' apiario.id_apiario %}"
+
+                                        title="Eliminar apiario"
+                                    >
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </button>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        </td>
+
+
+                    </tr>
+
+
+
+                    <!-- =================================================
+                         MODAL DETALLE
+                    ================================================== -->
+
+                    <div
+                        class="modal fade"
+                        id="modalDetalleApiario{{ apiario.id_apiario }}"
+                        tabindex="-1"
+                        aria-hidden="true"
+                    >
+
+                        <div
+                            class="
+                                modal-dialog
+                                modal-lg
+                                modal-dialog-centered
+                            "
+                        >
+
+                            <div
+                                class="
+                                    modal-content
+                                    border-0
+                                    shadow
+                                    rounded-4
+                                "
+                            >
+
+
+                                <!-- =====================================
+                                     HEADER
+                                ====================================== -->
+
+                                <div
+                                    class="modal-header border-0"
+                                    style="background:#E8F7E9;"
+                                >
+
+                                    <div>
+
+                                        <h4
+                                            class="fw-bold mb-1"
+                                            style="color:#234F39;"
+                                        >
+
+                                            <i
+                                                class="
+                                                    bi
+                                                    bi-eye-fill
+                                                    me-2
+                                                "
+                                            ></i>
+
+                                            Detalles del Apiario
+
+                                        </h4>
+
+
+                                        <p class="text-muted mb-0">
+
+                                            Información completa del
+                                            apiario seleccionado.
+
+                                        </p>
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                    ></button>
+
+                                </div>
+
+
+
+                                <!-- =====================================
+                                     BODY
+                                ====================================== -->
+
+                                <div class="modal-body">
+
+                                    <div class="row g-3">
+
+
+                                        <!-- IMAGEN -->
+
+                                        <div class="col-12">
+
+                                            <div
+                                                class="
+                                                    modal-info-box
+                                                    text-center
+                                                "
+                                            >
+
+                                                {% if apiario.imagen %}
+
+                                                    <img
+                                                        src="{{ apiario.imagen.url }}"
+                                                        alt="Imagen del apiario"
+                                                        style="
+                                                            width:100%;
+                                                            max-height:260px;
+                                                            object-fit:cover;
+                                                            border-radius:18px;
+                                                        "
+                                                    >
+
+                                                {% else %}
+
+                                                    <div
+                                                        style="
+                                                            height:180px;
+                                                            border-radius:18px;
+                                                            background:#E8F7E9;
+                                                            display:flex;
+                                                            align-items:center;
+                                                            justify-content:center;
+                                                        "
+                                                    >
+
+                                                        <span class="text-muted">
+
+                                                            <i
+                                                                class="
+                                                                    bi
+                                                                    bi-image
+                                                                    me-2
+                                                                "
+                                                            ></i>
+
+                                                            Sin imagen registrada
+
+                                                        </span>
+
+                                                    </div>
+
+                                                {% endif %}
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- NOMBRE -->
+
+                                        <div class="col-md-6">
+
+                                            <div
+                                                class="
+                                                    modal-info-box
+                                                    verde
+                                                "
+                                            >
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-house-heart-fill
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Nombre del Apiario
+
+                                                </small>
+
+
+                                                <h5>
+
+                                                    {{ apiario.nombreapiario }}
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- UBICACIÓN -->
+
+                                        <div class="col-md-6">
+
+                                            <div class="modal-info-box">
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-geo-alt-fill
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Ubicación
+
+                                                </small>
+
+
+                                                <h5>
+
+                                                    {{ apiario.ubicacion }}
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- COLMENAS -->
+
+                                        <div class="col-md-6">
+
+                                            <div class="modal-info-box">
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-box-seam
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Cantidad de Colmenas
+
+                                                </small>
+
+
+                                                <h5>
+
+                                                    {{ apiario.cantidadcolmenas }}
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- ESTADO -->
+
+                                        <div class="col-md-6">
+
+                                            <div class="modal-info-box">
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-shield-check
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Estado del Apiario
+
+                                                </small>
+
+
+                                                <h5>
+
+                                                    {{ apiario.estadoapiario }}
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- FECHA -->
+
+                                        <div class="col-md-6">
+
+                                            <div class="modal-info-box">
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-calendar-event
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Fecha de Registro
+
+                                                </small>
+
+
+                                                <h5>
+
+                                                    {{ apiario.fechaeclosionapiario }}
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- APICULTOR -->
+
+                                        <div class="col-md-6">
+
+                                            <div class="modal-info-box">
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-person-badge-fill
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Apicultor Responsable
+
+                                                </small>
+
+
+                                                <h5>
+
+                                                    {% if apiario.id_apicultor %}
+
+                                                        {{ apiario.id_apicultor.nombre_completo }}
+
+                                                    {% else %}
+
+                                                        Sin responsable
+
+                                                    {% endif %}
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- DESCRIPCIÓN -->
+
+                                        <div class="col-12">
+
+                                            <div class="modal-info-box">
+
+                                                <small>
+
+                                                    <i
+                                                        class="
+                                                            bi
+                                                            bi-card-text
+                                                            me-1
+                                                        "
+                                                    ></i>
+
+                                                    Descripción
+
+                                                </small>
+
+
+                                                <p class="mb-0">
+
+                                                    {% if apiario.descripcion %}
+
+                                                        {{ apiario.descripcion }}
+
+                                                    {% else %}
+
+                                                        Sin descripción registrada.
+
+                                                    {% endif %}
+
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- =====================================
+                                     FOOTER
+                                ====================================== -->
+
+                                <div class="modal-footer border-0">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-cancelar"
+                                        data-bs-dismiss="modal"
+                                    >
+
+                                        <i
+                                            class="
+                                                bi
+                                                bi-x-circle
+                                                me-2
+                                            "
+                                        ></i>
+
+                                        Cerrar
+
+                                    </button>
+
+                                </div>
+
+
                             </div>
 
                         </div>
+
                     </div>
-                </div>
 
-                <!-- MODAL EDITAR -->
-                <div class="modal fade" id="modalEditarApiario{{ apiario.id_apiario }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
 
-                            <form method="POST" action="{% url 'editar_apiario' apiario.id_apiario %}" enctype="multipart/form-data" class="form-validar-apiario" data-id-apiario="{{ apiario.id_apiario }}">
-                                {% csrf_token %}
 
-                                <div class="modal-header border-0" style="background:#E8F7E9;">
-                                    <div>
-                                        <h4 class="fw-bold mb-1" style="color:#234F39;">
-                                            <i class="bi bi-pencil-square me-2"></i>
-                                            Editar Apiario
-                                        </h4>
+                    <!-- =================================================
+                         MODAL EDITAR
+                    ================================================== -->
 
-                                        <p class="text-muted mb-0">
-                                            Modifique la información del apiario.
-                                        </p>
+                    <div
+                        class="modal fade"
+                        id="modalEditarApiario{{ apiario.id_apiario }}"
+                        tabindex="-1"
+                        aria-hidden="true"
+                    >
+
+                        <div
+                            class="
+                                modal-dialog
+                                modal-xl
+                                modal-dialog-centered
+                            "
+                        >
+
+                            <div
+                                class="
+                                    modal-content
+                                    border-0
+                                    shadow
+                                    rounded-4
+                                "
+                            >
+
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'editar_apiario' apiario.id_apiario %}"
+                                    enctype="multipart/form-data"
+                                    class="form-validar-apiario"
+                                    data-id-apiario="{{ apiario.id_apiario }}"
+                                >
+
+                                    {% csrf_token %}
+
+
+
+                                    <!-- =================================
+                                         HEADER
+                                    ================================== -->
+
+                                    <div
+                                        class="modal-header border-0"
+                                        style="background:#E8F7E9;"
+                                    >
+
+                                        <div>
+
+                                            <h4
+                                                class="fw-bold mb-1"
+                                                style="color:#234F39;"
+                                            >
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-pencil-square
+                                                        me-2
+                                                    "
+                                                ></i>
+
+                                                Editar Apiario
+
+                                            </h4>
+
+
+                                            <p class="text-muted mb-0">
+
+                                                Modifique la información
+                                                del apiario.
+
+                                            </p>
+
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                        ></button>
+
                                     </div>
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
 
-                                <div class="modal-body">
-                                    <div class="row g-3">
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Nombre del Apiario</label>
-                                            <input type="text"
-                                                name="nombre_apiario"
-                                                class="form-control"
-                                                value="{{ apiario.nombreapiario }}"
-                                                required>
-                                            <div class="valid-feedback">Nombre disponible.</div>
-                                            <div class="invalid-feedback"></div>
-                                        </div>
+                                    <!-- =================================
+                                         BODY
+                                    ================================== -->
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Ubicación</label>
-                                            <input type="text"
-                                                   name="ubicacion"
-                                                   class="form-control"
-                                                   value="{{ apiario.ubicacion }}"
-                                                   required>
-                                        </div>
+                                    <div class="modal-body">
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Cantidad de Colmenas</label>
-                                            <input type="number"
-                                                name="cantidad_colmenas"
-                                                class="form-control"
-                                                value="{{ apiario.cantidadcolmenas }}"
-                                                min="0"
-                                                max="20"
-                                                required>
-                                            <div class="valid-feedback">Cantidad válida.</div>
-                                            <div class="invalid-feedback"></div>
-                                        </div>
+                                        <div class="row g-3">
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Estado</label>
-                                            <select name="estado_apiario" class="form-select" required>
-                                                <option value="Bueno" {% if apiario.estadoapiario == "Bueno" %}selected{% endif %}>Bueno</option>
-                                                <option value="Precaución" {% if apiario.estadoapiario == "Precaución" %}selected{% endif %}>Precaución</option>
-                                                <option value="Deficiente" {% if apiario.estadoapiario == "Deficiente" %}selected{% endif %}>Deficiente</option>
-                                            </select>
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Fecha de Registro</label>
-                                            <input type="date"
-                                                   name="fecha_registro"
-                                                   class="form-control"
-                                                   value="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
-                                                   max="{% now 'Y-m-d' %}"
-                                                   required>
-                                        </div>
+                                            <!-- NOMBRE -->
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Apicultor Responsable</label>
-                                            <select name="id_apicultor" class="form-select" required>
-                                                {% for apicultor in apicultores %}
-                                                    <option value="{{ apicultor.id_apicultor }}">
-                                                        {{ apicultor.nombre_completo }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
+                                            <div class="col-md-6">
 
-                                        <div class="col-12">
-                                            <label class="form-label">Descripción</label>
-                                            <textarea name="descripcion"
-                                                      class="form-control"
-                                                      rows="4">{{ apiario.descripcion }}</textarea>
-                                        </div>
+                                                <label class="form-label">
 
-                                        <div class="col-12">
-                                            <label class="form-label">Imagen del Apiario</label>
+                                                    Nombre del Apiario
 
-                                            {% if apiario.imagen %}
-                                                <div class="mb-2">
-                                                    <img src="{{ apiario.imagen.url }}"
-                                                         alt="Imagen actual"
-                                                         style="width:130px;height:95px;object-fit:cover;border-radius:14px;">
+                                                </label>
+
+
+                                                <input
+                                                    type="text"
+                                                    name="nombre_apiario"
+                                                    class="form-control"
+                                                    value="{{ apiario.nombreapiario }}"
+                                                    required
+                                                >
+
+
+                                                <div class="valid-feedback">
+
+                                                    Nombre disponible.
+
                                                 </div>
-                                            {% endif %}
 
-                                            <input type="file"
-                                                   name="imagen"
-                                                   class="form-control"
-                                                   accept="image/*">
+
+                                                <div class="invalid-feedback"></div>
+
+                                            </div>
+
+
+
+                                            <!-- UBICACIÓN -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="form-label">
+
+                                                    Ubicación
+
+                                                </label>
+
+
+                                                <input
+                                                    type="text"
+                                                    name="ubicacion"
+                                                    class="form-control"
+                                                    value="{{ apiario.ubicacion }}"
+                                                    required
+                                                >
+
+                                            </div>
+
+
+
+                                            <!-- CANTIDAD -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="form-label">
+
+                                                    Cantidad de Colmenas
+
+                                                </label>
+
+
+                                                <input
+                                                    type="number"
+                                                    name="cantidad_colmenas"
+                                                    class="form-control"
+                                                    value="{{ apiario.cantidadcolmenas }}"
+                                                    min="0"
+                                                    max="20"
+                                                    required
+                                                >
+
+
+                                                <div class="valid-feedback">
+
+                                                    Cantidad válida.
+
+                                                </div>
+
+
+                                                <div class="invalid-feedback"></div>
+
+                                            </div>
+
+
+
+                                            <!-- ESTADO -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="form-label">
+                                                    Estado
+                                                </label>
+
+
+                                                <select
+                                                    name="estado_apiario"
+                                                    class="form-select"
+                                                    required
+                                                >
+
+                                                    <option
+                                                        value="Bueno"
+                                                        {% if apiario.estadoapiario == "Bueno" %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        Bueno
+                                                    </option>
+
+
+                                                    <option
+                                                        value="Precaución"
+                                                        {% if apiario.estadoapiario == "Precaución" %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        Precaución
+                                                    </option>
+
+
+                                                    <option
+                                                        value="Deficiente"
+                                                        {% if apiario.estadoapiario == "Deficiente" %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        Deficiente
+                                                    </option>
+
+                                                </select>
+
+                                            </div>
+
+
+
+                                            <!-- FECHA -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="form-label">
+
+                                                    Fecha de Registro
+
+                                                </label>
+
+
+                                                <input
+                                                    type="date"
+                                                    name="fecha_registro"
+                                                    class="form-control"
+                                                    value="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
+                                                    max="{% now 'Y-m-d' %}"
+                                                    required
+                                                >
+
+                                            </div>
+
+
+
+                                            <!-- APICULTOR -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="form-label">
+
+                                                    Apicultor Responsable
+
+                                                </label>
+
+
+                                                <select
+                                                    name="id_apicultor"
+                                                    class="form-select"
+                                                    required
+                                                >
+
+                                                    {% for apicultor in apicultores %}
+
+                                                        <option
+                                                            value="{{ apicultor.id_apicultor }}"
+
+                                                            {% if apiario.id_apicultor and apiario.id_apicultor.id_apicultor == apicultor.id_apicultor %}
+                                                                selected
+                                                            {% endif %}
+                                                        >
+
+                                                            {{ apicultor.nombre_completo }}
+
+                                                        </option>
+
+                                                    {% endfor %}
+
+                                                </select>
+
+                                            </div>
+
+
+
+                                            <!-- DESCRIPCIÓN -->
+
+                                            <div class="col-12">
+
+                                                <label class="form-label">
+
+                                                    Descripción
+
+                                                </label>
+
+
+                                                <textarea
+                                                    name="descripcion"
+                                                    class="form-control"
+                                                    rows="4"
+                                                >{{ apiario.descripcion }}</textarea>
+
+                                            </div>
+
+
+
+                                            <!-- IMAGEN -->
+
+                                            <div class="col-12">
+
+                                                <label class="form-label">
+
+                                                    Imagen del Apiario
+
+                                                </label>
+
+
+                                                {% if apiario.imagen %}
+
+                                                    <div class="mb-2">
+
+                                                        <img
+                                                            src="{{ apiario.imagen.url }}"
+                                                            alt="Imagen actual"
+                                                            style="
+                                                                width:130px;
+                                                                height:95px;
+                                                                object-fit:cover;
+                                                                border-radius:14px;
+                                                            "
+                                                        >
+
+                                                    </div>
+
+                                                {% endif %}
+
+
+                                                <input
+                                                    type="file"
+                                                    name="imagen"
+                                                    class="form-control"
+                                                    accept="image/*"
+                                                >
+
+                                            </div>
+
+
                                         </div>
 
                                     </div>
-                                </div>
 
-                                <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                        Cancelar
-                                    </button>
 
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-save me-2"></i>
-                                        Guardar Cambios
-                                    </button>
-                                </div>
 
-                            </form>
+                                    <!-- =================================
+                                         FOOTER
+                                    ================================== -->
+
+                                    <div class="modal-footer border-0">
+
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-cancelar"
+                                            data-bs-dismiss="modal"
+                                        >
+
+                                            Cancelar
+
+                                        </button>
+
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-success"
+                                        >
+
+                                            <i
+                                                class="
+                                                    bi
+                                                    bi-save
+                                                    me-2
+                                                "
+                                            ></i>
+
+                                            Guardar Cambios
+
+                                        </button>
+
+
+                                    </div>
+
+
+                                </form>
+
+
+                            </div>
 
                         </div>
+
                     </div>
-                </div>
 
-                <!-- MODAL ELIMINAR -->
-                <div class="modal fade" id="modalEliminarApiario{{ apiario.id_apiario }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
-
-                            <form method="POST" action="{% url 'eliminar_apiario' apiario.id_apiario %}">
-                                {% csrf_token %}
-
-                                <div class="modal-header border-0 modal-delete-header">
-                                    <div>
-                                        <h4 class="fw-bold text-danger mb-1">
-                                            <i class="bi bi-trash-fill me-2"></i>
-                                            Eliminar Apiario
-                                        </h4>
-
-                                        <p class="text-muted mb-0">
-                                            Esta acción no se puede deshacer.
-                                        </p>
-                                    </div>
-
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-
-                                    <div class="alerta-eliminar mb-3">
-                                        <strong>Advertencia:</strong>
-                                        al eliminar este apiario, se eliminará el registro seleccionado.
-                                    </div>
-
-                                    <div class="row g-3">
-
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box verde">
-                                                <small>Nombre del Apiario</small>
-                                                <h5>{{ apiario.nombreapiario }}</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Ubicación</small>
-                                                <h5>{{ apiario.ubicacion }}</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Cantidad de Colmenas</small>
-                                                <h5>{{ apiario.cantidadcolmenas }}</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Estado</small>
-                                                <h5>{{ apiario.estadoapiario }}</h5>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                        Cancelar
-                                    </button>
-
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash me-2"></i>
-                                        Sí, eliminar
-                                    </button>
-                                </div>
-
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
 
                 {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center py-4">
-                        No hay apiarios registrados.
-                    </td>
-                </tr>
+
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="text-center py-4"
+                        >
+
+                            No hay apiarios registrados.
+
+                        </td>
+
+                    </tr>
+
+
                 {% endfor %}
+
+
             </tbody>
+
         </table>
+
     </div>
+
 </div>
 
-<!-- VISTA EN TARJETAS -->
-<div class="grid-tarjetas-apiarios" id="vistaTarjetasApiarios" style="display:none;">
+
+
+<!-- =========================================================
+     VISTA EN TARJETAS
+========================================================== -->
+
+<div
+    class="grid-tarjetas-apiarios"
+    id="vistaTarjetasApiarios"
+    style="display:none;"
+>
+
 
     {% for apiario in apiarios %}
-    <div class="tarjeta-apiario">
 
-        <div class="tarjeta-apiario-imagen">
-            {% if apiario.imagen %}
-                <img src="{{ apiario.imagen.url }}" alt="Imagen del apiario" 
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            {% else %}
-                <div class="tarjeta-apiario-sin-imagen">
-                    <i class="bi bi-image"></i>
-                </div>
-            {% endif %}
 
-            {% if apiario.estadoapiario == "Bueno" %}
-                <span class="badge-estado badge-bueno tarjeta-apiario-badge">Bueno</span>
-            {% elif apiario.estadoapiario == "Precaución" %}
-                <span class="badge-estado badge-precaucion tarjeta-apiario-badge">Precaución</span>
-            {% else %}
-                <span class="badge-estado badge-deficiente tarjeta-apiario-badge">Deficiente</span>
-            {% endif %}
-        </div>
+        <div class="tarjeta-apiario">
 
-        <div class="tarjeta-apiario-cuerpo">
 
-            <h5>{{ apiario.nombreapiario }}</h5>
+            <!-- =================================================
+                 IMAGEN
+            ================================================== -->
 
-            <div class="tarjeta-apiario-dato">
-                <i class="bi bi-geo-alt-fill"></i>
-                <span>{{ apiario.ubicacion }}</span>
-            </div>
+            <div class="tarjeta-apiario-imagen">
 
-            <div class="tarjeta-apiario-dato">
-                <i class="bi bi-box-seam"></i>
-                <span>{{ apiario.cantidadcolmenas }} colmenas</span>
-            </div>
 
-            <div class="acciones mt-3">
-                
-                <button type="button" class="btn-accion btn-ver"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalDetalleApiario{{ apiario.id_apiario }}">
-                    <i class="bi bi-eye"></i>
-                </button>
+                {% if apiario.imagen %}
 
-                {% if "ag" in permisos_usuario %}
-                <button type="button" class="btn-accion btn-editar"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalEditarApiario{{ apiario.id_apiario }}">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
+                    <img
+                        src="{{ apiario.imagen.url }}"
+                        alt="Imagen del apiario"
+                    >
 
-                <button type="button" class="btn-accion btn-borrar"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalEliminarApiario{{ apiario.id_apiario }}">
-                    <i class="bi bi-trash"></i>
-                </button>
+                {% else %}
+
+                    <div class="tarjeta-apiario-sin-imagen">
+
+                        <i class="bi bi-image"></i>
+
+                    </div>
+
                 {% endif %}
-                
+
+
+
+                <!-- =================================================
+                     ESTADO
+                ================================================== -->
+
+                {% if apiario.estadoapiario == "Bueno" %}
+
+                    <span
+                        class="
+                            badge-estado
+                            badge-bueno
+                            tarjeta-apiario-badge
+                        "
+                    >
+                        Bueno
+                    </span>
+
+
+                {% elif apiario.estadoapiario == "Precaución" %}
+
+                    <span
+                        class="
+                            badge-estado
+                            badge-precaucion
+                            tarjeta-apiario-badge
+                        "
+                    >
+                        Precaución
+                    </span>
+
+
+                {% else %}
+
+                    <span
+                        class="
+                            badge-estado
+                            badge-deficiente
+                            tarjeta-apiario-badge
+                        "
+                    >
+                        Deficiente
+                    </span>
+
+                {% endif %}
+
+
             </div>
+
+
+
+            <!-- =================================================
+                 CUERPO
+            ================================================== -->
+
+            <div class="tarjeta-apiario-cuerpo">
+
+
+                <h5>
+
+                    {{ apiario.nombreapiario }}
+
+                </h5>
+
+
+
+                <!-- UBICACIÓN -->
+
+                <div class="tarjeta-apiario-dato">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                    <span>
+
+                        {{ apiario.ubicacion }}
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- COLMENAS -->
+
+                <div class="tarjeta-apiario-dato">
+
+                    <i class="bi bi-box-seam"></i>
+
+                    <span>
+
+                        {{ apiario.cantidadcolmenas }}
+                        colmenas
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     ACCIONES
+                ================================================== -->
+
+                <div class="acciones mt-3">
+
+
+                    <!-- VER -->
+
+                    <button
+                        type="button"
+                        class="
+                            btn-accion
+                            btn-ver
+                        "
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalDetalleApiario{{ apiario.id_apiario }}"
+                        title="Ver apiario"
+                    >
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+
+
+                    {% if "ag" in permisos_usuario %}
+
+
+                        <!-- EDITAR -->
+
+                        <button
+                            type="button"
+                            class="
+                                btn-accion
+                                btn-editar
+                            "
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEditarApiario{{ apiario.id_apiario }}"
+                            title="Editar apiario"
+                        >
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </button>
+
+
+
+                        <!-- ELIMINAR -->
+
+                        <button
+                            type="button"
+                            class="
+                                btn-accion
+                                btn-borrar
+                                btn-eliminar-apiario
+                            "
+
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEliminarApiario"
+
+                            data-nombre="{{ apiario.nombreapiario }}"
+                            data-colmenas="{{ apiario.total_colmenas_reales }}"
+                            data-url="{% url 'eliminar_apiario' apiario.id_apiario %}"
+
+                            title="Eliminar apiario"
+                        >
+
+                            <i class="bi bi-trash"></i>
+
+                        </button>
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </div>
+
 
         </div>
 
-    </div>
+
     {% empty %}
-    <p class="text-center text-muted py-4 w-100">No hay apiarios registrados.</p>
+
+
+        <p
+            class="
+                text-center
+                text-muted
+                py-4
+                w-100
+            "
+        >
+
+            No hay apiarios registrados.
+
+        </p>
+
+
     {% endfor %}
+
 
 </div>
 
+
+
+<!-- =========================================================
+     PAGINACIÓN
+========================================================== -->
+
 {% if apiarios.has_other_pages %}
-<nav class="mt-4">
-    <ul class="pagination justify-content-center align-items-center">
 
-        {% if apiarios.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ apiarios.previous_page_number }}&estado={{ request.GET.estado }}">
-                    Anterior
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Anterior</span>
-            </li>
-        {% endif %}
 
-        {% for num in apiarios.paginator.page_range %}
-            {% if apiarios.number == num %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
-            {% else %}
+    <nav class="mt-4">
+
+        <ul
+            class="
+                pagination
+                justify-content-center
+                align-items-center
+            "
+        >
+
+
+            <!-- =================================================
+                 ANTERIOR
+            ================================================== -->
+
+            {% if apiarios.has_previous %}
+
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}&estado={{ request.GET.estado }}">
-                        {{ num }}
+
+                    <a
+                        class="page-link"
+                        href="?page={{ apiarios.previous_page_number }}&estado={{ request.GET.estado }}"
+                    >
+
+                        Anterior
+
                     </a>
+
                 </li>
+
+            {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+
+                        Anterior
+
+                    </span>
+
+                </li>
+
             {% endif %}
-        {% endfor %}
 
-        {% if apiarios.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ apiarios.next_page_number }}&estado={{ request.GET.estado }}">
-                    Siguiente
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Siguiente</span>
-            </li>
-        {% endif %}
 
-    </ul>
-</nav>
+
+            <!-- =================================================
+                 PÁGINAS
+            ================================================== -->
+
+            {% for num in apiarios.paginator.page_range %}
+
+
+                {% if apiarios.number == num %}
+
+                    <li class="page-item active">
+
+                        <span class="page-link">
+
+                            {{ num }}
+
+                        </span>
+
+                    </li>
+
+
+                {% else %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ num }}&estado={{ request.GET.estado }}"
+                        >
+
+                            {{ num }}
+
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+
+            {% endfor %}
+
+
+
+            <!-- =================================================
+                 SIGUIENTE
+            ================================================== -->
+
+            {% if apiarios.has_next %}
+
+                <li class="page-item">
+
+                    <a
+                        class="page-link"
+                        href="?page={{ apiarios.next_page_number }}&estado={{ request.GET.estado }}"
+                    >
+
+                        Siguiente
+
+                    </a>
+
+                </li>
+
+            {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+
+                        Siguiente
+
+                    </span>
+
+                </li>
+
+            {% endif %}
+
+
+        </ul>
+
+    </nav>
+
+
 {% endif %}
 
-<!-- MODAL AGREGAR APIARIO -->
-<div class="modal fade" id="modalAgregarApiario" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
 
-            <form method="POST" action="{% url 'crear_apiario' %}" enctype="multipart/form-data" class="form-validar-apiario">
-                {% csrf_token %}
 
-                <div class="modal-header border-0" style="background:#E8F7E9;">
-                    <div>
-                        <h4 class="fw-bold mb-1" style="color:#234F39;">
-                            <i class="bi bi-plus-circle me-2"></i>
-                            Agregar Apiario
-                        </h4>
-                        <p class="text-muted mb-0">
-                            Registra un nuevo apiario en el sistema.
-                        </p>
+<!-- =========================================================
+     MODAL ELIMINAR APIARIO
+     ÚNICO Y REUTILIZABLE
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalEliminarApiario"
+    tabindex="-1"
+    aria-labelledby="modalEliminarApiarioLabel"
+    aria-hidden="true"
+>
+
+    <div class="modal-dialog modal-dialog-centered">
+
+
+        <div
+            class="
+                modal-content
+                modal-eliminar-apiario
+                border-0
+            "
+        >
+
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <div
+                class="
+                    modal-header
+                    modal-header-eliminar-apiario
+                "
+            >
+
+
+                <div
+                    class="
+                        d-flex
+                        align-items-center
+                        gap-3
+                    "
+                >
+
+
+                    <div class="icono-header-eliminar-apiario">
+
+                        <i class="bi bi-flower1"></i>
+
                     </div>
 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                    <div>
+
+                        <h5
+                            class="modal-title fw-bold mb-1"
+                            id="modalEliminarApiarioLabel"
+                        >
+
+                            Eliminar apiario
+
+                        </h5>
+
+
+                        <p class="mb-0">
+
+                            Esta acción puede ser irreversible.
+
+                        </p>
+
+                    </div>
+
+
                 </div>
 
+
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form
+                method="POST"
+                action=""
+                id="formEliminarApiario"
+            >
+
+                {% csrf_token %}
+
+
+
+                <!-- =================================================
+                     BODY
+                ================================================== -->
+
+                <div class="modal-body p-4">
+
+
+                    <div class="contenido-eliminar-apiario">
+
+
+                        <!-- =========================================
+                             ICONO ADVERTENCIA
+                        ========================================== -->
+
+                        <div class="icono-advertencia-eliminar-apiario">
+
+                            <i
+                                class="
+                                    bi
+                                    bi-exclamation-triangle-fill
+                                "
+                            ></i>
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             PREGUNTA
+                        ========================================== -->
+
+                        <h5>
+
+                            ¿Deseas eliminar este apiario?
+
+                        </h5>
+
+
+                        <p>
+
+                            Estás a punto de eliminar:
+
+                        </p>
+
+
+
+                        <!-- =========================================
+                             NOMBRE
+                        ========================================== -->
+
+                        <div class="nombre-apiario-eliminar">
+
+
+                            <i class="bi bi-flower1"></i>
+
+
+                            <strong id="nombreApiarioEliminar">
+
+                                Apiario
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             ELIMINACIÓN PERMITIDA
+                        ========================================== -->
+
+                        <div
+                            class="alerta-eliminacion-apiario-permitida"
+                            id="alertaEliminacionApiarioPermitida"
+                        >
+
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+
+                            <div>
+
+
+                                <strong>
+
+                                    El apiario puede eliminarse
+
+                                </strong>
+
+
+                                <span>
+
+                                    No tiene colmenas asociadas
+                                    actualmente.
+
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             ELIMINACIÓN BLOQUEADA
+                        ========================================== -->
+
+                        <div
+                            class="
+                                alerta-eliminacion-apiario-bloqueada
+                                d-none
+                            "
+                            id="alertaEliminacionApiarioBloqueada"
+                        >
+
+
+                            <i
+                                class="
+                                    bi
+                                    bi-shield-exclamation
+                                "
+                            ></i>
+
+
+                            <div>
+
+
+                                <strong>
+
+                                    No se puede eliminar
+
+                                </strong>
+
+
+                                <span
+                                    id="mensajeColmenasApiarioEliminar"
+                                >
+
+                                    Este apiario tiene
+                                    colmenas asociadas.
+
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     FOOTER
+                ================================================== -->
+
+                <div
+                    class="
+                        modal-footer
+                        modal-footer-eliminar-apiario
+                    "
+                >
+
+
+                    <!-- CANCELAR -->
+
+                    <button
+                        type="button"
+                        class="
+                            btn
+                            btn-cancelar-eliminacion-apiario
+                        "
+                        data-bs-dismiss="modal"
+                    >
+
+                        <i
+                            class="
+                                bi
+                                bi-arrow-left
+                                me-1
+                            "
+                        ></i>
+
+                        Cancelar
+
+                    </button>
+
+
+
+                    <!-- ELIMINAR -->
+
+                    <button
+                        type="submit"
+                        class="
+                            btn
+                            btn-confirmar-eliminacion-apiario
+                        "
+                        id="btnConfirmarEliminarApiario"
+                    >
+
+                        <i
+                            class="
+                                bi
+                                bi-trash3-fill
+                                me-2
+                            "
+                        ></i>
+
+                        Eliminar definitivamente
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     MODAL AGREGAR APIARIO
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="modalAgregarApiario"
+    tabindex="-1"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-xl
+            modal-dialog-centered
+        "
+    >
+
+        <div
+            class="
+                modal-content
+                border-0
+                shadow
+                rounded-4
+            "
+        >
+
+
+            <form
+                method="POST"
+                action="{% url 'crear_apiario' %}"
+                enctype="multipart/form-data"
+                class="form-validar-apiario"
+            >
+
+                {% csrf_token %}
+
+
+
+                <!-- =================================================
+                     HEADER
+                ================================================== -->
+
+                <div
+                    class="modal-header border-0"
+                    style="background:#E8F7E9;"
+                >
+
+
+                    <div>
+
+
+                        <h4
+                            class="fw-bold mb-1"
+                            style="color:#234F39;"
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-plus-circle
+                                    me-2
+                                "
+                            ></i>
+
+                            Agregar Apiario
+
+                        </h4>
+
+
+                        <p class="text-muted mb-0">
+
+                            Registra un nuevo apiario
+                            en el sistema.
+
+                        </p>
+
+
+                    </div>
+
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     BODY
+                ================================================== -->
+
                 <div class="modal-body">
+
+
                     <div class="row g-3">
 
+
+                        <!-- =========================================
+                             NOMBRE
+                        ========================================== -->
+
                         <div class="col-md-6">
-                            <label class="form-label">Nombre del Apiario</label>
-                            <input type="text"
+
+
+                            <label class="form-label">
+
+                                Nombre del Apiario
+
+                            </label>
+
+
+                            <input
+                                type="text"
                                 name="nombre_apiario"
                                 class="form-control"
                                 placeholder="Ej: Prado del Sol"
-                                required>
-                            <div class="valid-feedback">Nombre disponible.</div>
+                                required
+                            >
+
+
+                            <div class="valid-feedback">
+
+                                Nombre disponible.
+
+                            </div>
+
+
                             <div class="invalid-feedback"></div>
+
+
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Ubicación</label>
-                            <input type="text"
-                                   name="ubicacion"
-                                   class="form-control"
-                                   placeholder="Ej: Urrao - Antioquia"
-                                   required>
-                        </div>
+
+
+                        <!-- =========================================
+                             UBICACIÓN
+                        ========================================== -->
 
                         <div class="col-md-6">
-                            <label class="form-label">Cantidad de Colmenas</label>
-                            <input type="number"
+
+
+                            <label class="form-label">
+
+                                Ubicación
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                name="ubicacion"
+                                class="form-control"
+                                placeholder="Ej: Urrao - Antioquia"
+                                required
+                            >
+
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             COLMENAS
+                        ========================================== -->
+
+                        <div class="col-md-6">
+
+
+                            <label class="form-label">
+
+                                Cantidad de Colmenas
+
+                            </label>
+
+
+                            <input
+                                type="number"
                                 name="cantidad_colmenas"
                                 class="form-control"
                                 min="0"
                                 max="20"
-                                required>
-                            <div class="valid-feedback">Cantidad válida.</div>
+                                required
+                            >
+
+
+                            <div class="valid-feedback">
+
+                                Cantidad válida.
+
+                            </div>
+
+
                             <div class="invalid-feedback"></div>
+
+
                         </div>
 
+
+
+                        <!-- =========================================
+                             ESTADO
+                        ========================================== -->
+
                         <div class="col-md-6">
-                            <label class="form-label">Estado</label>
-                            <select name="estado_apiario" class="form-select" required>
-                                <option value="Bueno">Bueno</option>
-                                <option value="Precaución">Precaución</option>
-                                <option value="Deficiente">Deficiente</option>
+
+
+                            <label class="form-label">
+
+                                Estado
+
+                            </label>
+
+
+                            <select
+                                name="estado_apiario"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="Bueno">
+                                    Bueno
+                                </option>
+
+                                <option value="Precaución">
+                                    Precaución
+                                </option>
+
+                                <option value="Deficiente">
+                                    Deficiente
+                                </option>
+
                             </select>
+
+
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Fecha de Registro</label>
-                            <input type="date"
-                                   name="fecha_registro"
-                                   class="form-control"
-                                   max="{% now 'Y-m-d' %}"
-                                   required>
-                        </div>
+
+
+                        <!-- =========================================
+                             FECHA
+                        ========================================== -->
 
                         <div class="col-md-6">
-                            <label class="form-label">Apicultor Responsable</label>
-                            <select name="id_apicultor" class="form-select" required>
-                                <option value="">Seleccione un apicultor</option>
+
+
+                            <label class="form-label">
+
+                                Fecha de Registro
+
+                            </label>
+
+
+                            <input
+                                type="date"
+                                name="fecha_registro"
+                                class="form-control"
+                                max="{% now 'Y-m-d' %}"
+                                required
+                            >
+
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             APICULTOR
+                        ========================================== -->
+
+                        <div class="col-md-6">
+
+
+                            <label class="form-label">
+
+                                Apicultor Responsable
+
+                            </label>
+
+
+                            <select
+                                name="id_apicultor"
+                                class="form-select"
+                                required
+                            >
+
+
+                                <option value="">
+
+                                    Seleccione un apicultor
+
+                                </option>
+
+
                                 {% for apicultor in apicultores %}
-                                    <option value="{{ apicultor.id_apicultor }}">
+
+
+                                    <option
+                                        value="{{ apicultor.id_apicultor }}"
+                                    >
+
                                         {{ apicultor.nombre_completo }}
+
                                     </option>
+
+
                                 {% endfor %}
+
+
                             </select>
+
+
                         </div>
 
-                        <div class="col-12">
-                            <label class="form-label">Descripción</label>
-                            <textarea name="descripcion"
-                                      class="form-control"
-                                      rows="4"
-                                      placeholder="Describe el apiario..."></textarea>
-                        </div>
+
+
+                        <!-- =========================================
+                             DESCRIPCIÓN
+                        ========================================== -->
 
                         <div class="col-12">
-                            <label class="form-label">Imagen del Apiario</label>
-                            <input type="file"
-                                   name="imagen"
-                                   class="form-control"
-                                   accept="image/*">
+
+
+                            <label class="form-label">
+
+                                Descripción
+
+                            </label>
+
+
+                            <textarea
+                                name="descripcion"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Describe el apiario..."
+                            ></textarea>
+
+
                         </div>
+
+
+
+                        <!-- =========================================
+                             IMAGEN
+                        ========================================== -->
+
+                        <div class="col-12">
+
+
+                            <label class="form-label">
+
+                                Imagen del Apiario
+
+                            </label>
+
+
+                            <input
+                                type="file"
+                                name="imagen"
+                                class="form-control"
+                                accept="image/*"
+                            >
+
+
+                        </div>
+
 
                     </div>
+
+
                 </div>
+
+
+
+                <!-- =================================================
+                     FOOTER
+                ================================================== -->
 
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+
+
+                    <button
+                        type="button"
+                        class="btn btn-cancelar"
+                        data-bs-dismiss="modal"
+                    >
+
                         Cancelar
+
                     </button>
 
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-save me-2"></i>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+
+                        <i
+                            class="
+                                bi
+                                bi-save
+                                me-2
+                            "
+                        ></i>
+
                         Guardar Apiario
+
                     </button>
+
+
                 </div>
+
 
             </form>
 
+
         </div>
+
+
     </div>
+
+
 </div>
+
 
 {% endblock %}
 
+
+
 {% block extra_js %}
+
+
 <script>
-    const URL_VERIFICAR_NOMBRE_APIARIO = "{% url 'verificar_nombre_apiario' %}";
+
+    const URL_VERIFICAR_NOMBRE_APIARIO =
+        "{% url 'verificar_nombre_apiario' %}";
+
 </script>
-<script src="{% static 'panel_admin/js/apiarios_vista.js' %}"></script>
+
+
+<script
+    src="{% static 'panel_admin/js/apiarios_vista.js' %}?v=2"
+></script>
+
+
 {% endblock %}

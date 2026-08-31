@@ -342,115 +342,382 @@
                     </div>
                 </div>
 
-                <!-- MODAL EDITAR -->
-                <div class="modal fade" id="modalEditarColmena{{ colmena.id_colmena }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
+                <!-- =========================================================
+                    MODAL EDITAR COLMENA
+                ========================================================== -->
 
-                            <form method="POST" action="{% url 'editar_colmena' colmena.id_colmena %}" enctype="multipart/form-data" class="form-validar-colmena">
+                <div
+                    class="modal fade"
+                    id="modalEditarColmena{{ colmena.id_colmena }}"
+                    tabindex="-1"
+                    aria-hidden="true"
+                >
+
+                    <div
+                        class="
+                            modal-dialog
+                            modal-xl
+                            modal-dialog-centered
+                        "
+                    >
+
+                        <div
+                            class="
+                                modal-content
+                                border-0
+                                shadow
+                                rounded-4
+                            "
+                        >
+
+                            <form
+                                method="POST"
+                                action="{% url 'editar_colmena' colmena.id_colmena %}"
+                                enctype="multipart/form-data"
+                                class="form-validar-colmena"
+                                data-apiario-original="{% if colmena.id_apiario %}{{ colmena.id_apiario.id_apiario }}{% endif %}"
+                            >
+
                                 {% csrf_token %}
 
-                                <div class="modal-header border-0" style="background:#E8F7E9;">
+
+                                <!-- =================================================
+                                    ENCABEZADO
+                                ================================================== -->
+
+                                <div
+                                    class="modal-header border-0"
+                                    style="background:#E8F7E9;"
+                                >
+
                                     <div>
-                                        <h4 class="fw-bold mb-1" style="color:#234F39;">
+
+                                        <h4
+                                            class="fw-bold mb-1"
+                                            style="color:#234F39;"
+                                        >
+
                                             <i class="bi bi-pencil-square me-2"></i>
+
                                             Editar Colmena
+
                                         </h4>
+
+
                                         <p class="text-muted mb-0">
+
                                             Modifique la información de la colmena.
+
                                         </p>
+
                                     </div>
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                    ></button>
+
                                 </div>
+
+
+                                <!-- =================================================
+                                    CUERPO
+                                ================================================== -->
 
                                 <div class="modal-body">
+
                                     <div class="row g-3">
 
-                                        <div class="col-md-6">
-                                            <label class="form-label">Código de Colmena</label>
-                                            <input type="text"
-                                                   class="form-control"
-                                                   value="{{ colmena.codigocolmena }}"
-                                                   readonly>
-                                        </div>
+
+                                        <!-- =========================================
+                                            CÓDIGO
+                                        ========================================== -->
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Apiario</label>
-                                            <select name="id_apiario" class="form-select" required>
+
+                                            <label class="form-label">
+
+                                                Código de Colmena
+
+                                            </label>
+
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                value="{{ colmena.codigocolmena }}"
+                                                readonly
+                                            >
+
+                                        </div>
+
+
+                                        <!-- =========================================
+                                            APIARIO
+                                        ========================================== -->
+
+                                        <div class="col-md-6">
+
+                                            <label class="form-label">
+
+                                                Apiario
+
+                                            </label>
+
+
+                                            <select
+                                                name="id_apiario"
+                                                class="
+                                                    form-select
+                                                    select-apiario-capacidad
+                                                "
+                                                required
+                                            >
+
                                                 {% for apiario in apiarios %}
-                                                    <option value="{{ apiario.id_apiario }}"
+
+                                                    <option
+                                                        value="{{ apiario.id_apiario }}"
+
+                                                        data-actual="{{ apiario.total_colmenas_reales }}"
+                                                        data-maximo="{{ apiario.capacidad_maxima }}"
+
                                                         {% if colmena.id_apiario and apiario.id_apiario == colmena.id_apiario.id_apiario %}
+
                                                             selected
-                                                        {% endif %}>
+
+                                                        {% else %}
+
+                                                            {% if apiario.esta_completo %}
+                                                                disabled
+                                                            {% endif %}
+
+                                                        {% endif %}
+                                                    >
+
                                                         {{ apiario.nombreapiario }}
+                                                        —
+                                                        {{ apiario.total_colmenas_reales }}/{{ apiario.capacidad_maxima }}
+
+                                                        {% if apiario.esta_completo %}
+                                                            (Completo)
+                                                        {% endif %}
+
                                                     </option>
+
                                                 {% endfor %}
+
                                             </select>
+
+
+                                            <!-- =====================================
+                                                INFORMACIÓN DE CAPACIDAD
+                                            ====================================== -->
+
+                                            <small
+                                                class="ayuda-capacidad-apiario"
+                                            ></small>
+
                                         </div>
+
+
+                                        <!-- =========================================
+                                            ESTADO
+                                        ========================================== -->
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Estado</label>
-                                            <select name="estado_colmena" class="form-select" required>
-                                                <option value="Activa" {% if colmena.estadocolmena == "Activa" %}selected{% endif %}>Activa</option>
-                                                <option value="Riesgo" {% if colmena.estadocolmena == "Riesgo" %}selected{% endif %}>Riesgo</option>
-                                                <option value="Inactiva" {% if colmena.estadocolmena == "Inactiva" %}selected{% endif %}>Inactiva</option>
-                                                <option value="Revisión" {% if colmena.estadocolmena == "Revisión" %}selected{% endif %}>Revisión</option>
+
+                                            <label class="form-label">
+
+                                                Estado
+
+                                            </label>
+
+
+                                            <select
+                                                name="estado_colmena"
+                                                class="form-select"
+                                                required
+                                            >
+
+                                                <option
+                                                    value="Activa"
+                                                    {% if colmena.estadocolmena == "Activa" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Activa
+                                                </option>
+
+
+                                                <option
+                                                    value="Riesgo"
+                                                    {% if colmena.estadocolmena == "Riesgo" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Riesgo
+                                                </option>
+
+
+                                                <option
+                                                    value="Inactiva"
+                                                    {% if colmena.estadocolmena == "Inactiva" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Inactiva
+                                                </option>
+
+
+                                                <option
+                                                    value="Revisión"
+                                                    {% if colmena.estadocolmena == "Revisión" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Revisión
+                                                </option>
+
                                             </select>
+
                                         </div>
+
+
+                                        <!-- =========================================
+                                            FECHA
+                                        ========================================== -->
 
                                         <div class="col-md-6">
-                                            <label class="form-label">Fecha de Registro</label>
-                                            <input type="date"
-                                                   name="fecha_registro"
-                                                   class="form-control"
-                                                   value="{{ colmena.fecharegistro|date:'Y-m-d' }}"
-                                                   max="{% now 'Y-m-d' %}"
-                                                   required>
+
+                                            <label class="form-label">
+
+                                                Fecha de Registro
+
+                                            </label>
+
+
+                                            <input
+                                                type="date"
+                                                name="fecha_registro"
+                                                class="form-control"
+                                                value="{{ colmena.fecharegistro|date:'Y-m-d' }}"
+                                                max="{% now 'Y-m-d' %}"
+                                                required
+                                            >
+
                                         </div>
 
-                                        <div class="col-12">
-                                            <label class="form-label">Descripción</label>
-                                            <textarea name="descripcion"
-                                                      class="form-control"
-                                                      rows="4">{{ colmena.descripcion }}</textarea>
-                                        </div>
+
+                                        <!-- =========================================
+                                            DESCRIPCIÓN
+                                        ========================================== -->
 
                                         <div class="col-12">
-                                            <label class="form-label">Imagen de la Colmena</label>
+
+                                            <label class="form-label">
+
+                                                Descripción
+
+                                            </label>
+
+
+                                            <textarea
+                                                name="descripcion"
+                                                class="form-control"
+                                                rows="4"
+                                            >{{ colmena.descripcion }}</textarea>
+
+                                        </div>
+
+
+                                        <!-- =========================================
+                                            IMAGEN
+                                        ========================================== -->
+
+                                        <div class="col-12">
+
+                                            <label class="form-label">
+
+                                                Imagen de la Colmena
+
+                                            </label>
+
 
                                             {% if colmena.imagen %}
+
                                                 <div class="mb-2">
-                                                    <img src="{{ colmena.imagen.url }}"
-                                                         alt="Imagen actual"
-                                                         style="width:130px;height:95px;object-fit:cover;border-radius:14px;">
+
+                                                    <img
+                                                        src="{{ colmena.imagen.url }}"
+                                                        alt="Imagen actual"
+                                                        style="
+                                                            width:130px;
+                                                            height:95px;
+                                                            object-fit:cover;
+                                                            border-radius:14px;
+                                                        "
+                                                    >
+
                                                 </div>
+
                                             {% endif %}
 
-                                            <input type="file"
-                                                   name="imagen"
-                                                   class="form-control"
-                                                   accept="image/*">
+
+                                            <input
+                                                type="file"
+                                                name="imagen"
+                                                class="form-control"
+                                                accept="image/*"
+                                            >
+
                                         </div>
 
+
                                     </div>
+
                                 </div>
+
+
+                                <!-- =================================================
+                                    PIE
+                                ================================================== -->
 
                                 <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-cancelar"
+                                        data-bs-dismiss="modal"
+                                    >
+
                                         Cancelar
+
                                     </button>
 
-                                    <button type="submit" class="btn btn-success">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-success"
+                                    >
+
                                         <i class="bi bi-save me-2"></i>
+
                                         Guardar Cambios
+
                                     </button>
+
                                 </div>
+
 
                             </form>
 
                         </div>
+
                     </div>
+
                 </div>
 
                 <!-- MODAL ELIMINAR -->
@@ -690,111 +957,373 @@
 </nav>
 {% endif %}
 
-<!-- MODAL AGREGAR COLMENA -->
-<div class="modal fade" id="modalAgregarColmena" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
+<!-- =========================================================
+     MODAL AGREGAR COLMENA
+========================================================== -->
 
-            <form method="POST" action="{% url 'crear_colmena' %}" enctype="multipart/form-data" class="form-validar-colmena">
+<div
+    class="modal fade"
+    id="modalAgregarColmena"
+    tabindex="-1"
+    aria-hidden="true"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-xl
+            modal-dialog-centered
+        "
+    >
+
+        <div
+            class="
+                modal-content
+                border-0
+                shadow
+                rounded-4
+            "
+        >
+
+
+            <form
+                method="POST"
+                action="{% url 'crear_colmena' %}"
+                enctype="multipart/form-data"
+                class="form-validar-colmena"
+            >
+
                 {% csrf_token %}
 
-                <div class="modal-header border-0" style="background:#E8F7E9;">
+
+                <!-- =================================================
+                     ENCABEZADO
+                ================================================== -->
+
+                <div
+                    class="modal-header border-0"
+                    style="background:#E8F7E9;"
+                >
+
                     <div>
-                        <h4 class="fw-bold mb-1" style="color:#234F39;">
+
+                        <h4
+                            class="fw-bold mb-1"
+                            style="color:#234F39;"
+                        >
+
                             <i class="bi bi-plus-circle me-2"></i>
+
                             Agregar Colmena
+
                         </h4>
+
+
                         <p class="text-muted mb-0">
-                            Registra una nueva colmena en el sistema.
+
+                            Registra una nueva colmena
+                            en el sistema.
+
                         </p>
+
                     </div>
 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
                 </div>
+
+
+                <!-- =================================================
+                     CUERPO
+                ================================================== -->
 
                 <div class="modal-body">
+
                     <div class="row g-3">
 
-                        <div class="col-md-6">
-                            <div class="modal-info-box verde h-100">
-                                <small>
-                                    <i class="bi bi-upc-scan me-1"></i>
-                                    Código de Colmena
-                                </small>
-                                <h5>Se generará automáticamente</h5>
-                            </div>
-                        </div>
+
+                        <!-- =========================================
+                             CÓDIGO AUTOMÁTICO
+                        ========================================== -->
 
                         <div class="col-md-6">
-                            <label class="form-label">Apiario</label>
-                            <select name="id_apiario" class="form-select" required>
-                                <option value="">Seleccione un apiario</option>
+
+                            <div
+                                class="
+                                    modal-info-box
+                                    verde
+                                    h-100
+                                "
+                            >
+
+                                <small>
+
+                                    <i class="bi bi-upc-scan me-1"></i>
+
+                                    Código de Colmena
+
+                                </small>
+
+
+                                <h5>
+
+                                    Se generará automáticamente
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================================
+                             APIARIO
+                        ========================================== -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+
+                                Apiario
+
+                            </label>
+
+
+                            <select
+                                name="id_apiario"
+                                class="
+                                    form-select
+                                    select-apiario-capacidad
+                                "
+                                required
+                            >
+
+                                <option value="">
+
+                                    Seleccione un apiario
+
+                                </option>
+
 
                                 {% for apiario in apiarios %}
-                                    <option value="{{ apiario.id_apiario }}">
+
+                                    <option
+                                        value="{{ apiario.id_apiario }}"
+
+                                        data-actual="{{ apiario.total_colmenas_reales }}"
+                                        data-maximo="{{ apiario.capacidad_maxima }}"
+
+                                        {% if apiario.esta_completo %}
+                                            disabled
+                                        {% endif %}
+                                    >
+
                                         {{ apiario.nombreapiario }}
+                                        —
+                                        {{ apiario.total_colmenas_reales }}/{{ apiario.capacidad_maxima }}
+
+                                        {% if apiario.esta_completo %}
+                                            (Completo)
+                                        {% endif %}
+
                                     </option>
+
                                 {% endfor %}
+
                             </select>
+
+
+                            <!-- =====================================
+                                 INFORMACIÓN DE CAPACIDAD
+                            ====================================== -->
+
+                            <small
+                                class="ayuda-capacidad-apiario"
+                            ></small>
+
                         </div>
+
+
+                        <!-- =========================================
+                             ESTADO
+                        ========================================== -->
 
                         <div class="col-md-6">
-                            <label class="form-label">Estado</label>
-                            <select name="estado_colmena" class="form-select" required>
-                                <option value="Activa">Activa</option>
-                                <option value="Riesgo">Riesgo</option>
-                                <option value="Inactiva">Inactiva</option>
-                                <option value="Revisión">Revisión</option>
+
+                            <label class="form-label">
+
+                                Estado
+
+                            </label>
+
+
+                            <select
+                                name="estado_colmena"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="Activa">
+
+                                    Activa
+
+                                </option>
+
+
+                                <option value="Riesgo">
+
+                                    Riesgo
+
+                                </option>
+
+
+                                <option value="Inactiva">
+
+                                    Inactiva
+
+                                </option>
+
+
+                                <option value="Revisión">
+
+                                    Revisión
+
+                                </option>
+
                             </select>
+
                         </div>
+
+
+                        <!-- =========================================
+                             FECHA
+                        ========================================== -->
 
                         <div class="col-md-6">
-                            <label class="form-label">Fecha de Registro</label>
-                            <input type="date"
-                                   name="fecha_registro"
-                                   class="form-control"
-                                   max="{% now 'Y-m-d' %}"
-                                   required>
+
+                            <label class="form-label">
+
+                                Fecha de Registro
+
+                            </label>
+
+
+                            <input
+                                type="date"
+                                name="fecha_registro"
+                                class="form-control"
+                                max="{% now 'Y-m-d' %}"
+                                required
+                            >
+
                         </div>
 
-                        <div class="col-12">
-                            <label class="form-label">Descripción</label>
-                            <textarea name="descripcion"
-                                      class="form-control"
-                                      rows="4"
-                                      placeholder="Describe la colmena..."></textarea>
-                        </div>
+
+                        <!-- =========================================
+                             DESCRIPCIÓN
+                        ========================================== -->
 
                         <div class="col-12">
-                            <label class="form-label">Imagen de la Colmena</label>
-                            <input type="file"
-                                   name="imagen"
-                                   class="form-control"
-                                   accept="image/*">
+
+                            <label class="form-label">
+
+                                Descripción
+
+                            </label>
+
+
+                            <textarea
+                                name="descripcion"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Describe la colmena..."
+                            ></textarea>
+
                         </div>
+
+
+                        <!-- =========================================
+                             IMAGEN
+                        ========================================== -->
+
+                        <div class="col-12">
+
+                            <label class="form-label">
+
+                                Imagen de la Colmena
+
+                            </label>
+
+
+                            <input
+                                type="file"
+                                name="imagen"
+                                class="form-control"
+                                accept="image/*"
+                            >
+
+                        </div>
+
 
                     </div>
+
                 </div>
+
+
+                <!-- =================================================
+                     PIE
+                ================================================== -->
 
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+
+
+                    <button
+                        type="button"
+                        class="btn btn-cancelar"
+                        data-bs-dismiss="modal"
+                    >
+
                         Cancelar
+
                     </button>
 
-                    <button type="submit" class="btn btn-success">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+
                         <i class="bi bi-save me-2"></i>
+
                         Guardar Colmena
+
                     </button>
+
+
                 </div>
+
 
             </form>
 
+
         </div>
+
     </div>
+
 </div>
 
 {% endblock %}
 
+
 {% block extra_js %}
-<script src="{% static 'panel_admin/js/colmenas_vista.js' %}"></script>
+
+<script
+    src="{% static 'panel_admin/js/colmenas_vista.js' %}?v=2"
+></script>
+
 {% endblock %}
