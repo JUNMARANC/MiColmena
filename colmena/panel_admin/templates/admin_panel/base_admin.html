@@ -292,7 +292,9 @@
                             title="Notificaciones"
                         >
 
-                            <i class="bi bi-bell-fill"></i>
+                            <span class="btn-notificaciones-hex">
+                                <i class="bi bi-bell-fill"></i>
+                            </span>
 
 
                             {% if notificaciones_no_leidas > 0 %}
@@ -544,28 +546,20 @@
 
                             <div class="notificaciones-dropdown-footer">
 
-                                <span>
-                                    Últimas notificaciones
-                                </span>
+                                <a
+                                    href="{% url 'centro_notificaciones' %}"
+                                    class="notificaciones-ver-todas"
+                                >
+
+                                    Ver todas las notificaciones
+
+                                    <i class="bi bi-arrow-right"></i>
+
+                                </a>
 
                             </div>
 
                         </div>
-
-                    </div>
-
-                    <div class="notificaciones-dropdown-footer">
-
-                        <a
-                            href="{% url 'centro_notificaciones' %}"
-                            class="notificaciones-ver-todas"
-                        >
-
-                            Ver todas las notificaciones
-
-                            <i class="bi bi-arrow-right"></i>
-
-                        </a>
 
                     </div>
 
