@@ -1,0 +1,1914 @@
+/* ==========================================================
+   DETALLE APIARIO - PANEL APICULTOR
+========================================================== */
+
+
+/* ==========================================================
+   CONTENEDOR GENERAL
+========================================================== */
+
+.detalle-apiario-page {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 22px;
+}
+
+
+/* ==========================================================
+   VOLVER
+========================================================== */
+
+.detalle-volver {
+
+    display: flex;
+
+    align-items: center;
+}
+
+
+.btn-volver-apiarios {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        8px
+        11px;
+
+    border-radius: 10px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-volver-apiarios:hover {
+
+    background:
+        var(--apicultor-activo);
+
+    transform:
+        translateX(-2px);
+}
+
+
+/* ==========================================================
+   TÍTULO
+========================================================== */
+
+.detalle-titulo {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+.detalle-etiqueta {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding:
+        5px
+        9px;
+
+    margin-bottom: 8px;
+
+    border-radius: 20px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+
+.detalle-titulo h1 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+
+.detalle-titulo p {
+
+    margin-top: 7px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 11px;
+
+    font-weight: 500;
+
+    line-height: 1.6;
+}
+
+
+/* ==========================================================
+   GRID SUPERIOR
+========================================================== */
+
+.detalle-resumen-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(320px, 0.75fr);
+
+    gap: 22px;
+
+    align-items: stretch;
+}
+
+
+/* ==========================================================
+   TARJETA GENERAL
+========================================================== */
+
+.detalle-card {
+
+    width: 100%;
+
+    padding: 22px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    box-shadow:
+        0 5px 17px
+        rgba(33, 79, 59, 0.07);
+}
+
+
+/* ==========================================================
+   HEADER DE TARJETA
+========================================================== */
+
+.detalle-card-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.detalle-card-header h2 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+
+    font-weight: 800;
+}
+
+
+.detalle-card-header p {
+
+    margin-top: 4px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 10px;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   ICONO HEADER
+========================================================== */
+
+.detalle-card-icono {
+
+    width: 42px;
+
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 18px;
+}
+
+
+/* ==========================================================
+   INFORMACIÓN GENERAL DEL APIARIO
+========================================================== */
+
+.apiario-informacion-principal {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+/* ==========================================================
+   FILA DE INFORMACIÓN
+========================================================== */
+
+.apiario-info-fila {
+
+    min-height: 84px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        13px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 13px;
+
+    background:
+        rgba(255, 237, 180, 0.22);
+}
+
+
+/* ==========================================================
+   ICONO DATO
+========================================================== */
+
+.apiario-info-icono {
+
+    width: 42px;
+
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 16px;
+}
+
+
+/* ==========================================================
+   TEXTO DATO
+========================================================== */
+
+.apiario-info-fila > div:last-child {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.apiario-info-fila span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.apiario-info-fila strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+}
+
+
+/* ==========================================================
+   ESTADO GENERAL APIARIO
+========================================================== */
+
+.estado-general-apiario {
+
+    display: inline-flex;
+
+    width: fit-content;
+
+    align-items: center;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    font-size: 9px !important;
+
+    font-weight: 800 !important;
+}
+
+
+.estado-general-apiario.bueno {
+
+    background: #E5F4E3;
+
+    color: #4F7B49 !important;
+}
+
+
+.estado-general-apiario.precaucion {
+
+    background: #FFF0BE;
+
+    color: #886814 !important;
+}
+
+
+.estado-general-apiario.deficiente {
+
+    background: #FCE2DE;
+
+    color: #A84D44 !important;
+}
+
+
+/* ==========================================================
+   DESCRIPCIÓN APIARIO
+========================================================== */
+
+.apiario-descripcion-detalle {
+
+    margin-top: 16px;
+
+    padding-top: 15px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+}
+
+
+.apiario-descripcion-detalle span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+.apiario-descripcion-detalle p {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 10px;
+
+    line-height: 1.65;
+}
+
+
+/* ==========================================================
+   ESTADO DE COLMENAS
+========================================================== */
+
+.estado-colmenas-detalle-card {
+
+    min-height: 100%;
+}
+
+
+/* ==========================================================
+   DONA
+========================================================== */
+
+.detalle-dona-contenedor {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 220px;
+
+    max-width: 280px;
+
+    margin:
+        0
+        auto;
+}
+
+
+/* ==========================================================
+   LEYENDA DONA
+========================================================== */
+
+.detalle-leyenda-estados {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        9px
+        12px;
+
+    max-width: 300px;
+
+    margin:
+        14px
+        auto
+        0;
+}
+
+
+.detalle-leyenda-estados > div {
+
+    display: grid;
+
+    grid-template-columns:
+        9px
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color:
+        #5F6D65;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.detalle-leyenda-estados strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   PUNTOS DE ESTADO
+========================================================== */
+
+.estado-punto {
+
+    width: 9px;
+
+    height: 9px;
+
+    display: inline-block;
+
+    border-radius: 50%;
+}
+
+
+.estado-punto.activa {
+
+    background: #78A965;
+}
+
+
+.estado-punto.revision {
+
+    background: #F2C94C;
+}
+
+
+.estado-punto.riesgo {
+
+    background: #F08A6A;
+}
+
+
+.estado-punto.inactiva {
+
+    background: #BFC7C2;
+}
+
+
+/* ==========================================================
+   TARJETA COLMENAS
+========================================================== */
+
+.colmenas-apiario-card {
+
+    padding-bottom: 10px;
+}
+
+
+/* ==========================================================
+   CONTADOR COLMENAS
+========================================================== */
+
+.contador-colmenas {
+
+    min-width: 56px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        11px;
+
+    border-radius: 20px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   TABLA RESPONSIVE
+========================================================== */
+
+.detalle-tabla-responsive {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    scrollbar-width: thin;
+}
+
+
+/* ==========================================================
+   TABLA
+========================================================== */
+
+.tabla-colmenas-apiario {
+
+    width: 100%;
+
+    min-width: 850px;
+
+    border-collapse: collapse;
+}
+
+
+/* ==========================================================
+   CABECERA
+========================================================== */
+
+.tabla-colmenas-apiario thead th {
+
+    padding:
+        12px
+        13px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.12);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   CUERPO
+========================================================== */
+
+.tabla-colmenas-apiario tbody td {
+
+    padding:
+        13px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+
+    color:
+        #536158;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    vertical-align: middle;
+}
+
+
+.tabla-colmenas-apiario tbody tr {
+
+    transition:
+        background 0.2s ease;
+}
+
+
+.tabla-colmenas-apiario tbody tr:hover {
+
+    background:
+        rgba(255, 237, 180, 0.22);
+}
+
+
+.tabla-colmenas-apiario tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* ==========================================================
+   NOMBRE COLMENA
+========================================================== */
+
+.tabla-colmena-nombre {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+
+.tabla-colmena-icono {
+
+    width: 34px;
+
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 13px;
+}
+
+
+.tabla-colmena-nombre > div:last-child {
+
+    min-width: 0;
+}
+
+
+.tabla-colmena-nombre strong {
+
+    display: block;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+.tabla-colmena-nombre span {
+
+    display: block;
+
+    max-width: 210px;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   BADGE ESTADO COLMENA
+========================================================== */
+
+.badge-estado-colmena {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        6px
+        9px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.badge-estado-colmena > span {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+}
+
+
+/* ACTIVA */
+
+.badge-estado-colmena.activa {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+.badge-estado-colmena.activa > span {
+
+    background: #78A965;
+}
+
+
+/* RIESGO */
+
+.badge-estado-colmena.riesgo {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+.badge-estado-colmena.riesgo > span {
+
+    background: #F08A6A;
+}
+
+
+/* REVISIÓN */
+
+.badge-estado-colmena.revision {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+.badge-estado-colmena.revision > span {
+
+    background: #F2C94C;
+}
+
+
+/* INACTIVA */
+
+.badge-estado-colmena.inactiva {
+
+    background: #EDF1EF;
+
+    color: #647069;
+}
+
+
+.badge-estado-colmena.inactiva > span {
+
+    background: #AEB9B2;
+}
+
+
+/* ==========================================================
+   FECHA
+========================================================== */
+
+.tabla-fecha {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.tabla-fecha i {
+
+    color: #B38C15;
+}
+
+
+/* ==========================================================
+   SIN DATO
+========================================================== */
+
+.dato-no-disponible {
+
+    color: #9AA39E;
+
+    font-size: 8px;
+
+    font-style: italic;
+}
+
+
+/* ==========================================================
+   INCIDENCIAS
+========================================================== */
+
+.contador-incidencias {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        5px
+        8px;
+
+    border-radius: 20px;
+
+    background: #E9F4E7;
+
+    color: #51754D;
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.contador-incidencias.tiene {
+
+    background: #FCE6E2;
+
+    color: #A64E46;
+}
+
+
+/* ==========================================================
+   ACCIONES TABLA
+========================================================== */
+
+.columna-acciones {
+
+    text-align: right !important;
+}
+
+
+.btn-ver-colmena {
+
+    min-height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        10px;
+
+    border:
+        1px solid
+        #E1D7A7;
+
+    border-radius: 9px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-ver-colmena:hover {
+
+    background:
+        var(--apicultor-sidebar);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* ==========================================================
+   TABLA VACÍA
+========================================================== */
+
+.tabla-colmenas-vacia {
+
+    height: 200px;
+
+    text-align: center !important;
+}
+
+
+.tabla-colmenas-vacia > div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.tabla-colmenas-vacia i {
+
+    margin-bottom: 10px;
+
+    color:
+        #D0AC38;
+
+    font-size: 28px;
+}
+
+
+.tabla-colmenas-vacia strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+}
+
+
+.tabla-colmenas-vacia span {
+
+    margin-top: 5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+}
+
+
+/* ==========================================================
+   ACCIONES DEL APIARIO
+========================================================== */
+
+.detalle-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+}
+
+
+.btn-accion-apiario {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        9px
+        16px;
+
+    border-radius: 11px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.btn-accion-apiario:hover {
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* MANTENIMIENTO */
+
+.btn-accion-apiario.mantenimiento {
+
+    background: #E7F2E3;
+
+    color: #4F744B;
+}
+
+
+/* INCIDENCIA */
+
+.btn-accion-apiario.incidencia {
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.detalle-apiario-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        4px
+        0
+        5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+}
+
+
+.detalle-apiario-footer i {
+
+    color:
+        var(--apicultor-sidebar);
+}
+
+
+/* ==========================================================
+   MODAL - OVERLAY
+========================================================== */
+
+.modal-colmena-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 22px;
+
+    background:
+        rgba(17, 38, 27, 0.58);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+/* ACTIVO */
+
+.modal-colmena-overlay.activo {
+
+    display: flex;
+}
+
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.modal-colmena {
+
+    width: 100%;
+
+    max-width: 760px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 20px;
+
+    background:
+        #FFFFF7;
+
+    box-shadow:
+        0 25px 70px
+        rgba(17, 38, 27, 0.25);
+
+    animation:
+        aparecerModalColmena
+        0.22s ease;
+}
+
+
+@keyframes aparecerModalColmena {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(15px)
+            scale(0.98);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* ==========================================================
+   HEADER MODAL
+========================================================== */
+
+.modal-colmena-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+}
+
+
+.modal-colmena-etiqueta {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.modal-colmena-header h2 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 22px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   CERRAR MODAL
+========================================================== */
+
+.modal-colmena-cerrar {
+
+    width: 36px;
+
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color:
+        #748078;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease;
+}
+
+
+.modal-colmena-cerrar:hover {
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+/* ==========================================================
+   CONTENIDO MODAL
+========================================================== */
+
+.modal-colmena-contenido {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.3fr)
+        minmax(250px, 0.7fr);
+
+    gap: 20px;
+
+    padding:
+        22px;
+}
+
+
+/* ==========================================================
+   SECCIONES MODAL
+========================================================== */
+
+.modal-colmena-seccion {
+
+    padding: 18px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.65);
+}
+
+
+.modal-colmena-seccion h3,
+.modal-colmena-descripcion h3 {
+
+    margin-bottom: 14px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   DATOS MODAL
+========================================================== */
+
+.modal-colmena-datos {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+.modal-colmena-datos > div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    padding:
+        11px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 237, 180, 0.24);
+}
+
+
+.modal-colmena-datos span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.modal-colmena-datos strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   ESTADO GRANDE
+========================================================== */
+
+.estado-colmena-grande {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding:
+        14px;
+
+    border-radius: 12px;
+}
+
+
+.estado-colmena-grande-icono {
+
+    width: 46px;
+
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 20px;
+}
+
+
+.estado-colmena-grande > div:last-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.estado-colmena-grande span {
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.estado-colmena-grande strong {
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+/* ACTIVA */
+
+.estado-colmena-grande.activa {
+
+    background: #E7F4E5;
+
+    color: #4F774A;
+}
+
+
+.estado-colmena-grande.activa
+.estado-colmena-grande-icono {
+
+    background: #D4EBCD;
+}
+
+
+/* RIESGO */
+
+.estado-colmena-grande.riesgo {
+
+    background: #FDE7E3;
+
+    color: #A64F47;
+}
+
+
+.estado-colmena-grande.riesgo
+.estado-colmena-grande-icono {
+
+    background: #F8D3CD;
+}
+
+
+/* REVISIÓN */
+
+.estado-colmena-grande.revision {
+
+    background: #FFF2C8;
+
+    color: #8C6B19;
+}
+
+
+.estado-colmena-grande.revision
+.estado-colmena-grande-icono {
+
+    background: #FFE8A1;
+}
+
+
+/* INACTIVA */
+
+.estado-colmena-grande.inactiva {
+
+    background: #EDF1EF;
+
+    color: #657169;
+}
+
+
+.estado-colmena-grande.inactiva
+.estado-colmena-grande-icono {
+
+    background: #DDE4E0;
+}
+
+
+/* ==========================================================
+   DESCRIPCIÓN MODAL
+========================================================== */
+
+.modal-colmena-descripcion {
+
+    margin:
+        0
+        22px
+        22px;
+
+    padding: 17px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 13px;
+
+    background:
+        rgba(255, 255, 255, 0.65);
+}
+
+
+.modal-colmena-descripcion p {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+
+/* ==========================================================
+   FOOTER MODAL
+========================================================== */
+
+.modal-colmena-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    padding:
+        15px
+        22px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+}
+
+
+.btn-modal-cerrar {
+
+    min-height: 38px;
+
+    padding:
+        8px
+        16px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   RESPONSIVE - 1200
+========================================================== */
+
+@media (
+    max-width: 1200px
+) {
+
+    .detalle-resumen-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .detalle-dona-contenedor {
+
+        max-width: 300px;
+    }
+
+
+    .detalle-leyenda-estados {
+
+        max-width: 330px;
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE - 820
+========================================================== */
+
+@media (
+    max-width: 820px
+) {
+
+    .detalle-apiario-page {
+
+        gap: 18px;
+    }
+
+
+    .detalle-titulo h1 {
+
+        font-size: 24px;
+    }
+
+
+    .apiario-informacion-principal {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .detalle-card {
+
+        padding: 17px;
+    }
+
+
+    .detalle-card-header h2 {
+
+        font-size: 15px;
+    }
+
+
+    .detalle-acciones {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .btn-accion-apiario {
+
+        width: 100%;
+    }
+
+
+    .modal-colmena-contenido {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE - 560
+========================================================== */
+
+@media (
+    max-width: 560px
+) {
+
+    .detalle-titulo h1 {
+
+        font-size: 21px;
+    }
+
+
+    .detalle-titulo p {
+
+        font-size: 10px;
+    }
+
+
+    .detalle-dona-contenedor {
+
+        height: 200px;
+    }
+
+
+    .detalle-leyenda-estados {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .detalle-card {
+
+        padding: 14px;
+
+        border-radius: 15px;
+    }
+
+
+    .modal-colmena-overlay {
+
+        padding: 10px;
+    }
+
+
+    .modal-colmena {
+
+        border-radius: 16px;
+    }
+
+
+    .modal-colmena-header {
+
+        padding:
+            16px;
+    }
+
+
+    .modal-colmena-contenido {
+
+        padding:
+            16px;
+    }
+
+
+    .modal-colmena-datos {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .modal-colmena-descripcion {
+
+        margin:
+            0
+            16px
+            16px;
+    }
+
+
+    .modal-colmena-footer {
+
+        padding:
+            13px
+            16px;
+    }
+
+}

@@ -1,0 +1,1023 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Mis Colmenas | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Mis Colmenas
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Consulta las colmenas pertenecientes a tus apiarios asignados
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/colmenas.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="colmenas-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="colmenas-encabezado">
+
+        <div>
+
+            <span class="colmenas-etiqueta">
+                Gestión de colmenas
+            </span>
+
+            <h1>
+                Mis Colmenas
+            </h1>
+
+            <p>
+                Consulta el estado y la actividad
+                de las colmenas asociadas a tus apiarios.
+            </p>
+
+        </div>
+
+
+        <div class="colmenas-total">
+
+            <div class="colmenas-total-icono">
+
+                <i class="bi bi-hexagon-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ total_colmenas|default:0 }}
+                </strong>
+
+                <span>
+                    Colmenas asignadas
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESUMEN DE ESTADOS
+    ====================================================== -->
+
+    <section class="colmenas-resumen">
+
+
+        <!-- ACTIVA -->
+
+        <article class="colmena-resumen-card activa">
+
+            <div class="colmena-resumen-icono">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ total_activas|default:0 }}
+                </strong>
+
+                <span>
+                    Activas
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- REVISIÓN -->
+
+        <article class="colmena-resumen-card revision">
+
+            <div class="colmena-resumen-icono">
+
+                <i class="bi bi-search"></i>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ total_revision|default:0 }}
+                </strong>
+
+                <span>
+                    Revisión
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- RIESGO -->
+
+        <article class="colmena-resumen-card riesgo">
+
+            <div class="colmena-resumen-icono">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ total_riesgo|default:0 }}
+                </strong>
+
+                <span>
+                    Riesgo
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- INACTIVAS -->
+
+        <article class="colmena-resumen-card inactiva">
+
+            <div class="colmena-resumen-icono">
+
+                <i class="bi bi-dash-circle-fill"></i>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ total_inactivas|default:0 }}
+                </strong>
+
+                <span>
+                    Inactivas
+                </span>
+
+            </div>
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <section class="colmenas-filtros">
+
+
+        <form
+            method="GET"
+            class="colmenas-form-filtros"
+        >
+
+
+            <!-- BUSCADOR -->
+
+            <div class="colmenas-buscador">
+
+                <i class="bi bi-search"></i>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ busqueda }}"
+                    placeholder="Buscar código, descripción o apiario..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+
+            <!-- APIARIO -->
+
+            <select
+                name="apiario"
+                class="colmenas-select"
+            >
+
+                <option value="">
+                    Todos los apiarios
+                </option>
+
+
+                {% for apiario in apiarios %}
+
+                    <option
+                        value="{{ apiario.id_apiario }}"
+
+                        {% if apiario_seleccionado == apiario.id_apiario|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ apiario.nombreapiario }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+
+
+            <!-- ESTADO -->
+
+            <select
+                name="estado"
+                class="colmenas-select"
+            >
+
+                <option value="">
+                    Todos los estados
+                </option>
+
+
+                <option
+                    value="Activa"
+
+                    {% if estado_seleccionado == "Activa" %}
+                        selected
+                    {% endif %}
+                >
+                    Activa
+                </option>
+
+
+                <option
+                    value="Revisión"
+
+                    {% if estado_seleccionado == "Revisión" %}
+                        selected
+                    {% endif %}
+                >
+                    Revisión
+                </option>
+
+
+                <option
+                    value="Riesgo"
+
+                    {% if estado_seleccionado == "Riesgo" %}
+                        selected
+                    {% endif %}
+                >
+                    Riesgo
+                </option>
+
+
+                <option
+                    value="Inactiva"
+
+                    {% if estado_seleccionado == "Inactiva" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactiva
+                </option>
+
+            </select>
+
+
+
+            <!-- FILTRAR -->
+
+            <button
+                type="submit"
+                class="btn-filtrar-colmenas"
+            >
+
+                <i class="bi bi-funnel"></i>
+
+                <span>
+                    Filtrar
+                </span>
+
+            </button>
+
+
+
+            <!-- LIMPIAR -->
+
+            {% if busqueda or apiario_seleccionado or estado_seleccionado %}
+
+                <a
+                    href="{% url 'colmenas_apicultor' %}"
+                    class="btn-limpiar-colmenas"
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                    <span>
+                        Limpiar
+                    </span>
+
+                </a>
+
+            {% endif %}
+
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESULTADOS
+    ====================================================== -->
+
+    <section class="colmenas-resultados-header">
+
+        <p>
+
+            Mostrando
+
+            <strong>
+                {{ total_resultados }}
+            </strong>
+
+            resultado{{ total_resultados|pluralize }}
+
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         GRID DE COLMENAS
+    ====================================================== -->
+
+    {% if colmenas %}
+
+
+        <section class="colmenas-grid">
+
+
+            {% for colmena in colmenas %}
+
+
+                <article class="colmena-card">
+
+
+                    <!-- =====================================
+                         PARTE SUPERIOR
+                    ====================================== -->
+
+                    <div class="colmena-card-superior">
+
+
+                        <div class="colmena-card-icono">
+
+                            <i class="bi bi-hexagon-fill"></i>
+
+                        </div>
+
+
+
+                        <span
+                            class="
+                                colmena-estado
+
+                                {% if colmena.estadocolmena == 'Activa' %}
+                                    activa
+                                {% elif colmena.estadocolmena == 'Revisión' %}
+                                    revision
+                                {% elif colmena.estadocolmena == 'Riesgo' %}
+                                    riesgo
+                                {% else %}
+                                    inactiva
+                                {% endif %}
+                            "
+                        >
+
+                            {{ colmena.estadocolmena }}
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         CÓDIGO
+                    ====================================== -->
+
+                    <div class="colmena-card-titulo">
+
+                        <span>
+                            Colmena
+                        </span>
+
+                        <h2>
+                            {{ colmena.codigocolmena }}
+                        </h2>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         APIARIO
+                    ====================================== -->
+
+                    <div class="colmena-card-dato">
+
+                        <i class="bi bi-flower1"></i>
+
+                        <div>
+
+                            <span>
+                                Apiario
+                            </span>
+
+                            <strong>
+                                {{ colmena.id_apiario.nombreapiario }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         MANTENIMIENTO
+                    ====================================== -->
+
+                    <div class="colmena-card-dato">
+
+                        <i class="bi bi-tools"></i>
+
+                        <div>
+
+                            <span>
+                                Último mantenimiento
+                            </span>
+
+                            <strong>
+
+                                {% if colmena.ultimo_mantenimiento %}
+
+                                    {{ colmena.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+
+                                {% else %}
+
+                                    Sin registro
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         INCIDENCIAS
+                    ====================================== -->
+
+                    <div class="colmena-card-dato">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                        <div>
+
+                            <span>
+                                Incidencias registradas
+                            </span>
+
+                            <strong>
+                                {{ colmena.total_incidencias }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         DESCRIPCIÓN
+                    ====================================== -->
+
+                    <div class="colmena-card-descripcion">
+
+                        {% if colmena.descripcion %}
+
+                            {{ colmena.descripcion|truncatechars:100 }}
+
+                        {% else %}
+
+                            <span>
+                                Sin descripción registrada.
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         FOOTER
+                    ====================================== -->
+
+                    <div class="colmena-card-footer">
+
+
+                        <a
+                            href="{% url 'detalle_apiario_apicultor' colmena.id_apiario.id_apiario %}"
+                            class="btn-ver-apiario-colmena"
+                        >
+
+                            <i class="bi bi-flower1"></i>
+
+                            <span>
+                                Ver apiario
+                            </span>
+
+                        </a>
+
+
+                        <button
+                            type="button"
+                            class="btn-detalle-colmena"
+                            data-colmena-modal="modalColmenaGeneral{{ colmena.id_colmena }}"
+                        >
+
+                            <i class="bi bi-eye"></i>
+
+                            <span>
+                                Ver detalle
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+
+                </article>
+
+
+            {% endfor %}
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PAGINACIÓN
+        ================================================== -->
+
+        {% if colmenas.paginator.num_pages > 1 %}
+
+
+            <nav class="colmenas-paginacion">
+
+
+                {% if colmenas.has_previous %}
+
+                    <a
+                        href="?page={{ colmenas.previous_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}"
+                        class="colmenas-pagina"
+                    >
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </a>
+
+                {% endif %}
+
+
+
+                {% for numero in colmenas.paginator.page_range %}
+
+
+                    {% if numero == colmenas.number %}
+
+                        <span class="colmenas-pagina active">
+                            {{ numero }}
+                        </span>
+
+                    {% else %}
+
+                        <a
+                            href="?page={{ numero }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}"
+                            class="colmenas-pagina"
+                        >
+
+                            {{ numero }}
+
+                        </a>
+
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+
+                {% if colmenas.has_next %}
+
+                    <a
+                        href="?page={{ colmenas.next_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}"
+                        class="colmenas-pagina"
+                    >
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                {% endif %}
+
+
+            </nav>
+
+
+        {% endif %}
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             SIN RESULTADOS
+        ================================================== -->
+
+        <section class="colmenas-vacio">
+
+
+            <div class="colmenas-vacio-icono">
+
+                <i class="bi bi-hexagon"></i>
+
+            </div>
+
+
+            <h2>
+
+                {% if busqueda or apiario_seleccionado or estado_seleccionado %}
+
+                    No encontramos colmenas
+
+                {% else %}
+
+                    No tienes colmenas asignadas
+
+                {% endif %}
+
+            </h2>
+
+
+            <p>
+
+                {% if busqueda or apiario_seleccionado or estado_seleccionado %}
+
+                    Intenta cambiar los filtros
+                    o realizar otra búsqueda.
+
+                {% else %}
+
+                    Las colmenas aparecerán aquí cuando
+                    existan dentro de tus apiarios asignados.
+
+                {% endif %}
+
+            </p>
+
+
+            {% if busqueda or apiario_seleccionado or estado_seleccionado %}
+
+                <a
+                    href="{% url 'colmenas_apicultor' %}"
+                    class="btn-restablecer-colmenas"
+                >
+
+                    Ver todas mis colmenas
+
+                </a>
+
+            {% endif %}
+
+
+        </section>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =========================================================
+     MODALES
+
+     FUERA DEL GRID PARA MANTENER EL HTML ORDENADO
+========================================================== -->
+
+{% for colmena in colmenas %}
+
+
+    <div
+        class="colmena-modal-overlay"
+        id="modalColmenaGeneral{{ colmena.id_colmena }}"
+    >
+
+
+        <div class="colmena-modal">
+
+
+            <!-- HEADER -->
+
+            <div class="colmena-modal-header">
+
+
+                <div>
+
+                    <span>
+                        {{ colmena.id_apiario.nombreapiario }}
+                    </span>
+
+                    <h2>
+                        {{ colmena.codigocolmena }}
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="colmena-modal-x"
+                    data-cerrar-colmena-modal
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- BODY -->
+
+            <div class="colmena-modal-body">
+
+
+                <div class="colmena-modal-dato">
+
+                    <span>
+                        Estado
+                    </span>
+
+                    <strong>
+                        {{ colmena.estadocolmena }}
+                    </strong>
+
+                </div>
+
+
+                <div class="colmena-modal-dato">
+
+                    <span>
+                        Apiario
+                    </span>
+
+                    <strong>
+                        {{ colmena.id_apiario.nombreapiario }}
+                    </strong>
+
+                </div>
+
+
+                <div class="colmena-modal-dato">
+
+                    <span>
+                        Fecha de registro
+                    </span>
+
+                    <strong>
+
+                        {% if colmena.fecharegistro %}
+
+                            {{ colmena.fecharegistro|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin registro
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="colmena-modal-dato">
+
+                    <span>
+                        Último mantenimiento
+                    </span>
+
+                    <strong>
+
+                        {% if colmena.ultimo_mantenimiento %}
+
+                            {{ colmena.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin mantenimiento
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="colmena-modal-dato">
+
+                    <span>
+                        Incidencias
+                    </span>
+
+                    <strong>
+                        {{ colmena.total_incidencias }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            {% if colmena.descripcion %}
+
+                <div class="colmena-modal-descripcion">
+
+                    <h3>
+                        Descripción
+                    </h3>
+
+                    <p>
+                        {{ colmena.descripcion }}
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- FOOTER -->
+
+            <div class="colmena-modal-footer">
+
+
+                <!-- ================================================
+                    ACCIONES PRINCIPALES
+                ================================================= -->
+
+                <div class="colmena-modal-acciones-principales">
+
+
+                    <a
+                        href="{% url 'registrar_mantenimiento_apicultor' colmena.id_colmena %}"
+                        class="btn-modal-mantenimiento"
+                    >
+                        <i class="bi bi-tools"></i>
+
+                        <span>
+                            Registrar mantenimiento
+                        </span>
+                    </a>
+
+
+                    <a
+                        href="{% url 'reportar_incidencia_apicultor' colmena.id_colmena %}"
+                        class="btn-modal-incidencia"
+                    >
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                        <span>
+                            Reportar incidencia
+                        </span>
+                    </a>
+
+
+                </div>
+
+
+
+                <!-- ================================================
+                    ACCIONES SECUNDARIAS
+                ================================================= -->
+
+                <div class="colmena-modal-acciones-secundarias">
+
+
+                    <a
+                        href="{% url 'detalle_apiario_apicultor' colmena.id_apiario.id_apiario %}"
+                        class="btn-modal-ver-apiario"
+                    >
+
+                        <i class="bi bi-flower1"></i>
+
+                        <span>
+                            Ver apiario
+                        </span>
+
+                    </a>
+
+
+                    <button
+                        type="button"
+                        class="btn-modal-colmena-cerrar"
+                        data-cerrar-colmena-modal
+                    >
+
+                        Cerrar
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endfor %}
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/colmenas.js' %}?v=1"
+></script>
+
+{% endblock %}
+
+
