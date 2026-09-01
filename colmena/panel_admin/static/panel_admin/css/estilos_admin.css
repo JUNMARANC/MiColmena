@@ -720,7 +720,11 @@ TABLAS
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    transition: .25s ease;
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+
+.btn-accion i {
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 
 .btn-ver {
@@ -739,7 +743,16 @@ TABLAS
 }
 
 .btn-accion:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(33, 79, 59, .15);
+}
+
+.btn-accion:hover i {
+    transform: scale(1.15);
+}
+
+.btn-accion:active {
+    transform: translateY(0) scale(.94);
 }
 
 /*==================================================
@@ -1308,9 +1321,21 @@ BADGES
 ==================================================*/
 
 .badge-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 8px 13px;
     border-radius: 30px;
     font-size: 12px;
+}
+
+.badge-estado::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    background: currentColor;
 }
 
 .badge-bueno {
@@ -1529,6 +1554,21 @@ PAGINADOR
         border-radius: 22px;
         padding: 28px;
         box-shadow: 0 10px 30px rgba(33, 79, 59, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .incidencias-container::after {
+        content: "";
+        position: absolute;
+        top: -18px;
+        right: -18px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(155deg, var(--amarillo, #F6DE87), var(--verde-medio, #5f9781));
+        clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+        opacity: .12;
+        pointer-events: none;
     }
 
     .incidencias-header {
@@ -1537,6 +1577,8 @@ PAGINADOR
         align-items: center;
         gap: 15px;
         margin-bottom: 25px;
+        position: relative;
+        z-index: 1;
     }
 
     .incidencias-header h2 {
@@ -1545,23 +1587,38 @@ PAGINADOR
         margin-bottom: 5px;
     }
 
+    .incidencias-header h2 i {
+        color: var(--miel, #f0a000);
+    }
+
     .incidencias-header p {
         color: #6c757d;
         margin: 0;
     }
 
     .btn-agregar-incidencia {
-        background: var(--verde-oscuro, #214f3b);
+        background: linear-gradient(135deg, var(--verde-medio, #5f9781), var(--verde-oscuro, #214f3b));
         color: white;
         border: none;
         border-radius: 12px;
         padding: 11px 20px;
         font-weight: 600;
+        box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+        transition:
+            transform .3s cubic-bezier(.34, 1.56, .64, 1),
+            box-shadow .25s ease,
+            background .3s ease;
     }
 
     .btn-agregar-incidencia:hover {
-        background: #163c2c;
+        background: linear-gradient(135deg, var(--verde-oscuro, #214f3b), var(--verde-medio, #5f9781));
         color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+    }
+
+    .btn-agregar-incidencia:active {
+        transform: translateY(0) scale(.97);
     }
 
     .filtros-incidencias {
@@ -1636,10 +1693,22 @@ PAGINADOR
 
     .badge-prioridad,
     .badge-estado {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         padding: 7px 11px;
         border-radius: 20px;
         font-size: 0.80rem;
         font-weight: 600;
+    }
+
+    .badge-prioridad::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        flex-shrink: 0;
+        clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+        background: currentColor;
     }
 
     .prioridad-baja {
@@ -1660,6 +1729,18 @@ PAGINADOR
     .prioridad-critica {
         background: #ffd9dc;
         color: #a72330;
+        animation: pulsoPrioridadCritica 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulsoPrioridadCritica {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(167, 35, 48, .35); }
+        50%      { box-shadow: 0 0 0 5px rgba(167, 35, 48, 0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .prioridad-critica {
+            animation: none;
+        }
     }
 
     .estado-pendiente {
@@ -8301,4 +8382,419 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 .tarjeta-dashboard h6 {
     margin-top: 8px !important;
+}
+/* =========================================================
+   MEJORAS VISUALES — TARJETAS DE APIARIOS
+   (glow de borde, tilt 3D, zoom de imagen, badges con pulso)
+========================================================= */
+
+.tarjeta-apiario {
+    position: relative;
+    isolation: isolate;
+    transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) translateY(0) scale(1);
+    transition: transform .4s cubic-bezier(.2, .8, .2, 1), box-shadow .4s ease;
+}
+
+.tarjeta-apiario:hover {
+    transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) translateY(-8px) scale(1.02);
+    box-shadow: 0 24px 44px rgba(33, 79, 59, .2), 0 0 0 1px rgba(240, 160, 0, .18);
+}
+
+/* Borde-degradado animado que aparece solo en hover */
+.tarjeta-apiario::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo, var(--miel)), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.tarjeta-apiario:hover::before {
+    opacity: 1;
+}
+
+@keyframes girarBordeMiel {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* Zoom + oscurecido suave de la imagen al hacer hover */
+.tarjeta-apiario-imagen {
+    position: relative;
+}
+
+.tarjeta-apiario-imagen img {
+    transition: transform .55s cubic-bezier(.2, .8, .2, 1), filter .55s ease;
+}
+
+.tarjeta-apiario:hover .tarjeta-apiario-imagen img {
+    transform: scale(1.14) rotate(.4deg);
+}
+
+.tarjeta-apiario-imagen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, .32) 100%);
+    opacity: 0;
+    transition: opacity .4s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tarjeta-apiario:hover .tarjeta-apiario-imagen::after {
+    opacity: 1;
+}
+
+/* Pulso de alerta en badges de estados que requieren atención */
+.tarjeta-apiario-badge.badge-precaucion {
+    animation: pulsoAlertaMiel 1.8s ease-in-out infinite;
+}
+
+.tarjeta-apiario-badge.badge-deficiente {
+    animation: pulsoAlertaRoja 1.8s ease-in-out infinite;
+}
+
+@keyframes pulsoAlertaMiel {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(240, 160, 0, .45); }
+    50%      { box-shadow: 0 0 0 7px rgba(240, 160, 0, 0); }
+}
+
+@keyframes pulsoAlertaRoja {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, .45); }
+    50%      { box-shadow: 0 0 0 7px rgba(220, 53, 69, 0); }
+}
+
+/* Pequeño rebote en los íconos de datos al pasar el mouse por la tarjeta */
+.tarjeta-apiario:hover .tarjeta-apiario-dato i {
+    animation: rebotitoIconoTarjeta .5s ease;
+}
+
+@keyframes rebotitoIconoTarjeta {
+    0%, 100% { transform: translateY(0) scale(1); }
+    35%      { transform: translateY(-3px) scale(1.15); }
+    65%      { transform: translateY(1px) scale(1); }
+}
+
+/* Entrada escalonada "potente" específica de las tarjetas (pop + leve giro) */
+@keyframes entradaTarjetaApiario {
+    0% {
+        opacity: 0;
+        transform: translateY(26px) scale(.9) rotate(-1.5deg);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.015) rotate(.4deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+}
+
+.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-apiario,
+    .tarjeta-apiario:hover {
+        transform: none !important;
+    }
+
+    .tarjeta-apiario::before,
+    .tarjeta-apiario-imagen img,
+    .tarjeta-apiario-imagen::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-apiario-badge.badge-precaucion,
+    .tarjeta-apiario-badge.badge-deficiente,
+    .tarjeta-apiario:hover .tarjeta-apiario-dato i {
+        animation: none !important;
+    }
+
+    .anim-entrada-tarjeta {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+}
+
+/* =========================================================
+   ENCABEZADO DE APIARIOS — FONDO CON POLEN FLOTANTE
+   (mismo recurso visual del dashboard: .dashboard-fondo-panal
+   + .particulas-flotantes, reutilizado aquí sin duplicar reglas)
+========================================================= */
+
+.encabezado-apiarios-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+}
+
+/* =========================================================
+   RONDA 2 DE MEJORAS — APIARIOS
+   (modales, búsqueda, orden, tooltips, ráfaga de polen,
+    mobile press, accesibilidad de foco)
+========================================================= */
+
+/* ---------- ENTRADA "REBOTADA" PARA TODOS LOS MODALES ---------- */
+
+.modal.fade .modal-dialog {
+    transition:
+        transform .4s cubic-bezier(.34, 1.35, .64, 1),
+        opacity .3s ease !important;
+}
+
+/* ---------- MICRO-INTERACCIÓN EN LAS CAJAS DE INFO DE MODALES ---------- */
+
+.modal-info-box {
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.modal-info-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(33, 79, 59, .14);
+}
+
+.modal-info-box small i {
+    display: inline-block;
+    color: var(--verde-medio);
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.modal-info-box:hover small i {
+    transform: scale(1.2) rotate(-6deg);
+}
+
+/* Entrada escalonada reutilizada dentro de los modales al abrirse */
+
+.anim-entrada-modal {
+    animation: entradaListaItem .4s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* ---------- BARRA "PANAL LLENO" DENTRO DE LA TARJETA ---------- */
+
+.tarjeta-apiario-panal {
+    margin-top: 10px;
+}
+
+.tarjeta-apiario-panal small {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--gris-texto);
+    font-size: .75rem;
+}
+
+/* ---------- BARRA DE HERRAMIENTAS: ESTADO + BUSCADOR + ACCIONES ---------- */
+
+.apiarios-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+}
+
+.apiarios-toolbar-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    flex: 0 1 200px;
+}
+
+.apiarios-toolbar-campo .form-label {
+    margin-bottom: 0;
+}
+
+.apiarios-toolbar-busqueda {
+    flex: 1 1 240px;
+}
+
+.apiarios-toolbar-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.apiarios-toolbar-campo .form-select,
+.apiarios-toolbar .buscador-tarjetas {
+    height: 42px;
+}
+
+.apiarios-toolbar-acciones .btn {
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+
+    .apiarios-toolbar-campo,
+    .apiarios-toolbar-busqueda {
+        flex: 1 1 100%;
+    }
+
+    .apiarios-toolbar-acciones {
+        width: 100%;
+    }
+
+    .apiarios-toolbar-acciones .btn {
+        flex: 1 1 auto;
+    }
+
+}
+
+/* ---------- BUSCADOR RÁPIDO DE TARJETAS ---------- */
+
+.buscador-tarjetas-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.buscador-tarjetas-wrap i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9aa79f;
+}
+
+.buscador-tarjetas {
+    width: 100%;
+    padding: 9px 14px 9px 38px;
+    border-radius: 999px;
+    border: 1px solid #dfe7e1;
+    background: #ffffff;
+    font-size: .88rem;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.buscador-tarjetas:focus {
+    outline: none;
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 3px rgba(95, 151, 129, .18);
+}
+
+.tarjeta-apiario.tarjeta-oculta-busqueda {
+    display: none !important;
+}
+
+tr.fila-oculta-busqueda {
+    display: none !important;
+}
+
+/* ---------- BOTÓN "ORDENAR POR URGENCIA" ---------- */
+
+.btn-ordenar-urgencia.activo {
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    border-color: var(--verde-oscuro);
+}
+
+/* ---------- BOTONES DE ACCIÓN: APARECEN AL HOVER SOLO EN ESCRITORIO ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-apiario .acciones .btn-accion {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .tarjeta-apiario:hover .acciones .btn-accion,
+    .tarjeta-apiario:focus-within .acciones .btn-accion {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tarjeta-apiario .acciones .btn-accion:nth-child(1) { transition-delay: 0s; }
+    .tarjeta-apiario .acciones .btn-accion:nth-child(2) { transition-delay: .04s; }
+    .tarjeta-apiario .acciones .btn-accion:nth-child(3) { transition-delay: .08s; }
+
+}
+
+/* ---------- PRESIÓN TÁCTIL EN MÓVIL (sin hover disponible) ---------- */
+
+@media (hover: none) {
+
+    .tarjeta-apiario:active {
+        transform: scale(.97);
+        transition: transform .15s ease;
+    }
+
+}
+
+/* ---------- FOCO VISIBLE PARA NAVEGACIÓN POR TECLADO ---------- */
+
+.tarjeta-apiario:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
+}
+
+/* ---------- RÁFAGA DE POLEN AL GUARDAR (botón Guardar) ---------- */
+
+.particula-rafaga-polen {
+    position: fixed;
+    width: 7px;
+    height: 7px;
+    background: var(--miel);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    animation: rafagaPolenBurst .65s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+@keyframes rafagaPolenBurst {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) translate(0, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.35) translate(var(--dx, 40px), var(--dy, -40px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .modal.fade .modal-dialog {
+        transition: none !important;
+    }
+
+    .modal-info-box,
+    .modal-info-box small i {
+        transition: none !important;
+    }
+
+    .anim-entrada-modal {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    .particula-rafaga-polen {
+        display: none !important;
+    }
+
+    .tarjeta-apiario .acciones .btn-accion {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
 }

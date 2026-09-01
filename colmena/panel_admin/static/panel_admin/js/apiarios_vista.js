@@ -80,12 +80,19 @@ document.addEventListener("DOMContentLoaded", function () {
     function aplicarEntradaEscalonada(
         contenedor,
         selectorHijos,
-        retrasoEntreElementos
+        retrasoEntreElementos,
+        claseAnimacion
     ) {
 
         if (!contenedor) {
             return;
         }
+
+
+        const clase = (
+            claseAnimacion ||
+            "anim-entrada-lista"
+        );
 
 
         const hijos = (
@@ -100,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Reiniciar animación
                 hijo.classList.remove(
-                    "anim-entrada-lista"
+                    clase
                 );
 
 
@@ -116,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 hijo.classList.add(
-                    "anim-entrada-lista"
+                    clase
                 );
 
             }
@@ -138,8 +145,717 @@ document.addEventListener("DOMContentLoaded", function () {
     aplicarEntradaEscalonada(
         vistaTarjetas,
         ".tarjeta-apiario",
-        70
+        70,
+        "anim-entrada-tarjeta"
     );
+
+
+    // =========================================================
+    // PREFERENCIA DE MOVIMIENTO REDUCIDO
+    // =========================================================
+
+    const prefiereMenosMovimiento = (
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches
+    );
+
+
+    // =========================================================
+    // EFECTO 3D AL PASAR EL MOUSE SOBRE LAS TARJETAS
+    // =========================================================
+
+    function inicializarTiltTarjetas() {
+
+        if (prefiereMenosMovimiento) {
+            return;
+        }
+
+
+        const tarjetas = (
+            document.querySelectorAll(
+                ".tarjeta-apiario"
+            )
+        );
+
+
+        tarjetas.forEach(
+            function (tarjeta) {
+
+                let cuadroPendiente = false;
+                let ultimoEvento = null;
+
+                tarjeta.addEventListener(
+                    "mousemove",
+                    function (evento) {
+
+                        ultimoEvento = evento;
+
+                        if (cuadroPendiente) {
+                            return;
+                        }
+
+                        cuadroPendiente = true;
+
+
+                        window.requestAnimationFrame(
+                            function () {
+
+                                cuadroPendiente = false;
+
+
+                                const rect = (
+                                    tarjeta.getBoundingClientRect()
+                                );
+
+                                const posX = (
+                                    ultimoEvento.clientX - rect.left
+                                );
+
+                                const posY = (
+                                    ultimoEvento.clientY - rect.top
+                                );
+
+                                const relX = (
+                                    (posX / rect.width - .5) * 2
+                                );
+
+                                const relY = (
+                                    (posY / rect.height - .5) * 2
+                                );
+
+                                tarjeta.style.setProperty(
+                                    "--tilt-x",
+                                    (relX * 6).toFixed(2) + "deg"
+                                );
+
+                                tarjeta.style.setProperty(
+                                    "--tilt-y",
+                                    (relY * -6).toFixed(2) + "deg"
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                tarjeta.addEventListener(
+                    "mouseleave",
+                    function () {
+
+                        tarjeta.style.setProperty(
+                            "--tilt-x",
+                            "0deg"
+                        );
+
+                        tarjeta.style.setProperty(
+                            "--tilt-y",
+                            "0deg"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+    inicializarTiltTarjetas();
+
+
+    // =========================================================
+    // ESTELA DE POLEN AL MOVER EL MOUSE
+    // (mismo efecto visual del cursor en el dashboard)
+    // =========================================================
+    //
+    // Si el dashboard ya la activa de forma global (por ejemplo
+    // desde un script en base_admin.html), esta comprobación
+    // evita crear dos estelas superpuestas en esta página.
+    // =========================================================
+
+    function inicializarEstelaPolen() {
+
+        if (prefiereMenosMovimiento) {
+            return;
+        }
+
+
+        if (window.__estelaPolenApiariosActiva) {
+            return;
+        }
+
+        window.__estelaPolenApiariosActiva = true;
+
+
+        const INTERVALO_MINIMO_MS = 45;
+
+        let ultimoTiempo = 0;
+
+
+        document.addEventListener(
+            "mousemove",
+            function (evento) {
+
+                const ahora = Date.now();
+
+                if (
+                    ahora - ultimoTiempo
+                    <
+                    INTERVALO_MINIMO_MS
+                ) {
+                    return;
+                }
+
+                ultimoTiempo = ahora;
+
+
+                const particula = (
+                    document.createElement("span")
+                );
+
+                particula.className = "estela-polen";
+
+                particula.style.left = (
+                    evento.clientX + "px"
+                );
+
+                particula.style.top = (
+                    evento.clientY + "px"
+                );
+
+                document.body.appendChild(particula);
+
+
+                window.setTimeout(
+                    function () {
+
+                        particula.remove();
+
+                    },
+                    700
+                );
+
+            }
+        );
+
+    }
+
+    inicializarEstelaPolen();
+
+
+    // =========================================================
+    // TOOLTIPS DE LOS BADGES DE ESTADO
+    // =========================================================
+
+    function inicializarTooltipsEstado() {
+
+        if (
+            typeof bootstrap === "undefined"
+            ||
+            !bootstrap.Tooltip
+        ) {
+            return;
+        }
+
+
+        document
+            .querySelectorAll(
+                '[data-bs-toggle="tooltip"]'
+            )
+            .forEach(
+                function (elemento) {
+
+                    new bootstrap.Tooltip(
+                        elemento
+                    );
+
+                }
+            );
+
+    }
+
+    inicializarTooltipsEstado();
+
+
+    // =========================================================
+    // ENTRADA ESCALONADA AL ABRIR MODALES
+    // (Detalle, Editar y Agregar Apiario)
+    // =========================================================
+
+    document.addEventListener(
+        "shown.bs.modal",
+        function (evento) {
+
+            const modal = evento.target;
+
+            if (!modal || !modal.id) {
+                return;
+            }
+
+            const esModalDeApiario = (
+                modal.id.indexOf("modalDetalleApiario") === 0
+                ||
+                modal.id.indexOf("modalEditarApiario") === 0
+                ||
+                modal.id === "modalAgregarApiario"
+            );
+
+            if (!esModalDeApiario) {
+                return;
+            }
+
+
+            const cuerpoModal = (
+                modal.querySelector(".modal-body")
+            );
+
+            aplicarEntradaEscalonada(
+                cuerpoModal,
+                ".row > div",
+                35,
+                "anim-entrada-modal"
+            );
+
+        }
+    );
+
+
+    // =========================================================
+    // BUSCADOR RÁPIDO (nombre / ubicación)
+    // =========================================================
+
+    function inicializarBuscadorApiarios() {
+
+        const buscador = (
+            document.getElementById(
+                "buscadorApiarios"
+            )
+        );
+
+        if (!buscador) {
+            return;
+        }
+
+
+        buscador.addEventListener(
+            "input",
+            function () {
+
+                const termino = (
+                    buscador.value
+                        .trim()
+                        .toLowerCase()
+                );
+
+
+                // ---- Tarjetas ----
+
+                let coincidenciasTarjetas = 0;
+
+                document
+                    .querySelectorAll(
+                        "#vistaTarjetasApiarios .tarjeta-apiario"
+                    )
+                    .forEach(
+                        function (tarjeta) {
+
+                            const nombre = (
+                                tarjeta.dataset.nombre || ""
+                            );
+
+                            const ubicacion = (
+                                tarjeta.dataset.ubicacion || ""
+                            );
+
+                            const coincide = (
+                                termino === ""
+                                ||
+                                nombre.indexOf(termino) !== -1
+                                ||
+                                ubicacion.indexOf(termino) !== -1
+                            );
+
+                            if (coincide) {
+                                coincidenciasTarjetas++;
+                            }
+
+                            tarjeta.classList.toggle(
+                                "tarjeta-oculta-busqueda",
+                                !coincide
+                            );
+
+                        }
+                    );
+
+
+                const mensajeSinResultadosTarjetas = (
+                    document.getElementById(
+                        "apiariosSinResultadosBusqueda"
+                    )
+                );
+
+                if (mensajeSinResultadosTarjetas) {
+
+                    const hayTarjetas = (
+                        document.querySelectorAll(
+                            "#vistaTarjetasApiarios .tarjeta-apiario"
+                        ).length > 0
+                    );
+
+                    mensajeSinResultadosTarjetas.style.display = (
+                        hayTarjetas && coincidenciasTarjetas === 0
+                            ? "block"
+                            : "none"
+                    );
+
+                }
+
+
+                // ---- Filas de tabla ----
+
+                let coincidenciasFilas = 0;
+
+                document
+                    .querySelectorAll(
+                        "#vistaTablaApiarios tbody tr[data-estado]"
+                    )
+                    .forEach(
+                        function (fila) {
+
+                            const nombre = (
+                                fila.dataset.nombre || ""
+                            );
+
+                            const ubicacion = (
+                                fila.dataset.ubicacion || ""
+                            );
+
+                            const coincide = (
+                                termino === ""
+                                ||
+                                nombre.indexOf(termino) !== -1
+                                ||
+                                ubicacion.indexOf(termino) !== -1
+                            );
+
+                            if (coincide) {
+                                coincidenciasFilas++;
+                            }
+
+                            fila.classList.toggle(
+                                "fila-oculta-busqueda",
+                                !coincide
+                            );
+
+                        }
+                    );
+
+
+                const mensajeSinResultadosTabla = (
+                    document.getElementById(
+                        "apiariosTablaSinResultadosBusqueda"
+                    )
+                );
+
+                if (mensajeSinResultadosTabla) {
+
+                    const hayFilas = (
+                        document.querySelectorAll(
+                            "#vistaTablaApiarios tbody tr[data-estado]"
+                        ).length > 0
+                    );
+
+                    mensajeSinResultadosTabla.style.display = (
+                        hayFilas && coincidenciasFilas === 0
+                            ? "table-row"
+                            : "none"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+    inicializarBuscadorApiarios();
+
+
+    // =========================================================
+    // ORDENAR POR URGENCIA (Deficiente > Precaución > Bueno)
+    // =========================================================
+
+    function inicializarOrdenUrgencia() {
+
+        const boton = (
+            document.getElementById(
+                "btnOrdenarUrgencia"
+            )
+        );
+
+        if (!boton) {
+            return;
+        }
+
+
+        const PRIORIDAD_ESTADO = {
+            "Deficiente": 0,
+            "Precaución": 1,
+            "Bueno": 2
+        };
+
+        let ordenadoPorUrgencia = false;
+
+
+        function ordenarPorUrgencia(
+            contenedor,
+            selectorItems
+        ) {
+
+            if (!contenedor) {
+                return;
+            }
+
+
+            const items = (
+                Array.from(
+                    contenedor.querySelectorAll(
+                        selectorItems
+                    )
+                )
+            );
+
+
+            // Guardar el orden original una sola vez
+            items.forEach(
+                function (item, indice) {
+
+                    if (
+                        item.dataset.ordenOriginal
+                        ===
+                        undefined
+                    ) {
+
+                        item.dataset.ordenOriginal =
+                            indice;
+
+                    }
+
+                }
+            );
+
+
+            items.sort(
+                function (a, b) {
+
+                    if (ordenadoPorUrgencia) {
+
+                        const valorA = (
+                            PRIORIDAD_ESTADO[a.dataset.estado]
+                        );
+
+                        const valorB = (
+                            PRIORIDAD_ESTADO[b.dataset.estado]
+                        );
+
+                        const prioridadA = (
+                            valorA === undefined ? 3 : valorA
+                        );
+
+                        const prioridadB = (
+                            valorB === undefined ? 3 : valorB
+                        );
+
+                        return prioridadA - prioridadB;
+
+                    }
+
+
+                    return (
+                        Number(a.dataset.ordenOriginal)
+                        -
+                        Number(b.dataset.ordenOriginal)
+                    );
+
+                }
+            );
+
+
+            items.forEach(
+                function (item) {
+
+                    contenedor.appendChild(item);
+
+                }
+            );
+
+        }
+
+
+        boton.addEventListener(
+            "click",
+            function () {
+
+                ordenadoPorUrgencia = (
+                    !ordenadoPorUrgencia
+                );
+
+
+                const cuerpoTabla = (
+                    document.querySelector(
+                        "#vistaTablaApiarios tbody"
+                    )
+                );
+
+                ordenarPorUrgencia(
+                    cuerpoTabla,
+                    "tr[data-estado]"
+                );
+
+                ordenarPorUrgencia(
+                    vistaTarjetas,
+                    ".tarjeta-apiario"
+                );
+
+
+                boton.classList.toggle(
+                    "activo",
+                    ordenadoPorUrgencia
+                );
+
+
+                aplicarEntradaEscalonada(
+                    cuerpoTabla,
+                    "tr[data-estado]",
+                    30
+                );
+
+                aplicarEntradaEscalonada(
+                    vistaTarjetas,
+                    ".tarjeta-apiario",
+                    40,
+                    "anim-entrada-tarjeta"
+                );
+
+            }
+        );
+
+    }
+
+    inicializarOrdenUrgencia();
+
+
+    // =========================================================
+    // RÁFAGA DE POLEN AL GUARDAR UN APIARIO
+    // =========================================================
+
+    function inicializarRafagaPolenGuardar() {
+
+        if (prefiereMenosMovimiento) {
+            return;
+        }
+
+
+        document
+            .querySelectorAll(
+                ".btn-guardar-apiario"
+            )
+            .forEach(
+                function (boton) {
+
+                    boton.addEventListener(
+                        "click",
+                        function () {
+
+                            const rect = (
+                                boton.getBoundingClientRect()
+                            );
+
+                            const centroX = (
+                                rect.left + rect.width / 2
+                            );
+
+                            const centroY = (
+                                rect.top + rect.height / 2
+                            );
+
+                            const CANTIDAD_PARTICULAS = 10;
+
+
+                            for (
+                                let i = 0;
+                                i < CANTIDAD_PARTICULAS;
+                                i++
+                            ) {
+
+                                const angulo = (
+                                    (Math.PI * 2 * i)
+                                    /
+                                    CANTIDAD_PARTICULAS
+                                );
+
+                                const distancia = (
+                                    40 + Math.random() * 30
+                                );
+
+                                const dx = (
+                                    Math.cos(angulo) * distancia
+                                );
+
+                                const dy = (
+                                    Math.sin(angulo) * distancia
+                                );
+
+                                const particula = (
+                                    document.createElement("span")
+                                );
+
+                                particula.className =
+                                    "particula-rafaga-polen";
+
+                                particula.style.left =
+                                    centroX + "px";
+
+                                particula.style.top =
+                                    centroY + "px";
+
+                                particula.style.setProperty(
+                                    "--dx",
+                                    dx.toFixed(1) + "px"
+                                );
+
+                                particula.style.setProperty(
+                                    "--dy",
+                                    dy.toFixed(1) + "px"
+                                );
+
+                                document.body.appendChild(
+                                    particula
+                                );
+
+                                window.setTimeout(
+                                    function () {
+
+                                        particula.remove();
+
+                                    },
+                                    700
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    inicializarRafagaPolenGuardar();
 
 
     // =========================================================
@@ -242,7 +958,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     aplicarEntradaEscalonada(
                         elementoAMostrar,
                         ".tarjeta-apiario",
-                        70
+                        70,
+                        "anim-entrada-tarjeta"
                     );
 
                 } else {
@@ -443,7 +1160,8 @@ document.addEventListener("DOMContentLoaded", function () {
             aplicarEntradaEscalonada(
                 vistaTarjetas,
                 ".tarjeta-apiario",
-                70
+                70,
+                "anim-entrada-tarjeta"
             );
 
         } else {

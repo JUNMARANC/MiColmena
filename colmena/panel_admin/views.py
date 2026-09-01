@@ -640,6 +640,15 @@ def apiarios_admin(request):
     if estado:
         apiarios_lista = apiarios_lista.filter(estadoapiario=estado)
 
+    busqueda = request.GET.get('q', '').strip()
+
+    if busqueda:
+        apiarios_lista = apiarios_lista.filter(
+            Q(nombreapiario__icontains=busqueda)
+            |
+            Q(ubicacion__icontains=busqueda)
+        )
+
     paginator = Paginator(apiarios_lista, 5)
     page_number = request.GET.get('page')
     apiarios = paginator.get_page(page_number)
@@ -10473,4 +10482,3 @@ def guardar_configuracion_seguridad(request):
         f"{reverse('configuracion_admin')}"
         "?tab=seguridad"
     )
-
