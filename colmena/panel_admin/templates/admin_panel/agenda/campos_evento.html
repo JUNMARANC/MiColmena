@@ -42,28 +42,78 @@
 
     </div>
 
+    <!-- =========================================================
+        ESTADO DEL EVENTO
+    ========================================================== -->
+
     <div class="col-md-6">
 
         <label class="form-label">
             Estado
         </label>
 
-        <select
-            class="form-select"
-            id="{{ prefijo }}EstadoEvento"
-            name="estado"
-            required
-        >
 
-            {% for valor, nombre in estados_evento %}
+        {% if prefijo == "crear" %}
 
-                <option value="{{ valor }}">
-                    {{ nombre }}
-                </option>
+            <!-- =================================================
+                CREAR:
+                Todo evento nuevo nace como Programado.
+                No permitimos escoger otro estado.
+            ================================================== -->
 
-            {% endfor %}
+            <div
+                class="form-control d-flex align-items-center gap-2"
+                style="
+                    background:#f8f9fa;
+                    cursor:not-allowed;
+                "
+            >
 
-        </select>
+                <i
+                    class="bi bi-clock-fill"
+                    style="color:#5F9781;"
+                ></i>
+
+                <span>
+                    Programado
+                </span>
+
+            </div>
+
+
+            <small class="text-muted d-block mt-1">
+
+                Los eventos nuevos se registran automáticamente
+                como programados.
+
+            </small>
+
+
+        {% else %}
+
+            <!-- =================================================
+                EDITAR:
+                Aquí sí puede cambiarse el estado.
+            ================================================== -->
+
+            <select
+                class="form-select"
+                id="{{ prefijo }}EstadoEvento"
+                name="estado"
+                required
+            >
+
+                {% for valor, nombre in estados_evento %}
+
+                    <option value="{{ valor }}">
+                        {{ nombre }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        {% endif %}
 
     </div>
 

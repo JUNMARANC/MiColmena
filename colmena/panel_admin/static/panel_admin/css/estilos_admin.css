@@ -720,7 +720,11 @@ TABLAS
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    transition: .25s ease;
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+
+.btn-accion i {
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 
 .btn-ver {
@@ -739,7 +743,16 @@ TABLAS
 }
 
 .btn-accion:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(33, 79, 59, .15);
+}
+
+.btn-accion:hover i {
+    transform: scale(1.15);
+}
+
+.btn-accion:active {
+    transform: translateY(0) scale(.94);
 }
 
 /*==================================================
@@ -834,14 +847,495 @@ MODALES
     padding: 15px;
 }
 
+/* =========================================================
+   MODAL ELIMINAR APIARIO
+========================================================= */
+
+.modal-eliminar-apiario {
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.modal-header-eliminar-apiario {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-apiario .modal-title,
+.modal-header-eliminar-apiario p,
+.modal-header-eliminar-apiario i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-apiario p {
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO DEL HEADER
+========================================================= */
+
+.icono-header-eliminar-apiario {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.contenido-eliminar-apiario {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO DE ADVERTENCIA
+========================================================= */
+
+.icono-advertencia-eliminar-apiario {
+
+    width: 78px;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        5px
+        auto
+        18px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 2rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO Y DESCRIPCIÓN
+========================================================= */
+
+.contenido-eliminar-apiario h5 {
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-apiario > p {
+
+    margin-bottom: 14px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+}
+
+
+/* =========================================================
+   NOMBRE DEL APIARIO
+========================================================= */
+
+.nombre-apiario-eliminar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        17px;
+
+    border-radius: 12px;
+
+    background: #f4f7f5;
+
+    color:
+        var(--verde-oscuro);
+
+}
+
+
+.nombre-apiario-eliminar i {
+
+    color:
+        var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida,
+.alerta-eliminacion-apiario-bloqueada {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin-top: 22px;
+
+    padding: 14px;
+
+    border-radius: 13px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   PERMITIDO
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+/* =========================================================
+   BLOQUEADO
+========================================================= */
+
+.alerta-eliminacion-apiario-bloqueada {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+/* =========================================================
+   ICONOS DE ALERTA
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida > i,
+.alerta-eliminacion-apiario-bloqueada > i {
+
+    margin-top: 2px;
+
+    font-size: 1rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DE ALERTAS
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida div,
+.alerta-eliminacion-apiario-bloqueada div {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.alerta-eliminacion-apiario-permitida strong,
+.alerta-eliminacion-apiario-bloqueada strong {
+
+    font-size: 0.8rem;
+
+}
+
+
+.alerta-eliminacion-apiario-permitida span,
+.alerta-eliminacion-apiario-bloqueada span {
+
+    margin-top: 3px;
+
+    font-size: 0.72rem;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-apiario {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-apiario,
+.btn-confirmar-eliminacion-apiario {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CANCELAR
+========================================================= */
+
+.btn-cancelar-eliminacion-apiario {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-apiario:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR ELIMINACIÓN
+========================================================= */
+
+.btn-confirmar-eliminacion-apiario {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-apiario:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   BOTÓN DESHABILITADO
+========================================================= */
+
+.btn-confirmar-eliminacion-apiario:disabled,
+.btn-confirmar-eliminacion-apiario.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-header-eliminar-apiario {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-footer-eliminar-apiario {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-apiario,
+    .btn-confirmar-eliminacion-apiario {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-apiario {
+
+        width: 68px;
+
+        height: 68px;
+
+        font-size: 1.7rem;
+
+    }
+
+}
+
 /*==================================================
 BADGES
 ==================================================*/
 
 .badge-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 8px 13px;
     border-radius: 30px;
     font-size: 12px;
+}
+
+.badge-estado::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    background: currentColor;
 }
 
 .badge-bueno {
@@ -1060,6 +1554,21 @@ PAGINADOR
         border-radius: 22px;
         padding: 28px;
         box-shadow: 0 10px 30px rgba(33, 79, 59, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .incidencias-container::after {
+        content: "";
+        position: absolute;
+        top: -18px;
+        right: -18px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(155deg, var(--amarillo, #F6DE87), var(--verde-medio, #5f9781));
+        clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+        opacity: .12;
+        pointer-events: none;
     }
 
     .incidencias-header {
@@ -1068,6 +1577,8 @@ PAGINADOR
         align-items: center;
         gap: 15px;
         margin-bottom: 25px;
+        position: relative;
+        z-index: 1;
     }
 
     .incidencias-header h2 {
@@ -1076,23 +1587,38 @@ PAGINADOR
         margin-bottom: 5px;
     }
 
+    .incidencias-header h2 i {
+        color: var(--miel, #f0a000);
+    }
+
     .incidencias-header p {
         color: #6c757d;
         margin: 0;
     }
 
     .btn-agregar-incidencia {
-        background: var(--verde-oscuro, #214f3b);
+        background: linear-gradient(135deg, var(--verde-medio, #5f9781), var(--verde-oscuro, #214f3b));
         color: white;
         border: none;
         border-radius: 12px;
         padding: 11px 20px;
         font-weight: 600;
+        box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+        transition:
+            transform .3s cubic-bezier(.34, 1.56, .64, 1),
+            box-shadow .25s ease,
+            background .3s ease;
     }
 
     .btn-agregar-incidencia:hover {
-        background: #163c2c;
+        background: linear-gradient(135deg, var(--verde-oscuro, #214f3b), var(--verde-medio, #5f9781));
         color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+    }
+
+    .btn-agregar-incidencia:active {
+        transform: translateY(0) scale(.97);
     }
 
     .filtros-incidencias {
@@ -1167,10 +1693,22 @@ PAGINADOR
 
     .badge-prioridad,
     .badge-estado {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         padding: 7px 11px;
         border-radius: 20px;
         font-size: 0.80rem;
         font-weight: 600;
+    }
+
+    .badge-prioridad::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        flex-shrink: 0;
+        clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+        background: currentColor;
     }
 
     .prioridad-baja {
@@ -1191,6 +1729,18 @@ PAGINADOR
     .prioridad-critica {
         background: #ffd9dc;
         color: #a72330;
+        animation: pulsoPrioridadCritica 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulsoPrioridadCritica {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(167, 35, 48, .35); }
+        50%      { box-shadow: 0 0 0 5px rgba(167, 35, 48, 0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .prioridad-critica {
+            animation: none;
+        }
     }
 
     .estado-pendiente {
@@ -6275,6 +6825,8 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 .dashboard-fondo-panal {
     position: relative;
+    overflow: hidden;
+    border-radius: 18px;
 }
 
 .particulas-flotantes {
@@ -6282,44 +6834,54 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     inset: 0;
     overflow: hidden;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 
 .dashboard-fondo-panal-contenido {
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    padding: 4px 2px;
 }
 
 .particulas-flotantes span {
     position: absolute;
     bottom: -24px;
-    width: 7px;
-    height: 7px;
-    background: var(--miel);
-    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff3c4 0%, #ffb238 40%, #e8541c 80%);
+    box-shadow: 0 0 6px 1px rgba(232, 84, 28, .55);
     opacity: 0;
-    animation: flotarParticulaPanal linear infinite;
+    animation: chispaFogata linear infinite;
 }
 
-@keyframes flotarParticulaPanal {
-    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-    8%   { opacity: .35; }
-    92%  { opacity: .3; }
-    100% { transform: translate(var(--deriva, 30px), -640px) rotate(200deg); opacity: 0; }
+@keyframes chispaFogata {
+    0%   { transform: translate(0, 0) scale(.6); opacity: 0; }
+    6%   { opacity: 1; }
+    30%  { transform: translate(calc(var(--deriva, 20px) * .3), -160px) scale(1); }
+    55%  { transform: translate(var(--deriva, 20px), -320px) scale(.85); opacity: .8; }
+    80%  { opacity: .35; }
+    100% { transform: translate(calc(var(--deriva, 20px) * 1.6), -560px) scale(.3); opacity: 0; }
 }
 
-.particulas-flotantes span:nth-child(1)  { left: 3%;   width: 6px; height: 6px;  animation-duration: 24s; animation-delay: 0s;   --deriva: 40px; }
-.particulas-flotantes span:nth-child(2)  { left: 11%;  width: 4px; height: 4px;  border-radius: 50%; clip-path: none; animation-duration: 19s; animation-delay: 2s;   --deriva: -25px; }
-.particulas-flotantes span:nth-child(3)  { left: 21%;  width: 8px; height: 8px;  animation-duration: 30s; animation-delay: 5s;   --deriva: 20px; }
-.particulas-flotantes span:nth-child(4)  { left: 32%;  width: 5px; height: 5px;  border-radius: 50%; clip-path: none; animation-duration: 21s; animation-delay: 1s;   --deriva: -40px; }
-.particulas-flotantes span:nth-child(5)  { left: 44%;  width: 7px; height: 7px;  animation-duration: 27s; animation-delay: 7s;   --deriva: 30px; }
-.particulas-flotantes span:nth-child(6)  { left: 55%;  width: 4px; height: 4px;  border-radius: 50%; clip-path: none; animation-duration: 18s; animation-delay: 3.5s; --deriva: -20px; }
-.particulas-flotantes span:nth-child(7)  { left: 64%;  width: 9px; height: 9px;  animation-duration: 32s; animation-delay: 0.5s; --deriva: -35px; }
-.particulas-flotantes span:nth-child(8)  { left: 74%;  width: 5px; height: 5px;  border-radius: 50%; clip-path: none; animation-duration: 22s; animation-delay: 6s;   --deriva: 25px; }
-.particulas-flotantes span:nth-child(9)  { left: 82%;  width: 7px; height: 7px;  animation-duration: 26s; animation-delay: 4s;   --deriva: -15px; }
-.particulas-flotantes span:nth-child(10) { left: 90%;  width: 4px; height: 4px;  border-radius: 50%; clip-path: none; animation-duration: 20s; animation-delay: 8s;   --deriva: 30px; }
-.particulas-flotantes span:nth-child(11) { left: 96%;  width: 6px; height: 6px;  animation-duration: 29s; animation-delay: 2.5s; --deriva: -30px; }
-.particulas-flotantes span:nth-child(12) { left: 60%;  width: 6px; height: 6px;  animation-duration: 23s; animation-delay: 9s;   --deriva: 15px; }
+.particulas-flotantes span:nth-child(1)  { left: 3%;   width: 5px; height: 5px; animation-duration: 5.5s; animation-delay: 0s;    --deriva: 30px; }
+.particulas-flotantes span:nth-child(2)  { left: 11%;  width: 3px; height: 3px; animation-duration: 4.2s; animation-delay: .8s;   --deriva: -18px; }
+.particulas-flotantes span:nth-child(3)  { left: 21%;  width: 6px; height: 6px; animation-duration: 6.5s; animation-delay: 1.6s;  --deriva: 22px; }
+.particulas-flotantes span:nth-child(4)  { left: 32%;  width: 4px; height: 4px; animation-duration: 4.8s; animation-delay: .3s;   --deriva: -28px; }
+.particulas-flotantes span:nth-child(5)  { left: 44%;  width: 5px; height: 5px; animation-duration: 5.9s; animation-delay: 2.2s;  --deriva: 16px; }
+.particulas-flotantes span:nth-child(6)  { left: 55%;  width: 3px; height: 3px; animation-duration: 4.4s; animation-delay: 1.1s;  --deriva: -14px; }
+.particulas-flotantes span:nth-child(7)  { left: 64%;  width: 6px; height: 6px; animation-duration: 6.8s; animation-delay: .1s;   --deriva: -24px; }
+.particulas-flotantes span:nth-child(8)  { left: 74%;  width: 4px; height: 4px; animation-duration: 5.1s; animation-delay: 2.6s;  --deriva: 20px; }
+.particulas-flotantes span:nth-child(9)  { left: 82%;  width: 6px; height: 6px; animation-duration: 6.2s; animation-delay: .9s;   --deriva: -18px; }
+.particulas-flotantes span:nth-child(10) { left: 90%;  width: 3px; height: 3px; animation-duration: 4.6s; animation-delay: 1.9s;  --deriva: 26px; }
+.particulas-flotantes span:nth-child(11) { left: 96%;  width: 5px; height: 5px; animation-duration: 5.7s; animation-delay: .5s;   --deriva: -22px; }
+.particulas-flotantes span:nth-child(12) { left: 60%;  width: 5px; height: 5px; animation-duration: 4.9s; animation-delay: 2.9s;  --deriva: 14px; }
+.particulas-flotantes span:nth-child(13) { left: 7%;   width: 4px; height: 4px; animation-duration: 5.3s; animation-delay: 1.4s;  --deriva: -20px; }
+.particulas-flotantes span:nth-child(14) { left: 27%;  width: 3px; height: 3px; animation-duration: 4.5s; animation-delay: 3.4s;  --deriva: 24px; }
+.particulas-flotantes span:nth-child(15) { left: 38%;  width: 6px; height: 6px; animation-duration: 6.1s; animation-delay: .6s;   --deriva: -16px; }
+.particulas-flotantes span:nth-child(16) { left: 50%;  width: 4px; height: 4px; animation-duration: 5.0s; animation-delay: 2.1s;  --deriva: 18px; }
+.particulas-flotantes span:nth-child(17) { left: 70%;  width: 3px; height: 3px; animation-duration: 4.3s; animation-delay: 1.7s;  --deriva: -26px; }
+.particulas-flotantes span:nth-child(18) { left: 87%;  width: 5px; height: 5px; animation-duration: 5.8s; animation-delay: 3.9s;  --deriva: 20px; }
 
 @media (prefers-reduced-motion: reduce) {
     .particulas-flotantes {
@@ -6737,7 +7299,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     overflow: hidden;
 
-    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    border-radius: 50%;
 
     background: #ffffff;
 
@@ -6972,6 +7534,27 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     padding: 0;
 
+    border: none;
+    /* Sin clip-path aquí: si el recorte va en el botón, corta
+       también el contador (punto rojo) que es hijo suyo. El
+       hexágono ahora vive solo en .btn-notificaciones-hex. */
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition: transform 0.2s ease;
+}
+
+
+.btn-notificaciones-hex {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     border: 1px solid #d9e6de;
     clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
@@ -6981,19 +7564,18 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     font-size: 19px;
 
-    cursor: pointer;
-
     transition:
         background-color 0.2s ease,
         border-color 0.2s ease,
-        transform 0.2s ease,
         box-shadow 0.2s ease;
 }
 
 
 .btn-notificaciones:hover {
     transform: translateY(-1px) scale(1.06);
+}
 
+.btn-notificaciones:hover .btn-notificaciones-hex {
     background: #edf7f0;
 
     border-color: #9ec7ad;
@@ -7003,7 +7585,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
         rgba(33, 79, 59, 0.08);
 }
 
-.btn-notificaciones.campana-activa i {
+.btn-notificaciones.campana-activa .btn-notificaciones-hex i {
     animation: tintineoCampana 2.6s ease-in-out infinite;
     transform-origin: top center;
 }
@@ -7029,8 +7611,9 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
     position: absolute;
 
-    top: -5px;
-    right: -5px;
+    top: -4px;
+    right: -4px;
+    z-index: 2;
 
     display: flex;
     align-items: center;
@@ -7049,6 +7632,8 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     font-weight: 700;
 
     line-height: 1;
+
+    box-shadow: 0 2px 5px rgba(214, 69, 69, 0.35);
 
     animation: pulsoContadorNotificaciones 1.8s ease-in-out infinite;
 }
@@ -7394,20 +7979,11 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 ========================================================= */
 
 .notificaciones-dropdown-footer {
-    padding: 11px 18px;
-
     border-top: 1px solid #e6eee9;
 
     background: #fafcfb;
 
-    text-align: center;
-}
-
-
-.notificaciones-dropdown-footer span {
-    color: #809087;
-
-    font-size: 10px;
+    padding: 8px 10px;
 }
 
 
@@ -7692,10 +8268,9 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
    FOOTER DROPDOWN NOTIFICACIONES
 ========================================================== */
 
-.notificaciones-dropdown-footer {
-    border-top: 1px solid #e7eee9;
-    padding: 10px 12px;
-}
+/* ==========================================================
+   LINK "VER TODAS" DENTRO DEL FOOTER
+========================================================== */
 
 .notificaciones-ver-todas {
     display: flex;
@@ -7704,14 +8279,522 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     gap: 7px;
     text-decoration: none;
     color: var(--verde-oscuro, #214f3b);
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 700;
-    padding: 7px;
+    padding: 8px;
     border-radius: 8px;
     transition: .2s ease;
+}
+
+.notificaciones-ver-todas i {
+    font-size: 11px;
+    transition: transform .2s ease;
 }
 
 .notificaciones-ver-todas:hover {
     background: #eef8f1;
     color: var(--verde-oscuro, #214f3b);
+}
+
+/*Limite de colmeas segun lo definido en los apiarios*/
+.ayuda-capacidad-apiario {
+
+    display: block;
+
+    min-height: 18px;
+
+    margin-top: 6px;
+
+    font-size: 0.72rem;
+
+    font-weight: 600;
+
+}
+
+
+.ayuda-capacidad-apiario.disponible {
+
+    color: #4f7b61;
+
+}
+
+
+.ayuda-capacidad-apiario.completo {
+
+    color: #b6424c;
+}
+
+.notificaciones-ver-todas:hover i {
+    transform: translateX(3px);
+}
+
+/* Dashboard: mantener los iconos y contenido centrados aunque la tarjeta sea un enlace */
+.tarjeta-dashboard-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: inherit;
+    text-decoration: none;
+    height: 100%;
+}
+
+.tarjeta-dashboard-link .icono-dashboard {
+    align-self: center;
+}
+
+.tarjeta-dashboard-link h2,
+.tarjeta-dashboard-link h6 {
+    width: 100%;
+    text-align: center;
+}
+
+/* =========================================================
+   AJUSTE DASHBOARD: ICONOS ARRIBA DE LOS NÚMEROS
+   ========================================================= */
+
+.tarjeta-dashboard {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.tarjeta-dashboard .icono-dashboard {
+    position: static !important;
+    order: -1 !important;
+    align-self: center !important;
+    margin: 0 auto 12px !important;
+    flex-shrink: 0;
+}
+
+.tarjeta-dashboard h2,
+.tarjeta-dashboard h6 {
+    width: 100%;
+    text-align: center;
+}
+
+.tarjeta-dashboard h2 {
+    margin-top: 0 !important;
+}
+
+.tarjeta-dashboard h6 {
+    margin-top: 8px !important;
+}
+/* =========================================================
+   MEJORAS VISUALES — TARJETAS DE APIARIOS
+   (glow de borde, tilt 3D, zoom de imagen, badges con pulso)
+========================================================= */
+
+.tarjeta-apiario {
+    position: relative;
+    isolation: isolate;
+    transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) translateY(0) scale(1);
+    transition: transform .4s cubic-bezier(.2, .8, .2, 1), box-shadow .4s ease;
+}
+
+.tarjeta-apiario:hover {
+    transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) translateY(-8px) scale(1.02);
+    box-shadow: 0 24px 44px rgba(33, 79, 59, .2), 0 0 0 1px rgba(240, 160, 0, .18);
+}
+
+/* Borde-degradado animado que aparece solo en hover */
+.tarjeta-apiario::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo, var(--miel)), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.tarjeta-apiario:hover::before {
+    opacity: 1;
+}
+
+@keyframes girarBordeMiel {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* Zoom + oscurecido suave de la imagen al hacer hover */
+.tarjeta-apiario-imagen {
+    position: relative;
+}
+
+.tarjeta-apiario-imagen img {
+    transition: transform .55s cubic-bezier(.2, .8, .2, 1), filter .55s ease;
+}
+
+.tarjeta-apiario:hover .tarjeta-apiario-imagen img {
+    transform: scale(1.14) rotate(.4deg);
+}
+
+.tarjeta-apiario-imagen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, .32) 100%);
+    opacity: 0;
+    transition: opacity .4s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tarjeta-apiario:hover .tarjeta-apiario-imagen::after {
+    opacity: 1;
+}
+
+/* Pulso de alerta en badges de estados que requieren atención */
+.tarjeta-apiario-badge.badge-precaucion {
+    animation: pulsoAlertaMiel 1.8s ease-in-out infinite;
+}
+
+.tarjeta-apiario-badge.badge-deficiente {
+    animation: pulsoAlertaRoja 1.8s ease-in-out infinite;
+}
+
+@keyframes pulsoAlertaMiel {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(240, 160, 0, .45); }
+    50%      { box-shadow: 0 0 0 7px rgba(240, 160, 0, 0); }
+}
+
+@keyframes pulsoAlertaRoja {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, .45); }
+    50%      { box-shadow: 0 0 0 7px rgba(220, 53, 69, 0); }
+}
+
+/* Pequeño rebote en los íconos de datos al pasar el mouse por la tarjeta */
+.tarjeta-apiario:hover .tarjeta-apiario-dato i {
+    animation: rebotitoIconoTarjeta .5s ease;
+}
+
+@keyframes rebotitoIconoTarjeta {
+    0%, 100% { transform: translateY(0) scale(1); }
+    35%      { transform: translateY(-3px) scale(1.15); }
+    65%      { transform: translateY(1px) scale(1); }
+}
+
+/* Entrada escalonada "potente" específica de las tarjetas (pop + leve giro) */
+@keyframes entradaTarjetaApiario {
+    0% {
+        opacity: 0;
+        transform: translateY(26px) scale(.9) rotate(-1.5deg);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.015) rotate(.4deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+}
+
+.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-apiario,
+    .tarjeta-apiario:hover {
+        transform: none !important;
+    }
+
+    .tarjeta-apiario::before,
+    .tarjeta-apiario-imagen img,
+    .tarjeta-apiario-imagen::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-apiario-badge.badge-precaucion,
+    .tarjeta-apiario-badge.badge-deficiente,
+    .tarjeta-apiario:hover .tarjeta-apiario-dato i {
+        animation: none !important;
+    }
+
+    .anim-entrada-tarjeta {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+}
+
+/* =========================================================
+   ENCABEZADO DE APIARIOS — FONDO CON POLEN FLOTANTE
+   (mismo recurso visual del dashboard: .dashboard-fondo-panal
+   + .particulas-flotantes, reutilizado aquí sin duplicar reglas)
+========================================================= */
+
+.encabezado-apiarios-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+}
+
+/* =========================================================
+   RONDA 2 DE MEJORAS — APIARIOS
+   (modales, búsqueda, orden, tooltips, ráfaga de polen,
+    mobile press, accesibilidad de foco)
+========================================================= */
+
+/* ---------- ENTRADA "REBOTADA" PARA TODOS LOS MODALES ---------- */
+
+.modal.fade .modal-dialog {
+    transition:
+        transform .4s cubic-bezier(.34, 1.35, .64, 1),
+        opacity .3s ease !important;
+}
+
+/* ---------- MICRO-INTERACCIÓN EN LAS CAJAS DE INFO DE MODALES ---------- */
+
+.modal-info-box {
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.modal-info-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(33, 79, 59, .14);
+}
+
+.modal-info-box small i {
+    display: inline-block;
+    color: var(--verde-medio);
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.modal-info-box:hover small i {
+    transform: scale(1.2) rotate(-6deg);
+}
+
+/* Entrada escalonada reutilizada dentro de los modales al abrirse */
+
+.anim-entrada-modal {
+    animation: entradaListaItem .4s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* ---------- BARRA "PANAL LLENO" DENTRO DE LA TARJETA ---------- */
+
+.tarjeta-apiario-panal {
+    margin-top: 10px;
+}
+
+.tarjeta-apiario-panal small {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--gris-texto);
+    font-size: .75rem;
+}
+
+/* ---------- BARRA DE HERRAMIENTAS: ESTADO + BUSCADOR + ACCIONES ---------- */
+
+.apiarios-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+}
+
+.apiarios-toolbar-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    flex: 0 1 200px;
+}
+
+.apiarios-toolbar-campo .form-label {
+    margin-bottom: 0;
+}
+
+.apiarios-toolbar-busqueda {
+    flex: 1 1 240px;
+}
+
+.apiarios-toolbar-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.apiarios-toolbar-campo .form-select,
+.apiarios-toolbar .buscador-tarjetas {
+    height: 42px;
+}
+
+.apiarios-toolbar-acciones .btn {
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+
+    .apiarios-toolbar-campo,
+    .apiarios-toolbar-busqueda {
+        flex: 1 1 100%;
+    }
+
+    .apiarios-toolbar-acciones {
+        width: 100%;
+    }
+
+    .apiarios-toolbar-acciones .btn {
+        flex: 1 1 auto;
+    }
+
+}
+
+/* ---------- BUSCADOR RÁPIDO DE TARJETAS ---------- */
+
+.buscador-tarjetas-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.buscador-tarjetas-wrap i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9aa79f;
+}
+
+.buscador-tarjetas {
+    width: 100%;
+    padding: 9px 14px 9px 38px;
+    border-radius: 999px;
+    border: 1px solid #dfe7e1;
+    background: #ffffff;
+    font-size: .88rem;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.buscador-tarjetas:focus {
+    outline: none;
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 3px rgba(95, 151, 129, .18);
+}
+
+.tarjeta-apiario.tarjeta-oculta-busqueda {
+    display: none !important;
+}
+
+tr.fila-oculta-busqueda {
+    display: none !important;
+}
+
+/* ---------- BOTÓN "ORDENAR POR URGENCIA" ---------- */
+
+.btn-ordenar-urgencia.activo {
+    background: var(--verde-oscuro);
+    color: #ffffff;
+    border-color: var(--verde-oscuro);
+}
+
+/* ---------- BOTONES DE ACCIÓN: APARECEN AL HOVER SOLO EN ESCRITORIO ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-apiario .acciones .btn-accion {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .tarjeta-apiario:hover .acciones .btn-accion,
+    .tarjeta-apiario:focus-within .acciones .btn-accion {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tarjeta-apiario .acciones .btn-accion:nth-child(1) { transition-delay: 0s; }
+    .tarjeta-apiario .acciones .btn-accion:nth-child(2) { transition-delay: .04s; }
+    .tarjeta-apiario .acciones .btn-accion:nth-child(3) { transition-delay: .08s; }
+
+}
+
+/* ---------- PRESIÓN TÁCTIL EN MÓVIL (sin hover disponible) ---------- */
+
+@media (hover: none) {
+
+    .tarjeta-apiario:active {
+        transform: scale(.97);
+        transition: transform .15s ease;
+    }
+
+}
+
+/* ---------- FOCO VISIBLE PARA NAVEGACIÓN POR TECLADO ---------- */
+
+.tarjeta-apiario:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
+}
+
+/* ---------- RÁFAGA DE POLEN AL GUARDAR (botón Guardar) ---------- */
+
+.particula-rafaga-polen {
+    position: fixed;
+    width: 7px;
+    height: 7px;
+    background: var(--miel);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    animation: rafagaPolenBurst .65s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+@keyframes rafagaPolenBurst {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) translate(0, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.35) translate(var(--dx, 40px), var(--dy, -40px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .modal.fade .modal-dialog {
+        transition: none !important;
+    }
+
+    .modal-info-box,
+    .modal-info-box small i {
+        transition: none !important;
+    }
+
+    .anim-entrada-modal {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    .particula-rafaga-polen {
+        display: none !important;
+    }
+
+    .tarjeta-apiario .acciones .btn-accion {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
 }

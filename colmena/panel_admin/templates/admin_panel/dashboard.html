@@ -12,6 +12,7 @@
 <div class="particulas-flotantes" aria-hidden="true">
     <span></span><span></span><span></span><span></span><span></span><span></span>
     <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
 </div>
 
 <div class="dashboard-fondo-panal-contenido">
@@ -43,7 +44,7 @@ TARJETAS
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="tarjeta-dashboard">
+        <a href="{% url 'apicultores_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
 
             <div class="icono-dashboard icono-apicultores">
                 <i class="bi bi-people-fill"></i>
@@ -53,13 +54,13 @@ TARJETAS
 
             <h6>Apicultores</h6>
 
-        </div>
+        </a>
 
     </div>
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="tarjeta-dashboard">
+        <a href="{% url 'apiarios_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
 
             <div class="icono-dashboard icono-apiarios">
                 <i class="bi bi-geo-alt-fill"></i>
@@ -69,13 +70,13 @@ TARJETAS
 
             <h6>Apiarios</h6>
 
-        </div>
+        </a>
 
     </div>
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="tarjeta-dashboard">
+        <a href="{% url 'colmenas_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
 
             <div class="icono-dashboard icono-colmenas">
                 <i class="bi bi-hexagon-fill"></i>
@@ -85,13 +86,13 @@ TARJETAS
 
             <h6>Colmenas</h6>
 
-        </div>
+        </a>
 
     </div>
 
     <div class="col-md-6 col-xl-3">
 
-        <div class="tarjeta-dashboard">
+        <a href="{% url 'incidencias_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
 
             <div class="icono-dashboard icono-incidencias">
                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -101,7 +102,7 @@ TARJETAS
 
             <h6>Incidencias activas</h6>
 
-        </div>
+        </a>
 
     </div>
 
@@ -219,6 +220,15 @@ ACTIVIDAD RECIENTE (distribuida horizontalmente)
 </div>
 
 </div>
+
+<style>
+    .tarjeta-dashboard-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+    }
+</style>
 
 {% endblock %}
 

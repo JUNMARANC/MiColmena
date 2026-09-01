@@ -447,8 +447,16 @@
                                             id="correoContacto"
                                             name="correo_contacto"
                                             value="{{ configuracion.correo_contacto }}"
+
                                             maxlength="254"
-                                            placeholder="correo@empresa.com"
+
+                                            pattern="[A-Za-z0-9._%+-]+@gmail[.]com"
+
+                                            title="Debes ingresar una dirección de Gmail válida"
+                                            placeholder="Ejemplo: micolmena@gmail.com"
+
+                                            autocomplete="email"
+                                            spellcheck="false"
                                         >
 
                                     </div>
@@ -486,9 +494,16 @@
                                             id="telefonoContacto"
                                             name="telefono_contacto"
                                             value="{{ configuracion.telefono_contacto }}"
-                                            maxlength="20"
+
+                                            minlength="10"
+                                            maxlength="10"
+
                                             inputmode="numeric"
+                                            pattern="3[0-9]{9}"
+
+                                            title="El celular debe tener exactamente 10 números y comenzar por 3"
                                             placeholder="Ejemplo: 3101234567"
+                                            autocomplete="tel"
                                         >
 
                                     </div>
