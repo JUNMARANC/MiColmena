@@ -1439,65 +1439,89 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            if (!valorTexto) {
+            if (
+                fechaSeleccionada >
+                hoy
+            ) {
 
                 marcarInvalido(
                     fecha,
-                    "La fecha de registro es obligatoria."
+                    "La fecha de registro no puede ser una fecha futura."
                 );
 
                 esValido = false;
 
 
-            } else {
+            } else if (
+                fechaSeleccionada
+                    .getFullYear()
+                <
+                AÑO_MINIMO_FECHA
+            ) {
 
-                const fechaSeleccionada = (
-                    new Date(
-                        valorTexto +
-                        "T00:00:00"
+                marcarInvalido(
+                    fecha,
+                    "La fecha de registro no es válida."
+                );
+
+                esValido = false;
+
+
+            } else if (
+                formulario.dataset
+                    .fechaColmenaMasAntigua
+                &&
+                valorTexto
+                >
+                formulario.dataset
+                    .fechaColmenaMasAntigua
+            ) {
+
+                const fechaLimiteTexto = (
+                    formulario.dataset
+                        .fechaColmenaMasAntigua
+                );
+
+
+                const partesFecha = (
+                    fechaLimiteTexto.split("-")
+                );
+
+
+                const fechaLimiteLegible = (
+                    partesFecha.length === 3
+                    ?
+                    (
+                        partesFecha[2]
+                        +
+                        "/"
+                        +
+                        partesFecha[1]
+                        +
+                        "/"
+                        +
+                        partesFecha[0]
+                    )
+                    :
+                    fechaLimiteTexto
+                );
+
+
+                marcarInvalido(
+                    fecha,
+                    (
+                        "La fecha del apiario no puede ser "
+                        +
+                        "posterior al "
+                        +
+                        fechaLimiteLegible
+                        +
+                        " porque ya existen colmenas registradas."
                     )
                 );
 
 
-                const hoy = new Date();
-
-
-                hoy.setHours(
-                    0,
-                    0,
-                    0,
-                    0
-                );
-
-
-                if (
-                    fechaSeleccionada >
-                    hoy
-                ) {
-
-                    marcarInvalido(
-                        fecha,
-                        "La fecha de registro no puede ser una fecha futura."
-                    );
-
-                    esValido = false;
-
-
-                } else if (
-                    fechaSeleccionada
-                        .getFullYear()
-                    <
-                    AÑO_MINIMO_FECHA
-                ) {
-
-                    marcarInvalido(
-                        fecha,
-                        "La fecha de registro no es válida."
-                    );
-
-                    esValido = false;
-
-                }
+                esValido = false;
 
             }
 

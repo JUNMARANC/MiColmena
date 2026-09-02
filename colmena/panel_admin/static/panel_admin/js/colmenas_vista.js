@@ -212,27 +212,183 @@ document.addEventListener("DOMContentLoaded", function () {
         }
  
         // ---------- FECHA DE REGISTRO ----------
-        const fecha = formulario.querySelector('[name="fecha_registro"]');
+        const fecha = (
+            formulario.querySelector(
+                '[name="fecha_registro"]'
+            )
+        );
+
+
         if (fecha) {
-            limpiarValidez(fecha);
-            const valorTexto = fecha.value;
- 
+
+            limpiarValidez(
+                fecha
+            );
+
+
+            const valorTexto =
+                fecha.value;
+
+
             if (!valorTexto) {
-                marcarInvalido(fecha, "La fecha de registro es obligatoria.");
+
+                marcarInvalido(
+                    fecha,
+                    "La fecha de registro es obligatoria."
+                );
+
                 esValido = false;
+
             } else {
-                const fechaSeleccionada = new Date(valorTexto + "T00:00:00");
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
- 
-                if (fechaSeleccionada > hoy) {
-                    marcarInvalido(fecha, "La fecha de registro no puede ser una fecha futura.");
+
+                const fechaSeleccionada =
+                    new Date(
+                        valorTexto +
+                        "T00:00:00"
+                    );
+
+
+                const hoy =
+                    new Date();
+
+
+                hoy.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+
+                // ==============================================
+                // NO PERMITIR FECHA FUTURA
+                // ==============================================
+
+                if (
+                    fechaSeleccionada >
+                    hoy
+                ) {
+
+                    marcarInvalido(
+                        fecha,
+                        "La fecha de registro no puede ser una fecha futura."
+                    );
+
                     esValido = false;
-                } else if (fechaSeleccionada.getFullYear() < AÑO_MINIMO_FECHA) {
-                    marcarInvalido(fecha, "La fecha de registro no es válida.");
+
+                } else if (
+                    fechaSeleccionada
+                        .getFullYear()
+                    <
+                    AÑO_MINIMO_FECHA
+                ) {
+
+                    marcarInvalido(
+                        fecha,
+                        "La fecha de registro no es válida."
+                    );
+
                     esValido = false;
+
+                } else if (
+                    apiario
+                    &&
+                    apiario.value
+                ) {
+
+                    // ==========================================
+                    // FECHA DEL APIARIO SELECCIONADO
+                    // ==========================================
+
+                    const opcionApiario = (
+                        apiario.options[
+                            apiario.selectedIndex
+                        ]
+                    );
+
+
+                    const fechaApiarioTexto = (
+                        opcionApiario
+                        ?
+                        (
+                            opcionApiario.dataset
+                                .fechaApiario
+                            ||
+                            ""
+                        )
+                        :
+                        ""
+                    );
+
+
+                    if (fechaApiarioTexto) {
+
+                        const fechaApiario =
+                            new Date(
+                                fechaApiarioTexto +
+                                "T00:00:00"
+                            );
+
+
+                        // ======================================
+                        // COLMENA NO ANTERIOR AL APIARIO
+                        // ======================================
+
+                        if (
+                            fechaSeleccionada <
+                            fechaApiario
+                        ) {
+
+                            const partesFecha =
+                                fechaApiarioTexto
+                                    .split("-");
+
+
+                            const fechaLegible = (
+                                partesFecha.length === 3
+                                ?
+                                (
+                                    partesFecha[2]
+                                    +
+                                    "/"
+                                    +
+                                    partesFecha[1]
+                                    +
+                                    "/"
+                                    +
+                                    partesFecha[0]
+                                )
+                                :
+                                fechaApiarioTexto
+                            );
+
+
+                            marcarInvalido(
+                                fecha,
+                                (
+                                    "La fecha de la colmena no puede ser "
+                                    +
+                                    "anterior a la fecha de registro del "
+                                    +
+                                    "apiario seleccionado ("
+                                    +
+                                    fechaLegible
+                                    +
+                                    ")."
+                                )
+                            );
+
+
+                            esValido = false;
+
+                        }
+
+                    }
+
                 }
+
             }
+
         }
  
         // ---------- DESCRIPCIÓN (opcional, solo límite de longitud) ----------
@@ -309,6 +465,12 @@ document.addEventListener(
                         return;
                     }
 
+                    const fechaRegistro = (
+                        formulario.querySelector(
+                            '[name="fecha_registro"]'
+                        )
+                    );
+
 
                     const ayuda = (
                         formulario.querySelector(
@@ -324,6 +486,74 @@ document.addEventListener(
                         ""
                     );
 
+                    // =========================================
+                    // ACTUALIZAR FECHA MÍNIMA SEGÚN APIARIO
+                    // =========================================
+
+                    function actualizarFechaMinima() {
+
+                        if (!fechaRegistro) {
+                            return;
+                        }
+
+
+                        const opcion = (
+                            selectApiario.options[
+                                selectApiario.selectedIndex
+                            ]
+                        );
+
+
+                        // -------------------------------------
+                        // SIN APIARIO SELECCIONADO
+                        // -------------------------------------
+
+                        if (
+                            !selectApiario.value
+                            ||
+                            !opcion
+                        ) {
+
+                            fechaRegistro.removeAttribute(
+                                "min"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // -------------------------------------
+                        // OBTENER FECHA DEL APIARIO
+                        // -------------------------------------
+
+                        const fechaApiario = (
+                            opcion.dataset
+                                .fechaApiario
+                            ||
+                            ""
+                        );
+
+
+                        if (!fechaApiario) {
+
+                            fechaRegistro.removeAttribute(
+                                "min"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // -------------------------------------
+                        // ESTABLECER FECHA MÍNIMA
+                        // -------------------------------------
+
+                        fechaRegistro.min =
+                            fechaApiario;
+
+                    }
 
                     // =========================================
                     // VALIDAR CAPACIDAD
@@ -534,13 +764,21 @@ document.addEventListener(
 
                     selectApiario.addEventListener(
                         "change",
-                        validarCapacidadApiario
+                        function () {
+
+                            actualizarFechaMinima();
+
+                            validarCapacidadApiario();
+
+                        }
                     );
 
 
                     // =========================================
                     // VALIDACIÓN INICIAL
                     // =========================================
+
+                    actualizarFechaMinima();
 
                     validarCapacidadApiario();
 

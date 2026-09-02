@@ -483,6 +483,7 @@
 
                                                         data-actual="{{ apiario.total_colmenas_reales }}"
                                                         data-maximo="{{ apiario.capacidad_maxima }}"
+                                                        data-fecha-apiario="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
 
                                                         {% if colmena.id_apiario and apiario.id_apiario == colmena.id_apiario.id_apiario %}
 
@@ -1117,6 +1118,7 @@
 
                                         data-actual="{{ apiario.total_colmenas_reales }}"
                                         data-maximo="{{ apiario.capacidad_maxima }}"
+                                        data-fecha-apiario="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
 
                                         {% if apiario.esta_completo %}
                                             disabled
