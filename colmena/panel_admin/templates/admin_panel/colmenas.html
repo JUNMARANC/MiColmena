@@ -6,140 +6,146 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <h2 class="titulo-panel mb-0">Gestión de Colmenas</h2>
+<div class="dashboard-fondo-panal encabezado-colmenas-panal mb-4">
 
-    <div class="d-flex align-items-center gap-3">
+    <div class="particulas-flotantes" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
+    </div>
 
-        <div class="selector-vista" role="group" aria-label="Modo de visualización">
-            <button type="button"
-                    id="btnVistaTabla"
-                    class="selector-vista-btn activo"
-                    title="Ver en tabla">
-                <i class="bi bi-table"></i>
+    <div class="dashboard-fondo-panal-contenido d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+        <h2 class="titulo-panel mb-0">
+            <i class="bi bi-hexagon-fill me-2" style="color: var(--miel);"></i>
+            Gestión de Colmenas
+        </h2>
+
+        <div class="d-flex align-items-center gap-3">
+
+            <div class="selector-vista" role="group" aria-label="Modo de visualización">
+                <button type="button"
+                        id="btnVistaTabla"
+                        class="selector-vista-btn activo"
+                        title="Ver en tabla">
+                    <i class="bi bi-table"></i>
+                </button>
+
+                <button type="button"
+                        id="btnVistaTarjetas"
+                        class="selector-vista-btn"
+                        title="Ver en tarjetas">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </button>
+            </div>
+
+            {% if "cg" in permisos_usuario %}
+            <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
+                <i class="bi bi-plus-circle me-2"></i>
+                Agregar
             </button>
+            {% endif %}
 
-            <button type="button"
-                    id="btnVistaTarjetas"
-                    class="selector-vista-btn"
-                    title="Ver en tarjetas">
-                <i class="bi bi-grid-3x3-gap-fill"></i>
-            </button>
         </div>
 
-        {% if "cv" in permisos_usuario %}
-        <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
-            <i class="bi bi-plus-circle me-2"></i>
-            Agregar
-        </button>
-        {% endif %}
     </div>
+
 </div>
 
 <div class="card-admin mb-4">
 
-    <form method="GET">
+    <form method="GET" class="colmenas-toolbar">
 
-        <div class="row g-3 align-items-end">
+        <div class="colmenas-toolbar-campo">
 
-            <div class="col-md-4">
+            <label class="form-label">
+                Buscar por código
+            </label>
 
-                <label class="form-label">
-                    Buscar por código
-                </label>
+            <input
+                type="text"
+                name="codigo"
+                class="form-control"
+                placeholder="CM00000001"
+                value="{{ request.GET.codigo }}">
 
-                <input
-                    type="text"
-                    name="codigo"
-                    class="form-control"
-                    placeholder="CM00000001"
-                    value="{{ request.GET.codigo }}">
+        </div>
 
-            </div>
+        <div class="colmenas-toolbar-campo">
 
-            <div class="col-md-3">
+            <label class="form-label">
+                Apiario
+            </label>
 
-                <label class="form-label">
-                    Apiario
-                </label>
+            <select name="apiario" class="form-select">
 
-                <select name="apiario" class="form-select">
+                <option value="">
+                    Todos
+                </option>
 
-                    <option value="">
-                        Todos
-                    </option>
+                {% for apiario in apiarios %}
 
-                    {% for apiario in apiarios %}
+                <option
+                    value="{{ apiario.id_apiario }}"
+                    {% if request.GET.apiario == apiario.id_apiario|stringformat:"s" %}
+                    selected
+                    {% endif %}
+                >
 
-                    <option
-                        value="{{ apiario.id_apiario }}"
-                        {% if request.GET.apiario == apiario.id_apiario|stringformat:"s" %}
-                        selected
-                        {% endif %}
-                    >
+                    {{ apiario.nombreapiario }}
 
-                        {{ apiario.nombreapiario }}
+                </option>
 
-                    </option>
+                {% endfor %}
 
-                    {% endfor %}
+            </select>
 
-                </select>
+        </div>
 
-            </div>
+        <div class="colmenas-toolbar-campo">
 
-            <div class="col-md-3">
+            <label class="form-label">
+                Estado
+            </label>
 
-                <label class="form-label">
-                    Estado
-                </label>
+            <select name="estado" class="form-select">
 
-                <select name="estado" class="form-select">
+                <option value="">Todos</option>
 
-                    <option value="">Todos</option>
+                <option value="Activa"
+                {% if request.GET.estado == "Activa" %}selected{% endif %}>
+                    Activa
+                </option>
 
-                    <option value="Activa"
-                    {% if request.GET.estado == "Activa" %}selected{% endif %}>
-                        Activa
-                    </option>
+                <option value="Riesgo"
+                {% if request.GET.estado == "Riesgo" %}selected{% endif %}>
+                    Riesgo
+                </option>
 
-                    <option value="Riesgo"
-                    {% if request.GET.estado == "Riesgo" %}selected{% endif %}>
-                        Riesgo
-                    </option>
+                <option value="Inactiva"
+                {% if request.GET.estado == "Inactiva" %}selected{% endif %}>
+                    Inactiva
+                </option>
 
-                    <option value="Inactiva"
-                    {% if request.GET.estado == "Inactiva" %}selected{% endif %}>
-                        Inactiva
-                    </option>
+                <option value="Revisión"
+                {% if request.GET.estado == "Revisión" %}selected{% endif %}>
+                    Revisión
+                </option>
 
-                    <option value="Revisión"
-                    {% if request.GET.estado == "Revisión" %}selected{% endif %}>
-                        Revisión
-                    </option>
+            </select>
 
-                </select>
+        </div>
 
-            </div>
+        <div class="colmenas-toolbar-acciones">
 
-            <div class="col-md-2 d-grid">
+            <button class="btn btn-success">
+                <i class="bi bi-search me-2"></i>
+                Filtrar
+            </button>
 
-                <button class="btn btn-success">
-                    <i class="bi bi-search me-2"></i>
-                    Filtrar
-                </button>
-
-            </div>
-
-            <div class="col-md-2 d-grid">
-
-                <a href="{% url 'colmenas_admin' %}" class="btn btn-outline-secondary">
-
-                    Limpiar
-
-                </a>
-
-            </div>
+            <a href="{% url 'colmenas_admin' %}" class="btn btn-outline-secondary">
+                Limpiar
+            </a>
 
         </div>
 
@@ -188,13 +194,29 @@
 
                     <td>
                         {% if colmena.estadocolmena == "Activa" %}
-                            <span class="badge-estado badge-bueno">Activa</span>
+                            <span
+                                class="badge-estado badge-bueno"
+                                data-bs-toggle="tooltip"
+                                title="Colmena activa y en buen estado."
+                            >Activa</span>
                         {% elif colmena.estadocolmena == "Riesgo" %}
-                            <span class="badge-estado badge-precaucion">Riesgo</span>
+                            <span
+                                class="badge-estado badge-precaucion"
+                                data-bs-toggle="tooltip"
+                                title="Presenta señales de riesgo, revisar pronto."
+                            >Riesgo</span>
                         {% elif colmena.estadocolmena == "Inactiva" %}
-                            <span class="badge-estado badge-deficiente">Inactiva</span>
+                            <span
+                                class="badge-estado badge-deficiente"
+                                data-bs-toggle="tooltip"
+                                title="Colmena inactiva, sin actividad registrada."
+                            >Inactiva</span>
                         {% else %}
-                            <span class="badge-estado badge-precaucion">{{ colmena.estadocolmena }}</span>
+                            <span
+                                class="badge-estado badge-precaucion"
+                                data-bs-toggle="tooltip"
+                                title="Pendiente de revisión por el apicultor."
+                            >{{ colmena.estadocolmena }}</span>
                         {% endif %}
                     </td>
 
@@ -209,6 +231,7 @@
                                 <i class="bi bi-eye"></i>
                             </button>
 
+                            {% if "cg" in permisos_usuario %}
                             <button type="button"
                                     class="btn-accion btn-editar"
                                     data-bs-toggle="modal"
@@ -222,6 +245,7 @@
                                     data-bs-target="#modalEliminarColmena{{ colmena.id_colmena }}">
                                 <i class="bi bi-trash"></i>
                             </button>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -700,7 +724,7 @@
 
                                     <button
                                         type="submit"
-                                        class="btn btn-success"
+                                        class="btn btn-success btn-guardar-colmena"
                                     >
 
                                         <i class="bi bi-save me-2"></i>
@@ -821,7 +845,11 @@
                 {% empty %}
                 <tr>
                     <td colspan="6" class="text-center py-4">
-                        No hay colmenas registradas.
+                        {% if request.GET.codigo or request.GET.apiario or request.GET.estado %}
+                            No se encontraron colmenas con esos filtros.
+                        {% else %}
+                            No hay colmenas registradas.
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -847,13 +875,29 @@
             {% endif %}
 
             {% if colmena.estadocolmena == "Activa" %}
-                <span class="badge-estado badge-bueno tarjeta-colmena-badge">Activa</span>
+                <span
+                    class="badge-estado badge-bueno tarjeta-colmena-badge"
+                    data-bs-toggle="tooltip"
+                    title="Colmena activa y en buen estado."
+                >Activa</span>
             {% elif colmena.estadocolmena == "Riesgo" %}
-                <span class="badge-estado badge-precaucion tarjeta-colmena-badge">Riesgo</span>
+                <span
+                    class="badge-estado badge-precaucion tarjeta-colmena-badge"
+                    data-bs-toggle="tooltip"
+                    title="Presenta señales de riesgo, revisar pronto."
+                >Riesgo</span>
             {% elif colmena.estadocolmena == "Inactiva" %}
-                <span class="badge-estado badge-deficiente tarjeta-colmena-badge">Inactiva</span>
+                <span
+                    class="badge-estado badge-deficiente tarjeta-colmena-badge"
+                    data-bs-toggle="tooltip"
+                    title="Colmena inactiva, sin actividad registrada."
+                >Inactiva</span>
             {% else %}
-                <span class="badge-estado badge-precaucion tarjeta-colmena-badge">{{ colmena.estadocolmena }}</span>
+                <span
+                    class="badge-estado badge-precaucion tarjeta-colmena-badge"
+                    data-bs-toggle="tooltip"
+                    title="Pendiente de revisión por el apicultor."
+                >{{ colmena.estadocolmena }}</span>
             {% endif %}
         </div>
 
@@ -903,7 +947,13 @@
 
     </div>
     {% empty %}
-    <p class="text-center text-muted py-4 w-100">No hay colmenas registradas.</p>
+    <p class="text-center text-muted py-4 w-100">
+        {% if request.GET.codigo or request.GET.apiario or request.GET.estado %}
+            No se encontraron colmenas con esos filtros.
+        {% else %}
+            No hay colmenas registradas.
+        {% endif %}
+    </p>
     {% endfor %}
 
 </div>
@@ -1295,7 +1345,7 @@
 
                     <button
                         type="submit"
-                        class="btn btn-success"
+                        class="btn btn-success btn-guardar-colmena"
                     >
 
                         <i class="bi bi-save me-2"></i>

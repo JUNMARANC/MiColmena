@@ -267,117 +267,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================================================
+    // =========================================================
     // ESTELA DE POLEN AL MOVER EL MOUSE
-    // (mismo efecto visual del cursor en el dashboard)
+    // Y TOOLTIPS DE LOS BADGES DE ESTADO
+    // (ambos ahora son globales: ver funciones_admin.js,
+    //  que se carga en todas las páginas del panel)
     // =========================================================
-    //
-    // Si el dashboard ya la activa de forma global (por ejemplo
-    // desde un script en base_admin.html), esta comprobación
-    // evita crear dos estelas superpuestas en esta página.
-    // =========================================================
-
-    function inicializarEstelaPolen() {
-
-        if (prefiereMenosMovimiento) {
-            return;
-        }
-
-
-        if (window.__estelaPolenApiariosActiva) {
-            return;
-        }
-
-        window.__estelaPolenApiariosActiva = true;
-
-
-        const INTERVALO_MINIMO_MS = 45;
-
-        let ultimoTiempo = 0;
-
-
-        document.addEventListener(
-            "mousemove",
-            function (evento) {
-
-                const ahora = Date.now();
-
-                if (
-                    ahora - ultimoTiempo
-                    <
-                    INTERVALO_MINIMO_MS
-                ) {
-                    return;
-                }
-
-                ultimoTiempo = ahora;
-
-
-                const particula = (
-                    document.createElement("span")
-                );
-
-                particula.className = "estela-polen";
-
-                particula.style.left = (
-                    evento.clientX + "px"
-                );
-
-                particula.style.top = (
-                    evento.clientY + "px"
-                );
-
-                document.body.appendChild(particula);
-
-
-                window.setTimeout(
-                    function () {
-
-                        particula.remove();
-
-                    },
-                    700
-                );
-
-            }
-        );
-
-    }
-
-    inicializarEstelaPolen();
-
-
-    // =========================================================
-    // TOOLTIPS DE LOS BADGES DE ESTADO
-    // =========================================================
-
-    function inicializarTooltipsEstado() {
-
-        if (
-            typeof bootstrap === "undefined"
-            ||
-            !bootstrap.Tooltip
-        ) {
-            return;
-        }
-
-
-        document
-            .querySelectorAll(
-                '[data-bs-toggle="tooltip"]'
-            )
-            .forEach(
-                function (elemento) {
-
-                    new bootstrap.Tooltip(
-                        elemento
-                    );
-
-                }
-            );
-
-    }
-
-    inicializarTooltipsEstado();
 
 
     // =========================================================
