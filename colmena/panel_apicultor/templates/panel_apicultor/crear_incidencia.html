@@ -1,0 +1,1053 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Reportar incidencia | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Reportar incidencia
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Registra una novedad detectada en uno de tus apiarios o colmenas
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/crear_incidencia.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+{% with tipo_actual=valores_formulario.tipo_entidad|default:tipo_inicial %}
+{% with apiario_actual=valores_formulario.apiario|default:apiario_preseleccionado %}
+{% with colmena_actual=valores_formulario.colmena|default:colmena_preseleccionada %}
+
+
+<div class="crear-incidencia-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="crear-incidencia-encabezado">
+
+
+        <div class="crear-incidencia-encabezado-info">
+
+
+            <a
+                href="{% url 'incidencias_apicultor' %}"
+                class="btn-volver-incidencias"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                <span>
+                    Volver a incidencias
+                </span>
+
+            </a>
+
+
+            <span class="crear-incidencia-etiqueta">
+                Nuevo reporte
+            </span>
+
+
+            <h1>
+                Reportar incidencia
+            </h1>
+
+
+            <p>
+                Registra una novedad encontrada durante la revisión
+                de tus apiarios o colmenas asignadas.
+            </p>
+
+
+        </div>
+
+
+        <div class="crear-incidencia-encabezado-icono">
+
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         INFORMACIÓN
+    ====================================================== -->
+
+    <section class="crear-incidencia-aviso">
+
+
+        <div class="crear-incidencia-aviso-icono">
+
+            <i class="bi bi-shield-check"></i>
+
+        </div>
+
+
+        <div>
+
+            <strong>
+                Solo puedes reportar sobre tus apiarios
+            </strong>
+
+            <p>
+                El sistema únicamente permite seleccionar apiarios
+                asignados a tu perfil y las colmenas que pertenecen
+                a esos apiarios.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FORMULARIO
+    ====================================================== -->
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="crear-incidencia-form"
+        id="formCrearIncidencia"
+        novalidate
+    >
+
+        {% csrf_token %}
+
+
+
+        <!-- =================================================
+             1. TIPO DE INCIDENCIA
+        ================================================== -->
+
+        <section class="crear-incidencia-card">
+
+
+            <div class="crear-incidencia-card-header">
+
+
+                <div class="crear-incidencia-card-icono">
+
+                    <i class="bi bi-diagram-3-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 1
+                    </span>
+
+                    <h2>
+                        ¿Dónde ocurrió la incidencia?
+                    </h2>
+
+                    <p>
+                        Indica si la novedad afecta al apiario
+                        en general o a una colmena específica.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="tipo-incidencia-selector">
+
+
+                <!-- =========================================
+                     APIARIO
+                ========================================== -->
+
+                <label class="tipo-incidencia-opcion">
+
+
+                    <input
+                        type="radio"
+                        name="tipo_entidad"
+                        value="Apiario"
+                        class="tipo-entidad-radio"
+
+                        {% if tipo_actual != "Colmena" %}
+                            checked
+                        {% endif %}
+                    >
+
+
+                    <span class="tipo-incidencia-radio-visual"></span>
+
+
+                    <span class="tipo-incidencia-icono">
+
+                        <i class="bi bi-flower1"></i>
+
+                    </span>
+
+
+                    <span class="tipo-incidencia-texto">
+
+                        <strong>
+                            Apiario
+                        </strong>
+
+                        <small>
+                            La incidencia afecta de manera
+                            general al apiario.
+                        </small>
+
+                    </span>
+
+
+                </label>
+
+
+
+                <!-- =========================================
+                     COLMENA
+                ========================================== -->
+
+                <label class="tipo-incidencia-opcion">
+
+
+                    <input
+                        type="radio"
+                        name="tipo_entidad"
+                        value="Colmena"
+                        class="tipo-entidad-radio"
+
+                        {% if tipo_actual == "Colmena" %}
+                            checked
+                        {% endif %}
+                    >
+
+
+                    <span class="tipo-incidencia-radio-visual"></span>
+
+
+                    <span class="tipo-incidencia-icono">
+
+                        <i class="bi bi-hexagon-fill"></i>
+
+                    </span>
+
+
+                    <span class="tipo-incidencia-texto">
+
+                        <strong>
+                            Colmena
+                        </strong>
+
+                        <small>
+                            La incidencia corresponde a una
+                            colmena específica.
+                        </small>
+
+                    </span>
+
+
+                </label>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             2. UBICACIÓN
+        ================================================== -->
+
+        <section class="crear-incidencia-card">
+
+
+            <div class="crear-incidencia-card-header">
+
+
+                <div class="crear-incidencia-card-icono">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 2
+                    </span>
+
+                    <h2>
+                        Ubicación de la incidencia
+                    </h2>
+
+                    <p>
+                        Selecciona el apiario y, si corresponde,
+                        la colmena afectada.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="crear-incidencia-grid">
+
+
+                <!-- =========================================
+                     APIARIO
+                ========================================== -->
+
+                <div class="campo-incidencia">
+
+
+                    <label for="apiarioIncidencia">
+
+                        Apiario
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-incidencia-control">
+
+
+                        <i class="bi bi-flower1"></i>
+
+
+                        <select
+                            id="apiarioIncidencia"
+                            name="apiario"
+                            required
+                        >
+
+
+                            <option value="">
+                                Selecciona un apiario
+                            </option>
+
+
+                            {% for apiario in apiarios %}
+
+
+                                <option
+                                    value="{{ apiario.id_apiario }}"
+
+                                    {% if apiario_actual == apiario.id_apiario|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ apiario.nombreapiario }}
+
+                                </option>
+
+
+                            {% endfor %}
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+                        Solo aparecen los apiarios que tienes asignados.
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     COLMENA
+                ========================================== -->
+
+                <div
+                    class="campo-incidencia campo-colmena"
+                    id="contenedorColmena"
+                >
+
+
+                    <label for="colmenaIncidencia">
+
+                        Colmena
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-incidencia-control">
+
+
+                        <i class="bi bi-hexagon-fill"></i>
+
+
+                        <select
+                            id="colmenaIncidencia"
+                            name="colmena"
+                        >
+
+
+                            <option value="">
+                                Selecciona una colmena
+                            </option>
+
+
+                            {% for colmena in colmenas %}
+
+
+                                <option
+                                    value="{{ colmena.id_colmena }}"
+
+                                    data-apiario-id="{{ colmena.id_apiario.id_apiario }}"
+
+                                    {% if colmena_actual == colmena.id_colmena|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ colmena.codigocolmena }}
+
+                                    -
+                                    
+                                    {{ colmena.id_apiario.nombreapiario }}
+
+                                </option>
+
+
+                            {% endfor %}
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+                        Se mostrarán únicamente las colmenas
+                        del apiario seleccionado.
+                    </small>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             3. INFORMACIÓN DE LA INCIDENCIA
+        ================================================== -->
+
+        <section class="crear-incidencia-card">
+
+
+            <div class="crear-incidencia-card-header">
+
+
+                <div class="crear-incidencia-card-icono">
+
+                    <i class="bi bi-clipboard2-pulse-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 3
+                    </span>
+
+                    <h2>
+                        Información de la incidencia
+                    </h2>
+
+                    <p>
+                        Describe claramente qué ocurrió y qué
+                        nivel de atención consideras necesario.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="crear-incidencia-grid">
+
+
+                <!-- =========================================
+                     TÍTULO
+                ========================================== -->
+
+                <div class="campo-incidencia campo-completo">
+
+
+                    <label for="tituloIncidencia">
+
+                        Título de la incidencia
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-incidencia-control">
+
+
+                        <i class="bi bi-pencil-square"></i>
+
+
+                        <input
+                            type="text"
+                            id="tituloIncidencia"
+                            name="titulo"
+                            maxlength="150"
+                            value="{{ valores_formulario.titulo|default:'' }}"
+                            placeholder="Ej: Presencia de plaga en la colmena"
+                            autocomplete="off"
+                            required
+                        >
+
+
+                    </div>
+
+
+                    <div class="campo-meta">
+
+                        <small>
+                            Usa un título corto que describa
+                            claramente la novedad.
+                        </small>
+
+                        <span id="contadorTitulo">
+                            0 / 150
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     PRIORIDAD
+                ========================================== -->
+
+                <div class="campo-incidencia">
+
+
+                    <label for="prioridadIncidencia">
+
+                        Prioridad
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-incidencia-control">
+
+
+                        <i class="bi bi-flag-fill"></i>
+
+
+                        <select
+                            id="prioridadIncidencia"
+                            name="prioridad"
+                            required
+                        >
+
+
+                            <option value="">
+                                Selecciona una prioridad
+                            </option>
+
+
+                            {% for prioridad in prioridades %}
+
+
+                                <option
+                                    value="{{ prioridad }}"
+
+                                    {% if valores_formulario.prioridad == prioridad %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ prioridad }}
+
+                                </option>
+
+
+                            {% endfor %}
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+
+                        Usa Crítica únicamente cuando requiera
+                        atención inmediata.
+
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FECHA
+                ========================================== -->
+
+                <div class="campo-incidencia">
+
+
+                    <label for="fechaIncidencia">
+
+                        Fecha de detección
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-incidencia-control">
+
+
+                        <i class="bi bi-calendar3"></i>
+
+
+                        <input
+                            type="date"
+                            id="fechaIncidencia"
+                            name="fecha"
+
+                            value="{% if valores_formulario.fecha %}{{ valores_formulario.fecha }}{% else %}{{ fecha_hoy|date:'Y-m-d' }}{% endif %}"
+
+                            max="{{ fecha_hoy|date:'Y-m-d' }}"
+                            required
+                        >
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+
+                        Indica cuándo detectaste la incidencia.
+
+                    </small>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             4. OBSERVACIONES
+        ================================================== -->
+
+        <section class="crear-incidencia-card">
+
+
+            <div class="crear-incidencia-card-header">
+
+
+                <div class="crear-incidencia-card-icono">
+
+                    <i class="bi bi-card-text"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 4
+                    </span>
+
+                    <h2>
+                        Observaciones
+                    </h2>
+
+                    <p>
+                        Describe lo ocurrido con suficiente detalle
+                        para facilitar la revisión de la incidencia.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="campo-incidencia campo-completo">
+
+
+                <label for="observacionesIncidencia">
+
+                    Descripción de la novedad
+
+                </label>
+
+
+                <textarea
+                    id="observacionesIncidencia"
+                    name="observaciones"
+                    maxlength="1000"
+                    rows="6"
+                    placeholder="Describe qué encontraste, posibles causas, condiciones observadas o cualquier información que ayude a evaluar la incidencia..."
+                >{{ valores_formulario.observaciones|default:"" }}</textarea>
+
+
+                <div class="campo-meta">
+
+                    <small>
+                        Puedes incluir detalles de la inspección
+                        realizada.
+                    </small>
+
+                    <span id="contadorObservaciones">
+                        0 / 1000
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             5. EVIDENCIA FOTOGRÁFICA
+        ================================================== -->
+
+        <section class="crear-incidencia-card">
+
+
+            <div class="crear-incidencia-card-header">
+
+
+                <div class="crear-incidencia-card-icono">
+
+                    <i class="bi bi-camera-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 5
+                    </span>
+
+                    <h2>
+                        Evidencia fotográfica
+                    </h2>
+
+                    <p>
+                        Puedes adjuntar una imagen que ayude al
+                        administrador a evaluar mejor la situación.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="evidencia-incidencia">
+
+
+                <!-- =========================================
+                     INPUT
+                ========================================== -->
+
+                <input
+                    type="file"
+                    name="imagen"
+                    id="imagenIncidencia"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                >
+
+
+
+                <!-- =========================================
+                     SELECTOR
+                ========================================== -->
+
+                <label
+                    for="imagenIncidencia"
+                    class="evidencia-selector"
+                    id="selectorImagenIncidencia"
+                >
+
+
+                    <div class="evidencia-selector-icono">
+
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Seleccionar fotografía
+                        </strong>
+
+                        <span>
+                            JPG, PNG o WEBP · Máximo 5 MB
+                        </span>
+
+                    </div>
+
+
+                    <div class="evidencia-selector-boton">
+
+                        Examinar
+
+                    </div>
+
+
+                </label>
+
+
+
+                <!-- =========================================
+                     VISTA PREVIA
+                ========================================== -->
+
+                <div
+                    class="evidencia-preview"
+                    id="previewImagenIncidencia"
+                    hidden
+                >
+
+
+                    <div class="evidencia-preview-imagen">
+
+
+                        <img
+                            id="imagenPreview"
+                            src=""
+                            alt="Vista previa de la evidencia"
+                        >
+
+
+                    </div>
+
+
+                    <div class="evidencia-preview-info">
+
+
+                        <div>
+
+
+                            <strong id="nombreImagen">
+                                Imagen
+                            </strong>
+
+
+                            <span id="pesoImagen">
+                                —
+                            </span>
+
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="btnEliminarImagen"
+                            class="btn-eliminar-imagen"
+                        >
+
+                            <i class="bi bi-trash3"></i>
+
+                            <span>
+                                Quitar
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             RESUMEN / CONFIRMACIÓN
+        ================================================== -->
+
+        <section class="crear-incidencia-confirmacion">
+
+
+            <div class="crear-incidencia-confirmacion-icono">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    La incidencia quedará registrada como Pendiente
+                </strong>
+
+                <p>
+                    Una vez reportada aparecerá en tu listado de
+                    incidencias y también podrá ser consultada por
+                    los administradores del sistema.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             BOTONES
+        ================================================== -->
+
+        <div class="crear-incidencia-acciones">
+
+
+            <a
+                href="{% url 'incidencias_apicultor' %}"
+                class="btn-cancelar-incidencia"
+            >
+
+                <i class="bi bi-x-lg"></i>
+
+                <span>
+                    Cancelar
+                </span>
+
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn-guardar-incidencia"
+                id="btnGuardarIncidencia"
+            >
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <span>
+                    Reportar incidencia
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+
+{% endwith %}
+{% endwith %}
+{% endwith %}
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/crear_incidencia.js' %}?v=1"
+></script>
+
+{% endblock %}

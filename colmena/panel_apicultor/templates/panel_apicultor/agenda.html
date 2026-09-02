@@ -1,0 +1,1850 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Agenda | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Agenda
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Consulta las actividades programadas para tus apiarios y colmenas
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/agenda.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="agenda-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="agenda-encabezado">
+
+
+        <div>
+
+
+            <span class="agenda-etiqueta">
+                Planificación
+            </span>
+
+
+            <h1>
+                Mi agenda
+            </h1>
+
+
+            <p>
+                Consulta mantenimientos, revisiones, incidencias
+                y eventos relacionados con tus apiarios asignados.
+            </p>
+
+
+        </div>
+
+
+        <div class="agenda-encabezado-icono">
+
+            <i class="bi bi-calendar-week-fill"></i>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TARJETAS DE RESUMEN
+    ====================================================== -->
+
+    <section class="agenda-resumen">
+
+
+        <!-- PROGRAMADOS -->
+
+        <article class="agenda-resumen-card programados">
+
+
+            <div class="agenda-resumen-icono">
+
+                <i class="bi bi-calendar-check-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ total_programados|default:0 }}
+                </strong>
+
+                <span>
+                    Programados
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- HOY -->
+
+        <article class="agenda-resumen-card hoy">
+
+
+            <div class="agenda-resumen-icono">
+
+                <i class="bi bi-calendar-day-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ total_hoy|default:0 }}
+                </strong>
+
+                <span>
+                    Para hoy
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- COMPLETADOS -->
+
+        <article class="agenda-resumen-card completados">
+
+
+            <div class="agenda-resumen-icono">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ total_completados|default:0 }}
+                </strong>
+
+                <span>
+                    Completados
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- CANCELADOS -->
+
+        <article class="agenda-resumen-card cancelados">
+
+
+            <div class="agenda-resumen-icono">
+
+                <i class="bi bi-x-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ total_cancelados|default:0 }}
+                </strong>
+
+                <span>
+                    Cancelados
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CALENDARIO + PRÓXIMOS EVENTOS
+    ====================================================== -->
+
+    <section class="agenda-principal">
+
+
+        <!-- =================================================
+             CALENDARIO
+        ================================================== -->
+
+        <div class="agenda-calendario-card">
+
+
+            <!-- HEADER CALENDARIO -->
+
+            <div class="agenda-calendario-header">
+
+
+                <div>
+
+
+                    <span>
+                        Calendario
+                    </span>
+
+
+                    <h2 id="tituloMesAgenda">
+                        —
+                    </h2>
+
+
+                </div>
+
+
+
+                <div class="agenda-calendario-controles">
+
+
+                    <button
+                        type="button"
+                        class="btn-calendario-control"
+                        id="btnMesAnterior"
+                        title="Mes anterior"
+                    >
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-calendario-hoy"
+                        id="btnHoyAgenda"
+                    >
+
+                        Hoy
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-calendario-control"
+                        id="btnMesSiguiente"
+                        title="Mes siguiente"
+                    >
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- DÍAS DE LA SEMANA -->
+
+            <div class="agenda-calendario-semana">
+
+
+                <span>Lun</span>
+                <span>Mar</span>
+                <span>Mié</span>
+                <span>Jue</span>
+                <span>Vie</span>
+                <span>Sáb</span>
+                <span>Dom</span>
+
+
+            </div>
+
+
+
+            <!-- DÍAS DEL CALENDARIO -->
+
+            <div
+                class="agenda-calendario-dias"
+                id="calendarioAgenda"
+            >
+
+                <!--
+                    Los días se generan con JavaScript
+                -->
+
+            </div>
+
+
+
+            <!-- LEYENDA -->
+
+            <div class="agenda-calendario-leyenda">
+
+
+                <span>
+
+                    <i class="leyenda-punto mantenimiento"></i>
+
+                    Mantenimiento
+
+                </span>
+
+
+                <span>
+
+                    <i class="leyenda-punto revision"></i>
+
+                    Revisión
+
+                </span>
+
+
+                <span>
+
+                    <i class="leyenda-punto incidencia"></i>
+
+                    Incidencia
+
+                </span>
+
+
+                <span>
+
+                    <i class="leyenda-punto evento"></i>
+
+                    Evento
+
+                </span>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRÓXIMOS EVENTOS
+        ================================================== -->
+
+        <aside class="agenda-proximos-card">
+
+
+            <div class="agenda-proximos-header">
+
+
+                <div>
+
+
+                    <span>
+                        Próximamente
+                    </span>
+
+
+                    <h2>
+                        Próximos eventos
+                    </h2>
+
+
+                </div>
+
+
+                <i class="bi bi-clock-history"></i>
+
+
+            </div>
+
+
+
+            <div class="agenda-proximos-lista">
+
+
+                {% for evento in proximos_eventos %}
+
+
+                    <button
+                        type="button"
+                        class="agenda-proximo-evento"
+                        data-modal-evento="modalEvento{{ evento.id_evento }}"
+                    >
+
+
+                        <!-- ICONO -->
+
+                        <div
+                            class="
+                                agenda-proximo-icono
+                                {{ evento.tipo_evento }}
+                            "
+                        >
+
+
+                            {% if evento.tipo_evento == "mantenimiento" %}
+
+                                <i class="bi bi-tools"></i>
+
+                            {% elif evento.tipo_evento == "revision" %}
+
+                                <i class="bi bi-search"></i>
+
+                            {% elif evento.tipo_evento == "incidencia" %}
+
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                            {% else %}
+
+                                <i class="bi bi-calendar-event-fill"></i>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+
+                        <!-- INFO -->
+
+                        <div class="agenda-proximo-info">
+
+
+                            <strong>
+
+                                {{ evento.titulo }}
+
+                            </strong>
+
+
+                            <span>
+
+                                <i class="bi bi-calendar3"></i>
+
+                                {{ evento.fecha|date:"d/m/Y" }}
+
+                                ·
+
+                                <i class="bi bi-clock"></i>
+
+                                {{ evento.hora|time:"H:i" }}
+
+                            </span>
+
+
+                            <small>
+
+
+                                {% if evento.id_colmena %}
+
+                                    {{ evento.id_apiario.nombreapiario }}
+                                    ·
+                                    Colmena {{ evento.id_colmena.codigocolmena }}
+
+                                {% else %}
+
+                                    {{ evento.id_apiario.nombreapiario }}
+
+                                {% endif %}
+
+
+                            </small>
+
+
+                        </div>
+
+
+
+                        <i class="bi bi-chevron-right agenda-proximo-flecha"></i>
+
+
+                    </button>
+
+
+                {% empty %}
+
+
+                    <div class="agenda-proximos-vacio">
+
+
+                        <i class="bi bi-calendar2-check"></i>
+
+
+                        <strong>
+                            Sin próximos eventos
+                        </strong>
+
+
+                        <span>
+                            No tienes actividades programadas próximamente.
+                        </span>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </aside>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         EVENTOS DE HOY
+    ====================================================== -->
+
+    {% if eventos_hoy %}
+
+
+        <section class="agenda-hoy-card">
+
+
+            <div class="agenda-hoy-header">
+
+
+                <div>
+
+
+                    <span>
+                        {{ hoy|date:"d/m/Y" }}
+                    </span>
+
+
+                    <h2>
+                        Actividades para hoy
+                    </h2>
+
+
+                </div>
+
+
+                <div class="agenda-hoy-cantidad">
+
+                    {{ total_hoy }}
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="agenda-hoy-lista">
+
+
+                {% for evento in eventos_hoy %}
+
+
+                    <button
+                        type="button"
+                        class="agenda-hoy-evento"
+                        data-modal-evento="modalEvento{{ evento.id_evento }}"
+                    >
+
+
+                        <div class="agenda-hoy-hora">
+
+                            {{ evento.hora|time:"H:i" }}
+
+                        </div>
+
+
+                        <div
+                            class="
+                                agenda-hoy-linea
+                                {{ evento.tipo_evento }}
+                            "
+                        ></div>
+
+
+                        <div class="agenda-hoy-info">
+
+
+                            <strong>
+
+                                {{ evento.titulo }}
+
+                            </strong>
+
+
+                            <span>
+
+
+                                {% if evento.id_colmena %}
+
+                                    {{ evento.id_apiario.nombreapiario }}
+
+                                    · Colmena
+
+                                    {{ evento.id_colmena.codigocolmena }}
+
+                                {% else %}
+
+                                    {{ evento.id_apiario.nombreapiario }}
+
+                                {% endif %}
+
+
+                            </span>
+
+
+                        </div>
+
+
+                        <span
+                            class="
+                                agenda-estado
+                                {{ evento.estado }}
+                            "
+                        >
+
+                            {{ evento.get_estado_display }}
+
+                        </span>
+
+
+                    </button>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </section>
+
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <section class="agenda-filtros-card">
+
+
+        <form
+            method="GET"
+            class="agenda-filtros-form"
+        >
+
+
+            <!-- BUSCAR -->
+
+            <div class="agenda-buscador">
+
+
+                <i class="bi bi-search"></i>
+
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ busqueda }}"
+                    placeholder="Buscar evento, apiario o colmena..."
+                    autocomplete="off"
+                >
+
+
+            </div>
+
+
+
+            <!-- APIARIO -->
+
+            <select
+                name="apiario"
+                class="agenda-select"
+            >
+
+
+                <option value="">
+                    Todos los apiarios
+                </option>
+
+
+                {% for apiario in apiarios %}
+
+
+                    <option
+                        value="{{ apiario.id_apiario }}"
+
+                        {% if apiario_seleccionado == apiario.id_apiario|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ apiario.nombreapiario }}
+
+                    </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- TIPO -->
+
+            <select
+                name="tipo"
+                class="agenda-select"
+            >
+
+
+                <option value="">
+                    Todos los tipos
+                </option>
+
+
+                {% for tipo in tipos_disponibles %}
+
+
+                    <option
+                        value="{{ tipo.valor }}"
+
+                        {% if tipo_seleccionado == tipo.valor %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ tipo.nombre }}
+
+                    </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- ESTADO -->
+
+            <select
+                name="estado"
+                class="agenda-select"
+            >
+
+
+                <option value="">
+                    Todos los estados
+                </option>
+
+
+                {% for estado in estados_disponibles %}
+
+
+                    <option
+                        value="{{ estado.valor }}"
+
+                        {% if estado_seleccionado == estado.valor %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ estado.nombre }}
+
+                    </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- FECHA -->
+
+            <div class="agenda-fecha-filtro">
+
+
+                <i class="bi bi-calendar3"></i>
+
+
+                <input
+                    type="date"
+                    name="fecha"
+                    value="{{ fecha_seleccionada }}"
+                >
+
+
+            </div>
+
+
+
+            <!-- FILTRAR -->
+
+            <button
+                type="submit"
+                class="btn-agenda-filtrar"
+            >
+
+                <i class="bi bi-funnel-fill"></i>
+
+                <span>
+                    Filtrar
+                </span>
+
+            </button>
+
+
+
+            <!-- LIMPIAR -->
+
+            {% if busqueda or apiario_seleccionado or tipo_seleccionado or estado_seleccionado or fecha_seleccionada %}
+
+
+                <a
+                    href="{% url 'agenda_apicultor' %}"
+                    class="btn-agenda-limpiar"
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                    <span>
+                        Limpiar
+                    </span>
+
+                </a>
+
+
+            {% endif %}
+
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         HEADER LISTADO
+    ====================================================== -->
+
+    <section class="agenda-resultados-header">
+
+
+        <div>
+
+
+            <span class="agenda-resultados-etiqueta">
+
+                <i class="bi bi-list-ul"></i>
+
+                Eventos de agenda
+
+            </span>
+
+
+        </div>
+
+
+        <p>
+
+            <strong>
+                {{ total_resultados|default:0 }}
+            </strong>
+
+            resultado{{ total_resultados|pluralize }}
+
+        </p>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TABLA
+    ====================================================== -->
+
+    {% if eventos %}
+
+
+        <section class="agenda-tabla-card">
+
+
+            <div class="agenda-tabla-responsive">
+
+
+                <table class="agenda-tabla">
+
+
+                    <thead>
+
+
+                        <tr>
+
+
+                            <th>
+                                Evento
+                            </th>
+
+
+                            <th>
+                                Ubicación
+                            </th>
+
+
+                            <th>
+                                Fecha
+                            </th>
+
+
+                            <th>
+                                Hora
+                            </th>
+
+
+                            <th>
+                                Tipo
+                            </th>
+
+
+                            <th>
+                                Estado
+                            </th>
+
+
+                            <th>
+                                Responsable
+                            </th>
+
+
+                            <th class="agenda-acciones-columna">
+                                Acción
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        {% for evento in eventos %}
+
+
+                            <tr>
+
+
+                                <!-- EVENTO -->
+
+                                <td>
+
+
+                                    <div class="agenda-evento-titulo">
+
+
+                                        <div
+                                            class="
+                                                agenda-evento-icono
+                                                {{ evento.tipo_evento }}
+                                            "
+                                        >
+
+
+                                            {% if evento.tipo_evento == "mantenimiento" %}
+
+                                                <i class="bi bi-tools"></i>
+
+                                            {% elif evento.tipo_evento == "revision" %}
+
+                                                <i class="bi bi-search"></i>
+
+                                            {% elif evento.tipo_evento == "incidencia" %}
+
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                            {% else %}
+
+                                                <i class="bi bi-calendar-event-fill"></i>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+                                        <div>
+
+
+                                            <strong>
+
+                                                {{ evento.titulo }}
+
+                                            </strong>
+
+
+                                            <span>
+
+                                                #{{ evento.id_evento }}
+
+                                            </span>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- UBICACIÓN -->
+
+                                <td>
+
+
+                                    <div class="agenda-ubicacion">
+
+
+                                        <strong>
+
+                                            {{ evento.id_apiario.nombreapiario }}
+
+                                        </strong>
+
+
+                                        <span>
+
+
+                                            {% if evento.id_colmena %}
+
+                                                <i class="bi bi-hexagon-fill"></i>
+
+                                                Colmena
+                                                {{ evento.id_colmena.codigocolmena }}
+
+                                            {% else %}
+
+                                                <i class="bi bi-geo-alt-fill"></i>
+
+                                                Evento del apiario
+
+                                            {% endif %}
+
+
+                                        </span>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- FECHA -->
+
+                                <td>
+
+
+                                    <div class="agenda-fecha">
+
+
+                                        <i class="bi bi-calendar3"></i>
+
+                                        {{ evento.fecha|date:"d/m/Y" }}
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- HORA -->
+
+                                <td>
+
+
+                                    <div class="agenda-hora">
+
+
+                                        <i class="bi bi-clock"></i>
+
+                                        {{ evento.hora|time:"H:i" }}
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- TIPO -->
+
+                                <td>
+
+
+                                    <span
+                                        class="
+                                            agenda-tipo
+                                            {{ evento.tipo_evento }}
+                                        "
+                                    >
+
+                                        {{ evento.get_tipo_evento_display }}
+
+                                    </span>
+
+
+                                </td>
+
+
+
+                                <!-- ESTADO -->
+
+                                <td>
+
+
+                                    <span
+                                        class="
+                                            agenda-estado
+                                            {{ evento.estado }}
+                                        "
+                                    >
+
+                                        <span></span>
+
+                                        {{ evento.get_estado_display }}
+
+                                    </span>
+
+
+                                </td>
+
+
+
+                                <!-- RESPONSABLE -->
+
+                                <td>
+
+
+                                    <div class="agenda-responsable">
+
+
+                                        <i class="bi bi-person-circle"></i>
+
+
+                                        <span>
+
+
+                                            {% if evento.responsable %}
+
+                                                {% if evento.responsable.user.get_full_name %}
+
+                                                    {{ evento.responsable.user.get_full_name }}
+
+                                                {% else %}
+
+                                                    {{ evento.responsable.user.username }}
+
+                                                {% endif %}
+
+                                            {% else %}
+
+                                                Sin responsable
+
+                                            {% endif %}
+
+
+                                        </span>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- ACCIÓN -->
+
+                                <td class="agenda-acciones-columna">
+
+
+                                    <button
+                                        type="button"
+                                        class="btn-ver-evento"
+                                        data-modal-evento="modalEvento{{ evento.id_evento }}"
+                                        title="Ver detalle"
+                                    >
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </button>
+
+
+                                </td>
+
+
+                            </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PAGINACIÓN
+        ================================================== -->
+
+        {% if eventos.paginator.num_pages > 1 %}
+
+
+            <nav class="agenda-paginacion">
+
+
+                {% if eventos.has_previous %}
+
+
+                    <a
+                        href="?page={{ eventos.previous_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&tipo={{ tipo_seleccionado }}&estado={{ estado_seleccionado }}&fecha={{ fecha_seleccionada }}"
+                        class="agenda-pagina"
+                    >
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </a>
+
+
+                {% endif %}
+
+
+
+                {% for numero in eventos.paginator.page_range %}
+
+
+                    {% if numero == eventos.number %}
+
+
+                        <span class="agenda-pagina active">
+
+                            {{ numero }}
+
+                        </span>
+
+
+                    {% else %}
+
+
+                        <a
+                            href="?page={{ numero }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&tipo={{ tipo_seleccionado }}&estado={{ estado_seleccionado }}&fecha={{ fecha_seleccionada }}"
+                            class="agenda-pagina"
+                        >
+
+                            {{ numero }}
+
+                        </a>
+
+
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+
+                {% if eventos.has_next %}
+
+
+                    <a
+                        href="?page={{ eventos.next_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&tipo={{ tipo_seleccionado }}&estado={{ estado_seleccionado }}&fecha={{ fecha_seleccionada }}"
+                        class="agenda-pagina"
+                    >
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+
+                {% endif %}
+
+
+            </nav>
+
+
+        {% endif %}
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             VACÍO
+        ================================================== -->
+
+        <section class="agenda-vacio">
+
+
+            <div class="agenda-vacio-icono">
+
+                <i class="bi bi-calendar2-check"></i>
+
+            </div>
+
+
+            <h2>
+
+                {% if busqueda or apiario_seleccionado or tipo_seleccionado or estado_seleccionado or fecha_seleccionada %}
+
+                    No encontramos eventos
+
+                {% else %}
+
+                    No tienes eventos en tu agenda
+
+                {% endif %}
+
+            </h2>
+
+
+            <p>
+
+                {% if busqueda or apiario_seleccionado or tipo_seleccionado or estado_seleccionado or fecha_seleccionada %}
+
+                    Intenta cambiar los filtros utilizados
+                    para encontrar otros resultados.
+
+                {% else %}
+
+                    Los eventos programados por los administradores
+                    para tus apiarios aparecerán en esta sección.
+
+                {% endif %}
+
+            </p>
+
+
+            {% if busqueda or apiario_seleccionado or tipo_seleccionado or estado_seleccionado or fecha_seleccionada %}
+
+
+                <a
+                    href="{% url 'agenda_apicultor' %}"
+                    class="btn-agenda-ver-todos"
+                >
+
+                    Ver toda la agenda
+
+                </a>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =========================================================
+     MODALES DE EVENTOS
+========================================================== -->
+
+{% for evento in eventos %}
+
+
+    <div
+        class="agenda-modal-overlay"
+        id="modalEvento{{ evento.id_evento }}"
+        aria-hidden="true"
+    >
+
+
+        <div
+            class="agenda-modal"
+            role="dialog"
+            aria-modal="true"
+        >
+
+
+            <!-- HEADER -->
+
+            <div class="agenda-modal-header">
+
+
+                <div
+                    class="
+                        agenda-modal-icono
+                        {{ evento.tipo_evento }}
+                    "
+                >
+
+
+                    {% if evento.tipo_evento == "mantenimiento" %}
+
+                        <i class="bi bi-tools"></i>
+
+                    {% elif evento.tipo_evento == "revision" %}
+
+                        <i class="bi bi-search"></i>
+
+                    {% elif evento.tipo_evento == "incidencia" %}
+
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    {% else %}
+
+                        <i class="bi bi-calendar-event-fill"></i>
+
+                    {% endif %}
+
+
+                </div>
+
+
+                <div class="agenda-modal-header-info">
+
+
+                    <span>
+
+                        {{ evento.get_tipo_evento_display }}
+                        ·
+                        Evento #{{ evento.id_evento }}
+
+                    </span>
+
+
+                    <h2>
+
+                        {{ evento.titulo }}
+
+                    </h2>
+
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="agenda-modal-cerrar"
+                    data-cerrar-modal-evento
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- BODY -->
+
+            <div class="agenda-modal-body">
+
+
+                <!-- APIARIO -->
+
+                <div class="agenda-modal-dato">
+
+
+                    <span>
+                        Apiario
+                    </span>
+
+
+                    <strong>
+
+                        {{ evento.id_apiario.nombreapiario }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- COLMENA -->
+
+                <div class="agenda-modal-dato">
+
+
+                    <span>
+
+                        Ubicación
+
+                    </span>
+
+
+                    <strong>
+
+
+                        {% if evento.id_colmena %}
+
+                            Colmena {{ evento.id_colmena.codigocolmena }}
+
+                        {% else %}
+
+                            Apiario {{ evento.id_apiario.nombreapiario }}
+
+                        {% endif %}
+
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- FECHA -->
+
+                <div class="agenda-modal-dato">
+
+
+                    <span>
+                        Fecha
+                    </span>
+
+
+                    <strong>
+
+                        {{ evento.fecha|date:"d/m/Y" }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- HORA -->
+
+                <div class="agenda-modal-dato">
+
+
+                    <span>
+                        Hora
+                    </span>
+
+
+                    <strong>
+
+                        {{ evento.hora|time:"H:i" }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- TIPO -->
+
+                <div class="agenda-modal-dato">
+
+
+                    <span>
+                        Tipo
+                    </span>
+
+
+                    <strong>
+
+                        {{ evento.get_tipo_evento_display }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- ESTADO -->
+
+                <div class="agenda-modal-dato">
+
+
+                    <span>
+                        Estado
+                    </span>
+
+
+                    <strong>
+
+                        {{ evento.get_estado_display }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- RESPONSABLE -->
+
+                <div class="agenda-modal-dato agenda-modal-dato-completo">
+
+
+                    <span>
+                        Responsable
+                    </span>
+
+
+                    <strong>
+
+
+                        {% if evento.responsable %}
+
+                            {% if evento.responsable.user.get_full_name %}
+
+                                {{ evento.responsable.user.get_full_name }}
+
+                            {% else %}
+
+                                {{ evento.responsable.user.username }}
+
+                            {% endif %}
+
+                        {% else %}
+
+                            Sin responsable asignado
+
+                        {% endif %}
+
+
+                    </strong>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- DESCRIPCIÓN -->
+
+            <div class="agenda-modal-descripcion">
+
+
+                <h3>
+
+                    Descripción
+
+                </h3>
+
+
+                {% if evento.descripcion %}
+
+
+                    <p>
+
+                        {{ evento.descripcion }}
+
+                    </p>
+
+
+                {% else %}
+
+
+                    <p class="sin-descripcion">
+
+                        Este evento no tiene una descripción registrada.
+
+                    </p>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- CREADO POR -->
+
+            {% if evento.creado_por %}
+
+
+                <div class="agenda-modal-creador">
+
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+
+                    <div>
+
+
+                        <span>
+
+                            Evento creado por
+
+                        </span>
+
+
+                        <strong>
+
+
+                            {% if evento.creado_por.get_full_name %}
+
+                                {{ evento.creado_por.get_full_name }}
+
+                            {% else %}
+
+                                {{ evento.creado_por.username }}
+
+                            {% endif %}
+
+
+                        </strong>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endif %}
+
+
+
+            <!-- FOOTER -->
+
+            <div class="agenda-modal-footer">
+
+
+                {% if evento.id_apiario %}
+
+
+                    <a
+                        href="{% url 'detalle_apiario_apicultor' evento.id_apiario.id_apiario %}"
+                        class="btn-agenda-ver-apiario"
+                    >
+
+                        <i class="bi bi-flower1"></i>
+
+                        <span>
+                            Ver apiario
+                        </span>
+
+                    </a>
+
+
+                {% endif %}
+
+
+                <button
+                    type="button"
+                    class="btn-agenda-cerrar"
+                    data-cerrar-modal-evento
+                >
+
+                    Cerrar
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endfor %}
+
+
+
+<!-- =========================================================
+     DATOS DEL CALENDARIO PARA JAVASCRIPT
+========================================================== -->
+
+{{ eventos_calendario|json_script:"eventosAgendaData" }}
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/agenda.js' %}?v=1"
+></script>
+
+{% endblock %}

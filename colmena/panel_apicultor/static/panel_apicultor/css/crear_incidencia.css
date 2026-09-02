@@ -1,0 +1,1474 @@
+/* ==========================================================
+   CREAR INCIDENCIA - PANEL APICULTOR
+   MI COLMENA
+========================================================== */
+
+
+/* ==========================================================
+   1. CONTENEDOR GENERAL
+========================================================== */
+
+.crear-incidencia-page {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+/* ==========================================================
+   2. ENCABEZADO
+========================================================== */
+
+.crear-incidencia-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.crear-incidencia-encabezado-info {
+    min-width: 0;
+}
+
+.crear-incidencia-etiqueta {
+    display: inline-flex;
+    align-items: center;
+
+    margin-top: 15px;
+    margin-bottom: 7px;
+
+    padding: 5px 11px;
+
+    border-radius: 30px;
+
+    background: #fce2de;
+    color: #a84d44;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.crear-incidencia-encabezado h1 {
+    margin: 0;
+
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 29px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.crear-incidencia-encabezado p {
+    max-width: 670px;
+
+    margin: 7px 0 0;
+
+    color: var(--apicultor-texto-secundario, #66746c);
+
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.7;
+}
+
+
+/* ==========================================================
+   3. BOTÓN VOLVER
+========================================================== */
+
+.btn-volver-incidencias {
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 11px;
+
+    border: 1px solid rgba(33, 79, 59, 0.12);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.78);
+
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 8px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-volver-incidencias:hover {
+    background: #ffffff;
+    border-color: rgba(33, 79, 59, 0.22);
+
+    transform: translateX(-2px);
+}
+
+.btn-volver-incidencias i {
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   4. ICONO ENCABEZADO
+========================================================== */
+
+.crear-incidencia-encabezado-icono {
+    width: 62px;
+    height: 62px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #fce2de;
+
+    color: #a84d44;
+
+    font-size: 25px;
+}
+
+
+/* ==========================================================
+   5. AVISO DE SEGURIDAD
+========================================================== */
+
+.crear-incidencia-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+
+    padding: 15px 17px;
+
+    border: 1px solid #d9e8d6;
+    border-radius: 15px;
+
+    background: rgba(231, 242, 227, 0.58);
+}
+
+.crear-incidencia-aviso-icono {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #dcefd7;
+
+    color: #4f744b;
+
+    font-size: 16px;
+}
+
+.crear-incidencia-aviso > div:last-child {
+    min-width: 0;
+}
+
+.crear-incidencia-aviso strong {
+    display: block;
+
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.crear-incidencia-aviso p {
+    margin: 4px 0 0;
+
+    color: var(--apicultor-texto-secundario, #66746c);
+
+    font-size: 8px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================================
+   6. FORMULARIO GENERAL
+========================================================== */
+
+.crear-incidencia-form {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+
+/* ==========================================================
+   7. TARJETAS
+========================================================== */
+
+.crear-incidencia-card {
+    padding: 20px;
+
+    border: 1px solid rgba(33, 79, 59, 0.09);
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 5px 18px rgba(33, 79, 59, 0.045);
+}
+
+
+/* ==========================================================
+   8. HEADER DE LAS TARJETAS
+========================================================== */
+
+.crear-incidencia-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+
+    margin-bottom: 20px;
+}
+
+.crear-incidencia-card-icono {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #ffedb4;
+
+    color: #214f3b;
+
+    font-size: 17px;
+}
+
+.crear-incidencia-card-header > div:last-child {
+    min-width: 0;
+}
+
+.crear-incidencia-card-header span {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #a38116;
+
+    font-size: 7px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+}
+
+.crear-incidencia-card-header h2 {
+    margin: 0;
+
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.crear-incidencia-card-header p {
+    max-width: 650px;
+
+    margin: 4px 0 0;
+
+    color: var(--apicultor-texto-secundario, #66746c);
+
+    font-size: 8px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================================
+   9. SELECTOR APIARIO / COLMENA
+========================================================== */
+
+.tipo-incidencia-selector {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+
+/* ==========================================================
+   10. OPCIÓN TIPO
+========================================================== */
+
+.tipo-incidencia-opcion {
+    position: relative;
+
+    min-height: 108px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 16px;
+
+    border: 1px solid #dce3de;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.tipo-incidencia-opcion:hover {
+    border-color: #d7bd58;
+
+    background: #fffdf4;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   11. RADIO REAL
+========================================================== */
+
+.tipo-incidencia-opcion input[type="radio"] {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   12. RADIO VISUAL
+========================================================== */
+
+.tipo-incidencia-radio-visual {
+    width: 17px;
+    height: 17px;
+
+    flex-shrink: 0;
+
+    border: 2px solid #c7d0ca;
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    box-shadow:
+        inset 0 0 0 4px #ffffff;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+/* ==========================================================
+   13. TIPO ACTIVO
+========================================================== */
+
+.tipo-incidencia-opcion:has(input:checked),
+.tipo-incidencia-opcion.activa {
+    border-color: #dabd4d;
+
+    background: rgba(255, 237, 180, 0.3);
+
+    box-shadow:
+        0 0 0 3px rgba(255, 221, 113, 0.12);
+}
+
+.tipo-incidencia-opcion:has(input:checked)
+.tipo-incidencia-radio-visual,
+.tipo-incidencia-opcion.activa
+.tipo-incidencia-radio-visual {
+    border-color: #c8a72c;
+
+    background: #ffdd71;
+}
+
+
+/* ==========================================================
+   14. ICONO TIPO
+========================================================== */
+
+.tipo-incidencia-icono {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #f5f8f5;
+
+    color: #52745f;
+
+    font-size: 18px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.tipo-incidencia-opcion:has(input:checked)
+.tipo-incidencia-icono,
+.tipo-incidencia-opcion.activa
+.tipo-incidencia-icono {
+    background: #ffedb4;
+
+    color: #214f3b;
+}
+
+
+/* ==========================================================
+   15. TEXTO TIPO
+========================================================== */
+
+.tipo-incidencia-texto {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tipo-incidencia-texto strong {
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.tipo-incidencia-texto small {
+    max-width: 330px;
+
+    color: var(--apicultor-texto-secundario, #66746c);
+
+    font-size: 8px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   16. GRID DE CAMPOS
+========================================================== */
+
+.crear-incidencia-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 17px;
+}
+
+.campo-completo {
+    grid-column: 1 / -1;
+}
+
+
+/* ==========================================================
+   17. CAMPO
+========================================================== */
+
+.campo-incidencia {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* ==========================================================
+   18. COLMENA OCULTA
+========================================================== */
+
+.campo-colmena.oculto {
+    display: none;
+}
+
+
+/* ==========================================================
+   19. LABEL
+========================================================== */
+
+.campo-incidencia > label {
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.campo-incidencia > label > span {
+    color: #bd554b;
+}
+
+
+/* ==========================================================
+   20. CONTENEDOR INPUT / SELECT
+========================================================== */
+
+.campo-incidencia-control {
+    position: relative;
+
+    width: 100%;
+}
+
+.campo-incidencia-control > i {
+    position: absolute;
+
+    top: 50%;
+    left: 14px;
+
+    z-index: 2;
+
+    transform: translateY(-50%);
+
+    color: #829087;
+
+    font-size: 13px;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   21. INPUTS Y SELECTS
+========================================================== */
+
+.campo-incidencia-control input,
+.campo-incidencia-control select {
+    width: 100%;
+    height: 46px;
+
+    padding:
+        0
+        14px
+        0
+        40px;
+
+    border: 1px solid #dce3de;
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: var(--apicultor-texto, #163324);
+
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 600;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.campo-incidencia-control select {
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   22. PLACEHOLDER
+========================================================== */
+
+.campo-incidencia-control input::placeholder {
+    color: #a2aca6;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   23. FOCUS
+========================================================== */
+
+.campo-incidencia-control input:focus,
+.campo-incidencia-control select:focus,
+.campo-incidencia textarea:focus {
+    border-color: #d5b849;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 221, 113, 0.2);
+}
+
+
+/* ==========================================================
+   24. SELECT DESHABILITADO
+========================================================== */
+
+.campo-incidencia-control select:disabled {
+    background: #f4f6f4;
+
+    color: #9ba49e;
+
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================
+   25. AYUDA
+========================================================== */
+
+.campo-ayuda {
+    color: #89938d;
+
+    font-size: 7px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   26. TEXTAREA
+========================================================== */
+
+.campo-incidencia textarea {
+    width: 100%;
+    min-height: 135px;
+
+    padding: 13px 14px;
+
+    resize: vertical;
+
+    border: 1px solid #dce3de;
+    border-radius: 12px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: var(--apicultor-texto, #163324);
+
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1.7;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-incidencia textarea::placeholder {
+    color: #a2aca6;
+}
+
+
+/* ==========================================================
+   27. META / CONTADORES
+========================================================== */
+
+.campo-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.campo-meta small {
+    color: #89938d;
+
+    font-size: 7px;
+    line-height: 1.5;
+}
+
+.campo-meta > span {
+    flex-shrink: 0;
+
+    color: #849087;
+
+    font-size: 7px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   28. CONTADOR CERCA DEL LÍMITE
+========================================================== */
+
+.campo-meta > span.cerca-limite {
+    color: #b2761e;
+}
+
+.campo-meta > span.limite-alcanzado {
+    color: #ae4d43;
+}
+
+
+/* ==========================================================
+   29. CAMPO CON ERROR
+========================================================== */
+
+.campo-incidencia.error
+.campo-incidencia-control input,
+
+.campo-incidencia.error
+.campo-incidencia-control select,
+
+.campo-incidencia.error textarea {
+    border-color: #d9665c;
+
+    background: #fffafa;
+
+    box-shadow:
+        0 0 0 3px rgba(217, 102, 92, 0.1);
+}
+
+
+/* ==========================================================
+   30. MENSAJE ERROR
+========================================================== */
+
+.campo-error-mensaje {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-top: 2px;
+
+    color: #ad5148;
+
+    font-size: 7px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   31. EVIDENCIA
+========================================================== */
+
+.evidencia-incidencia {
+    width: 100%;
+}
+
+
+/* ==========================================================
+   32. SELECTOR DE IMAGEN
+========================================================== */
+
+.evidencia-selector {
+    width: 100%;
+    min-height: 120px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 18px;
+
+    border: 1.5px dashed #c8d1cb;
+    border-radius: 14px;
+
+    background: #fafcfa;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.evidencia-selector:hover {
+    border-color: #d0ad35;
+
+    background: rgba(255, 237, 180, 0.18);
+}
+
+
+/* ==========================================================
+   33. DRAG / ACTIVO
+========================================================== */
+
+.evidencia-selector.arrastrando {
+    border-color: #c49f22;
+
+    background: rgba(255, 237, 180, 0.34);
+
+    transform: scale(1.002);
+}
+
+
+/* ==========================================================
+   34. ICONO EVIDENCIA
+========================================================== */
+
+.evidencia-selector-icono {
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #ffedb4;
+
+    color: #214f3b;
+
+    font-size: 20px;
+}
+
+.evidencia-selector > div:nth-child(2) {
+    min-width: 0;
+    flex: 1;
+}
+
+.evidencia-selector strong {
+    display: block;
+
+    color: var(--apicultor-verde-oscuro, #214f3b);
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.evidencia-selector span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #7e8a83;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   35. BOTÓN EXAMINAR
+========================================================== */
+
+.evidencia-selector-boton {
+    flex-shrink: 0;
+
+    padding: 9px 14px;
+
+    border: 1px solid #dfc45d;
+    border-radius: 9px;
+
+    background: #ffdd71;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   36. PREVIEW
+========================================================== */
+
+.evidencia-preview {
+    width: 100%;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(33, 79, 59, 0.11);
+    border-radius: 14px;
+
+    background: #ffffff;
+}
+
+.evidencia-preview[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   37. IMAGEN PREVIEW
+========================================================== */
+
+.evidencia-preview-imagen {
+    width: 100%;
+    height: 320px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #f1f4f2;
+}
+
+.evidencia-preview-imagen img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+}
+
+
+/* ==========================================================
+   38. INFORMACIÓN DE IMAGEN
+========================================================== */
+
+.evidencia-preview-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 13px 15px;
+}
+
+.evidencia-preview-info > div:first-child {
+    min-width: 0;
+}
+
+.evidencia-preview-info strong {
+    display: block;
+
+    max-width: 600px;
+
+    overflow: hidden;
+
+    color: #214f3b;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.evidencia-preview-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #87928b;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   39. QUITAR IMAGEN
+========================================================== */
+
+.btn-eliminar-imagen {
+    flex-shrink: 0;
+
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 7px 11px;
+
+    border: 1px solid #efcbc7;
+    border-radius: 9px;
+
+    background: #fff8f7;
+
+    color: #ab5148;
+
+    font-family: inherit;
+    font-size: 7px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.btn-eliminar-imagen:hover {
+    border-color: #df9c95;
+
+    background: #fce2de;
+}
+
+
+/* ==========================================================
+   40. ERROR DE EVIDENCIA
+========================================================== */
+
+.evidencia-selector.error {
+    border-color: #d9665c;
+
+    background: #fff8f7;
+}
+
+
+/* ==========================================================
+   41. CONFIRMACIÓN
+========================================================== */
+
+.crear-incidencia-confirmacion {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #eadba0;
+    border-radius: 14px;
+
+    background: rgba(255, 237, 180, 0.32);
+}
+
+.crear-incidencia-confirmacion-icono {
+    width: 39px;
+    height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #ffedb4;
+
+    color: #214f3b;
+
+    font-size: 15px;
+}
+
+.crear-incidencia-confirmacion strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.crear-incidencia-confirmacion p {
+    margin: 4px 0 0;
+
+    color: #66746c;
+
+    font-size: 8px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================================
+   42. ACCIONES
+========================================================== */
+
+.crear-incidencia-acciones {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+
+    padding-top: 3px;
+}
+
+
+/* ==========================================================
+   43. CANCELAR
+========================================================== */
+
+.btn-cancelar-incidencia {
+    min-height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 9px 16px;
+
+    border: 1px solid #d8dfda;
+    border-radius: 11px;
+
+    background: #ffffff;
+
+    color: #66746c;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-cancelar-incidencia:hover {
+    border-color: #cbd4ce;
+
+    background: #f4f6f4;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   44. REPORTAR
+========================================================== */
+
+.btn-guardar-incidencia {
+    min-height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 9px 18px;
+
+    border: 1px solid #e0c04c;
+    border-radius: 11px;
+
+    background: #ffdd71;
+
+    color: #214f3b;
+
+    font-family: inherit;
+    font-size: 8px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 11px rgba(150, 119, 24, 0.1);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-guardar-incidencia:hover {
+    background: #f3ca4e;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 15px rgba(150, 119, 24, 0.14);
+}
+
+
+/* ==========================================================
+   45. BOTÓN CARGANDO
+========================================================== */
+
+.btn-guardar-incidencia:disabled {
+    opacity: 0.65;
+
+    cursor: wait;
+
+    transform: none;
+}
+
+
+/* ==========================================================
+   46. ANIMACIÓN DE ENTRADA
+========================================================== */
+
+.crear-incidencia-card {
+    animation:
+        entradaCrearIncidencia
+        0.32s ease both;
+}
+
+.crear-incidencia-card:nth-of-type(1) {
+    animation-delay: 0.02s;
+}
+
+.crear-incidencia-card:nth-of-type(2) {
+    animation-delay: 0.05s;
+}
+
+.crear-incidencia-card:nth-of-type(3) {
+    animation-delay: 0.08s;
+}
+
+.crear-incidencia-card:nth-of-type(4) {
+    animation-delay: 0.11s;
+}
+
+.crear-incidencia-card:nth-of-type(5) {
+    animation-delay: 0.14s;
+}
+
+@keyframes entradaCrearIncidencia {
+    from {
+        opacity: 0;
+
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================================
+   47. RESPONSIVE - 1000px
+========================================================== */
+
+@media (max-width: 1000px) {
+
+    .crear-incidencia-page {
+        max-width: 100%;
+    }
+
+}
+
+
+/* ==========================================================
+   48. RESPONSIVE - 800px
+========================================================== */
+
+@media (max-width: 800px) {
+
+    .crear-incidencia-encabezado {
+        align-items: flex-start;
+    }
+
+
+    .crear-incidencia-encabezado h1 {
+        font-size: 24px;
+    }
+
+
+    .crear-incidencia-encabezado-icono {
+        width: 52px;
+        height: 52px;
+
+        border-radius: 15px;
+
+        font-size: 21px;
+    }
+
+
+    .crear-incidencia-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .campo-completo {
+        grid-column: auto;
+    }
+
+}
+
+
+/* ==========================================================
+   49. RESPONSIVE - 650px
+========================================================== */
+
+@media (max-width: 650px) {
+
+    .crear-incidencia-page {
+        gap: 17px;
+    }
+
+
+    /* ======================================================
+       ENCABEZADO
+    ====================================================== */
+
+    .crear-incidencia-encabezado-icono {
+        display: none;
+    }
+
+
+    /* ======================================================
+       TARJETAS
+    ====================================================== */
+
+    .crear-incidencia-card {
+        padding: 16px;
+
+        border-radius: 15px;
+    }
+
+
+    /* ======================================================
+       SELECTOR TIPO
+    ====================================================== */
+
+    .tipo-incidencia-selector {
+        grid-template-columns: 1fr;
+    }
+
+
+    .tipo-incidencia-opcion {
+        min-height: 95px;
+
+        padding: 14px;
+    }
+
+
+    /* ======================================================
+       EVIDENCIA
+    ====================================================== */
+
+    .evidencia-selector {
+        flex-wrap: wrap;
+    }
+
+
+    .evidencia-selector-boton {
+        width: 100%;
+
+        text-align: center;
+    }
+
+
+    .evidencia-preview-imagen {
+        height: 260px;
+    }
+
+
+    /* ======================================================
+       ACCIONES
+    ====================================================== */
+
+    .crear-incidencia-acciones {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+
+    .btn-cancelar-incidencia,
+    .btn-guardar-incidencia {
+        width: 100%;
+    }
+
+}
+
+
+/* ==========================================================
+   50. RESPONSIVE - 480px
+========================================================== */
+
+@media (max-width: 480px) {
+
+    .crear-incidencia-encabezado h1 {
+        font-size: 21px;
+    }
+
+
+    .crear-incidencia-encabezado p {
+        font-size: 9px;
+    }
+
+
+    .crear-incidencia-aviso,
+    .crear-incidencia-confirmacion {
+        padding: 13px;
+    }
+
+
+    .crear-incidencia-card-header {
+        gap: 10px;
+    }
+
+
+    .crear-incidencia-card-icono {
+        width: 39px;
+        height: 39px;
+
+        font-size: 15px;
+    }
+
+
+    .crear-incidencia-card-header h2 {
+        font-size: 12px;
+    }
+
+
+    .tipo-incidencia-opcion {
+        gap: 10px;
+    }
+
+
+    .tipo-incidencia-icono {
+        width: 40px;
+        height: 40px;
+
+        font-size: 16px;
+    }
+
+
+    .campo-meta {
+        align-items: flex-start;
+    }
+
+
+    .evidencia-preview-imagen {
+        height: 220px;
+    }
+
+
+    .evidencia-preview-info {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .btn-eliminar-imagen {
+        width: 100%;
+    }
+
+}
