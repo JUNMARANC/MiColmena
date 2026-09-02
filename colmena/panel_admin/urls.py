@@ -67,6 +67,9 @@ urlpatterns = [
 
     #MiPerfil
     path("mi-perfil/",views.mi_perfil,name="mi_perfil",),
+    path("mi-perfil/verificar-correo/",views.verificar_correo_mi_perfil,name="verificar_correo_mi_perfil",),
+    path("mi-perfil/verificar-password-actual/",views.verificar_password_actual_mi_perfil,name="verificar_password_actual_mi_perfil",),
+    path("mi-perfil/verificar-password/",views.verificar_password_mi_perfil,name="verificar_password_mi_perfil",),
     path("mi-perfil/actualizar/",views.actualizar_mi_perfil,name="actualizar_mi_perfil",),
     path("mi-perfil/cambiar-password/",views.cambiar_password_perfil,name="cambiar_password_perfil",),
 

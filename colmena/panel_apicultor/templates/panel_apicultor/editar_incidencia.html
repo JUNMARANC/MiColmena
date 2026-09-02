@@ -1,0 +1,1269 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Gestionar incidencia | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Gestionar incidencia
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Actualiza el seguimiento, estado y evidencia de la incidencia
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/editar_incidencia.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="editar-incidencia-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="editar-incidencia-encabezado">
+
+
+        <div class="editar-incidencia-encabezado-info">
+
+
+            <a
+                href="{% url 'incidencias_apicultor' %}"
+                class="btn-volver-incidencias"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                <span>
+                    Volver a incidencias
+                </span>
+
+            </a>
+
+
+            <span class="editar-incidencia-etiqueta">
+
+                Incidencia #{{ incidencia.id_incidencia }}
+
+            </span>
+
+
+            <h1>
+
+                {{ incidencia.titulo }}
+
+            </h1>
+
+
+            <p>
+
+                Consulta la información original del reporte
+                y registra los avances realizados sobre esta incidencia.
+
+            </p>
+
+
+        </div>
+
+
+        <div class="editar-incidencia-estado-superior">
+
+
+            <span
+                class="
+                    incidencia-estado-principal
+
+                    {% if incidencia.estado == 'Pendiente' %}
+                        pendiente
+
+                    {% elif incidencia.estado == 'En proceso' %}
+                        proceso
+
+                    {% elif incidencia.estado == 'Resuelta' %}
+                        resuelta
+
+                    {% endif %}
+                "
+            >
+
+                <span></span>
+
+                {{ incidencia.estado|default:"Pendiente" }}
+
+            </span>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         AVISO
+    ====================================================== -->
+
+    <section class="editar-incidencia-aviso">
+
+
+        <div class="editar-incidencia-aviso-icono">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+        </div>
+
+
+        <div>
+
+            <strong>
+
+                Información original protegida
+
+            </strong>
+
+
+            <p>
+
+                La entidad, el apiario, la colmena, la fecha de detección
+                y la persona que reportó la incidencia no pueden modificarse
+                desde este formulario.
+
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FORMULARIO
+    ====================================================== -->
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="editar-incidencia-form"
+        id="formEditarIncidencia"
+        novalidate
+    >
+
+        {% csrf_token %}
+
+
+
+        <!-- =================================================
+             INFORMACIÓN ORIGINAL
+        ================================================== -->
+
+        <section class="editar-incidencia-card">
+
+
+            <div class="editar-incidencia-card-header">
+
+
+                <div class="editar-incidencia-card-icono">
+
+                    <i class="bi bi-clipboard-data-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Información del reporte
+                    </span>
+
+                    <h2>
+                        Datos de la incidencia
+                    </h2>
+
+                    <p>
+                        Estos datos identifican dónde y cuándo
+                        fue registrada la incidencia.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="editar-incidencia-grid">
+
+
+                <!-- =========================================
+                     ENTIDAD
+                ========================================== -->
+
+                <div class="campo-incidencia bloqueado">
+
+
+                    <label>
+
+                        Entidad
+
+                    </label>
+
+
+                    <div class="campo-bloqueado">
+
+
+                        <div class="campo-bloqueado-icono">
+
+
+                            {% if incidencia.entidadincidencia == "Colmena" %}
+
+                                <i class="bi bi-hexagon-fill"></i>
+
+                            {% else %}
+
+                                <i class="bi bi-flower1"></i>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+
+                                {{ incidencia.entidadincidencia|default:"Apiario" }}
+
+                            </strong>
+
+
+                            <span>
+
+                                Tipo de entidad reportada
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-lock-fill campo-lock"></i>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     APIARIO
+                ========================================== -->
+
+                <div class="campo-incidencia bloqueado">
+
+
+                    <label>
+
+                        Apiario
+
+                    </label>
+
+
+                    <div class="campo-bloqueado">
+
+
+                        <div class="campo-bloqueado-icono">
+
+                            <i class="bi bi-flower1"></i>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+
+
+                                {% if incidencia.id_apiario %}
+
+                                    {{ incidencia.id_apiario.nombreapiario }}
+
+                                {% else %}
+
+                                    Sin apiario asociado
+
+                                {% endif %}
+
+
+                            </strong>
+
+
+                            <span>
+
+                                Apiario donde ocurrió la incidencia
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-lock-fill campo-lock"></i>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     COLMENA
+                ========================================== -->
+
+                {% if incidencia.id_colmena %}
+
+
+                    <div class="campo-incidencia bloqueado">
+
+
+                        <label>
+
+                            Colmena
+
+                        </label>
+
+
+                        <div class="campo-bloqueado">
+
+
+                            <div class="campo-bloqueado-icono">
+
+                                <i class="bi bi-hexagon-fill"></i>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <strong>
+
+                                    {{ incidencia.id_colmena.codigocolmena }}
+
+                                </strong>
+
+
+                                <span>
+
+                                    Colmena afectada
+
+                                </span>
+
+
+                            </div>
+
+
+                            <i class="bi bi-lock-fill campo-lock"></i>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endif %}
+
+
+
+                <!-- =========================================
+                     FECHA
+                ========================================== -->
+
+                <div class="campo-incidencia bloqueado">
+
+
+                    <label>
+
+                        Fecha de detección
+
+                    </label>
+
+
+                    <div class="campo-bloqueado">
+
+
+                        <div class="campo-bloqueado-icono">
+
+                            <i class="bi bi-calendar3"></i>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+
+
+                                {% if incidencia.fechadeteccion %}
+
+                                    {{ incidencia.fechadeteccion|date:"d/m/Y" }}
+
+                                {% else %}
+
+                                    Sin fecha
+
+                                {% endif %}
+
+
+                            </strong>
+
+
+                            <span>
+
+                                Fecha original del reporte
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-lock-fill campo-lock"></i>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     PRIORIDAD
+                ========================================== -->
+
+                <div class="campo-incidencia bloqueado">
+
+
+                    <label>
+
+                        Prioridad
+
+                    </label>
+
+
+                    <div class="campo-bloqueado">
+
+
+                        <div
+                            class="
+                                prioridad-incidencia-icono
+
+                                {% if incidencia.prioridad == 'Crítica' %}
+                                    critica
+
+                                {% elif incidencia.prioridad == 'Alta' %}
+                                    alta
+
+                                {% elif incidencia.prioridad == 'Media' %}
+                                    media
+
+                                {% else %}
+                                    baja
+                                {% endif %}
+                            "
+                        >
+
+                            <i class="bi bi-flag-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+
+                                {{ incidencia.prioridad|default:"Sin definir" }}
+
+                            </strong>
+
+
+                            <span>
+
+                                Nivel definido al crear la incidencia
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-lock-fill campo-lock"></i>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     REPORTADA POR
+                ========================================== -->
+
+                <div class="campo-incidencia bloqueado">
+
+
+                    <label>
+
+                        Reportada por
+
+                    </label>
+
+
+                    <div class="campo-bloqueado">
+
+
+                        <div class="campo-bloqueado-icono">
+
+                            <i class="bi bi-person-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+
+                                {{ incidencia.responsable|default:"Sin responsable" }}
+
+                            </strong>
+
+
+                            <span>
+
+                                Persona que registró inicialmente el reporte
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-lock-fill campo-lock"></i>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             ESTADO DE LA INCIDENCIA
+        ================================================== -->
+
+        <section class="editar-incidencia-card">
+
+
+            <div class="editar-incidencia-card-header">
+
+
+                <div class="editar-incidencia-card-icono">
+
+                    <i class="bi bi-arrow-repeat"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Seguimiento
+                    </span>
+
+                    <h2>
+                        Estado de la incidencia
+                    </h2>
+
+                    <p>
+                        Actualiza el estado según el avance realizado.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="estado-incidencia-opciones">
+
+
+                <!-- =========================================
+                     PENDIENTE
+                ========================================== -->
+
+                <label class="estado-incidencia-opcion pendiente">
+
+
+                    <input
+                        type="radio"
+                        name="estado"
+                        value="Pendiente"
+
+                        {% if incidencia.estado == "Pendiente" or not incidencia.estado %}
+                            checked
+                        {% endif %}
+                    >
+
+
+                    <span class="estado-radio"></span>
+
+
+                    <span class="estado-icono">
+
+                        <i class="bi bi-clock-fill"></i>
+
+                    </span>
+
+
+                    <span class="estado-texto">
+
+
+                        <strong>
+                            Pendiente
+                        </strong>
+
+
+                        <small>
+
+                            La incidencia aún no ha comenzado
+                            a ser atendida.
+
+                        </small>
+
+
+                    </span>
+
+
+                </label>
+
+
+
+                <!-- =========================================
+                     EN PROCESO
+                ========================================== -->
+
+                <label class="estado-incidencia-opcion proceso">
+
+
+                    <input
+                        type="radio"
+                        name="estado"
+                        value="En proceso"
+
+                        {% if incidencia.estado == "En proceso" %}
+                            checked
+                        {% endif %}
+                    >
+
+
+                    <span class="estado-radio"></span>
+
+
+                    <span class="estado-icono">
+
+                        <i class="bi bi-arrow-repeat"></i>
+
+                    </span>
+
+
+                    <span class="estado-texto">
+
+
+                        <strong>
+                            En proceso
+                        </strong>
+
+
+                        <small>
+
+                            Ya se están realizando acciones
+                            para atender la incidencia.
+
+                        </small>
+
+
+                    </span>
+
+
+                </label>
+
+
+
+                <!-- =========================================
+                     RESUELTA
+                ========================================== -->
+
+                <label class="estado-incidencia-opcion resuelta">
+
+
+                    <input
+                        type="radio"
+                        name="estado"
+                        value="Resuelta"
+
+                        {% if incidencia.estado == "Resuelta" %}
+                            checked
+                        {% endif %}
+                    >
+
+
+                    <span class="estado-radio"></span>
+
+
+                    <span class="estado-icono">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                    </span>
+
+
+                    <span class="estado-texto">
+
+
+                        <strong>
+                            Resuelta
+                        </strong>
+
+
+                        <small>
+
+                            La situación fue atendida
+                            y no requiere nuevas acciones.
+
+                        </small>
+
+
+                    </span>
+
+
+                </label>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             OBSERVACIONES
+        ================================================== -->
+
+        <section class="editar-incidencia-card">
+
+
+            <div class="editar-incidencia-card-header">
+
+
+                <div class="editar-incidencia-card-icono">
+
+                    <i class="bi bi-card-text"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Seguimiento
+                    </span>
+
+                    <h2>
+                        Observaciones
+                    </h2>
+
+                    <p>
+                        Registra las acciones realizadas, hallazgos
+                        o cambios relacionados con la incidencia.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="campo-incidencia campo-completo">
+
+
+                <label for="observacionesIncidencia">
+
+                    Observaciones
+
+                </label>
+
+
+                <textarea
+                    id="observacionesIncidencia"
+                    name="observaciones"
+                    maxlength="1000"
+                    rows="7"
+                    placeholder="Describe las acciones realizadas, resultados obtenidos o novedades encontradas..."
+                >{{ incidencia.observaciones|default:"" }}</textarea>
+
+
+                <div class="campo-meta">
+
+
+                    <small>
+
+                        Máximo 1000 caracteres.
+
+                    </small>
+
+
+                    <span id="contadorObservaciones">
+
+                        0 / 1000
+
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             EVIDENCIA
+        ================================================== -->
+
+        <section class="editar-incidencia-card">
+
+
+            <div class="editar-incidencia-card-header">
+
+
+                <div class="editar-incidencia-card-icono">
+
+                    <i class="bi bi-camera-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Evidencia
+                    </span>
+
+                    <h2>
+                        Evidencia fotográfica
+                    </h2>
+
+                    <p>
+                        Puedes conservar la fotografía actual
+                        o cargar una nueva evidencia.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 IMAGEN ACTUAL
+            ================================================== -->
+
+            {% if incidencia.imagen %}
+
+
+                <div class="evidencia-actual">
+
+
+                    <div class="evidencia-actual-header">
+
+
+                        <div>
+
+
+                            <strong>
+
+                                Evidencia actual
+
+                            </strong>
+
+
+                            <span>
+
+                                Esta fotografía permanecerá guardada
+                                mientras no selecciones una nueva.
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-image-fill"></i>
+
+
+                    </div>
+
+
+                    <div class="evidencia-actual-imagen">
+
+
+                        <img
+                            src="{{ incidencia.imagen.url }}"
+                            alt="Evidencia actual de {{ incidencia.titulo }}"
+                        >
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% else %}
+
+
+                <div class="sin-evidencia-actual">
+
+
+                    <i class="bi bi-image"></i>
+
+
+                    <div>
+
+
+                        <strong>
+
+                            Sin evidencia fotográfica
+
+                        </strong>
+
+
+                        <span>
+
+                            Esta incidencia no tiene una fotografía asociada.
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 NUEVA IMAGEN
+            ================================================== -->
+
+            <div class="nueva-evidencia">
+
+
+                <input
+                    type="file"
+                    id="imagenIncidencia"
+                    name="imagen"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                >
+
+
+                <label
+                    for="imagenIncidencia"
+                    class="evidencia-selector"
+                    id="selectorImagenIncidencia"
+                >
+
+
+                    <div class="evidencia-selector-icono">
+
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+
+                        <strong>
+
+
+                            {% if incidencia.imagen %}
+
+                                Cambiar fotografía
+
+                            {% else %}
+
+                                Agregar fotografía
+
+                            {% endif %}
+
+
+                        </strong>
+
+
+                        <span>
+
+                            JPG, PNG o WEBP · Máximo 5 MB
+
+                        </span>
+
+
+                    </div>
+
+
+                    <div class="evidencia-selector-boton">
+
+                        Examinar
+
+                    </div>
+
+
+                </label>
+
+
+
+                <!-- =========================================
+                     PREVIEW NUEVA IMAGEN
+                ========================================== -->
+
+                <div
+                    class="evidencia-preview"
+                    id="previewImagenIncidencia"
+                    hidden
+                >
+
+
+                    <div class="evidencia-preview-etiqueta">
+
+                        Nueva evidencia
+
+                    </div>
+
+
+                    <div class="evidencia-preview-imagen">
+
+
+                        <img
+                            id="imagenPreview"
+                            src=""
+                            alt="Vista previa de la nueva evidencia"
+                        >
+
+
+                    </div>
+
+
+                    <div class="evidencia-preview-info">
+
+
+                        <div>
+
+
+                            <strong id="nombreImagen">
+
+                                Imagen
+
+                            </strong>
+
+
+                            <span id="pesoImagen">
+
+                                —
+
+                            </span>
+
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="btnEliminarImagen"
+                            class="btn-eliminar-imagen"
+                        >
+
+                            <i class="bi bi-trash3"></i>
+
+                            <span>
+
+                                Quitar
+
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             RESUMEN CAMBIO DE ESTADO
+        ================================================== -->
+
+        <section class="editar-incidencia-resumen">
+
+
+            <div class="editar-incidencia-resumen-icono">
+
+                <i class="bi bi-shield-check"></i>
+
+            </div>
+
+
+            <div>
+
+
+                <strong>
+
+                    Mantén actualizado el seguimiento
+
+                </strong>
+
+
+                <p>
+
+                    Los cambios realizados aparecerán también
+                    en el panel administrativo para que los
+                    administradores puedan consultar el avance
+                    de la incidencia.
+
+                </p>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             ACCIONES
+        ================================================== -->
+
+        <div class="editar-incidencia-acciones">
+
+
+            <a
+                href="{% url 'incidencias_apicultor' %}"
+                class="btn-cancelar-edicion"
+            >
+
+                <i class="bi bi-x-lg"></i>
+
+                <span>
+
+                    Cancelar
+
+                </span>
+
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn-guardar-edicion"
+                id="btnGuardarIncidencia"
+            >
+
+                <i class="bi bi-check2-circle"></i>
+
+                <span>
+
+                    Guardar cambios
+
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/editar_incidencia.js' %}?v=1"
+></script>
+
+{% endblock %}

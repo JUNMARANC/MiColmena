@@ -22,7 +22,15 @@ document.addEventListener(
 
         inicializarValidacionPassword();
 
+        inicializarValidacionPasswordActual();
+
+        inicializarValidacionPasswordDjango();
+
         inicializarFormularioPerfil();
+
+        inicializarValidacionCorreoPerfil();
+
+        inicializarValidacionDatosPersonales();
 
         inicializarFormularioPassword();
 
@@ -829,6 +837,1695 @@ function actualizarReglaPassword(
 
 }
 
+/* ============================================================
+   VALIDACIÓN DE CONTRASEÑA ACTUAL
+============================================================ */
+
+function inicializarValidacionPasswordActual() {
+
+    const passwordActual =
+        document.getElementById(
+            "passwordActualPerfil"
+        );
+
+
+    const formulario =
+        document.getElementById(
+            "formCambiarPasswordPerfil"
+        );
+
+
+    const mensaje =
+        document.getElementById(
+            "mensajePasswordActualPerfil"
+        );
+
+
+    if (
+        !passwordActual ||
+        !formulario ||
+        !mensaje
+    ) {
+        return;
+    }
+
+
+    const urlVerificar =
+        passwordActual.dataset.urlVerificar;
+
+
+    const csrfInput =
+        formulario.querySelector(
+            'input[name="csrfmiddlewaretoken"]'
+        );
+
+
+    if (
+        !urlVerificar ||
+        !csrfInput
+    ) {
+        return;
+    }
+
+
+    /* ========================================================
+       VALIDAR
+    ======================================================== */
+
+    async function validarPasswordActual() {
+
+        const clave =
+            passwordActual.value;
+
+
+        passwordActual.setCustomValidity("");
+
+        passwordActual.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        mensaje.classList.add(
+            "d-none"
+        );
+
+        mensaje.classList.remove(
+            "text-success",
+            "text-danger"
+        );
+
+
+        if (!clave) {
+
+            passwordActual.setCustomValidity(
+                "La contraseña actual es obligatoria."
+            );
+
+
+            passwordActual.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajePasswordActual(
+                "La contraseña actual es obligatoria.",
+                false
+            );
+
+
+            return false;
+        }
+
+
+        const datosFormulario =
+            new FormData();
+
+
+        datosFormulario.append(
+            "password_actual",
+            clave
+        );
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    urlVerificar,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-CSRFToken":
+                                csrfInput.value,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        },
+
+                        body:
+                            datosFormulario
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible verificar la contraseña actual."
+                );
+
+            }
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!datos.valido) {
+
+                passwordActual.setCustomValidity(
+                    datos.mensaje
+                );
+
+
+                passwordActual.classList.add(
+                    "is-invalid"
+                );
+
+
+                mostrarMensajePasswordActual(
+                    datos.mensaje,
+                    false
+                );
+
+
+                return false;
+            }
+
+
+            passwordActual.setCustomValidity("");
+
+
+            passwordActual.classList.add(
+                "is-valid"
+            );
+
+
+            mostrarMensajePasswordActual(
+                datos.mensaje,
+                true
+            );
+
+
+            return true;
+
+
+        } catch (error) {
+
+            passwordActual.setCustomValidity(
+                "No fue posible verificar la contraseña actual."
+            );
+
+
+            passwordActual.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajePasswordActual(
+                "No fue posible verificar la contraseña actual.",
+                false
+            );
+
+
+            return false;
+
+        }
+
+    }
+
+
+    /* ========================================================
+       AL MODIFICARLA
+    ======================================================== */
+
+    passwordActual.addEventListener(
+        "input",
+        function () {
+
+            passwordActual.setCustomValidity("");
+
+            passwordActual.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            mensaje.classList.add(
+                "d-none"
+            );
+
+        }
+    );
+
+
+    /* ========================================================
+       VALIDAR AL SALIR DEL CAMPO
+    ======================================================== */
+
+    passwordActual.addEventListener(
+        "blur",
+        validarPasswordActual
+    );
+
+
+    /* ========================================================
+       EXPONER PARA EL SUBMIT
+    ======================================================== */
+
+    passwordActual.validarPasswordActualPerfil =
+        validarPasswordActual;
+
+
+    function mostrarMensajePasswordActual(
+        texto,
+        valido
+    ) {
+
+        mensaje.textContent =
+            texto;
+
+
+        mensaje.classList.remove(
+            "d-none",
+            "text-success",
+            "text-danger"
+        );
+
+
+        mensaje.classList.add(
+            valido
+                ? "text-success"
+                : "text-danger"
+        );
+
+    }
+
+}
+
+/* ============================================================
+   VALIDACIÓN DE CONTRASEÑA CON DJANGO
+============================================================ */
+
+function inicializarValidacionPasswordDjango() {
+
+    const passwordNuevo =
+        document.getElementById(
+            "passwordNuevoPerfil"
+        );
+
+
+    const formulario =
+        document.getElementById(
+            "formCambiarPasswordPerfil"
+        );
+
+
+    const contenedorMensajes =
+        document.getElementById(
+            "mensajesPasswordDjangoPerfil"
+        );
+
+
+    if (
+        !passwordNuevo ||
+        !formulario ||
+        !contenedorMensajes
+    ) {
+        return;
+    }
+
+
+    const urlVerificar =
+        passwordNuevo.dataset
+            .urlVerificar;
+
+
+    if (!urlVerificar) {
+        return;
+    }
+
+
+    const csrfInput =
+        formulario.querySelector(
+            'input[name="csrfmiddlewaretoken"]'
+        );
+
+
+    if (!csrfInput) {
+        return;
+    }
+
+
+    let temporizador = null;
+
+    let controladorPeticion = null;
+
+
+    /* ========================================================
+       CONSULTAR DJANGO
+    ======================================================== */
+
+    async function validarPasswordDjango() {
+
+        clearTimeout(
+            temporizador
+        );
+
+        temporizador = null;
+
+        const clave =
+            passwordNuevo.value;
+
+
+        passwordNuevo.setCustomValidity("");
+
+
+        contenedorMensajes.classList.add(
+            "d-none"
+        );
+
+
+        contenedorMensajes.classList.remove(
+            "text-success",
+            "text-danger"
+        );
+
+
+        /* ----------------------------------------------------
+           VACÍA
+        ---------------------------------------------------- */
+
+        if (!clave) {
+
+            passwordNuevo.setCustomValidity(
+                "La nueva contraseña es obligatoria."
+            );
+
+
+            passwordNuevo.classList.remove(
+                "is-valid"
+            );
+
+
+            passwordNuevo.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajesPasswordDjango(
+                contenedorMensajes,
+                [
+                    "La nueva contraseña es obligatoria."
+                ],
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           MÍNIMO LOCAL
+        ---------------------------------------------------- */
+
+        if (clave.length < 8) {
+
+            passwordNuevo.setCustomValidity(
+                "La contraseña debe tener al menos 8 caracteres."
+            );
+
+
+            passwordNuevo.classList.remove(
+                "is-valid"
+            );
+
+
+            passwordNuevo.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajesPasswordDjango(
+                contenedorMensajes,
+                [
+                    "La contraseña debe tener al menos 8 caracteres."
+                ],
+                false
+            );
+
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           CANCELAR PETICIÓN ANTERIOR
+        ---------------------------------------------------- */
+
+        if (controladorPeticion) {
+
+            controladorPeticion.abort();
+
+        }
+
+
+        controladorPeticion =
+            new AbortController();
+
+
+        /* ----------------------------------------------------
+           DATOS
+        ---------------------------------------------------- */
+
+        const datosFormulario =
+            new FormData();
+
+
+        datosFormulario.append(
+            "password_nuevo",
+            clave
+        );
+
+
+        /* ----------------------------------------------------
+           CONSULTAR DJANGO
+        ---------------------------------------------------- */
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    urlVerificar,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-CSRFToken":
+                                csrfInput.value,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        },
+
+                        body:
+                            datosFormulario,
+
+                        signal:
+                            controladorPeticion.signal
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible validar la contraseña."
+                );
+
+            }
+
+
+            const datos =
+                await respuesta.json();
+
+
+            /* ------------------------------------------------
+               CONTRASEÑA INVÁLIDA
+            ------------------------------------------------ */
+
+            if (!datos.valido) {
+
+                const mensajes =
+                    Array.isArray(
+                        datos.mensajes
+                    )
+                        ? datos.mensajes
+                        : [
+                            "La contraseña no cumple los requisitos."
+                        ];
+
+
+                passwordNuevo.setCustomValidity(
+                    mensajes.join(" ")
+                );
+
+
+                passwordNuevo.classList.remove(
+                    "is-valid"
+                );
+
+
+                passwordNuevo.classList.add(
+                    "is-invalid"
+                );
+
+
+                mostrarMensajesPasswordDjango(
+                    contenedorMensajes,
+                    mensajes,
+                    false
+                );
+
+
+                return false;
+
+            }
+
+
+            /* ------------------------------------------------
+               CONTRASEÑA VÁLIDA
+            ------------------------------------------------ */
+
+            passwordNuevo.setCustomValidity("");
+
+
+            passwordNuevo.classList.remove(
+                "is-invalid"
+            );
+
+
+            passwordNuevo.classList.add(
+                "is-valid"
+            );
+
+
+            mostrarMensajesPasswordDjango(
+                contenedorMensajes,
+                datos.mensajes || [
+                    (
+                        "La contraseña cumple "
+                        +
+                        "los requisitos de seguridad."
+                    )
+                ],
+                true
+            );
+
+
+            return true;
+
+
+        } catch (error) {
+
+            if (
+                error.name ===
+                "AbortError"
+            ) {
+
+                return false;
+
+            }
+
+
+            passwordNuevo.setCustomValidity(
+                (
+                    "No fue posible validar la "
+                    +
+                    "contraseña en este momento."
+                )
+            );
+
+
+            passwordNuevo.classList.remove(
+                "is-valid"
+            );
+
+
+            passwordNuevo.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajesPasswordDjango(
+                contenedorMensajes,
+                [
+                    (
+                        "No fue posible validar la "
+                        +
+                        "contraseña en este momento."
+                    )
+                ],
+                false
+            );
+
+
+            return false;
+
+        }
+
+    }
+
+
+    /* ========================================================
+       MIENTRAS ESCRIBE
+    ======================================================== */
+
+    passwordNuevo.addEventListener(
+        "input",
+        function () {
+
+            clearTimeout(
+                temporizador
+            );
+
+
+            passwordNuevo.setCustomValidity("");
+
+
+            passwordNuevo.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            contenedorMensajes.classList.add(
+                "d-none"
+            );
+
+
+            temporizador =
+                setTimeout(
+                    validarPasswordDjango,
+                    500
+                );
+
+        }
+    );
+
+
+    /* ========================================================
+       AL SALIR DEL CAMPO
+    ======================================================== */
+
+    passwordNuevo.addEventListener(
+        "blur",
+        validarPasswordDjango
+    );
+
+
+    /* ========================================================
+       EXPONER PARA EL SUBMIT
+    ======================================================== */
+
+    passwordNuevo.validarPasswordDjangoPerfil =
+        validarPasswordDjango;
+
+}
+
+
+/* ============================================================
+   MOSTRAR MENSAJES DE DJANGO
+============================================================ */
+
+function mostrarMensajesPasswordDjango(
+    elemento,
+    mensajes,
+    esValido
+) {
+
+    if (!elemento) {
+        return;
+    }
+
+
+    const listaMensajes =
+        Array.isArray(mensajes)
+            ? mensajes
+            : [mensajes];
+
+
+    elemento.innerHTML = "";
+
+
+    const lista =
+        document.createElement(
+            "ul"
+        );
+
+
+    lista.className =
+        "mb-0 ps-3";
+
+
+    listaMensajes.forEach(
+        function (mensaje) {
+
+            const item =
+                document.createElement(
+                    "li"
+                );
+
+
+            item.textContent =
+                mensaje;
+
+
+            lista.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    elemento.appendChild(
+        lista
+    );
+
+
+    elemento.classList.remove(
+        "d-none",
+        "text-success",
+        "text-danger"
+    );
+
+
+    elemento.classList.add(
+        esValido
+            ? "text-success"
+            : "text-danger"
+    );
+
+}
+
+/* ============================================================
+   VALIDACIÓN DE CORREO ELECTRÓNICO - MI PERFIL
+============================================================ */
+
+function inicializarValidacionCorreoPerfil() {
+
+    const correo =
+        document.getElementById(
+            "correoPerfil"
+        );
+
+
+    const mensaje =
+        document.getElementById(
+            "mensajeCorreoPerfil"
+        );
+
+
+    if (
+        !correo ||
+        !mensaje
+    ) {
+        return;
+    }
+
+
+    const urlVerificar =
+        correo.dataset.urlVerificar;
+
+
+    if (!urlVerificar) {
+        return;
+    }
+
+
+    let temporizador = null;
+
+    let controladorPeticion = null;
+
+
+    /* --------------------------------------------------------
+       VALIDAR CORREO
+    -------------------------------------------------------- */
+
+    async function validarCorreo() {
+
+        clearTimeout(
+            temporizador
+        );
+
+        temporizador = null;
+
+        const valor =
+            correo.value
+                .trim()
+                .toLowerCase();
+
+
+        correo.value = valor;
+
+
+        correo.setCustomValidity("");
+
+        correo.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        mensaje.classList.add(
+            "d-none"
+        );
+
+        mensaje.classList.remove(
+            "text-success",
+            "text-danger"
+        );
+
+
+        /* ----------------------------------------------------
+           CAMPO VACÍO
+        ---------------------------------------------------- */
+
+        if (!valor) {
+
+            correo.setCustomValidity(
+                "El correo electrónico es obligatorio."
+            );
+
+            correo.classList.add(
+                "is-invalid"
+            );
+
+            mostrarMensajeCorreo(
+                mensaje,
+                "El correo electrónico es obligatorio.",
+                false
+            );
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           FORMATO Y PROVEEDOR
+        ---------------------------------------------------- */
+
+        const regexCorreoPermitido =
+            /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
+
+
+        if (
+            !regexCorreoPermitido.test(
+                valor
+            )
+        ) {
+
+            correo.setCustomValidity(
+                "El correo debe pertenecer a Gmail, Outlook, Hotmail o Yahoo."
+            );
+
+            correo.classList.add(
+                "is-invalid"
+            );
+
+            mostrarMensajeCorreo(
+                mensaje,
+                "El correo debe pertenecer a Gmail, Outlook, Hotmail o Yahoo.",
+                false
+            );
+
+            return false;
+        }
+
+
+        /* ----------------------------------------------------
+           CANCELAR PETICIÓN ANTERIOR
+        ---------------------------------------------------- */
+
+        if (controladorPeticion) {
+
+            controladorPeticion.abort();
+
+        }
+
+
+        controladorPeticion =
+            new AbortController();
+
+
+        /* ----------------------------------------------------
+           CONSULTAR DJANGO
+        ---------------------------------------------------- */
+
+        try {
+
+            const parametros =
+                new URLSearchParams({
+                    correo: valor
+                });
+
+
+            const respuesta =
+                await fetch(
+                    `${urlVerificar}?${parametros.toString()}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        },
+                        signal:
+                            controladorPeticion.signal
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible verificar el correo."
+                );
+
+            }
+
+
+            const datos =
+                await respuesta.json();
+
+
+            /* ------------------------------------------------
+               FORMATO / PROVEEDOR INVÁLIDO DESDE BACKEND
+            ------------------------------------------------ */
+
+            if (!datos.valido) {
+
+                correo.setCustomValidity(
+                    datos.mensaje ||
+                    "El correo electrónico no es válido."
+                );
+
+                correo.classList.remove(
+                    "is-valid"
+                );
+
+                correo.classList.add(
+                    "is-invalid"
+                );
+
+
+                mostrarMensajeCorreo(
+                    mensaje,
+                    datos.mensaje ||
+                    "El correo electrónico no es válido.",
+                    false
+                );
+
+
+                return false;
+            }
+
+
+            /* ------------------------------------------------
+               CORREO DUPLICADO
+            ------------------------------------------------ */
+
+            if (datos.existe) {
+
+                correo.setCustomValidity(
+                    datos.mensaje ||
+                    "Este correo electrónico ya está registrado."
+                );
+
+                correo.classList.remove(
+                    "is-valid"
+                );
+
+                correo.classList.add(
+                    "is-invalid"
+                );
+
+
+                mostrarMensajeCorreo(
+                    mensaje,
+                    datos.mensaje ||
+                    "Este correo electrónico ya está registrado.",
+                    false
+                );
+
+
+                return false;
+            }
+
+
+            /* ------------------------------------------------
+               CORREO DISPONIBLE
+            ------------------------------------------------ */
+
+            correo.setCustomValidity("");
+
+            correo.classList.remove(
+                "is-invalid"
+            );
+
+            correo.classList.add(
+                "is-valid"
+            );
+
+
+            mostrarMensajeCorreo(
+                mensaje,
+                datos.mensaje ||
+                "Correo electrónico disponible.",
+                true
+            );
+
+
+            return true;
+
+
+        } catch (error) {
+
+            if (
+                error.name ===
+                "AbortError"
+            ) {
+
+                return false;
+
+            }
+
+
+            correo.setCustomValidity(
+                "No fue posible verificar el correo en este momento."
+            );
+
+            correo.classList.remove(
+                "is-valid"
+            );
+
+            correo.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeCorreo(
+                mensaje,
+                "No fue posible verificar el correo en este momento.",
+                false
+            );
+
+
+            return false;
+
+        }
+
+    }
+
+
+    /* --------------------------------------------------------
+       VALIDACIÓN MIENTRAS ESCRIBE
+    -------------------------------------------------------- */
+
+    correo.addEventListener(
+        "input",
+        function () {
+
+            clearTimeout(
+                temporizador
+            );
+
+
+            correo.setCustomValidity("");
+
+            correo.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            mensaje.classList.add(
+                "d-none"
+            );
+
+
+            temporizador =
+                setTimeout(
+                    validarCorreo,
+                    500
+                );
+
+        }
+    );
+
+
+    /* --------------------------------------------------------
+       VALIDAR AL SALIR DEL CAMPO
+    -------------------------------------------------------- */
+
+    correo.addEventListener(
+        "blur",
+        validarCorreo
+    );
+
+
+    /* --------------------------------------------------------
+       GUARDAR FUNCIÓN PARA EL SUBMIT
+    -------------------------------------------------------- */
+
+    correo.validarCorreoPerfil =
+        validarCorreo;
+
+}
+
+
+/* ============================================================
+   MOSTRAR MENSAJE DEL CORREO
+============================================================ */
+
+function mostrarMensajeCorreo(
+    elemento,
+    mensaje,
+    esValido
+) {
+
+    if (!elemento) {
+        return;
+    }
+
+
+    elemento.textContent =
+        mensaje;
+
+
+    elemento.classList.remove(
+        "d-none",
+        "text-success",
+        "text-danger"
+    );
+
+
+    elemento.classList.add(
+        esValido
+            ? "text-success"
+            : "text-danger"
+    );
+
+}
+
+/* ============================================================
+   VALIDACIÓN DE DATOS PERSONALES - MI PERFIL
+============================================================ */
+
+function inicializarValidacionDatosPersonales() {
+
+    const nombres =
+        document.getElementById(
+            "nombresPerfil"
+        );
+
+
+    const apellidos =
+        document.getElementById(
+            "apellidosPerfil"
+        );
+
+
+    const telefono =
+        document.getElementById(
+            "telefonoPerfil"
+        );
+
+    const mensajeTelefono =
+        document.getElementById(
+            "mensajeTelefonoPerfil"
+        );
+
+
+    const regexNombre =
+        /^(?=.*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ])[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+
+
+    const regexCelular =
+        /^3[0-9]{9}$/;
+
+
+    /* ========================================================
+       NOMBRES
+    ======================================================== */
+
+    function validarNombres() {
+
+        if (!nombres) {
+            return true;
+        }
+
+
+        const valor =
+            nombres.value.trim();
+
+
+        nombres.setCustomValidity("");
+
+        nombres.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        if (!valor) {
+
+            nombres.setCustomValidity(
+                "Los nombres son obligatorios."
+            );
+
+            nombres.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        if (valor.length < 2) {
+
+            nombres.setCustomValidity(
+                "Los nombres deben tener al menos 2 caracteres."
+            );
+
+            nombres.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        if (valor.length > 150) {
+
+            nombres.setCustomValidity(
+                "Los nombres no pueden superar los 150 caracteres."
+            );
+
+            nombres.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        if (!regexNombre.test(valor)) {
+
+            nombres.setCustomValidity(
+                "Usa solamente letras, espacios, apóstrofes o guiones."
+            );
+
+            nombres.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        nombres.setCustomValidity("");
+
+        nombres.classList.add(
+            "is-valid"
+        );
+
+
+        return true;
+
+    }
+
+
+    /* ========================================================
+       APELLIDOS
+    ======================================================== */
+
+    function validarApellidos() {
+
+        if (!apellidos) {
+            return true;
+        }
+
+
+        const valor =
+            apellidos.value.trim();
+
+
+        apellidos.setCustomValidity("");
+
+        apellidos.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        if (!valor) {
+
+            apellidos.setCustomValidity(
+                "Los apellidos son obligatorios."
+            );
+
+            apellidos.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        if (valor.length < 2) {
+
+            apellidos.setCustomValidity(
+                "Los apellidos deben tener al menos 2 caracteres."
+            );
+
+            apellidos.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        if (valor.length > 150) {
+
+            apellidos.setCustomValidity(
+                "Los apellidos no pueden superar los 150 caracteres."
+            );
+
+            apellidos.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        if (!regexNombre.test(valor)) {
+
+            apellidos.setCustomValidity(
+                "Usa solamente letras, espacios, apóstrofes o guiones."
+            );
+
+            apellidos.classList.add(
+                "is-invalid"
+            );
+
+            return false;
+        }
+
+
+        apellidos.setCustomValidity("");
+
+        apellidos.classList.add(
+            "is-valid"
+        );
+
+
+        return true;
+
+    }
+
+
+    /* ========================================================
+       CELULAR / TELÉFONO
+    ======================================================== */
+
+    function validarTelefono() {
+
+        if (!telefono) {
+            return true;
+        }
+
+
+        const valor =
+            telefono.value.trim();
+
+
+        telefono.setCustomValidity("");
+
+        telefono.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        if (mensajeTelefono) {
+
+            mensajeTelefono.classList.add(
+                "d-none"
+            );
+
+            mensajeTelefono.classList.remove(
+                "text-success",
+                "text-danger"
+            );
+
+            mensajeTelefono.textContent = "";
+
+        }
+
+
+        /* ========================================================
+        VACÍO - ES OPCIONAL
+        ======================================================== */
+
+        if (!valor) {
+
+            return true;
+
+        }
+
+
+        /* ========================================================
+        DEBE COMENZAR POR 3
+        ======================================================== */
+
+        if (!valor.startsWith("3")) {
+
+            const mensaje =
+                "El celular debe comenzar por 3.";
+
+
+            telefono.setCustomValidity(
+                mensaje
+            );
+
+
+            telefono.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeTelefono(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        /* ========================================================
+        DEBE TENER 10 DÍGITOS
+        ======================================================== */
+
+        if (valor.length < 10) {
+
+            const faltan =
+                10 - valor.length;
+
+
+            const mensaje =
+                faltan === 1
+                    ? "Falta 1 número para completar el celular."
+                    : `Faltan ${faltan} números para completar el celular.`;
+
+
+            telefono.setCustomValidity(
+                mensaje
+            );
+
+
+            telefono.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeTelefono(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        if (valor.length > 10) {
+
+            const mensaje =
+                "El celular debe tener exactamente 10 números.";
+
+
+            telefono.setCustomValidity(
+                mensaje
+            );
+
+
+            telefono.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeTelefono(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        /* ========================================================
+        CELULAR CORRECTO
+        ======================================================== */
+
+        telefono.setCustomValidity("");
+
+
+        telefono.classList.add(
+            "is-valid"
+        );
+
+
+        mostrarMensajeTelefono(
+            "Celular válido.",
+            true
+        );
+
+
+        return true;
+
+
+        /* ========================================================
+        MOSTRAR MENSAJE
+        ======================================================== */
+
+        function mostrarMensajeTelefono(
+            mensaje,
+            valido
+        ) {
+
+            if (!mensajeTelefono) {
+                return;
+            }
+
+
+            mensajeTelefono.textContent =
+                mensaje;
+
+
+            mensajeTelefono.classList.remove(
+                "d-none",
+                "text-success",
+                "text-danger"
+            );
+
+
+            mensajeTelefono.classList.add(
+                valido
+                    ? "text-success"
+                    : "text-danger"
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       EVENTOS
+    ======================================================== */
+
+    if (nombres) {
+
+        nombres.addEventListener(
+            "input",
+            validarNombres
+        );
+
+
+        nombres.addEventListener(
+            "blur",
+            validarNombres
+        );
+
+    }
+
+
+    if (apellidos) {
+
+        apellidos.addEventListener(
+            "input",
+            validarApellidos
+        );
+
+
+        apellidos.addEventListener(
+            "blur",
+            validarApellidos
+        );
+
+    }
+
+
+    if (telefono) {
+
+        telefono.addEventListener(
+            "input",
+            function () {
+
+                /*
+                * Eliminar cualquier carácter
+                * que no sea un número.
+                */
+                telefono.value =
+                    telefono.value
+                        .replace(
+                            /[^0-9]/g,
+                            ""
+                        )
+                        .slice(
+                            0,
+                            10
+                        );
+
+
+                validarTelefono();
+
+            }
+        );
+
+
+        telefono.addEventListener(
+            "blur",
+            validarTelefono
+        );
+
+    }
+
+
+    /* ========================================================
+       EXPONER VALIDACIONES AL FORMULARIO
+    ======================================================== */
+
+    if (nombres) {
+        nombres.validarCampoPerfil =
+            validarNombres;
+    }
+
+
+    if (apellidos) {
+        apellidos.validarCampoPerfil =
+            validarApellidos;
+    }
+
+
+    if (telefono) {
+        telefono.validarCampoPerfil =
+            validarTelefono;
+    }
+
+}
 
 /* ============================================================
    4. FORMULARIO INFORMACIÓN PERSONAL
@@ -848,6 +2545,29 @@ function inicializarFormularioPerfil() {
         );
 
 
+    const correo =
+        document.getElementById(
+            "correoPerfil"
+        );
+
+    const nombres =
+        document.getElementById(
+            "nombresPerfil"
+        );
+
+
+    const apellidos =
+        document.getElementById(
+            "apellidosPerfil"
+        );
+
+
+    const telefono =
+        document.getElementById(
+            "telefonoPerfil"
+        );
+
+
     if (
         !formulario ||
         !botonGuardar
@@ -858,16 +2578,82 @@ function inicializarFormularioPerfil() {
 
     formulario.addEventListener(
         "submit",
-        function (evento) {
+        async function (evento) {
+
+            /* ------------------------------------------------
+               DETENER ENVÍO MIENTRAS VALIDAMOS
+            ------------------------------------------------ */
+
+            evento.preventDefault();
+
+            evento.stopPropagation();
+
+
+            /* ------------------------------------------------
+               VALIDAR CORREO CONTRA DJANGO
+            ------------------------------------------------ */
+
+            let correoValido =
+                true;
+
 
             if (
-                !formulario.checkValidity()
+                correo &&
+                typeof correo.validarCorreoPerfil
+                    === "function"
             ) {
 
-                evento.preventDefault();
+                correoValido =
+                    await correo
+                        .validarCorreoPerfil();
 
-                evento.stopPropagation();
+            }
 
+
+            /* ------------------------------------------------
+               VALIDAR RESTO DEL FORMULARIO
+            ------------------------------------------------ */
+
+            let datosPersonalesValidos =
+                true;
+
+
+            [
+                nombres,
+                apellidos,
+                telefono
+            ].forEach(
+                function (campo) {
+
+                    if (
+                        campo &&
+                        typeof campo.validarCampoPerfil
+                            === "function"
+                    ) {
+
+                        if (
+                            !campo.validarCampoPerfil()
+                        ) {
+
+                            datosPersonalesValidos =
+                                false;
+
+                        }
+
+                    }
+
+                }
+            );
+
+            const formularioValido =
+                formulario.checkValidity();
+
+
+            if (
+                !correoValido ||
+                !datosPersonalesValidos ||
+                !formularioValido
+            ) {
 
                 formulario.classList.add(
                     "was-validated"
@@ -881,6 +2667,10 @@ function inicializarFormularioPerfil() {
 
             }
 
+
+            /* ------------------------------------------------
+               TODO CORRECTO
+            ------------------------------------------------ */
 
             botonGuardar.disabled =
                 true;
@@ -898,6 +2688,18 @@ function inicializarFormularioPerfil() {
 
                 Guardando...
             `;
+
+
+            /* ------------------------------------------------
+               ENVIAR FORMULARIO
+            ------------------------------------------------ */
+
+            HTMLFormElement
+                .prototype
+                .submit
+                .call(
+                    formulario
+                );
 
         }
     );
@@ -954,25 +2756,26 @@ function inicializarFormularioPassword() {
 
     formulario.addEventListener(
         "submit",
-        function (evento) {
+        async function (evento) {
 
-            const passwordValido =
+            /* ------------------------------------------------
+               DETENER ENVÍO
+            ------------------------------------------------ */
+
+            evento.preventDefault();
+
+            evento.stopPropagation();
+
+
+            /* ------------------------------------------------
+               VALIDACIÓN LOCAL
+            ------------------------------------------------ */
+
+            const passwordLocalValido =
                 validarPasswordPerfil();
 
 
-            const formularioValido =
-                formulario.checkValidity();
-
-
-            if (
-                !passwordValido ||
-                !formularioValido
-            ) {
-
-                evento.preventDefault();
-
-                evento.stopPropagation();
-
+            if (!passwordLocalValido) {
 
                 formulario.classList.add(
                     "was-validated"
@@ -986,6 +2789,145 @@ function inicializarFormularioPassword() {
 
             }
 
+
+            /* ------------------------------------------------
+               VALIDAR CONTRASEÑA ACTUAL
+            ------------------------------------------------ */
+
+            let passwordActualValido =
+                true;
+
+
+            if (
+                typeof passwordActual
+                    .validarPasswordActualPerfil
+                === "function"
+            ) {
+
+                passwordActualValido =
+                    await passwordActual
+                        .validarPasswordActualPerfil();
+
+            }
+
+
+            if (!passwordActualValido) {
+
+                formulario.classList.add(
+                    "was-validated"
+                );
+
+
+                /*
+                 * No usamos reportValidity aquí.
+                 *
+                 * El mensaje ya se muestra debajo
+                 * de passwordActualPerfil.
+                 */
+
+                return;
+
+            }
+
+
+            /* ------------------------------------------------
+               VALIDACIÓN REAL DE DJANGO
+            ------------------------------------------------ */
+
+            if (
+                typeof passwordNuevo
+                    .validarPasswordDjangoPerfil
+                !== "function"
+            ) {
+
+                const contenedorMensajes =
+                    document.getElementById(
+                        "mensajesPasswordDjangoPerfil"
+                    );
+
+
+                passwordNuevo.setCustomValidity(
+                    "No fue posible verificar la contraseña."
+                );
+
+
+                passwordNuevo.classList.add(
+                    "is-invalid"
+                );
+
+
+                mostrarMensajesPasswordDjango(
+                    contenedorMensajes,
+                    [
+                        (
+                            "No fue posible verificar "
+                            +
+                            "la contraseña en este momento."
+                        )
+                    ],
+                    false
+                );
+
+
+                return;
+
+            }
+
+
+            const passwordDjangoValido =
+                await passwordNuevo
+                    .validarPasswordDjangoPerfil();
+
+
+            /* ------------------------------------------------
+               SI DJANGO LA RECHAZA
+            ------------------------------------------------ */
+
+            if (!passwordDjangoValido) {
+
+                formulario.classList.add(
+                    "was-validated"
+                );
+
+
+                /*
+                 * No usamos reportValidity aquí.
+                 *
+                 * El mensaje ya se muestra debajo
+                 * del campo de nueva contraseña.
+                 */
+
+                return;
+
+            }
+
+
+            /* ------------------------------------------------
+               VALIDACIÓN GENERAL DEL FORMULARIO
+            ------------------------------------------------ */
+
+            const formularioValido =
+                formulario.checkValidity();
+
+
+            if (!formularioValido) {
+
+                formulario.classList.add(
+                    "was-validated"
+                );
+
+
+                formulario.reportValidity();
+
+
+                return;
+
+            }
+
+
+            /* ------------------------------------------------
+               TODO CORRECTO
+            ------------------------------------------------ */
 
             botonGuardar.disabled =
                 true;
@@ -1003,6 +2945,18 @@ function inicializarFormularioPassword() {
 
                 Actualizando...
             `;
+
+
+            /* ------------------------------------------------
+               ENVIAR DEFINITIVAMENTE
+            ------------------------------------------------ */
+
+            HTMLFormElement
+                .prototype
+                .submit
+                .call(
+                    formulario
+                );
 
         }
     );

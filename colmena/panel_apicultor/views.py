@@ -6,6 +6,7 @@ from django.db.models import Q
 from datetime import datetime
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.urls import reverse
 
 
 from dbmicolmena.models import (
@@ -16,10 +17,6 @@ from dbmicolmena.models import (
     Incidencia,
     EventoAgenda,
 )
-
-
-
-
 
 
 
@@ -1179,7 +1176,8 @@ def registrar_mantenimiento_apicultor(
 
 
 # ============================================================
-# REPORTAR INCIDENCIA - APICULTOR
+# ACCESO RÁPIDO
+# REPORTAR INCIDENCIA DESDE UNA COLMENA
 # ============================================================
 
 @login_required
@@ -1189,251 +1187,43 @@ def reportar_incidencia_apicultor(
 ):
 
     # ========================================================
-    # OBTENER APICULTOR AUTENTICADO
+    # APICULTOR
     # ========================================================
 
-    apicultor = (
-        Apicultor.objects
-        .filter(
-            user=request.user
-        )
-        .first()
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
     )
 
 
-    if not apicultor:
-
-        messages.error(
-            request,
-            "Tu usuario no tiene un perfil de apicultor asignado."
-        )
-
-        return redirect(
-            "login"
-        )
-
-
     # ========================================================
-    # OBTENER COLMENA
-    #
-    # SEGURIDAD:
-    # Solo puede reportar sobre sus propias colmenas.
+    # VALIDAR QUE LA COLMENA SEA SUYA
     # ========================================================
 
     colmena = get_object_or_404(
+
         Colmena,
+
         id_colmena=id_colmena,
+
         id_apiario__id_apicultor=apicultor
+
     )
 
 
     # ========================================================
-    # APIARIO AUTOMÁTICO
+    # REDIRIGIR AL NUEVO FORMULARIO
+    #
+    # Quedará preseleccionada la colmena.
     # ========================================================
 
-    apiario = colmena.id_apiario
+    url = reverse(
+        "crear_incidencia_apicultor"
+    )
 
 
-    # ========================================================
-    # PROCESAR FORMULARIO
-    # ========================================================
-
-    if request.method == "POST":
-
-        titulo = (
-            request.POST.get(
-                "titulo",
-                ""
-            )
-            .strip()
-        )
-
-
-        prioridad = (
-            request.POST.get(
-                "prioridad",
-                ""
-            )
-            .strip()
-        )
-
-
-        fecha_deteccion = (
-            request.POST.get(
-                "fecha_deteccion",
-                ""
-            )
-            .strip()
-        )
-
-
-        observaciones = (
-            request.POST.get(
-                "observaciones",
-                ""
-            )
-            .strip()
-        )
-
-
-        imagen = (
-            request.FILES.get(
-                "imagen"
-            )
-        )
-
-
-        # ====================================================
-        # VALIDACIONES
-        # ====================================================
-
-        errores = []
-
-
-        if not titulo:
-
-            errores.append(
-                "Debes ingresar un título para la incidencia."
-            )
-
-
-        if len(titulo) > 150:
-
-            errores.append(
-                "El título no puede superar los 150 caracteres."
-            )
-
-
-        prioridades_validas = [
-            "Baja",
-            "Media",
-            "Alta",
-            "Crítica",
-        ]
-
-
-        if prioridad not in prioridades_validas:
-
-            errores.append(
-                "Selecciona una prioridad válida."
-            )
-
-
-        if not fecha_deteccion:
-
-            errores.append(
-                "Debes seleccionar la fecha de detección."
-            )
-
-
-        if len(observaciones) > 1000:
-
-            errores.append(
-                "Las observaciones son demasiado extensas."
-            )
-
-
-        # ====================================================
-        # MOSTRAR ERRORES
-        # ====================================================
-
-        if errores:
-
-            for error in errores:
-
-                messages.error(
-                    request,
-                    error
-                )
-
-
-        else:
-
-            # =================================================
-            # CREAR INCIDENCIA
-            # =================================================
-
-            incidencia = Incidencia(
-
-                id_apicultor=
-                    apicultor,
-
-                id_apiario=
-                    apiario,
-
-                id_colmena=
-                    colmena,
-
-                entidadincidencia=
-                    "Colmena",
-
-                titulo=
-                    titulo,
-
-                prioridad=
-                    prioridad,
-
-                fechadeteccion=
-                    fecha_deteccion,
-
-                estado=
-                    "Abierta",
-
-                observaciones=
-                    observaciones,
-
-                responsable=(
-                    request.user.get_full_name()
-                    or
-                    request.user.username
-                ),
-
-            )
-
-
-            if imagen:
-
-                incidencia.imagen = (
-                    imagen
-                )
-
-
-            incidencia.save()
-
-
-            messages.success(
-                request,
-                "La incidencia fue reportada correctamente."
-            )
-
-
-            return redirect(
-                "colmenas_apicultor"
-            )
-
-
-    # ========================================================
-    # CONTEXTO
-    # ========================================================
-
-    contexto = {
-
-        "apicultor":
-            apicultor,
-
-        "apiario":
-            apiario,
-
-        "colmena":
-            colmena,
-
-    }
-
-
-    return render(
-        request,
-        "panel_apicultor/reportar_incidencia.html",
-        contexto
+    return redirect(
+        f"{url}?colmena={colmena.id_colmena}"
     )
 
 
@@ -1953,7 +1743,8 @@ def actualizar_observacion_mantenimiento_apicultor(
 
 
 # ============================================================
-# INCIDENCIAS - PANEL APICULTOR
+# INCIDENCIAS
+# PANEL APICULTOR
 # ============================================================
 
 @login_required
@@ -1963,19 +1754,10 @@ def incidencias_apicultor(request):
     # APICULTOR AUTENTICADO
     # ========================================================
 
-    apicultor = Apicultor.objects.filter(
+    apicultor = get_object_or_404(
+        Apicultor,
         user=request.user
-    ).first()
-
-
-    if not apicultor:
-
-        messages.error(
-            request,
-            "Tu usuario no tiene un perfil de apicultor asignado."
-        )
-
-        return redirect("login")
+    )
 
 
     # ========================================================
@@ -1994,29 +1776,27 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # INCIDENCIAS DEL APICULTOR
+    # INCIDENCIAS ASIGNADAS AL APICULTOR
     #
-    # Puede incluir:
+    # id_apicultor representa al apicultor encargado
+    # de gestionar la incidencia.
     #
-    # - incidencia directa del apiario
-    # - incidencia de una colmena
+    # Aquí aparecerán:
     #
-    # Nunca mostramos incidencias de otro apicultor.
+    # - Las incidencias creadas por él mismo.
+    # - Las incidencias asignadas por un administrador.
     # ========================================================
 
     incidencias_base = (
         Incidencia.objects
         .filter(
-            Q(id_apicultor=apicultor)
-            |
-            Q(id_apiario__in=apiarios)
+            id_apicultor=apicultor
         )
         .select_related(
             "id_apicultor",
             "id_apiario",
             "id_colmena"
         )
-        .distinct()
     )
 
 
@@ -2029,61 +1809,54 @@ def incidencias_apicultor(request):
     )
 
 
-    total_abiertas = (
+    total_pendientes = (
         incidencias_base
         .filter(
-            estado__iexact="Abierta"
+            estado__iexact="Pendiente"
+        )
+        .count()
+    )
+
+
+    total_en_proceso = (
+        incidencias_base
+        .filter(
+            estado__iexact="En proceso"
+        )
+        .count()
+    )
+
+
+    total_resueltas = (
+        incidencias_base
+        .filter(
+            estado__iexact="Resuelta"
         )
         .count()
     )
 
 
     # ========================================================
-    # ESTADOS QUE REALMENTE EXISTEN EN LA BD
-    #
-    # Así no inventamos estados.
+    # ESTADOS OFICIALES
     # ========================================================
 
-    estados_disponibles = list(
-        incidencias_base
-        .exclude(
-            estado__isnull=True
-        )
-        .exclude(
-            estado=""
-        )
-        .values_list(
-            "estado",
-            flat=True
-        )
-        .distinct()
-        .order_by(
-            "estado"
-        )
-    )
+    estados_disponibles = [
+        "Pendiente",
+        "En proceso",
+        "Resuelta",
+    ]
 
 
     # ========================================================
-    # PRIORIDADES QUE REALMENTE EXISTEN
+    # PRIORIDADES OFICIALES
     # ========================================================
 
-    prioridades_disponibles = list(
-        incidencias_base
-        .exclude(
-            prioridad__isnull=True
-        )
-        .exclude(
-            prioridad=""
-        )
-        .values_list(
-            "prioridad",
-            flat=True
-        )
-        .distinct()
-        .order_by(
-            "prioridad"
-        )
-    )
+    prioridades_disponibles = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
 
 
     # ========================================================
@@ -2115,7 +1888,7 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # QUERY PRINCIPAL
+    # CONSULTA PARA FILTRAR
     # ========================================================
 
     incidencias = incidencias_base
@@ -2148,6 +1921,12 @@ def incidencias_apicultor(request):
             |
 
             Q(
+                entidadincidencia__icontains=busqueda
+            )
+
+            |
+
+            Q(
                 id_apiario__nombreapiario__icontains=busqueda
             )
 
@@ -2161,7 +1940,7 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # FILTRO APIARIO
+    # FILTRO POR APIARIO
     # ========================================================
 
     if apiario_seleccionado.isdigit():
@@ -2174,15 +1953,13 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # FILTRO ESTADO
+    # FILTRO POR ESTADO
     # ========================================================
 
     if (
         estado_seleccionado
         and
-        estado_seleccionado
-        in
-        estados_disponibles
+        estado_seleccionado in estados_disponibles
     ):
 
         incidencias = incidencias.filter(
@@ -2191,15 +1968,13 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # FILTRO PRIORIDAD
+    # FILTRO POR PRIORIDAD
     # ========================================================
 
     if (
         prioridad_seleccionada
         and
-        prioridad_seleccionada
-        in
-        prioridades_disponibles
+        prioridad_seleccionada in prioridades_disponibles
     ):
 
         incidencias = incidencias.filter(
@@ -2209,8 +1984,6 @@ def incidencias_apicultor(request):
 
     # ========================================================
     # ORDEN
-    #
-    # Las más recientes primero.
     # ========================================================
 
     incidencias = incidencias.order_by(
@@ -2229,13 +2002,13 @@ def incidencias_apicultor(request):
     )
 
 
-    numero_pagina = request.GET.get(
+    pagina = request.GET.get(
         "page"
     )
 
 
     incidencias_pagina = paginator.get_page(
-        numero_pagina
+        pagina
     )
 
 
@@ -2254,20 +2027,35 @@ def incidencias_apicultor(request):
         "incidencias":
             incidencias_pagina,
 
+
+        # CONTADORES
+
         "total_incidencias":
             total_incidencias,
 
-        "total_abiertas":
-            total_abiertas,
+        "total_pendientes":
+            total_pendientes,
+
+        "total_en_proceso":
+            total_en_proceso,
+
+        "total_resueltas":
+            total_resueltas,
 
         "total_resultados":
             paginator.count,
+
+
+        # OPCIONES
 
         "estados_disponibles":
             estados_disponibles,
 
         "prioridades_disponibles":
             prioridades_disponibles,
+
+
+        # FILTROS
 
         "busqueda":
             busqueda,
@@ -2287,5 +2075,1263 @@ def incidencias_apicultor(request):
     return render(
         request,
         "panel_apicultor/incidencias.html",
+        contexto
+    )
+
+
+
+# ============================================================
+# CREAR INCIDENCIA
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+def crear_incidencia_apicultor(request):
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # SOLO SUS APIARIOS
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+        .filter(
+            id_apicultor=apicultor
+        )
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    # ========================================================
+    # SOLO COLMENAS DE SUS APIARIOS
+    # ========================================================
+
+    colmenas = (
+        Colmena.objects
+        .filter(
+            id_apiario__id_apicultor=apicultor
+        )
+        .select_related(
+            "id_apiario"
+        )
+        .order_by(
+            "id_apiario__nombreapiario",
+            "codigocolmena"
+        )
+    )
+
+
+    prioridades_validas = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
+
+
+    # ========================================================
+    # VALORES INICIALES
+    #
+    # Esto nos servirá después para:
+    #
+    # /incidencias/crear/?apiario=2
+    #
+    # o:
+    #
+    # /incidencias/crear/?colmena=8
+    # ========================================================
+
+    tipo_inicial = "Apiario"
+
+    apiario_preseleccionado = request.GET.get(
+        "apiario",
+        ""
+    ).strip()
+
+    colmena_preseleccionada = request.GET.get(
+        "colmena",
+        ""
+    ).strip()
+
+
+    # ========================================================
+    # SI VENIMOS DESDE UNA COLMENA
+    # ========================================================
+
+    if colmena_preseleccionada.isdigit():
+
+        colmena_inicial = (
+            colmenas
+            .filter(
+                id_colmena=int(
+                    colmena_preseleccionada
+                )
+            )
+            .first()
+        )
+
+
+        if colmena_inicial:
+
+            tipo_inicial = "Colmena"
+
+            apiario_preseleccionado = str(
+                colmena_inicial.id_apiario_id
+            )
+
+            colmena_preseleccionada = str(
+                colmena_inicial.id_colmena
+            )
+
+
+    # ========================================================
+    # POST
+    # ========================================================
+
+    if request.method == "POST":
+
+        tipo_entidad = request.POST.get(
+            "tipo_entidad",
+            ""
+        ).strip()
+
+
+        id_apiario = request.POST.get(
+            "apiario",
+            ""
+        ).strip()
+
+
+        id_colmena = request.POST.get(
+            "colmena",
+            ""
+        ).strip()
+
+
+        titulo = request.POST.get(
+            "titulo",
+            ""
+        ).strip()
+
+
+        prioridad = request.POST.get(
+            "prioridad",
+            ""
+        ).strip()
+
+
+        fecha = request.POST.get(
+            "fecha",
+            ""
+        ).strip()
+
+
+        observaciones = request.POST.get(
+            "observaciones",
+            ""
+        ).strip()
+
+
+        imagen = request.FILES.get(
+            "imagen"
+        )
+
+
+        # ====================================================
+        # GUARDAR DATOS ESCRITOS PARA NO PERDERLOS SI HAY ERROR
+        # ====================================================
+
+        valores_formulario = {
+
+            "tipo_entidad":
+                tipo_entidad,
+
+            "apiario":
+                id_apiario,
+
+            "colmena":
+                id_colmena,
+
+            "titulo":
+                titulo,
+
+            "prioridad":
+                prioridad,
+
+            "fecha":
+                fecha,
+
+            "observaciones":
+                observaciones,
+
+        }
+
+
+        # ====================================================
+        # VALIDACIONES
+        # ====================================================
+
+        errores = []
+
+
+        # ----------------------------------------------------
+        # TIPO
+        # ----------------------------------------------------
+
+        if tipo_entidad not in [
+            "Apiario",
+            "Colmena"
+        ]:
+
+            errores.append(
+                "Selecciona si la incidencia corresponde "
+                "a un apiario o a una colmena."
+            )
+
+
+        # ----------------------------------------------------
+        # TÍTULO
+        # ----------------------------------------------------
+
+        if not titulo:
+
+            errores.append(
+                "Debes ingresar un título para la incidencia."
+            )
+
+
+        # ----------------------------------------------------
+        # PRIORIDAD
+        # ----------------------------------------------------
+
+        if prioridad not in prioridades_validas:
+
+            errores.append(
+                "Selecciona una prioridad válida."
+            )
+
+
+        # ----------------------------------------------------
+        # FECHA
+        # ----------------------------------------------------
+
+        fecha_deteccion = None
+
+
+        if fecha:
+
+            try:
+
+                fecha_deteccion = datetime.strptime(
+                    fecha,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+
+                errores.append(
+                    "La fecha de detección no es válida."
+                )
+
+        else:
+
+            fecha_deteccion = timezone.localdate()
+
+
+        # ====================================================
+        # VALIDAR APIARIO
+        #
+        # IMPORTANTE:
+        # buscamos únicamente dentro de SUS apiarios.
+        # ====================================================
+
+        apiario = None
+
+
+        if not id_apiario.isdigit():
+
+            errores.append(
+                "Debes seleccionar un apiario."
+            )
+
+        else:
+
+            apiario = (
+                apiarios
+                .filter(
+                    id_apiario=int(
+                        id_apiario
+                    )
+                )
+                .first()
+            )
+
+
+            if not apiario:
+
+                errores.append(
+                    "El apiario seleccionado no pertenece "
+                    "a tus apiarios asignados."
+                )
+
+
+        # ====================================================
+        # VALIDAR COLMENA
+        # ====================================================
+
+        colmena = None
+
+
+        if (
+            tipo_entidad == "Colmena"
+            and
+            apiario
+        ):
+
+            if not id_colmena.isdigit():
+
+                errores.append(
+                    "Debes seleccionar una colmena."
+                )
+
+            else:
+
+                colmena = (
+                    Colmena.objects
+                    .filter(
+                        id_colmena=int(
+                            id_colmena
+                        ),
+
+                        id_apiario=apiario,
+
+                        id_apiario__id_apicultor=apicultor
+                    )
+                    .first()
+                )
+
+
+                if not colmena:
+
+                    errores.append(
+                        "La colmena seleccionada no pertenece "
+                        "al apiario indicado."
+                    )
+
+
+        # ====================================================
+        # VALIDAR IMAGEN
+        # ====================================================
+
+        if imagen:
+
+            tipo_archivo = getattr(
+                imagen,
+                "content_type",
+                ""
+            )
+
+
+            if (
+                tipo_archivo
+                and
+                not tipo_archivo.startswith("image/")
+            ):
+
+                errores.append(
+                    "El archivo de evidencia debe ser una imagen."
+                )
+
+
+            limite_imagen = (
+                5 * 1024 * 1024
+            )
+
+
+            if imagen.size > limite_imagen:
+
+                errores.append(
+                    "La imagen no puede superar los 5 MB."
+                )
+
+
+        # ====================================================
+        # SI HAY ERRORES
+        # ====================================================
+
+        if errores:
+
+            for error in errores:
+
+                messages.error(
+                    request,
+                    error
+                )
+
+
+            contexto = {
+
+                "apicultor":
+                    apicultor,
+
+                "apiarios":
+                    apiarios,
+
+                "colmenas":
+                    colmenas,
+
+                "prioridades":
+                    prioridades_validas,
+
+                "tipo_inicial":
+                    tipo_entidad,
+
+                "apiario_preseleccionado":
+                    id_apiario,
+
+                "colmena_preseleccionada":
+                    id_colmena,
+
+                "valores_formulario":
+                    valores_formulario,
+
+                "fecha_hoy":
+                    timezone.localdate(),
+
+            }
+
+
+            return render(
+                request,
+                "panel_apicultor/crear_incidencia.html",
+                contexto
+            )
+
+
+        # ====================================================
+        # NOMBRE DE QUIEN LA REPORTÓ
+        # ====================================================
+
+        nombre_reportante = (
+            request.user
+            .get_full_name()
+            .strip()
+        )
+
+
+        if not nombre_reportante:
+
+            nombre_reportante = (
+                request.user.username
+            )
+
+
+        # ====================================================
+        # CREAR INCIDENCIA
+        # ====================================================
+
+        Incidencia.objects.create(
+
+            # Apicultor encargado
+            id_apicultor=apicultor,
+
+            # Lugar
+            id_apiario=apiario,
+
+            # NULL cuando es incidencia general del apiario
+            id_colmena=colmena,
+
+            # Apiario / Colmena
+            entidadincidencia=tipo_entidad,
+
+            titulo=titulo,
+
+            prioridad=prioridad,
+
+            fechadeteccion=fecha_deteccion,
+
+            # Toda incidencia creada empieza abierta
+            estado="Pendiente",
+
+            observaciones=observaciones,
+
+            imagen=imagen,
+
+            # Persona que hizo el reporte
+            responsable=nombre_reportante
+
+        )
+
+
+        messages.success(
+            request,
+            "La incidencia fue reportada correctamente."
+        )
+
+
+        return redirect(
+            "incidencias_apicultor"
+        )
+
+
+    # ========================================================
+    # GET
+    # ========================================================
+
+    contexto = {
+
+        "apicultor":
+            apicultor,
+
+        "apiarios":
+            apiarios,
+
+        "colmenas":
+            colmenas,
+
+        "prioridades":
+            prioridades_validas,
+
+        "tipo_inicial":
+            tipo_inicial,
+
+        "apiario_preseleccionado":
+            apiario_preseleccionado,
+
+        "colmena_preseleccionada":
+            colmena_preseleccionada,
+
+        "fecha_hoy":
+            timezone.localdate(),
+
+        "valores_formulario":
+            {},
+
+    }
+
+
+    return render(
+        request,
+        "panel_apicultor/crear_incidencia.html",
+        contexto
+    )
+
+
+
+# ============================================================
+# EDITAR / GESTIONAR INCIDENCIA
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+def editar_incidencia_apicultor(
+    request,
+    id_incidencia
+):
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # INCIDENCIA ASIGNADA AL APICULTOR
+    # ========================================================
+
+    incidencia = get_object_or_404(
+
+        Incidencia.objects.select_related(
+            "id_apicultor",
+            "id_apiario",
+            "id_colmena"
+        ),
+
+        id_incidencia=id_incidencia,
+
+        id_apicultor=apicultor
+    )
+
+
+    # ========================================================
+    # ESTADOS PERMITIDOS
+    # ========================================================
+
+    estados_disponibles = [
+        "Pendiente",
+        "En proceso",
+        "Resuelta",
+    ]
+
+
+    # ========================================================
+    # POST
+    # ========================================================
+
+    if request.method == "POST":
+
+        estado = request.POST.get(
+            "estado",
+            ""
+        ).strip()
+
+
+        observaciones = request.POST.get(
+            "observaciones",
+            ""
+        ).strip()
+
+
+        nueva_imagen = request.FILES.get(
+            "imagen"
+        )
+
+
+        errores = []
+
+
+        # ====================================================
+        # VALIDAR ESTADO
+        # ====================================================
+
+        if estado not in estados_disponibles:
+
+            errores.append(
+                "Selecciona un estado válido."
+            )
+
+
+        # ====================================================
+        # OBSERVACIONES
+        # ====================================================
+
+        if len(observaciones) > 1000:
+
+            errores.append(
+                "Las observaciones no pueden superar "
+                "los 1000 caracteres."
+            )
+
+
+        # ====================================================
+        # IMAGEN
+        # ====================================================
+
+        if nueva_imagen:
+
+            tipo_archivo = getattr(
+                nueva_imagen,
+                "content_type",
+                ""
+            )
+
+
+            if (
+                tipo_archivo
+                and
+                not tipo_archivo.startswith("image/")
+            ):
+
+                errores.append(
+                    "La evidencia debe ser una imagen."
+                )
+
+
+            if nueva_imagen.size > 5 * 1024 * 1024:
+
+                errores.append(
+                    "La imagen no puede superar los 5 MB."
+                )
+
+
+        # ====================================================
+        # ERRORES
+        # ====================================================
+
+        if errores:
+
+            for error in errores:
+
+                messages.error(
+                    request,
+                    error
+                )
+
+
+            return render(
+                request,
+                "panel_apicultor/editar_incidencia.html",
+                {
+                    "apicultor": apicultor,
+                    "incidencia": incidencia,
+                    "estados_disponibles": estados_disponibles,
+                }
+            )
+
+
+        # ====================================================
+        # ACTUALIZAR
+        # ========================================================
+
+        incidencia.estado = estado
+
+        incidencia.observaciones = observaciones
+
+
+        if nueva_imagen:
+
+            incidencia.imagen = nueva_imagen
+
+
+        incidencia.save()
+
+
+        messages.success(
+            request,
+            "La incidencia fue actualizada correctamente."
+        )
+
+
+        return redirect(
+            "incidencias_apicultor"
+        )
+
+
+    # ========================================================
+    # GET
+    # ========================================================
+
+    return render(
+        request,
+        "panel_apicultor/editar_incidencia.html",
+        {
+            "apicultor": apicultor,
+            "incidencia": incidencia,
+            "estados_disponibles": estados_disponibles,
+        }
+    )
+
+
+# ============================================================
+# AGENDA
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+def agenda_apicultor(request):
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # APIARIOS DEL APICULTOR
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+        .filter(
+            id_apicultor=apicultor
+        )
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    # ========================================================
+    # FECHA ACTUAL
+    # ========================================================
+
+    hoy = timezone.localdate()
+
+
+    # ========================================================
+    # EVENTOS DEL APICULTOR
+    #
+    # Puede ver:
+    #
+    # 1. Eventos asignados directamente a él.
+    #
+    # 2. Eventos correspondientes a sus apiarios.
+    #
+    # Esto nos permite que un administrador cree un evento
+    # para un apiario y el apicultor encargado pueda verlo.
+    # ========================================================
+
+    eventos_base = (
+        EventoAgenda.objects
+        .filter(
+            Q(
+                responsable=apicultor
+            )
+            |
+            Q(
+                id_apiario__in=apiarios
+            )
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "creado_por"
+        )
+        .distinct()
+    )
+
+
+    # ========================================================
+    # CONTADORES GENERALES
+    # ========================================================
+
+    total_eventos = (
+        eventos_base.count()
+    )
+
+
+    total_programados = (
+        eventos_base
+        .filter(
+            estado=EventoAgenda.EstadoEvento.PROGRAMADO
+        )
+        .count()
+    )
+
+
+    total_completados = (
+        eventos_base
+        .filter(
+            estado=EventoAgenda.EstadoEvento.COMPLETADO
+        )
+        .count()
+    )
+
+
+    total_cancelados = (
+        eventos_base
+        .filter(
+            estado=EventoAgenda.EstadoEvento.CANCELADO
+        )
+        .count()
+    )
+
+
+    # ========================================================
+    # EVENTOS PARA HOY
+    # ========================================================
+
+    eventos_hoy = (
+        eventos_base
+        .filter(
+            fecha=hoy
+        )
+        .order_by(
+            "hora"
+        )
+    )
+
+
+    total_hoy = eventos_hoy.count()
+
+
+    # ========================================================
+    # PRÓXIMOS EVENTOS
+    #
+    # No mostramos aquí eventos ya completados/cancelados.
+    # ========================================================
+
+    proximos_eventos = (
+        eventos_base
+        .filter(
+            fecha__gte=hoy,
+            estado=EventoAgenda.EstadoEvento.PROGRAMADO
+        )
+        .order_by(
+            "fecha",
+            "hora"
+        )[:5]
+    )
+
+
+    # ========================================================
+    # TIPOS DISPONIBLES
+    # ========================================================
+
+    tipos_disponibles = [
+        {
+            "valor": EventoAgenda.TipoEvento.MANTENIMIENTO,
+            "nombre": "Mantenimiento",
+        },
+        {
+            "valor": EventoAgenda.TipoEvento.REVISION,
+            "nombre": "Revisión",
+        },
+        {
+            "valor": EventoAgenda.TipoEvento.INCIDENCIA,
+            "nombre": "Incidencia",
+        },
+        {
+            "valor": EventoAgenda.TipoEvento.EVENTO,
+            "nombre": "Evento general",
+        },
+    ]
+
+
+    # ========================================================
+    # ESTADOS DISPONIBLES
+    # ========================================================
+
+    estados_disponibles = [
+        {
+            "valor": EventoAgenda.EstadoEvento.PROGRAMADO,
+            "nombre": "Programado",
+        },
+        {
+            "valor": EventoAgenda.EstadoEvento.COMPLETADO,
+            "nombre": "Completado",
+        },
+        {
+            "valor": EventoAgenda.EstadoEvento.CANCELADO,
+            "nombre": "Cancelado",
+        },
+    ]
+
+
+    # ========================================================
+    # FILTROS GET
+    # ========================================================
+
+    busqueda = request.GET.get(
+        "q",
+        ""
+    ).strip()
+
+
+    apiario_seleccionado = request.GET.get(
+        "apiario",
+        ""
+    ).strip()
+
+
+    tipo_seleccionado = request.GET.get(
+        "tipo",
+        ""
+    ).strip()
+
+
+    estado_seleccionado = request.GET.get(
+        "estado",
+        ""
+    ).strip()
+
+
+    fecha_seleccionada = request.GET.get(
+        "fecha",
+        ""
+    ).strip()
+
+
+    # ========================================================
+    # CONSULTA DE RESULTADOS
+    # ========================================================
+
+    eventos = eventos_base
+
+
+    # ========================================================
+    # BUSCADOR
+    # ========================================================
+
+    if busqueda:
+
+        eventos = eventos.filter(
+
+            Q(
+                titulo__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                descripcion__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                id_apiario__nombreapiario__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                id_colmena__codigocolmena__icontains=busqueda
+            )
+
+        )
+
+
+    # ========================================================
+    # FILTRO APIARIO
+    # ========================================================
+
+    if apiario_seleccionado.isdigit():
+
+        eventos = eventos.filter(
+            id_apiario__id_apiario=int(
+                apiario_seleccionado
+            )
+        )
+
+
+    # ========================================================
+    # FILTRO TIPO
+    # ========================================================
+
+    tipos_validos = [
+        EventoAgenda.TipoEvento.MANTENIMIENTO,
+        EventoAgenda.TipoEvento.REVISION,
+        EventoAgenda.TipoEvento.INCIDENCIA,
+        EventoAgenda.TipoEvento.EVENTO,
+    ]
+
+
+    if (
+        tipo_seleccionado
+        and
+        tipo_seleccionado in tipos_validos
+    ):
+
+        eventos = eventos.filter(
+            tipo_evento=tipo_seleccionado
+        )
+
+
+    # ========================================================
+    # FILTRO ESTADO
+    # ========================================================
+
+    estados_validos = [
+        EventoAgenda.EstadoEvento.PROGRAMADO,
+        EventoAgenda.EstadoEvento.COMPLETADO,
+        EventoAgenda.EstadoEvento.CANCELADO,
+    ]
+
+
+    if (
+        estado_seleccionado
+        and
+        estado_seleccionado in estados_validos
+    ):
+
+        eventos = eventos.filter(
+            estado=estado_seleccionado
+        )
+
+
+    # ========================================================
+    # FILTRO POR FECHA
+    # ========================================================
+
+    if fecha_seleccionada:
+
+        eventos = eventos.filter(
+            fecha=fecha_seleccionada
+        )
+
+
+    # ========================================================
+    # ORDEN
+    # ========================================================
+
+    eventos = eventos.order_by(
+        "fecha",
+        "hora"
+    )
+
+
+    # ========================================================
+    # PAGINACIÓN
+    # ========================================================
+
+    paginator = Paginator(
+        eventos,
+        10
+    )
+
+
+    pagina = request.GET.get(
+        "page"
+    )
+
+
+    eventos_pagina = paginator.get_page(
+        pagina
+    )
+
+
+    # ========================================================
+    # EVENTOS PARA EL CALENDARIO
+    #
+    # Estos no están paginados porque el calendario necesita
+    # conocer todos los eventos disponibles.
+    # ========================================================
+
+    eventos_calendario = []
+
+
+    for evento in eventos_base.order_by(
+        "fecha",
+        "hora"
+    ):
+
+        eventos_calendario.append({
+
+            "id":
+                evento.id_evento,
+
+            "titulo":
+                evento.titulo,
+
+            "tipo":
+                evento.tipo_evento,
+
+            "estado":
+                evento.estado,
+
+            "fecha":
+                evento.fecha.strftime(
+                    "%Y-%m-%d"
+                ),
+
+            "hora":
+                evento.hora.strftime(
+                    "%H:%M"
+                ),
+
+            "apiario":
+                evento.id_apiario.nombreapiario
+                if evento.id_apiario
+                else "",
+
+            "colmena":
+                evento.id_colmena.codigocolmena
+                if evento.id_colmena
+                else "",
+
+            "descripcion":
+                evento.descripcion or "",
+
+        })
+
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "apicultor":
+            apicultor,
+
+        "apiarios":
+            apiarios,
+
+
+        # EVENTOS
+
+        "eventos":
+            eventos_pagina,
+
+        "eventos_hoy":
+            eventos_hoy,
+
+        "proximos_eventos":
+            proximos_eventos,
+
+        "eventos_calendario":
+            eventos_calendario,
+
+
+        # CONTADORES
+
+        "total_eventos":
+            total_eventos,
+
+        "total_programados":
+            total_programados,
+
+        "total_completados":
+            total_completados,
+
+        "total_cancelados":
+            total_cancelados,
+
+        "total_hoy":
+            total_hoy,
+
+        "total_resultados":
+            paginator.count,
+
+
+        # OPCIONES
+
+        "tipos_disponibles":
+            tipos_disponibles,
+
+        "estados_disponibles":
+            estados_disponibles,
+
+
+        # FILTROS
+
+        "busqueda":
+            busqueda,
+
+        "apiario_seleccionado":
+            apiario_seleccionado,
+
+        "tipo_seleccionado":
+            tipo_seleccionado,
+
+        "estado_seleccionado":
+            estado_seleccionado,
+
+        "fecha_seleccionada":
+            fecha_seleccionada,
+
+
+        # FECHA
+
+        "hoy":
+            hoy,
+
+    }
+
+
+    return render(
+        request,
+        "panel_apicultor/agenda.html",
         contexto
     )
