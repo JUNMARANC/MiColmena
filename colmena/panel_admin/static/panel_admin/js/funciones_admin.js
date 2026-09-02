@@ -34,6 +34,46 @@ if (btnCollapseSidebar && sidebarAdmin) {
     });
 }
  
+/* AVISO DE SCROLL EN EL MENÚ DEL SIDEBAR
+   Cuando el menú no cabe completo en pantallas más chicas,
+   muestra una flechita abajo para avisar que hay más íconos. */
+const sidebarMenu = document.getElementById("sidebarMenu");
+const sidebarMenuScrollHint = document.getElementById("sidebarMenuScrollHint");
+
+if (sidebarMenu && sidebarMenuScrollHint) {
+
+    const actualizarAvisoScrollSidebar = () => {
+        // Cuánto falta por scrollear hacia abajo
+        const faltantePorAbajo =
+            sidebarMenu.scrollHeight -
+            sidebarMenu.clientHeight -
+            sidebarMenu.scrollTop;
+
+        sidebarMenuScrollHint.classList.toggle(
+            "visible",
+            faltantePorAbajo > 6
+        );
+    };
+
+    // Revisa al cargar, al hacer scroll y si cambia el tamaño de la ventana
+    actualizarAvisoScrollSidebar();
+    sidebarMenu.addEventListener("scroll", actualizarAvisoScrollSidebar);
+    window.addEventListener("resize", actualizarAvisoScrollSidebar);
+
+    // Revisa también si el sidebar se colapsa/expande o cambia su alto
+    if (typeof ResizeObserver !== "undefined") {
+        const observadorSidebarMenu = new ResizeObserver(
+            actualizarAvisoScrollSidebar
+        );
+        observadorSidebarMenu.observe(sidebarMenu);
+    }
+
+    // Al hacer clic en la flecha, baja un poco el menú
+    sidebarMenuScrollHint.addEventListener("click", () => {
+        sidebarMenu.scrollBy({ top: 140, behavior: "smooth" });
+    });
+}
+
 if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
     btnMobileSidebar.addEventListener("click", () => {
         sidebarAdmin.classList.add("mobile-active");

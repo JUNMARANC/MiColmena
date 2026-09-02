@@ -63,7 +63,9 @@
             <i class="bi bi-chevron-left"></i>
         </button>
 
-        <nav class="sidebar-menu">
+        <div class="sidebar-menu-wrap" id="sidebarMenuWrap">
+
+        <nav class="sidebar-menu" id="sidebarMenu">
 
             <a href="{% url 'dashboard_admin' %}" data-tooltip="Inicio" class="menu-link {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
                 <i class="bi bi-house-door"></i>
@@ -133,6 +135,18 @@
                 </a>
             {% endif %}
         </nav>
+
+            <button
+                type="button"
+                class="sidebar-menu-scroll-hint"
+                id="sidebarMenuScrollHint"
+                tabindex="-1"
+                aria-hidden="true"
+            >
+                <i class="bi bi-chevron-down"></i>
+            </button>
+
+        </div>
 
         <!-- =========================================================
             USUARIO ACTUAL / MI PERFIL
