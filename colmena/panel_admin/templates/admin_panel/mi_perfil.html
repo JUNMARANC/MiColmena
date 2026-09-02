@@ -759,16 +759,28 @@
 
                                     maxlength="254"
 
-                                    pattern="[A-Za-z0-9._%+-]+@gmail[.]com"
-
-                                    title="Debes ingresar una dirección de Gmail válida"
+                                    data-url-verificar="{% url 'verificar_correo_mi_perfil' %}"
 
                                     autocomplete="email"
+                                    autocapitalize="none"
                                     spellcheck="false"
                                     required
                                 >
 
                             </div>
+
+
+                            <small
+                                class="perfil-ayuda"
+                            >
+                                Se permiten correos de Gmail, Outlook, Hotmail y Yahoo.
+                            </small>
+
+
+                            <small
+                                id="mensajeCorreoPerfil"
+                                class="form-text d-none"
+                            ></small>
 
                         </div>
 
@@ -821,6 +833,12 @@
                                 >
 
                             </div>
+
+                            <small
+                                id="mensajeTelefonoPerfil"
+                                class="form-text d-none"
+                                aria-live="polite"
+                            ></small>
 
                         </div>
 
@@ -1108,6 +1126,9 @@
                                         class="form-control"
                                         id="passwordActualPerfil"
                                         name="password_actual"
+
+                                        data-url-verificar="{% url 'verificar_password_actual_mi_perfil' %}"
+
                                         autocomplete="current-password"
                                         required
                                     >
@@ -1130,6 +1151,12 @@
                                     </button>
 
                                 </div>
+
+                                <small
+                                    id="mensajePasswordActualPerfil"
+                                    class="form-text d-none"
+                                    aria-live="polite"
+                                ></small>
 
                             </div>
 
@@ -1167,7 +1194,11 @@
                                         class="form-control"
                                         id="passwordNuevoPerfil"
                                         name="password_nuevo"
+
                                         minlength="8"
+
+                                        data-url-verificar="{% url 'verificar_password_mi_perfil' %}"
+
                                         autocomplete="new-password"
                                         required
                                     >
@@ -1193,8 +1224,14 @@
 
 
                                 <small class="perfil-ayuda">
-                                    Mínimo 8 caracteres.
+                                    Usa una contraseña segura de mínimo 8 caracteres.
                                 </small>
+
+                                <div
+                                    id="mensajesPasswordDjangoPerfil"
+                                    class="small mt-2 d-none"
+                                    aria-live="polite"
+                                ></div>
 
                             </div>
 
@@ -2276,7 +2313,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=6"
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=8"
 ></script>
 
 {% endblock %}

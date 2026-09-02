@@ -112,7 +112,8 @@ REGEX_USERNAME = re.compile(
 
 
 REGEX_NOMBRE_PERSONA = re.compile(
-    r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$"
+    r"^(?=.*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ])"
+    r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$"
 )
 
 
@@ -9310,6 +9311,111 @@ def mi_perfil(request):
         contexto
     )
 
+# ============================================================
+# VERIFICAR CORREO DE MI PERFIL EN TIEMPO REAL
+# ============================================================
+
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_admin"
+)
+@require_GET
+def verificar_correo_mi_perfil(request):
+
+    # ========================================================
+    # OBTENER Y NORMALIZAR CORREO
+    # ========================================================
+
+    correo = normalizar_correo(
+        request.GET.get(
+            "correo",
+            ""
+        )
+    )
+
+
+    # ========================================================
+    # CORREO VACÍO
+    # ========================================================
+
+    if not correo:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "existe": False,
+                "mensaje": (
+                    "El correo electrónico es obligatorio."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # VALIDAR FORMATO Y PROVEEDOR
+    # ========================================================
+
+    if not validar_correo_permitido(
+        correo
+    ):
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "existe": False,
+                "mensaje": (
+                    "El correo electrónico debe pertenecer "
+                    "a Gmail, Outlook, Hotmail o Yahoo."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # VERIFICAR DUPLICADO
+    # ========================================================
+
+    correo_existe = (
+        User.objects
+        .filter(
+            email__iexact=correo
+        )
+        .exclude(
+            pk=request.user.pk
+        )
+        .exists()
+    )
+
+
+    # ========================================================
+    # RESPUESTA
+    # ========================================================
+
+    if correo_existe:
+
+        return JsonResponse(
+            {
+                "valido": True,
+                "existe": True,
+                "mensaje": (
+                    "Este correo electrónico ya pertenece "
+                    "a otro usuario."
+                ),
+            }
+        )
+
+
+    return JsonResponse(
+        {
+            "valido": True,
+            "existe": False,
+            "mensaje": (
+                "Correo electrónico disponible."
+            ),
+        }
+    )
+
 
 @login_required
 @permiso_requerido(
@@ -9738,6 +9844,172 @@ def actualizar_mi_perfil(request):
 
     return redirect(
         "mi_perfil"
+    )
+
+# ============================================================
+# VERIFICAR CONTRASEÑA ACTUAL DE MI PERFIL
+# ============================================================
+
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_admin"
+)
+@require_POST
+def verificar_password_actual_mi_perfil(request):
+
+    password_actual = (
+        request.POST.get(
+            "password_actual",
+            ""
+        )
+    )
+
+
+    # ========================================================
+    # CAMPO VACÍO
+    # ========================================================
+
+    if not password_actual:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensaje": (
+                    "La contraseña actual es obligatoria."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # COMPROBAR CONTRASEÑA
+    # ========================================================
+
+    if not request.user.check_password(
+        password_actual
+    ):
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensaje": (
+                    "La contraseña actual es incorrecta."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # CORRECTA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "valido": True,
+            "mensaje": (
+                "Contraseña actual correcta."
+            ),
+        }
+    )
+
+# ============================================================
+# VERIFICAR NUEVA CONTRASEÑA DE MI PERFIL EN TIEMPO REAL
+# ============================================================
+
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_admin"
+)
+@require_POST
+def verificar_password_mi_perfil(request):
+
+    usuario = request.user
+
+
+    # ========================================================
+    # OBTENER CONTRASEÑA
+    # ========================================================
+
+    password_nuevo = (
+        request.POST.get(
+            "password_nuevo",
+            ""
+        )
+    )
+
+
+    # ========================================================
+    # CAMPO VACÍO
+    # ========================================================
+
+    if not password_nuevo:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes": [
+                    "La nueva contraseña es obligatoria."
+                ],
+            }
+        )
+
+
+    # ========================================================
+    # NO PERMITIR LA CONTRASEÑA ACTUAL
+    # ========================================================
+
+    if usuario.check_password(
+        password_nuevo
+    ):
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes": [
+                    (
+                        "La nueva contraseña debe ser "
+                        "diferente a la contraseña actual."
+                    )
+                ],
+            }
+        )
+
+
+    # ========================================================
+    # VALIDADORES OFICIALES DE DJANGO
+    # ========================================================
+
+    try:
+
+        validate_password(
+            password_nuevo,
+            user=usuario
+        )
+
+
+    except ValidationError as error:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes": error.messages,
+            }
+        )
+
+
+    # ========================================================
+    # CONTRASEÑA VÁLIDA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "valido": True,
+            "mensajes": [
+                "La contraseña cumple los requisitos de seguridad."
+            ],
+        }
     )
 
 # ============================================================
