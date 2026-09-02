@@ -1317,8 +1317,8 @@ function inicializarValidacionesRegistroAdministrador(
     const REGEX_CELULAR =
         /^3[0-9]{9}$/;
 
-    const REGEX_GMAIL =
-        /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+    const REGEX_CORREO_PERMITIDO =
+        /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
 
     const REGEX_USERNAME =
         /^[A-Za-z0-9_@.+-]+$/;
@@ -1994,7 +1994,7 @@ function inicializarValidacionesRegistroAdministrador(
 
 
         if (
-            !REGEX_GMAIL.test(
+            !REGEX_CORREO_PERMITIDO.test(
                 valor
             )
         ) {
@@ -2002,7 +2002,7 @@ function inicializarValidacionesRegistroAdministrador(
             marcarCampo(
                 campo,
                 false,
-                "Debes ingresar una dirección válida terminada en @gmail.com."
+                "Usa un correo de Gmail, Outlook, Hotmail o Yahoo."
             );
 
             return false;
@@ -2012,7 +2012,7 @@ function inicializarValidacionesRegistroAdministrador(
         marcarCampo(
             campo,
             true,
-            "Formato de Gmail válido."
+            "Formato de correo válido."
         );
 
 
@@ -3210,8 +3210,8 @@ function inicializarModalEditarAdministrador() {
     const REGEX_CELULAR_EDITAR =
         /^3[0-9]{9}$/;
 
-    const REGEX_GMAIL_EDITAR =
-        /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+    const REGEX_CORREO_PERMITIDO_EDITAR =
+        /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
 
     const REGEX_USERNAME_EDITAR =
         /^[A-Za-z0-9_@.+-]+$/;
@@ -3564,7 +3564,7 @@ function inicializarModalEditarAdministrador() {
 
 
     /* ========================================================
-    CORREO GMAIL
+    CORREO ELECTRONICO
     ======================================================== */
 
     function validarCorreoEditar() {
@@ -3612,7 +3612,7 @@ function inicializarModalEditarAdministrador() {
 
 
         if (
-            !REGEX_GMAIL_EDITAR.test(
+            !REGEX_CORREO_PERMITIDO_EDITAR.test(
                 valor
             )
         ) {
@@ -3620,7 +3620,7 @@ function inicializarModalEditarAdministrador() {
             marcarEditar(
                 campo,
                 false,
-                "Debes ingresar una dirección válida terminada en @gmail.com."
+                "Usa un correo de Gmail, Outlook, Hotmail o Yahoo."
             );
 
             return false;
@@ -4980,8 +4980,8 @@ function inicializarVerificacionDuplicadosAdministrador() {
         300;
 
 
-    const REGEX_GMAIL =
-        /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+    const REGEX_CORREO_PERMITIDO =
+        /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
 
 
     const REGEX_USERNAME =
@@ -5236,7 +5236,7 @@ function inicializarVerificacionDuplicadosAdministrador() {
 
             return (
                 valor.length <= 254 &&
-                REGEX_GMAIL.test(
+                REGEX_CORREO_PERMITIDO.test(
                     valor
                 )
             );

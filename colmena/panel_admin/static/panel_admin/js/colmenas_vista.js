@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.appendChild(modal);
         });
 
+    // Nota: los tooltips de los badges de estado y el rastro de
+    // polen del cursor ahora son globales (ver funciones_admin.js,
+    // que se carga en todas las páginas del panel).
+
     // =========================================================
     // ENTRADA ESCALONADA (filas de tabla / tarjetas)
     // =========================================================
@@ -30,21 +34,23 @@ document.addEventListener("DOMContentLoaded", function () {
     // Reutiliza la clase .anim-entrada-lista (ya definida en
     // estilos_admin.css junto con la de Apiarios).
 
-    function aplicarEntradaEscalonada(contenedor, selectorHijos, retrasoEntreElementos) {
+    function aplicarEntradaEscalonada(contenedor, selectorHijos, retrasoEntreElementos, claseAnimacion) {
 
         if (!contenedor) {
             return;
         }
 
+        const clase = claseAnimacion || "anim-entrada-lista";
+
         const hijos = contenedor.querySelectorAll(selectorHijos);
 
         hijos.forEach(function (hijo, indice) {
 
-            hijo.classList.remove("anim-entrada-lista");
+            hijo.classList.remove(clase);
             void hijo.offsetWidth; // fuerza reflow para poder re-disparar
 
             hijo.style.animationDelay = (indice * retrasoEntreElementos) + "ms";
-            hijo.classList.add("anim-entrada-lista");
+            hijo.classList.add(clase);
         });
     }
 
@@ -53,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Entrada escalonada inicial (la vista visible al cargar la página)
     aplicarEntradaEscalonada(vistaTablaEl, "tbody tr", 45);
-    aplicarEntradaEscalonada(vistaTarjetasEl, ".tarjeta-colmena", 70);
+    aplicarEntradaEscalonada(vistaTarjetasEl, ".tarjeta-colmena", 70, "anim-entrada-tarjeta");
 
 
     // =========================================================
@@ -104,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Además del fundido general del contenedor, cada fila/tarjeta
             // entra escalonada para que se sienta más dinámico
             if (elementoAMostrar.id === "vistaTarjetasColmenas") {
-                aplicarEntradaEscalonada(elementoAMostrar, ".tarjeta-colmena", 70);
+                aplicarEntradaEscalonada(elementoAMostrar, ".tarjeta-colmena", 70, "anim-entrada-tarjeta");
             } else {
                 aplicarEntradaEscalonada(elementoAMostrar, "tbody tr", 45);
             }
@@ -154,6 +160,84 @@ document.addEventListener("DOMContentLoaded", function () {
         vistaTarjetas.style.display = "none";
         activarBoton(btnVistaTabla, btnVistaTarjetas);
     }
+
+    // =========================================================
+    // ENTRADA ESCALONADA DENTRO DE LOS MODALES
+    // (Detalle, Editar y Agregar Colmena)
+    // =========================================================
+
+    document.addEventListener("shown.bs.modal", function (evento) {
+
+        const modal = evento.target;
+
+        if (!modal || !modal.id) {
+            return;
+        }
+
+        const esModalDeColmena = (
+            modal.id.indexOf("modalDetalleColmena") === 0
+            ||
+            modal.id.indexOf("modalEditarColmena") === 0
+            ||
+            modal.id === "modalAgregarColmena"
+        );
+
+        if (!esModalDeColmena) {
+            return;
+        }
+
+        const cuerpoModal = modal.querySelector(".modal-body");
+
+        aplicarEntradaEscalonada(cuerpoModal, ".row > div", 35, "anim-entrada-modal");
+
+    });
+
+    // =========================================================
+    // RÁFAGA DE POLEN AL GUARDAR (botón Guardar)
+    // =========================================================
+
+    function inicializarRafagaPolenGuardar() {
+
+        document
+            .querySelectorAll(".btn-guardar-colmena")
+            .forEach(function (boton) {
+
+                boton.addEventListener("click", function () {
+
+                    const rect = boton.getBoundingClientRect();
+                    const centroX = rect.left + rect.width / 2;
+                    const centroY = rect.top + rect.height / 2;
+                    const CANTIDAD_PARTICULAS = 10;
+
+                    for (let i = 0; i < CANTIDAD_PARTICULAS; i++) {
+
+                        const angulo = (Math.PI * 2 * i) / CANTIDAD_PARTICULAS;
+                        const distancia = 40 + Math.random() * 30;
+                        const dx = Math.cos(angulo) * distancia;
+                        const dy = Math.sin(angulo) * distancia;
+
+                        const particula = document.createElement("span");
+                        particula.className = "particula-rafaga-polen";
+                        particula.style.left = centroX + "px";
+                        particula.style.top = centroY + "px";
+                        particula.style.setProperty("--dx", dx.toFixed(1) + "px");
+                        particula.style.setProperty("--dy", dy.toFixed(1) + "px");
+
+                        document.body.appendChild(particula);
+
+                        window.setTimeout(function () {
+                            particula.remove();
+                        }, 700);
+
+                    }
+
+                });
+
+            });
+
+    }
+
+    inicializarRafagaPolenGuardar();
 
 });
 
@@ -212,27 +296,183 @@ document.addEventListener("DOMContentLoaded", function () {
         }
  
         // ---------- FECHA DE REGISTRO ----------
-        const fecha = formulario.querySelector('[name="fecha_registro"]');
+        const fecha = (
+            formulario.querySelector(
+                '[name="fecha_registro"]'
+            )
+        );
+
+
         if (fecha) {
-            limpiarValidez(fecha);
-            const valorTexto = fecha.value;
- 
+
+            limpiarValidez(
+                fecha
+            );
+
+
+            const valorTexto =
+                fecha.value;
+
+
             if (!valorTexto) {
-                marcarInvalido(fecha, "La fecha de registro es obligatoria.");
+
+                marcarInvalido(
+                    fecha,
+                    "La fecha de registro es obligatoria."
+                );
+
                 esValido = false;
+
             } else {
-                const fechaSeleccionada = new Date(valorTexto + "T00:00:00");
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
- 
-                if (fechaSeleccionada > hoy) {
-                    marcarInvalido(fecha, "La fecha de registro no puede ser una fecha futura.");
+
+                const fechaSeleccionada =
+                    new Date(
+                        valorTexto +
+                        "T00:00:00"
+                    );
+
+
+                const hoy =
+                    new Date();
+
+
+                hoy.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+
+                // ==============================================
+                // NO PERMITIR FECHA FUTURA
+                // ==============================================
+
+                if (
+                    fechaSeleccionada >
+                    hoy
+                ) {
+
+                    marcarInvalido(
+                        fecha,
+                        "La fecha de registro no puede ser una fecha futura."
+                    );
+
                     esValido = false;
-                } else if (fechaSeleccionada.getFullYear() < AÑO_MINIMO_FECHA) {
-                    marcarInvalido(fecha, "La fecha de registro no es válida.");
+
+                } else if (
+                    fechaSeleccionada
+                        .getFullYear()
+                    <
+                    AÑO_MINIMO_FECHA
+                ) {
+
+                    marcarInvalido(
+                        fecha,
+                        "La fecha de registro no es válida."
+                    );
+
                     esValido = false;
+
+                } else if (
+                    apiario
+                    &&
+                    apiario.value
+                ) {
+
+                    // ==========================================
+                    // FECHA DEL APIARIO SELECCIONADO
+                    // ==========================================
+
+                    const opcionApiario = (
+                        apiario.options[
+                            apiario.selectedIndex
+                        ]
+                    );
+
+
+                    const fechaApiarioTexto = (
+                        opcionApiario
+                        ?
+                        (
+                            opcionApiario.dataset
+                                .fechaApiario
+                            ||
+                            ""
+                        )
+                        :
+                        ""
+                    );
+
+
+                    if (fechaApiarioTexto) {
+
+                        const fechaApiario =
+                            new Date(
+                                fechaApiarioTexto +
+                                "T00:00:00"
+                            );
+
+
+                        // ======================================
+                        // COLMENA NO ANTERIOR AL APIARIO
+                        // ======================================
+
+                        if (
+                            fechaSeleccionada <
+                            fechaApiario
+                        ) {
+
+                            const partesFecha =
+                                fechaApiarioTexto
+                                    .split("-");
+
+
+                            const fechaLegible = (
+                                partesFecha.length === 3
+                                ?
+                                (
+                                    partesFecha[2]
+                                    +
+                                    "/"
+                                    +
+                                    partesFecha[1]
+                                    +
+                                    "/"
+                                    +
+                                    partesFecha[0]
+                                )
+                                :
+                                fechaApiarioTexto
+                            );
+
+
+                            marcarInvalido(
+                                fecha,
+                                (
+                                    "La fecha de la colmena no puede ser "
+                                    +
+                                    "anterior a la fecha de registro del "
+                                    +
+                                    "apiario seleccionado ("
+                                    +
+                                    fechaLegible
+                                    +
+                                    ")."
+                                )
+                            );
+
+
+                            esValido = false;
+
+                        }
+
+                    }
+
                 }
+
             }
+
         }
  
         // ---------- DESCRIPCIÓN (opcional, solo límite de longitud) ----------
@@ -309,6 +549,12 @@ document.addEventListener(
                         return;
                     }
 
+                    const fechaRegistro = (
+                        formulario.querySelector(
+                            '[name="fecha_registro"]'
+                        )
+                    );
+
 
                     const ayuda = (
                         formulario.querySelector(
@@ -324,6 +570,74 @@ document.addEventListener(
                         ""
                     );
 
+                    // =========================================
+                    // ACTUALIZAR FECHA MÍNIMA SEGÚN APIARIO
+                    // =========================================
+
+                    function actualizarFechaMinima() {
+
+                        if (!fechaRegistro) {
+                            return;
+                        }
+
+
+                        const opcion = (
+                            selectApiario.options[
+                                selectApiario.selectedIndex
+                            ]
+                        );
+
+
+                        // -------------------------------------
+                        // SIN APIARIO SELECCIONADO
+                        // -------------------------------------
+
+                        if (
+                            !selectApiario.value
+                            ||
+                            !opcion
+                        ) {
+
+                            fechaRegistro.removeAttribute(
+                                "min"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // -------------------------------------
+                        // OBTENER FECHA DEL APIARIO
+                        // -------------------------------------
+
+                        const fechaApiario = (
+                            opcion.dataset
+                                .fechaApiario
+                            ||
+                            ""
+                        );
+
+
+                        if (!fechaApiario) {
+
+                            fechaRegistro.removeAttribute(
+                                "min"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // -------------------------------------
+                        // ESTABLECER FECHA MÍNIMA
+                        // -------------------------------------
+
+                        fechaRegistro.min =
+                            fechaApiario;
+
+                    }
 
                     // =========================================
                     // VALIDAR CAPACIDAD
@@ -534,13 +848,21 @@ document.addEventListener(
 
                     selectApiario.addEventListener(
                         "change",
-                        validarCapacidadApiario
+                        function () {
+
+                            actualizarFechaMinima();
+
+                            validarCapacidadApiario();
+
+                        }
                     );
 
 
                     // =========================================
                     // VALIDACIÓN INICIAL
                     // =========================================
+
+                    actualizarFechaMinima();
 
                     validarCapacidadApiario();
 

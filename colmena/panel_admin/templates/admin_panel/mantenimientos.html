@@ -6,33 +6,48 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <h2 class="titulo-panel mb-0">Gestión de Mantenimientos</h2>
+<div class="dashboard-fondo-panal encabezado-mantenimientos-panal mb-4">
 
-    <div class="d-flex align-items-center gap-3">
-
-        <div class="selector-vista" role="group" aria-label="Modo de visualización">
-            <button type="button"
-                    id="btnVistaTabla"
-                    class="selector-vista-btn activo"
-                    title="Ver en tabla">
-                <i class="bi bi-table"></i>
-            </button>
-
-            <button type="button"
-                    id="btnVistaTarjetas"
-                    class="selector-vista-btn"
-                    title="Ver en tarjetas">
-                <i class="bi bi-grid-3x3-gap-fill"></i>
-            </button>
-        </div>
-        {% if "mr" in permisos_usuario %}
-            <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
-                <i class="bi bi-plus-circle me-2"></i>
-                Agregar
-            </button>
-        {% endif %}
+    <div class="particulas-flotantes" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
     </div>
+
+    <div class="dashboard-fondo-panal-contenido d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+        <h2 class="titulo-panel mb-0">
+            <i class="bi bi-tools me-2" style="color: var(--miel);"></i>
+            Gestión de Mantenimientos
+        </h2>
+
+        <div class="d-flex align-items-center gap-3">
+
+            <div class="selector-vista" role="group" aria-label="Modo de visualización">
+                <button type="button"
+                        id="btnVistaTabla"
+                        class="selector-vista-btn activo"
+                        title="Ver en tabla">
+                    <i class="bi bi-table"></i>
+                </button>
+
+                <button type="button"
+                        id="btnVistaTarjetas"
+                        class="selector-vista-btn"
+                        title="Ver en tarjetas">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </button>
+            </div>
+            {% if "mr" in permisos_usuario %}
+                <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Agregar
+                </button>
+            {% endif %}
+        </div>
+
+    </div>
+
 </div>
 
 <div class="card-admin mb-4">
@@ -132,9 +147,13 @@
 
                     <td>
                         {% if mantenimiento.entidadmantenimiento == "Apiario" %}
-                            <span class="badge-estado badge-bueno">Apiario</span>
+                            <span class="badge-estado badge-bueno"
+                                  data-bs-toggle="tooltip"
+                                  title="Este mantenimiento aplica a todo el apiario.">Apiario</span>
                         {% else %}
-                            <span class="badge-estado badge-precaucion">Colmena</span>
+                            <span class="badge-estado badge-precaucion"
+                                  data-bs-toggle="tooltip"
+                                  title="Este mantenimiento aplica a una colmena específica.">Colmena</span>
                         {% endif %}
                     </td>
 
@@ -153,11 +172,17 @@
 
                     <td>
                         {% if mantenimiento.estado == "Pendiente" %}
-                            <span class="badge-estado badge-precaucion">Pendiente</span>
+                            <span class="badge-estado badge-precaucion"
+                                  data-bs-toggle="tooltip"
+                                  title="Aún no se ha realizado.">Pendiente</span>
                         {% elif mantenimiento.estado == "Completado" %}
-                            <span class="badge-estado badge-bueno">Completado</span>
+                            <span class="badge-estado badge-bueno"
+                                  data-bs-toggle="tooltip"
+                                  title="Ya se realizó.">Completado</span>
                         {% else %}
-                            <span class="badge-estado badge-deficiente">{{ mantenimiento.estado }}</span>
+                            <span class="badge-estado badge-deficiente"
+                                  data-bs-toggle="tooltip"
+                                  title="No se llegó a realizar.">{{ mantenimiento.estado }}</span>
                         {% endif %}
                     </td>
 
@@ -167,6 +192,7 @@
                                 <i class="bi bi-eye"></i>
                             </button>
 
+                            {% if "mg" in permisos_usuario %}
                             <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
@@ -174,6 +200,7 @@
                             <button type="button" class="btn-accion btn-borrar" data-bs-toggle="modal" data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}">
                                 <i class="bi bi-trash"></i>
                             </button>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -506,7 +533,11 @@
                 {% empty %}
                 <tr>
                     <td colspan="7" class="text-center py-4">
-                        No hay mantenimientos registrados.
+                        {% if request.GET.apiario or request.GET.colmena or request.GET.estado %}
+                            No se encontraron mantenimientos con esos filtros.
+                        {% else %}
+                            No hay mantenimientos registrados.
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -525,11 +556,17 @@
             <h5>{{ mantenimiento.tipo }}</h5>
 
             {% if mantenimiento.estado == "Pendiente" %}
-                <span class="badge-estado badge-precaucion">Pendiente</span>
+                <span class="badge-estado badge-precaucion"
+                      data-bs-toggle="tooltip"
+                      title="Aún no se ha realizado.">Pendiente</span>
             {% elif mantenimiento.estado == "Completado" %}
-                <span class="badge-estado badge-bueno">Completado</span>
+                <span class="badge-estado badge-bueno"
+                      data-bs-toggle="tooltip"
+                      title="Ya se realizó.">Completado</span>
             {% else %}
-                <span class="badge-estado badge-deficiente">{{ mantenimiento.estado }}</span>
+                <span class="badge-estado badge-deficiente"
+                      data-bs-toggle="tooltip"
+                      title="No se llegó a realizar.">{{ mantenimiento.estado }}</span>
             {% endif %}
         </div>
 
@@ -567,7 +604,7 @@
                     <i class="bi bi-eye"></i>
                 </button>
 
-                {% if "mr" in permisos_usuario %}
+                {% if "mg" in permisos_usuario %}
                     <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
                         <i class="bi bi-pencil-square"></i>
                     </button>
@@ -582,10 +619,65 @@
 
     </div>
     {% empty %}
-    <p class="text-center text-muted py-4 w-100">No hay mantenimientos registrados.</p>
+    <p class="text-center text-muted py-4 w-100">
+        {% if request.GET.apiario or request.GET.colmena or request.GET.estado %}
+            No se encontraron mantenimientos con esos filtros.
+        {% else %}
+            No hay mantenimientos registrados.
+        {% endif %}
+    </p>
     {% endfor %}
 
 </div>
+
+{% if mantenimientos.has_other_pages %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center align-items-center">
+
+        {% if mantenimientos.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ mantenimientos.previous_page_number }}&apiario={{ request.GET.apiario }}&colmena={{ request.GET.colmena }}&estado={{ request.GET.estado }}">
+                    Anterior
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+        {% endif %}
+
+        {% for num in mantenimientos.paginator.page_range %}
+            {% if mantenimientos.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ num }}&apiario={{ request.GET.apiario }}&colmena={{ request.GET.colmena }}&estado={{ request.GET.estado }}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if mantenimientos.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ mantenimientos.next_page_number }}&apiario={{ request.GET.apiario }}&colmena={{ request.GET.colmena }}&estado={{ request.GET.estado }}">
+                    Siguiente
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Siguiente</span>
+            </li>
+        {% endif %}
+
+    </ul>
+</nav>
+{% endif %}
 
 <!-- MODAL AGREGAR -->
 <div class="modal fade" id="modalAgregarMantenimiento" tabindex="-1">

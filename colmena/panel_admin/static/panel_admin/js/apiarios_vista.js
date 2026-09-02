@@ -267,117 +267,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================================================
+    // =========================================================
     // ESTELA DE POLEN AL MOVER EL MOUSE
-    // (mismo efecto visual del cursor en el dashboard)
+    // Y TOOLTIPS DE LOS BADGES DE ESTADO
+    // (ambos ahora son globales: ver funciones_admin.js,
+    //  que se carga en todas las páginas del panel)
     // =========================================================
-    //
-    // Si el dashboard ya la activa de forma global (por ejemplo
-    // desde un script en base_admin.html), esta comprobación
-    // evita crear dos estelas superpuestas en esta página.
-    // =========================================================
-
-    function inicializarEstelaPolen() {
-
-        if (prefiereMenosMovimiento) {
-            return;
-        }
-
-
-        if (window.__estelaPolenApiariosActiva) {
-            return;
-        }
-
-        window.__estelaPolenApiariosActiva = true;
-
-
-        const INTERVALO_MINIMO_MS = 45;
-
-        let ultimoTiempo = 0;
-
-
-        document.addEventListener(
-            "mousemove",
-            function (evento) {
-
-                const ahora = Date.now();
-
-                if (
-                    ahora - ultimoTiempo
-                    <
-                    INTERVALO_MINIMO_MS
-                ) {
-                    return;
-                }
-
-                ultimoTiempo = ahora;
-
-
-                const particula = (
-                    document.createElement("span")
-                );
-
-                particula.className = "estela-polen";
-
-                particula.style.left = (
-                    evento.clientX + "px"
-                );
-
-                particula.style.top = (
-                    evento.clientY + "px"
-                );
-
-                document.body.appendChild(particula);
-
-
-                window.setTimeout(
-                    function () {
-
-                        particula.remove();
-
-                    },
-                    700
-                );
-
-            }
-        );
-
-    }
-
-    inicializarEstelaPolen();
-
-
-    // =========================================================
-    // TOOLTIPS DE LOS BADGES DE ESTADO
-    // =========================================================
-
-    function inicializarTooltipsEstado() {
-
-        if (
-            typeof bootstrap === "undefined"
-            ||
-            !bootstrap.Tooltip
-        ) {
-            return;
-        }
-
-
-        document
-            .querySelectorAll(
-                '[data-bs-toggle="tooltip"]'
-            )
-            .forEach(
-                function (elemento) {
-
-                    new bootstrap.Tooltip(
-                        elemento
-                    );
-
-                }
-            );
-
-    }
-
-    inicializarTooltipsEstado();
 
 
     // =========================================================
@@ -1439,65 +1334,89 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            if (!valorTexto) {
+            if (
+                fechaSeleccionada >
+                hoy
+            ) {
 
                 marcarInvalido(
                     fecha,
-                    "La fecha de registro es obligatoria."
+                    "La fecha de registro no puede ser una fecha futura."
                 );
 
                 esValido = false;
 
 
-            } else {
+            } else if (
+                fechaSeleccionada
+                    .getFullYear()
+                <
+                AÑO_MINIMO_FECHA
+            ) {
 
-                const fechaSeleccionada = (
-                    new Date(
-                        valorTexto +
-                        "T00:00:00"
+                marcarInvalido(
+                    fecha,
+                    "La fecha de registro no es válida."
+                );
+
+                esValido = false;
+
+
+            } else if (
+                formulario.dataset
+                    .fechaColmenaMasAntigua
+                &&
+                valorTexto
+                >
+                formulario.dataset
+                    .fechaColmenaMasAntigua
+            ) {
+
+                const fechaLimiteTexto = (
+                    formulario.dataset
+                        .fechaColmenaMasAntigua
+                );
+
+
+                const partesFecha = (
+                    fechaLimiteTexto.split("-")
+                );
+
+
+                const fechaLimiteLegible = (
+                    partesFecha.length === 3
+                    ?
+                    (
+                        partesFecha[2]
+                        +
+                        "/"
+                        +
+                        partesFecha[1]
+                        +
+                        "/"
+                        +
+                        partesFecha[0]
+                    )
+                    :
+                    fechaLimiteTexto
+                );
+
+
+                marcarInvalido(
+                    fecha,
+                    (
+                        "La fecha del apiario no puede ser "
+                        +
+                        "posterior al "
+                        +
+                        fechaLimiteLegible
+                        +
+                        " porque ya existen colmenas registradas."
                     )
                 );
 
 
-                const hoy = new Date();
-
-
-                hoy.setHours(
-                    0,
-                    0,
-                    0,
-                    0
-                );
-
-
-                if (
-                    fechaSeleccionada >
-                    hoy
-                ) {
-
-                    marcarInvalido(
-                        fecha,
-                        "La fecha de registro no puede ser una fecha futura."
-                    );
-
-                    esValido = false;
-
-
-                } else if (
-                    fechaSeleccionada
-                        .getFullYear()
-                    <
-                    AÑO_MINIMO_FECHA
-                ) {
-
-                    marcarInvalido(
-                        fecha,
-                        "La fecha de registro no es válida."
-                    );
-
-                    esValido = false;
-
-                }
+                esValido = false;
 
             }
 

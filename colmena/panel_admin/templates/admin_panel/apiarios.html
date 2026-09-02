@@ -1026,6 +1026,7 @@
                                     enctype="multipart/form-data"
                                     class="form-validar-apiario"
                                     data-id-apiario="{{ apiario.id_apiario }}"
+                                    data-fecha-colmena-mas-antigua="{% if apiario.fecha_colmena_mas_antigua %}{{ apiario.fecha_colmena_mas_antigua|date:'Y-m-d' }}{% endif %}"
                                 >
 
                                     {% csrf_token %}
@@ -1247,9 +1248,30 @@
                                                     name="fecha_registro"
                                                     class="form-control"
                                                     value="{{ apiario.fechaeclosionapiario|date:'Y-m-d' }}"
-                                                    max="{% now 'Y-m-d' %}"
+
+                                                    {% if apiario.fecha_colmena_mas_antigua %}
+                                                        max="{{ apiario.fecha_colmena_mas_antigua|date:'Y-m-d' }}"
+                                                    {% else %}
+                                                        max="{% now 'Y-m-d' %}"
+                                                    {% endif %}
+
                                                     required
                                                 >
+
+
+                                                {% if apiario.fecha_colmena_mas_antigua %}
+
+                                                    <small class="form-text text-muted d-block mt-1">
+
+                                                        <i class="bi bi-info-circle me-1"></i>
+
+                                                        Este apiario tiene colmenas registradas.
+                                                        Su fecha no puede ser posterior al
+                                                        {{ apiario.fecha_colmena_mas_antigua|date:"d/m/Y" }}.
+
+                                                    </small>
+
+                                                {% endif %}
 
                                             </div>
 

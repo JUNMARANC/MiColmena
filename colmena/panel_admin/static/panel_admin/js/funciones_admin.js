@@ -97,6 +97,47 @@ if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
 })();
 
 /* =========================================================
+   RASTRO DE POLEN AL MOVER EL CURSOR
+   (global: aplica en todo el panel, no solo en el logo)
+   ========================================================= */
+(function () {
+    var prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefiereMenosMovimiento) return;
+
+    var ultimoDisparo = 0;
+    var INTERVALO_MINIMO_MS = 45;
+
+    document.addEventListener("mousemove", function (evento) {
+        var ahora = Date.now();
+        if (ahora - ultimoDisparo < INTERVALO_MINIMO_MS) return;
+        ultimoDisparo = ahora;
+
+        var particula = document.createElement("span");
+        particula.className = "estela-polen";
+        particula.style.left = evento.clientX + "px";
+        particula.style.top = evento.clientY + "px";
+
+        document.body.appendChild(particula);
+
+        window.setTimeout(function () {
+            particula.remove();
+        }, 700);
+    });
+})();
+
+/* =========================================================
+   TOOLTIPS DE LOS BADGES DE ESTADO
+   (global: cualquier [data-bs-toggle="tooltip"] del panel)
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+    if (typeof bootstrap === "undefined" || !bootstrap.Tooltip) return;
+
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (elemento) {
+        new bootstrap.Tooltip(elemento);
+    });
+});
+
+/* =========================================================
    BARRA DE CARGA AL NAVEGAR ENTRE PÁGINAS
    ========================================================= */
 (function () {
@@ -305,14 +346,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
  
     // NUEVO: entrada escalonada de filas/tarjetas
-    function aplicarEntradaEscalonadaMantenimientos(contenedor, selectorHijos, retraso) {
+    function aplicarEntradaEscalonadaMantenimientos(contenedor, selectorHijos, retraso, claseAnimacion) {
         if (!contenedor) return;
  
+        var clase = claseAnimacion || "anim-entrada-lista";
+
         contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
-            hijo.classList.remove("anim-entrada-lista");
+            hijo.classList.remove(clase);
             void hijo.offsetWidth;
             hijo.style.animationDelay = (indice * retraso) + "ms";
-            hijo.classList.add("anim-entrada-lista");
+            hijo.classList.add(clase);
         });
     }
  
@@ -330,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
  
     // NUEVO: entrada escalonada al cargar la página
     aplicarEntradaEscalonadaMantenimientos(vistaTabla, "tbody tr", 45);
-    aplicarEntradaEscalonadaMantenimientos(vistaTarjetas, ".tarjeta-mantenimiento", 70);
+    aplicarEntradaEscalonadaMantenimientos(vistaTarjetas, ".tarjeta-mantenimiento", 70, "anim-entrada-tarjeta");
  
     function activarBoton(botonActivo, botonInactivo) {
         botonActivo.classList.add("activo");
@@ -351,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
  
             // NUEVO: entrada escalonada al cambiar de vista
             if (elementoAMostrar.id === "vistaTarjetasMantenimientos") {
-                aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, ".tarjeta-mantenimiento", 70);
+                aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, ".tarjeta-mantenimiento", 70, "anim-entrada-tarjeta");
             } else {
                 aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, "tbody tr", 45);
             }
