@@ -1820,7 +1820,8 @@ document.addEventListener("DOMContentLoaded", function () {
  
     const SOLO_LETRAS = /[^A-Za-zÀ-ÿ\s]/g;
     const SOLO_NUMEROS = /[^0-9]/g;
-    const REGEX_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const REGEX_CORREO =
+        /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
  
     // Quita, mientras el usuario escribe, cualquier caracter
     // que no sea letra o espacio.
@@ -1850,16 +1851,96 @@ document.addEventListener("DOMContentLoaded", function () {
  
     // Marca el campo en rojo si, al salir de él, el correo
     // no tiene un formato válido.
-    function validarCorreoEnVivo(input) {
-        if (!input) return;
- 
-        input.addEventListener("blur", function () {
-            if (this.value && !REGEX_CORREO.test(this.value)) {
-                this.classList.add("is-invalid");
-            } else {
-                this.classList.remove("is-invalid");
+    function validarCorreoEnVivo(
+        input
+    ) {
+
+        if (!input) {
+            return;
+        }
+
+
+        function validar() {
+
+            const valor =
+                input.value
+                    .trim()
+                    .toLowerCase();
+
+
+            input.setCustomValidity(
+                ""
+            );
+
+
+            input.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
+            if (!valor) {
+
+                return;
             }
-        });
+
+
+            if (
+                !REGEX_CORREO.test(
+                    valor
+                )
+            ) {
+
+                input.setCustomValidity(
+                    (
+                        "Usa un correo de Gmail, Outlook, "
+                        + "Hotmail o Yahoo."
+                    )
+                );
+
+
+                input.classList.add(
+                    "is-invalid"
+                );
+
+
+                return;
+            }
+
+
+            input.classList.add(
+                "is-valid"
+            );
+
+        }
+
+
+        input.addEventListener(
+            "input",
+            function () {
+
+                input.value =
+                    input.value
+
+                        .replace(
+                            /\s/g,
+                            ""
+                        )
+
+                        .toLowerCase();
+
+
+                validar();
+
+            }
+        );
+
+
+        input.addEventListener(
+            "blur",
+            validar
+        );
+
     }
  
     // Años de experiencia: mientras escribe, solo permite dígitos
@@ -1947,16 +2028,16 @@ document.addEventListener(
         // CONFIGURACIÓN
         // =====================================================
 
-        const RETRASO_DEBOUNCE_MS = 300;
+        const RETRASO_DEBOUNCE_MS = 400;
+
+        const REGEX_CORREO_PERMITIDO =
+            /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
 
         const REGEX_IDENTIFICACION =
             /^[0-9]{6,10}$/;
 
         const REGEX_TELEFONO =
             /^3[0-9]{9}$/;
-
-        const REGEX_GMAIL =
-            /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
 
         const REGEX_USERNAME =
             /^[A-Za-z0-9_@.+-]{1,150}$/;
@@ -2512,10 +2593,10 @@ document.addEventListener(
 
 
         // =====================================================
-        // GMAIL
+        // CORREO ELECTRÓNICO
         // =====================================================
 
-        function validarGmailLocal(
+        function validarCorreoLocal(
             campo
         ) {
 
@@ -2532,6 +2613,10 @@ document.addEventListener(
                 valor;
 
 
+            // -------------------------------------------------
+            // OBLIGATORIO
+            // -------------------------------------------------
+
             if (!valor) {
 
                 mostrarEstado(
@@ -2540,13 +2625,39 @@ document.addEventListener(
                     "El correo electrónico es obligatorio."
                 );
 
+
                 return false;
 
             }
 
 
+            // -------------------------------------------------
+            // LONGITUD
+            // -------------------------------------------------
+
             if (
-                !REGEX_GMAIL.test(
+                valor.length >
+                254
+            ) {
+
+                mostrarEstado(
+                    campo,
+                    "invalido",
+                    "El correo electrónico no puede superar los 254 caracteres."
+                );
+
+
+                return false;
+
+            }
+
+
+            // -------------------------------------------------
+            // PROVEEDORES PERMITIDOS
+            // -------------------------------------------------
+
+            if (
+                !REGEX_CORREO_PERMITIDO.test(
                     valor
                 )
             ) {
@@ -2554,12 +2665,27 @@ document.addEventListener(
                 mostrarEstado(
                     campo,
                     "invalido",
-                    "Debe ser una dirección válida terminada en @gmail.com."
+                    (
+                        "Usa un correo de Gmail, Outlook, "
+                        + "Hotmail o Yahoo."
+                    )
                 );
+
 
                 return false;
 
             }
+
+
+            // -------------------------------------------------
+            // FORMATO CORRECTO
+            // -------------------------------------------------
+
+            mostrarEstado(
+                campo,
+                "valido",
+                "Formato de correo válido."
+            );
 
 
             return true;
@@ -3065,7 +3191,7 @@ document.addEventListener(
 
 
         // =====================================================
-        // GMAIL
+        // CORREO ELECTRÓNICO
         // =====================================================
 
         configurarCampoUnico(
@@ -3074,8 +3200,8 @@ document.addEventListener(
             ),
             "correo",
             formAgregar,
-            validarGmailLocal,
-            "Correo Gmail disponible."
+            validarCorreoLocal,
+            "Correo electrónico disponible."
         );
 
 
@@ -3085,8 +3211,8 @@ document.addEventListener(
             ),
             "correo",
             formEditar,
-            validarGmailLocal,
-            "Correo Gmail disponible."
+            validarCorreoLocal,
+            "Correo electrónico disponible."
         );
 
 

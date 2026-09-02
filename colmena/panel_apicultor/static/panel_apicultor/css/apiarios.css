@@ -857,3 +857,83 @@
     }
 
 }
+
+
+
+/* ==========================================================
+   FOOTER DE LA TARJETA
+========================================================== */
+
+.apiario-card-footer {
+
+    margin-top: 16px;
+
+    padding-top: 14px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+}
+
+
+/* ==========================================================
+   VER DETALLE
+========================================================== */
+
+.btn-detalle-apiario {
+
+    width: 100%;
+
+    min-height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding:
+        9px
+        12px;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-detalle-apiario:hover {
+
+    background:
+        var(--apicultor-sidebar);
+}
+
+
+.btn-detalle-apiario i {
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.btn-detalle-apiario:hover i {
+
+    transform:
+        translateX(3px);
+}

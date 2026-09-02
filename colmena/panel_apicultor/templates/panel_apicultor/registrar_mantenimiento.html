@@ -1,0 +1,658 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Registrar mantenimiento | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Registrar mantenimiento
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Registra un trabajo realizado o programado para una de tus colmenas
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/registrar_mantenimiento.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="registrar-mantenimiento-page">
+
+
+    <!-- =====================================================
+         VOLVER
+    ====================================================== -->
+
+    <div class="mantenimiento-volver">
+
+        <a
+            href="{% url 'colmenas_apicultor' %}"
+            class="btn-volver-mantenimiento"
+        >
+
+            <i class="bi bi-arrow-left"></i>
+
+            <span>
+                Volver a Mis Colmenas
+            </span>
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="mantenimiento-titulo">
+
+
+        <div>
+
+            <span class="mantenimiento-etiqueta">
+                Nuevo mantenimiento
+            </span>
+
+            <h1>
+                Registrar mantenimiento
+            </h1>
+
+            <p>
+                Registra una actividad realizada o
+                programada para la colmena seleccionada.
+            </p>
+
+        </div>
+
+
+        <div class="mantenimiento-titulo-icono">
+
+            <i class="bi bi-tools"></i>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FORMULARIO
+    ====================================================== -->
+
+    <form
+        method="POST"
+        class="mantenimiento-formulario"
+    >
+
+        {% csrf_token %}
+
+
+
+        <!-- =================================================
+             APIARIO Y COLMENA
+        ================================================== -->
+
+        <section class="mantenimiento-card">
+
+
+            <div class="mantenimiento-card-header">
+
+
+                <div>
+
+                    <h2>
+                        Ubicación del mantenimiento
+                    </h2>
+
+                    <p>
+                        El apiario y la colmena fueron
+                        cargados automáticamente.
+                    </p>
+
+                </div>
+
+
+                <div class="mantenimiento-card-icono">
+
+                    <i class="bi bi-lock-fill"></i>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="mantenimiento-origen-grid">
+
+
+                <!-- =========================================
+                     APIARIO
+                ========================================== -->
+
+                <div class="mantenimiento-origen-item">
+
+
+                    <div class="mantenimiento-origen-icono">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                    </div>
+
+
+                    <div class="mantenimiento-origen-info">
+
+                        <span>
+                            Apiario
+                        </span>
+
+                        <strong>
+                            {{ apiario.nombreapiario }}
+                        </strong>
+
+
+                        {% if apiario.ubicacion %}
+
+                            <small>
+                                {{ apiario.ubicacion }}
+                            </small>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <div class="mantenimiento-bloqueado">
+
+                        <i class="bi bi-lock-fill"></i>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     COLMENA
+                ========================================== -->
+
+                <div class="mantenimiento-origen-item">
+
+
+                    <div class="mantenimiento-origen-icono">
+
+                        <i class="bi bi-hexagon-fill"></i>
+
+                    </div>
+
+
+                    <div class="mantenimiento-origen-info">
+
+                        <span>
+                            Colmena
+                        </span>
+
+                        <strong>
+                            {{ colmena.codigocolmena }}
+                        </strong>
+
+                        <small>
+                            Estado:
+                            {{ colmena.estadocolmena }}
+                        </small>
+
+                    </div>
+
+
+                    <div class="mantenimiento-bloqueado">
+
+                        <i class="bi bi-lock-fill"></i>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             INFORMACIÓN DEL MANTENIMIENTO
+        ================================================== -->
+
+        <section class="mantenimiento-card">
+
+
+            <div class="mantenimiento-card-header">
+
+
+                <div>
+
+                    <h2>
+                        Información del mantenimiento
+                    </h2>
+
+                    <p>
+                        Completa los datos correspondientes
+                        a la actividad.
+                    </p>
+
+                </div>
+
+
+                <div class="mantenimiento-card-icono herramientas">
+
+                    <i class="bi bi-wrench-adjustable"></i>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="mantenimiento-campos-grid">
+
+
+                <!-- =========================================
+                     TIPO
+                ========================================== -->
+
+                <div class="campo-mantenimiento campo-completo">
+
+
+                    <label for="tipo">
+
+                        Tipo de mantenimiento
+
+                        <span>*</span>
+
+                    </label>
+
+
+                    <div class="input-mantenimiento">
+
+                        <i class="bi bi-tools"></i>
+
+
+                        <input
+                            type="text"
+                            id="tipo"
+                            name="tipo"
+                            maxlength="100"
+                            value="{{ request.POST.tipo }}"
+                            placeholder="Ej: Limpieza general de la colmena"
+                            required
+                        >
+
+                    </div>
+
+
+                    <small>
+                        Indica brevemente el trabajo
+                        realizado o programado.
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FECHA
+                ========================================== -->
+
+                <div class="campo-mantenimiento">
+
+
+                    <label for="fecha_ejecucion">
+
+                        Fecha
+
+                        <span>*</span>
+
+                    </label>
+
+
+                    <div class="input-mantenimiento">
+
+                        <i class="bi bi-calendar-event"></i>
+
+
+                        <input
+                            type="date"
+                            id="fecha_ejecucion"
+                            name="fecha_ejecucion"
+                            value="{% if request.POST.fecha_ejecucion %}{{ request.POST.fecha_ejecucion }}{% else %}{{ fecha_hoy }}{% endif %}"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     ESTADO
+                ========================================== -->
+
+                <div class="campo-mantenimiento">
+
+
+                    <label for="estado">
+
+                        Estado
+
+                        <span>*</span>
+
+                    </label>
+
+
+                    <div class="select-mantenimiento">
+
+                        <i class="bi bi-activity"></i>
+
+
+                        <select
+                            id="estado"
+                            name="estado"
+                            required
+                        >
+
+
+                            <option value="">
+                                Selecciona un estado
+                            </option>
+
+
+                            <option
+                                value="Pendiente"
+                                {% if request.POST.estado == "Pendiente" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Pendiente
+                            </option>
+
+
+                            <option
+                                value="Completado"
+                                {% if request.POST.estado == "Completado" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Completado
+                            </option>
+
+
+                            <option
+                                value="Cancelado"
+                                {% if request.POST.estado == "Cancelado" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Cancelado
+                            </option>
+
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     PRIORIDAD
+                ========================================== -->
+
+                <div class="campo-mantenimiento">
+
+
+                    <label for="prioridad">
+
+                        Prioridad
+
+                        <span>*</span>
+
+                    </label>
+
+
+                    <div class="select-mantenimiento">
+
+                        <i class="bi bi-flag-fill"></i>
+
+
+                        <select
+                            id="prioridad"
+                            name="prioridad"
+                            required
+                        >
+
+
+                            <option value="">
+                                Selecciona una prioridad
+                            </option>
+
+
+                            <option
+                                value="Baja"
+                                {% if request.POST.prioridad == "Baja" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Baja
+                            </option>
+
+
+                            <option
+                                value="Media"
+                                {% if request.POST.prioridad == "Media" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Media
+                            </option>
+
+
+                            <option
+                                value="Alta"
+                                {% if request.POST.prioridad == "Alta" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Alta
+                            </option>
+
+
+                            <option
+                                value="Crítica"
+                                {% if request.POST.prioridad == "Crítica" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Crítica
+                            </option>
+
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     RESPONSABLE
+                ========================================== -->
+
+                <div class="campo-mantenimiento">
+
+
+                    <label>
+                        Responsable
+                    </label>
+
+
+                    <div class="mantenimiento-responsable">
+
+
+                        <i class="bi bi-person-fill"></i>
+
+
+                        <div>
+
+
+                            <strong>
+
+                                {% if request.user.get_full_name %}
+
+                                    {{ request.user.get_full_name }}
+
+                                {% else %}
+
+                                    {{ request.user.username }}
+
+                                {% endif %}
+
+                            </strong>
+
+
+                            <span>
+                                Apicultor
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-lock-fill responsable-lock"></i>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     OBSERVACIONES
+                ========================================== -->
+
+                <div class="campo-mantenimiento campo-completo">
+
+
+                    <label for="observaciones">
+
+                        Observaciones
+
+                    </label>
+
+
+                    <textarea
+                        id="observaciones"
+                        name="observaciones"
+                        maxlength="1000"
+                        rows="5"
+                        placeholder="Describe las actividades realizadas, hallazgos o recomendaciones..."
+                    >{{ request.POST.observaciones }}</textarea>
+
+
+                    <div class="mantenimiento-textarea-ayuda">
+
+                        <span>
+                            Puedes registrar observaciones
+                            relacionadas con el mantenimiento.
+                        </span>
+
+                        <span>
+                            Máximo 1000 caracteres
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             ACCIONES
+        ================================================== -->
+
+        <section class="mantenimiento-acciones">
+
+
+            <a
+                href="{% url 'colmenas_apicultor' %}"
+                class="btn-cancelar-mantenimiento"
+            >
+
+                Cancelar
+
+            </a>
+
+
+
+            <button
+                type="submit"
+                class="btn-guardar-mantenimiento"
+            >
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                <span>
+                    Registrar mantenimiento
+                </span>
+
+            </button>
+
+
+        </section>
+
+
+    </form>
+
+
+</div>
+
+
+{% endblock %}

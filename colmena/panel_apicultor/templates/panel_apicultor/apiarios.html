@@ -34,23 +34,10 @@
 
 
     <!-- =====================================================
-         ENCABEZADO
+        ENCABEZADO
     ====================================================== -->
 
     <section class="apiarios-encabezado">
-
-        <div>
-
-            <h1>
-                Mis Apiarios
-            </h1>
-
-            <p>
-                Consulta el estado y la información
-                de los apiarios que tienes asignados.
-            </p>
-
-        </div>
 
 
         <div class="apiarios-total">
@@ -76,7 +63,7 @@
 
 
     <!-- =====================================================
-         FILTROS
+        FILTROS
     ====================================================== -->
 
     <section class="apiarios-filtros">
@@ -340,6 +327,23 @@
                             </p>
 
                         {% endif %}
+
+                        <div class="apiario-card-footer">
+
+                            <a
+                                href="{% url 'detalle_apiario_apicultor' apiario.id_apiario %}"
+                                class="btn-detalle-apiario"
+                            >
+
+                                <span>
+                                    Ver detalle
+                                </span>
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </a>
+
+                        </div>
 
 
                     </div>

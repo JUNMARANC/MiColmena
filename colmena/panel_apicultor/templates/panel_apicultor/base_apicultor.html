@@ -161,15 +161,21 @@
 
 
             <!-- =============================================
-                 MIS COLMENAS
+                MIS COLMENAS
             ============================================== -->
 
             <a
-                href="#"
-                class="sidebar-link"
+                href="{% url 'colmenas_apicultor' %}"
+                class="
+                    sidebar-link
+
+                    {% if request.resolver_match.url_name == 'colmenas_apicultor' %}
+                        active
+                    {% endif %}
+                "
             >
 
-                <i class="bi bi-hexagon"></i>
+                <i class="bi bi-hexagon-fill"></i>
 
                 <span>
                     Mis Colmenas
@@ -184,8 +190,14 @@
             ============================================== -->
 
             <a
-                href="#"
-                class="sidebar-link"
+                href="{% url 'mantenimientos_apicultor' %}"
+                class="
+                    sidebar-link
+
+                    {% if request.resolver_match.url_name == 'mantenimientos_apicultor' or request.resolver_match.url_name == 'registrar_mantenimiento_apicultor' %}
+                        active
+                    {% endif %}
+                "
             >
 
                 <i class="bi bi-tools"></i>
@@ -203,8 +215,14 @@
             ============================================== -->
 
             <a
-                href="#"
-                class="sidebar-link"
+                href="{% url 'incidencias_apicultor' %}"
+                class="
+                    sidebar-link
+
+                    {% if request.resolver_match.url_name == 'incidencias_apicultor' or request.resolver_match.url_name == 'reportar_incidencia_apicultor' %}
+                        active
+                    {% endif %}
+                "
             >
 
                 <i class="bi bi-exclamation-triangle"></i>

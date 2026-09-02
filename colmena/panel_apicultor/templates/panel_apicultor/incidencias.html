@@ -1,0 +1,144 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+
+
+{% block title %}
+    Incidencias | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Incidencias
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Consulta y gestiona las novedades detectadas en tus apiarios y colmenas
+{% endblock %}
+
+
+{% block content %}
+
+
+<div
+    style="
+        background: white;
+        padding: 30px;
+        border-radius: 18px;
+    "
+>
+
+
+    <h2>
+        Incidencias
+    </h2>
+
+
+    <p>
+
+        Total:
+
+        <strong>
+            {{ total_incidencias }}
+        </strong>
+
+    </p>
+
+
+    <p>
+
+        Abiertas:
+
+        <strong>
+            {{ total_abiertas }}
+        </strong>
+
+    </p>
+
+
+    <hr>
+
+
+    {% for incidencia in incidencias %}
+
+
+        <div
+            style="
+                padding: 15px 0;
+                border-bottom: 1px solid #ddd;
+            "
+        >
+
+
+            <strong>
+
+                {{ incidencia.titulo }}
+
+            </strong>
+
+
+            <br>
+
+
+            Estado:
+
+            {{ incidencia.estado }}
+
+
+            <br>
+
+
+            Prioridad:
+
+            {{ incidencia.prioridad }}
+
+
+            <br>
+
+
+            Apiario:
+
+            {% if incidencia.id_apiario %}
+
+                {{ incidencia.id_apiario.nombreapiario }}
+
+            {% else %}
+
+                Sin apiario
+
+            {% endif %}
+
+
+            <br>
+
+
+            {% if incidencia.id_colmena %}
+
+                Colmena:
+
+                {{ incidencia.id_colmena.codigocolmena }}
+
+            {% elif incidencia.id_apiario %}
+
+                Incidencia general del apiario
+
+            {% endif %}
+
+
+        </div>
+
+
+    {% empty %}
+
+
+        <p>
+            No tienes incidencias registradas.
+        </p>
+
+
+    {% endfor %}
+
+
+</div>
+
+
+{% endblock %}

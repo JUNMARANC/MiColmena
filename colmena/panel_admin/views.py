@@ -13,6 +13,7 @@ import json
 import re
 from calendar import monthrange
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.views.decorators.http import require_POST
 from panel_admin.forms import (VinculacionApicultorForm,RegistroLaboralMensualForm,)
 from dbmicolmena.models import (VinculacionApicultor,RegistroLaboralMensual,)
@@ -140,15 +141,31 @@ def normalizar_correo(
         .lower()
     )
 
+# ============================================================
+# DOMINIOS DE CORREO PERMITIDOS
+# ============================================================
 
-def validar_correo_gmail(
-    correo
-):
+DOMINIOS_CORREO_PERMITIDOS = {
+    "gmail.com",
+    "outlook.com",
+    "hotmail.com",
+    "yahoo.com",
+}
+
+
+# ============================================================
+# VALIDAR CORREO ELECTRÓNICO PERMITIDO
+# ============================================================
+
+def validar_correo_permitido(correo):
 
     correo = normalizar_correo(
         correo
     )
 
+    # ========================================================
+    # VALIDAR FORMATO GENERAL
+    # ========================================================
 
     try:
 
@@ -160,6 +177,9 @@ def validar_correo_gmail(
 
         return False
 
+    # ========================================================
+    # OBTENER DOMINIO
+    # ========================================================
 
     try:
 
@@ -171,14 +191,23 @@ def validar_correo_gmail(
             )[1]
         )
 
-    except IndexError:
+
+    except (
+        IndexError,
+        AttributeError
+    ):
 
         return False
 
 
+    # ========================================================
+    # VALIDAR DOMINIO
+    # ========================================================
+
     return (
-        dominio ==
-        "gmail.com"
+        dominio
+        in
+        DOMINIOS_CORREO_PERMITIDOS
     )
 
 
@@ -667,6 +696,24 @@ def apiarios_admin(request):
             .count()
         )
 
+        apiario.fecha_colmena_mas_antigua = (
+            Colmena.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .exclude(
+                fecharegistro__isnull=True
+            )
+            .order_by(
+                "fecharegistro"
+            )
+            .values_list(
+                "fecharegistro",
+                flat=True
+            )
+            .first()
+        )
+
 
     return render(
         request,
@@ -777,7 +824,138 @@ def editar_apiario(request, id):
 
 
         # ====================================================
-        # AQUÍ VA EL PASO 5
+        # FECHA DE REGISTRO DEL APIARIO
+        # ====================================================
+
+        fecha_registro_texto = (
+            request.POST.get(
+                "fecha_registro",
+                ""
+            )
+            .strip()
+        )
+
+
+        # ====================================================
+        # FECHA OBLIGATORIA
+        # ====================================================
+
+        if not fecha_registro_texto:
+
+            messages.error(
+                request,
+                "La fecha de registro del apiario es obligatoria."
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # CONVERTIR FECHA
+        # ====================================================
+
+        nueva_fecha_apiario = parse_date(
+            fecha_registro_texto
+        )
+
+
+        if not nueva_fecha_apiario:
+
+            messages.error(
+                request,
+                "La fecha de registro del apiario no es válida."
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # AÑO MÍNIMO
+        # ====================================================
+
+        if nueva_fecha_apiario.year < 1900:
+
+            messages.error(
+                request,
+                "La fecha de registro del apiario no es válida."
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # NO PERMITIR FECHA FUTURA
+        # ====================================================
+
+        hoy = timezone.localdate()
+
+
+        if nueva_fecha_apiario > hoy:
+
+            messages.error(
+                request,
+                "La fecha de registro del apiario no puede ser futura."
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
+        # OBTENER LA COLMENA MÁS ANTIGUA DEL APIARIO
+        # ====================================================
+
+        colmena_mas_antigua = (
+            Colmena.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .exclude(
+                fecharegistro__isnull=True
+            )
+            .order_by(
+                "fecharegistro"
+            )
+            .first()
+        )
+
+
+        # ====================================================
+        # NO DEJAR EL APIARIO DESPUÉS DE SUS COLMENAS
+        # ====================================================
+
+        if (
+            colmena_mas_antigua
+            and
+            nueva_fecha_apiario
+            >
+            colmena_mas_antigua.fecharegistro
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"No puedes establecer la fecha del apiario "
+                    f"«{apiario.nombreapiario}» en "
+                    f"{nueva_fecha_apiario.strftime('%d/%m/%Y')} "
+                    f"porque tiene una colmena registrada desde el "
+                    f"{colmena_mas_antigua.fecharegistro.strftime('%d/%m/%Y')}."
+                )
+            )
+
+            return redirect(
+                "apiarios_admin"
+            )
+
+
+        # ====================================================
         # VALIDAR CAPACIDAD DEL APIARIO
         # ====================================================
 
@@ -896,9 +1074,7 @@ def editar_apiario(request, id):
 
 
         apiario.fechaeclosionapiario = (
-            request.POST.get(
-                "fecha_registro"
-            )
+            nueva_fecha_apiario
         )
 
 
@@ -1068,7 +1244,7 @@ def eliminar_apiario(
     )
 
 
-#LOGICA DE LOS COLMENAS
+#LOGICA DE LAS COLMENAS
 @administrador_requerido
 @permiso_requerido("cv")
 def colmenas_admin(request):
@@ -1308,6 +1484,119 @@ def crear_colmena(request):
                 "colmenas_admin"
             )
 
+        # ====================================================
+        # FECHA DE REGISTRO DE LA COLMENA
+        # ====================================================
+
+        fecha_registro_texto = (
+            request.POST.get(
+                "fecha_registro",
+                ""
+            )
+            .strip()
+        )
+
+
+        # ====================================================
+        # FECHA OBLIGATORIA
+        # ====================================================
+
+        if not fecha_registro_texto:
+
+            messages.error(
+                request,
+                "La fecha de registro de la colmena es obligatoria."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # CONVERTIR FECHA
+        # ====================================================
+
+        fecha_registro = parse_date(
+            fecha_registro_texto
+        )
+
+
+        if not fecha_registro:
+
+            messages.error(
+                request,
+                "La fecha de registro de la colmena no es válida."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # NO PERMITIR FECHA FUTURA
+        # ====================================================
+
+        hoy = timezone.localdate()
+
+
+        if fecha_registro > hoy:
+
+            messages.error(
+                request,
+                "La fecha de registro de la colmena no puede ser futura."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # FECHA DEL APIARIO
+        # ====================================================
+
+        fecha_apiario = (
+            apiario.fechaeclosionapiario
+        )
+
+
+        if not fecha_apiario:
+
+            messages.error(
+                request,
+                (
+                    f"El apiario «{apiario.nombreapiario}» "
+                    "no tiene una fecha de registro válida."
+                )
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # LA COLMENA NO PUEDE SER ANTERIOR AL APIARIO
+        # ====================================================
+
+        if fecha_registro < fecha_apiario:
+
+            messages.error(
+                request,
+                (
+                    f"La colmena no puede registrarse con una fecha "
+                    f"anterior al apiario «{apiario.nombreapiario}». "
+                    f"El apiario fue registrado el "
+                    f"{fecha_apiario.strftime('%d/%m/%Y')}."
+                )
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
 
         # ====================================================
         # CAPACIDAD MÁXIMA
@@ -1419,9 +1708,7 @@ def crear_colmena(request):
                     ),
 
                 fecharegistro=
-                    request.POST.get(
-                        "fecha_registro"
-                    ),
+                    fecha_registro,
 
                 descripcion=
                     request.POST.get(
@@ -1563,6 +1850,119 @@ def editar_colmena(
                 "colmenas_admin"
             )
 
+        # ====================================================
+        # FECHA DE REGISTRO DE LA COLMENA
+        # ====================================================
+
+        fecha_registro_texto = (
+            request.POST.get(
+                "fecha_registro",
+                ""
+            )
+            .strip()
+        )
+
+
+        # ====================================================
+        # FECHA OBLIGATORIA
+        # ====================================================
+
+        if not fecha_registro_texto:
+
+            messages.error(
+                request,
+                "La fecha de registro de la colmena es obligatoria."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # CONVERTIR FECHA
+        # ====================================================
+
+        fecha_registro = parse_date(
+            fecha_registro_texto
+        )
+
+
+        if not fecha_registro:
+
+            messages.error(
+                request,
+                "La fecha de registro de la colmena no es válida."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # NO PERMITIR FECHA FUTURA
+        # ====================================================
+
+        hoy = timezone.localdate()
+
+
+        if fecha_registro > hoy:
+
+            messages.error(
+                request,
+                "La fecha de registro de la colmena no puede ser futura."
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # FECHA DEL APIARIO DESTINO
+        # ====================================================
+
+        fecha_apiario = (
+            apiario_nuevo.fechaeclosionapiario
+        )
+
+
+        if not fecha_apiario:
+
+            messages.error(
+                request,
+                (
+                    f"El apiario «{apiario_nuevo.nombreapiario}» "
+                    "no tiene una fecha de registro válida."
+                )
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
+
+        # ====================================================
+        # LA COLMENA NO PUEDE SER ANTERIOR AL APIARIO
+        # ====================================================
+
+        if fecha_registro < fecha_apiario:
+
+            messages.error(
+                request,
+                (
+                    f"La fecha de la colmena no puede ser anterior "
+                    f"al apiario «{apiario_nuevo.nombreapiario}». "
+                    f"El apiario fue registrado el "
+                    f"{fecha_apiario.strftime('%d/%m/%Y')}."
+                )
+            )
+
+            return redirect(
+                "colmenas_admin"
+            )
+
 
         # ====================================================
         # ¿SE ESTÁ CAMBIANDO DE APIARIO?
@@ -1665,9 +2065,7 @@ def editar_colmena(
 
 
         colmena.fecharegistro = (
-            request.POST.get(
-                "fecha_registro"
-            )
+            fecha_registro
         )
 
 
@@ -2741,7 +3139,7 @@ def verificar_dato_apicultor(request):
 
 
     # ========================================================
-    # CORREO GMAIL
+    # CORREO ELECTRÓNICO
     # ========================================================
 
     if campo == "correo":
@@ -2751,7 +3149,11 @@ def verificar_dato_apicultor(request):
         )
 
 
-        if not validar_gmail_apicultor(
+        # ----------------------------------------------------
+        # VALIDAR FORMATO Y PROVEEDOR
+        # ----------------------------------------------------
+
+        if not validar_correo_permitido(
             valor
         ):
 
@@ -2760,21 +3162,28 @@ def verificar_dato_apicultor(request):
                     "valido": False,
                     "existe": False,
                     "mensaje": (
-                        "Debes ingresar una dirección "
-                        "válida terminada en @gmail.com."
+                        "El correo debe pertenecer a Gmail, "
+                        "Outlook, Hotmail o Yahoo."
                     ),
                 }
             )
 
 
+        # ----------------------------------------------------
+        # BUSCAR DUPLICADO
+        # ----------------------------------------------------
+
         consulta = (
             User.objects
             .filter(
-                email__iexact=
-                    valor
+                email__iexact=valor
             )
         )
 
+
+        # ----------------------------------------------------
+        # EDITAR: EXCLUIR AL USUARIO ACTUAL
+        # ----------------------------------------------------
 
         if id_apicultor_actual:
 
@@ -2798,8 +3207,7 @@ def verificar_dato_apicultor(request):
 
                 consulta = (
                     consulta.exclude(
-                        pk=
-                            apicultor_actual.user_id
+                        pk=apicultor_actual.user_id
                     )
                 )
 
@@ -2816,7 +3224,7 @@ def verificar_dato_apicultor(request):
                     "Ese correo electrónico ya está registrado."
                     if existe
                     else
-                    "Correo Gmail disponible."
+                    "Correo electrónico disponible."
                 ),
             }
         )
@@ -2931,10 +3339,12 @@ def crear_apicultor(request):
         ""
     ).strip()
 
-    correo = request.POST.get(
-        "correo",
-        ""
-    ).strip().lower()
+    correo = normalizar_correo(
+        request.POST.get(
+            "correo",
+            ""
+        )
+    )
 
     telefono = request.POST.get(
         "telefono",
@@ -3035,6 +3445,26 @@ def crear_apicultor(request):
         )
         return redirect("apicultores_admin")
 
+    # =========================================================
+    # VALIDAR CORREO ELECTRÓNICO
+    # =========================================================
+
+    if not validar_correo_permitido(
+        correo
+    ):
+
+        messages.error(
+            request,
+            (
+                "El correo electrónico debe pertenecer "
+                "a Gmail, Outlook, Hotmail o Yahoo."
+            )
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
+
     # ============================================================
     # VALIDAR NOMBRES
     # ============================================================
@@ -3120,28 +3550,6 @@ def crear_apicultor(request):
             )
         )
         return redirect("apicultores_admin")
-
-
-    # ============================================================
-    # CORREO GMAIL
-    # ============================================================
-
-    correo = normalizar_correo(
-        correo
-    )
-
-    if not validar_gmail_apicultor(
-        correo
-    ):
-        messages.error(
-            request,
-            (
-                "El correo debe ser una dirección "
-                "válida de Gmail (@gmail.com)."
-            )
-        )
-        return redirect("apicultores_admin")
-
 
     # ============================================================
     # USERNAME
@@ -3437,10 +3845,12 @@ def editar_apicultor(request, id_apicultor):
         ""
     ).strip()
 
-    correo = request.POST.get(
-        "correo",
-        ""
-    ).strip().lower()
+    correo = normalizar_correo(
+        request.POST.get(
+            "correo",
+            ""
+        )
+    )
 
     telefono = request.POST.get(
         "telefono",
@@ -3523,6 +3933,26 @@ def editar_apicultor(request, id_apicultor):
         )
         return redirect("apicultores_admin")
 
+    # =========================================================
+    # VALIDAR CORREO ELECTRÓNICO
+    # =========================================================
+
+    if not validar_correo_permitido(
+        correo
+    ):
+
+        messages.error(
+            request,
+            (
+                "El correo electrónico debe pertenecer "
+                "a Gmail, Outlook, Hotmail o Yahoo."
+            )
+        )
+
+        return redirect(
+            "apicultores_admin"
+        )
+
     # ============================================================
     # NOMBRES
     # ============================================================
@@ -3588,31 +4018,6 @@ def editar_apicultor(request, id_apicultor):
             (
                 "El teléfono debe contener exactamente "
                 "10 números y comenzar por 3."
-            )
-        )
-
-        return redirect(
-            "apicultores_admin"
-        )
-
-
-    # ============================================================
-    # CORREO
-    # ============================================================
-
-    correo = normalizar_correo(
-        correo
-    )
-
-
-    if not validar_gmail_apicultor(
-        correo
-    ):
-        messages.error(
-            request,
-            (
-                "El correo debe ser una dirección "
-                "válida de Gmail (@gmail.com)."
             )
         )
 
@@ -6899,10 +7304,10 @@ def verificar_dato_administrador(request):
 
 
         # ----------------------------------------------------
-        # SOLO GMAIL
+        # VALIDAR FORMATO Y DOMINIO
         # ----------------------------------------------------
 
-        if not validar_correo_gmail(
+        if not validar_correo_permitido(
             valor
         ):
 
@@ -6911,8 +7316,8 @@ def verificar_dato_administrador(request):
                     "valido": False,
                     "existe": False,
                     "mensaje": (
-                        "Debes ingresar una dirección "
-                        "válida terminada en @gmail.com."
+                        "El correo debe pertenecer a Gmail, "
+                        "Outlook, Hotmail o Yahoo."
                     ),
                 }
             )
@@ -6962,7 +7367,7 @@ def verificar_dato_administrador(request):
                     "Ese correo electrónico ya está registrado."
                     if existe
                     else
-                    "Correo Gmail disponible."
+                    "Correo electrónico disponible."
                 ),
             }
         )
@@ -7299,18 +7704,18 @@ def crear_administrador(request):
 
 
     # =========================================================
-    # VALIDAR CORREO GMAIL
+    # VALIDAR CORREO ELECTRÓNICO
     # =========================================================
 
-    if not validar_correo_gmail(
+    if not validar_correo_permitido(
         correo
     ):
 
         messages.error(
             request,
             (
-                "El correo electrónico debe ser una "
-                "dirección válida de Gmail (@gmail.com)."
+                "El correo electrónico debe pertenecer "
+                "a Gmail, Outlook, Hotmail o Yahoo."
             )
         )
 
@@ -7910,18 +8315,18 @@ def editar_administrador(
 
 
     # =========================================================
-    # VALIDAR CORREO GMAIL
+    # VALIDAR CORREO ELECTRÓNICO
     # =========================================================
 
-    if not validar_correo_gmail(
+    if not validar_correo_permitido(
         correo
     ):
 
         messages.error(
             request,
             (
-                "El correo electrónico debe ser una "
-                "dirección válida de Gmail (@gmail.com)."
+                "El correo electrónico debe pertenecer "
+                "a Gmail, Outlook, Hotmail o Yahoo."
             )
         )
 
@@ -8939,13 +9344,11 @@ def actualizar_mi_perfil(request):
     )
 
 
-    correo = (
+    correo = normalizar_correo(
         request.POST.get(
             "correo",
             ""
         )
-        .strip()
-        .lower()
     )
 
 
@@ -9060,21 +9463,15 @@ def actualizar_mi_perfil(request):
         )
 
 
-    # Normalizamos antes de validar y guardar.
-    correo = normalizar_correo(
-        correo
-    )
-
-
-    if not validar_correo_gmail(
+    if not validar_correo_permitido(
         correo
     ):
 
         messages.error(
             request,
             (
-                "El correo electrónico debe ser una "
-                "dirección válida de Gmail (@gmail.com)."
+                "El correo electrónico debe pertenecer "
+                "a Gmail, Outlook, Hotmail o Yahoo."
             )
         )
 
