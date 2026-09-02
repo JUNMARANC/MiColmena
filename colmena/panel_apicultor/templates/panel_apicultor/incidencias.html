@@ -1,4 +1,5 @@
 {% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
 
 
 {% block title %}
@@ -16,110 +17,498 @@
 {% endblock %}
 
 
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/incidencias.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+
 {% block content %}
 
 
-<div
-    style="
-        background: white;
-        padding: 30px;
-        border-radius: 18px;
-    "
->
+<div class="incidencias-page">
 
 
-    <h2>
-        Incidencias
-    </h2>
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="incidencias-encabezado">
 
 
-    <p>
-
-        Total:
-
-        <strong>
-            {{ total_incidencias }}
-        </strong>
-
-    </p>
+        <div>
 
 
-    <p>
+            <span class="incidencias-etiqueta">
 
-        Abiertas:
+                Seguimiento de novedades
 
-        <strong>
-            {{ total_abiertas }}
-        </strong>
-
-    </p>
+            </span>
 
 
-    <hr>
+            <h1>
+
+                Incidencias
+
+            </h1>
 
 
-    {% for incidencia in incidencias %}
+            <p>
+
+                Consulta las novedades registradas en tus
+                apiarios y colmenas, revisa su prioridad,
+                estado y evidencia asociada.
+
+            </p>
 
 
-        <div
-            style="
-                padding: 15px 0;
-                border-bottom: 1px solid #ddd;
-            "
-        >
+        </div>
 
+
+        <div class="incidencias-encabezado-acciones">
+
+            <a
+                href="{% url 'crear_incidencia_apicultor' %}"
+                class="btn-reportar-incidencia"
+            >
+
+                <i class="bi bi-plus-lg"></i>
+
+                <span>
+                    Reportar incidencia
+                </span>
+
+            </a>
+
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESUMEN
+    ====================================================== -->
+
+    <section class="incidencias-resumen">
+
+
+        <!-- TOTAL -->
+
+        <article class="incidencia-resumen-card total">
+
+
+            <div class="incidencia-resumen-icono">
+
+                <i class="bi bi-clipboard2-data-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+
+                    {{ total_incidencias|default:0 }}
+
+                </strong>
+
+                <span>
+
+                    Total registradas
+
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- ABIERTAS -->
+
+        <article class="incidencia-resumen-card abierta">
+
+
+            <div class="incidencia-resumen-icono">
+
+                <i class="bi bi-exclamation-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+
+                    {{ total_pendientes|default:0 }}
+
+                </strong>
+
+                <span>
+                    Pendientes
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- RESUELTAS -->
+
+        <article class="incidencia-resumen-card resueltas">
+
+            <div class="incidencia-resumen-icono">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ total_resueltas|default:0 }}
+                </strong>
+
+                <span>
+                    Resueltas
+                </span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- RESULTADOS -->
+
+        <article class="incidencia-resumen-card resultados">
+
+
+            <div class="incidencia-resumen-icono">
+
+                <i class="bi bi-funnel-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+
+                    {{ total_resultados|default:0 }}
+
+                </strong>
+
+                <span>
+
+                    Resultados actuales
+
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+        AVISO
+    ====================================================== -->
+
+    <section class="incidencias-aviso">
+
+
+        <div class="incidencias-aviso-icono">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+        </div>
+
+
+        <div>
 
             <strong>
 
-                {{ incidencia.titulo }}
+                Seguimiento de incidencias
 
             </strong>
 
 
-            <br>
+            <p>
+
+                Una incidencia puede corresponder directamente
+                a una colmena o afectar de manera general a todo
+                un apiario.
+
+            </p>
+
+        </div>
 
 
-            Estado:
-
-            {{ incidencia.estado }}
+    </section>
 
 
-            <br>
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <section class="incidencias-filtros">
 
 
-            Prioridad:
-
-            {{ incidencia.prioridad }}
-
-
-            <br>
+        <form
+            method="GET"
+            class="incidencias-form-filtros"
+        >
 
 
-            Apiario:
+            <!-- =================================================
+                 BUSCADOR
+            ================================================== -->
 
-            {% if incidencia.id_apiario %}
+            <div class="incidencias-buscador">
 
-                {{ incidencia.id_apiario.nombreapiario }}
 
-            {% else %}
+                <i class="bi bi-search"></i>
 
-                Sin apiario
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ busqueda }}"
+                    placeholder="Buscar título, colmena, apiario, responsable..."
+                    autocomplete="off"
+                >
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 APIARIO
+            ================================================== -->
+
+            <select
+                name="apiario"
+                class="incidencias-select"
+            >
+
+
+                <option value="">
+
+                    Todos los apiarios
+
+                </option>
+
+
+                {% for apiario in apiarios %}
+
+
+                    <option
+                        value="{{ apiario.id_apiario }}"
+
+                        {% if apiario_seleccionado == apiario.id_apiario|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ apiario.nombreapiario }}
+
+                    </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- =================================================
+                ESTADO
+            ================================================== -->
+
+            <select
+                name="estado"
+                class="incidencias-select"
+            >
+
+
+                <option value="">
+
+                    Todos los estados
+
+                </option>
+
+
+                {% for estado in estados_disponibles %}
+
+
+                    <option
+                        value="{{ estado }}"
+
+                        {% if estado_seleccionado == estado %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ estado }}
+
+                    </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- =================================================
+                 PRIORIDAD
+            ================================================== -->
+
+            <select
+                name="prioridad"
+                class="incidencias-select"
+            >
+
+
+                <option value="">
+
+                    Todas las prioridades
+
+                </option>
+
+
+                {% for prioridad in prioridades_disponibles %}
+
+
+                    <option
+                        value="{{ prioridad }}"
+
+                        {% if prioridad_seleccionada == prioridad %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ prioridad }}
+
+                    </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- =================================================
+                 FILTRAR
+            ================================================== -->
+
+            <button
+                type="submit"
+                class="btn-filtrar-incidencias"
+            >
+
+                <i class="bi bi-funnel-fill"></i>
+
+                <span>
+
+                    Filtrar
+
+                </span>
+
+            </button>
+
+
+
+            <!-- =================================================
+                 LIMPIAR
+            ================================================== -->
+
+            {% if busqueda or apiario_seleccionado or estado_seleccionado or prioridad_seleccionada %}
+
+
+                <a
+                    href="{% url 'incidencias_apicultor' %}"
+                    class="btn-limpiar-incidencias"
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                    <span>
+
+                        Limpiar
+
+                    </span>
+
+                </a>
+
 
             {% endif %}
 
 
-            <br>
+        </form>
 
 
-            {% if incidencia.id_colmena %}
+    </section>
 
-                Colmena:
 
-                {{ incidencia.id_colmena.codigocolmena }}
 
-            {% elif incidencia.id_apiario %}
+    <!-- =====================================================
+         CABECERA RESULTADOS
+    ====================================================== -->
 
-                Incidencia general del apiario
+    <section class="incidencias-resultados-header">
+
+
+        <div>
+
+
+            {% if estado_seleccionado %}
+
+
+                <span class="resultado-incidencias">
+
+                    <i class="bi bi-filter-circle-fill"></i>
+
+                    Estado:
+                    {{ estado_seleccionado }}
+
+                </span>
+
+
+            {% else %}
+
+
+                <span class="resultado-incidencias">
+
+                    <i class="bi bi-list-ul"></i>
+
+                    Incidencias registradas
+
+                </span>
+
 
             {% endif %}
 
@@ -127,18 +516,1040 @@
         </div>
 
 
-    {% empty %}
-
-
         <p>
-            No tienes incidencias registradas.
+
+            <strong>
+
+                {{ total_resultados }}
+
+            </strong>
+
+            resultado{{ total_resultados|pluralize }}
+
         </p>
 
 
-    {% endfor %}
+    </section>
+
+
+
+    <!-- =====================================================
+         TABLA
+    ====================================================== -->
+
+    {% if incidencias %}
+
+
+        <section class="incidencias-tabla-card">
+
+
+            <div class="incidencias-tabla-responsive">
+
+
+                <table class="tabla-incidencias">
+
+
+                    <!-- =========================================
+                        CABECERA
+                    ========================================== -->
+
+                    <thead>
+
+
+                        <tr>
+
+
+                            <th>
+
+                                Incidencia
+
+                            </th>
+
+
+                            <th>
+
+                                Ubicación
+
+                            </th>
+
+
+                            <th>
+
+                                Fecha
+
+                            </th>
+
+
+                            <th>
+
+                                Prioridad
+
+                            </th>
+
+
+                            <th>
+
+                                Estado
+
+                            </th>
+
+
+                            <th>
+
+                                Responsable
+
+                            </th>
+
+
+                            <th class="tabla-acciones-incidencia">
+
+                                Acciones
+
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+                    <!-- =========================================
+                         CUERPO
+                    ========================================== -->
+
+                    <tbody>
+
+
+                        {% for incidencia in incidencias %}
+
+
+                            <tr>
+
+
+                                <!-- =============================
+                                     INCIDENCIA
+                                ============================== -->
+
+                                <td>
+
+
+                                    <div class="incidencia-tabla-titulo">
+
+
+                                        <div class="incidencia-tabla-icono">
+
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+
+                                            <strong>
+
+                                                {{ incidencia.titulo }}
+
+                                            </strong>
+
+
+                                            <span>
+
+                                                #{{ incidencia.id_incidencia }}
+
+                                            </span>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- =============================
+                                     UBICACIÓN
+                                ============================== -->
+
+                                <td>
+
+
+                                    <div class="incidencia-origen-tabla">
+
+
+                                        <strong>
+
+
+                                            {% if incidencia.id_apiario %}
+
+                                                {{ incidencia.id_apiario.nombreapiario }}
+
+                                            {% else %}
+
+                                                Sin ubicación asociada
+
+                                            {% endif %}
+
+
+                                        </strong>
+
+
+
+                                        <span>
+
+
+                                            {% if incidencia.id_colmena %}
+
+
+                                                <i class="bi bi-hexagon-fill"></i>
+
+                                                Colmena:
+
+                                                {{ incidencia.id_colmena.codigocolmena }}
+
+
+                                            {% elif incidencia.id_apiario %}
+
+
+                                                <i class="bi bi-geo-alt-fill"></i>
+
+                                                Incidencia del apiario
+
+
+                                            {% else %}
+
+
+                                                <i class="bi bi-exclamation-circle"></i>
+
+                                                Sin ubicación asociada
+
+
+                                            {% endif %}
+
+
+                                        </span>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- =============================
+                                     FECHA
+                                ============================== -->
+
+                                <td>
+
+
+                                    <div class="incidencia-fecha">
+
+
+                                        <i class="bi bi-calendar3"></i>
+
+
+                                        {% if incidencia.fechadeteccion %}
+
+                                            {{ incidencia.fechadeteccion|date:"d/m/Y" }}
+
+                                        {% else %}
+
+                                            Sin fecha
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- =============================
+                                     PRIORIDAD
+                                ============================== -->
+
+                                <td>
+
+
+                                    <span
+                                        class="
+                                            incidencia-prioridad
+
+                                            {% if incidencia.prioridad == 'Crítica' %}
+                                                critica
+
+                                            {% elif incidencia.prioridad == 'Alta' %}
+                                                alta
+
+                                            {% elif incidencia.prioridad == 'Media' %}
+                                                media
+
+                                            {% else %}
+                                                baja
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        {{ incidencia.prioridad|default:"Sin definir" }}
+
+                                    </span>
+
+
+                                </td>
+
+
+
+                                <!-- =============================
+                                     ESTADO
+                                ============================== -->
+
+                                <td>
+
+
+                                    <span
+                                        class="
+                                            incidencia-estado
+
+                                            {% if incidencia.estado == 'Pendiente' %}
+                                                pendiente
+
+                                            {% elif incidencia.estado == 'En proceso' %}
+                                                proceso
+
+                                            {% elif incidencia.estado == 'Resuelta' %}
+                                                resuelta
+
+                                            {% else %}
+                                                otro
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        <span></span>
+
+                                        {{ incidencia.estado }}
+
+                                    </span>
+
+
+                                </td>
+
+
+
+                                <!-- =============================
+                                     RESPONSABLE
+                                ============================== -->
+
+                                <td>
+
+
+                                    <div class="incidencia-responsable-tabla">
+
+
+                                        <i class="bi bi-person-circle"></i>
+
+
+                                        <span>
+
+                                            {{ incidencia.responsable|default:"Sin responsable" }}
+
+                                        </span>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                                <!-- =============================
+                                    ACCIONES
+                                ============================== -->
+
+                                <td class="acciones-incidencia-tabla">
+
+                                    <!-- VER -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-ver-incidencia"
+                                        data-modal-incidencia="modalIncidencia{{ incidencia.id_incidencia }}"
+                                        title="Ver detalle"
+                                    >
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </button>
+
+
+                                    <!-- EDITAR -->
+
+                                    <a
+                                        href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
+                                        class="btn-editar-incidencia"
+                                        title="Gestionar incidencia"
+                                    >
+
+                                        <i class="bi bi-pencil-square"></i>
+
+                                    </a>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PAGINACIÓN
+        ================================================== -->
+
+        {% if incidencias.paginator.num_pages > 1 %}
+
+
+            <nav class="incidencias-paginacion">
+
+
+                <!-- ANTERIOR -->
+
+                {% if incidencias.has_previous %}
+
+
+                    <a
+                        href="?page={{ incidencias.previous_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}&prioridad={{ prioridad_seleccionada }}"
+                        class="incidencias-pagina"
+                    >
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </a>
+
+
+                {% endif %}
+
+
+
+                <!-- NÚMEROS -->
+
+                {% for numero in incidencias.paginator.page_range %}
+
+
+                    {% if numero == incidencias.number %}
+
+
+                        <span class="incidencias-pagina active">
+
+                            {{ numero }}
+
+                        </span>
+
+
+                    {% else %}
+
+
+                        <a
+                            href="?page={{ numero }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}&prioridad={{ prioridad_seleccionada }}"
+                            class="incidencias-pagina"
+                        >
+
+                            {{ numero }}
+
+                        </a>
+
+
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+
+                <!-- SIGUIENTE -->
+
+                {% if incidencias.has_next %}
+
+
+                    <a
+                        href="?page={{ incidencias.next_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}&prioridad={{ prioridad_seleccionada }}"
+                        class="incidencias-pagina"
+                    >
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+
+                {% endif %}
+
+
+            </nav>
+
+
+        {% endif %}
+
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             ESTADO VACÍO
+        ================================================== -->
+
+        <section class="incidencias-vacio">
+
+
+            <div class="incidencias-vacio-icono">
+
+                <i class="bi bi-shield-check"></i>
+
+            </div>
+
+
+            <h2>
+
+
+                {% if busqueda or apiario_seleccionado or estado_seleccionado or prioridad_seleccionada %}
+
+                    No encontramos incidencias
+
+                {% else %}
+
+                    No tienes incidencias registradas
+
+                {% endif %}
+
+
+            </h2>
+
+
+            <p>
+
+
+                {% if busqueda or apiario_seleccionado or estado_seleccionado or prioridad_seleccionada %}
+
+                    Intenta cambiar o limpiar los filtros
+                    utilizados.
+
+                {% else %}
+
+                    Las incidencias que reportes en tus
+                    apiarios o colmenas aparecerán aquí.
+
+                {% endif %}
+
+
+            </p>
+
+
+            {% if busqueda or apiario_seleccionado or estado_seleccionado or prioridad_seleccionada %}
+
+
+                <a
+                    href="{% url 'incidencias_apicultor' %}"
+                    class="btn-ver-todas-incidencias"
+                >
+
+                    Ver todas las incidencias
+
+                </a>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    {% endif %}
 
 
 </div>
 
+
+
+<!-- =========================================================
+     MODALES DE DETALLE
+========================================================== -->
+
+{% for incidencia in incidencias %}
+
+
+    <div
+        class="incidencia-modal-overlay"
+        id="modalIncidencia{{ incidencia.id_incidencia }}"
+        aria-hidden="true"
+    >
+
+
+        <div
+            class="incidencia-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tituloIncidencia{{ incidencia.id_incidencia }}"
+        >
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <div class="incidencia-modal-header">
+
+
+                <div>
+
+
+                    <span>
+
+                        Incidencia #{{ incidencia.id_incidencia }}
+
+                    </span>
+
+
+                    <h2
+                        id="tituloIncidencia{{ incidencia.id_incidencia }}"
+                    >
+
+                        {{ incidencia.titulo }}
+
+                    </h2>
+
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="incidencia-modal-cerrar"
+                    data-cerrar-modal-incidencia
+                    aria-label="Cerrar detalle"
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 INFORMACIÓN
+            ================================================== -->
+
+            <div class="incidencia-modal-body">
+
+
+                <!-- APIARIO -->
+
+                <div class="incidencia-modal-dato">
+
+
+                    <span>
+
+                        Apiario
+
+                    </span>
+
+
+                    <strong>
+
+
+                        {% if incidencia.id_apiario %}
+
+                            {{ incidencia.id_apiario.nombreapiario }}
+
+                        {% else %}
+
+                            Sin apiario asociado
+
+                        {% endif %}
+
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- COLMENA / APIARIO -->
+
+                <div class="incidencia-modal-dato">
+
+
+                    {% if incidencia.id_colmena %}
+
+
+                        <span>
+
+                            Colmena
+
+                        </span>
+
+
+                        <strong>
+
+                            {{ incidencia.id_colmena.codigocolmena }}
+
+                        </strong>
+
+
+                    {% elif incidencia.id_apiario %}
+
+
+                        <span>
+
+                            Incidencia aplicada a
+
+                        </span>
+
+
+                        <strong>
+
+                            Apiario {{ incidencia.id_apiario.nombreapiario }}
+
+                        </strong>
+
+
+                    {% else %}
+
+
+                        <span>
+
+                            Ubicación
+
+                        </span>
+
+
+                        <strong>
+
+                            Sin ubicación asociada
+
+                        </strong>
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- FECHA -->
+
+                <div class="incidencia-modal-dato">
+
+
+                    <span>
+
+                        Fecha de detección
+
+                    </span>
+
+
+                    <strong>
+
+
+                        {% if incidencia.fechadeteccion %}
+
+                            {{ incidencia.fechadeteccion|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin fecha
+
+                        {% endif %}
+
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- PRIORIDAD -->
+
+                <div class="incidencia-modal-dato">
+
+
+                    <span>
+
+                        Prioridad
+
+                    </span>
+
+
+                    <strong>
+
+                        {{ incidencia.prioridad|default:"Sin definir" }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- ESTADO -->
+
+                <div class="incidencia-modal-dato">
+
+
+                    <span>
+
+                        Estado
+
+                    </span>
+
+
+                    <strong>
+
+                        {{ incidencia.estado|default:"Sin definir" }}
+
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- RESPONSABLE -->
+
+                <div class="incidencia-modal-dato">
+
+
+                    <span>
+
+                        Responsable
+
+                    </span>
+
+
+                    <strong>
+
+                        {{ incidencia.responsable|default:"Sin responsable" }}
+
+                    </strong>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 OBSERVACIONES
+            ================================================== -->
+
+            <div class="incidencia-modal-observaciones">
+
+
+                <h3>
+
+                    Observaciones
+
+                </h3>
+
+
+                {% if incidencia.observaciones %}
+
+
+                    <p>
+
+                        {{ incidencia.observaciones }}
+
+                    </p>
+
+
+                {% else %}
+
+
+                    <p class="sin-observaciones">
+
+                        No se registraron observaciones.
+
+                    </p>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 EVIDENCIA
+            ================================================== -->
+
+            {% if incidencia.imagen %}
+
+
+                <div class="incidencia-modal-evidencia">
+
+
+                    <div class="incidencia-evidencia-header">
+
+
+                        <div>
+
+
+                            <h3>
+
+                                Evidencia fotográfica
+
+                            </h3>
+
+
+                            <span>
+
+                                Imagen registrada al reportar
+                                la incidencia
+
+                            </span>
+
+
+                        </div>
+
+
+                        <i class="bi bi-image-fill"></i>
+
+
+                    </div>
+
+
+                    <div class="incidencia-evidencia-imagen">
+
+
+                        <img
+                            src="{{ incidencia.imagen.url }}"
+                            alt="Evidencia de {{ incidencia.titulo }}"
+                            loading="lazy"
+                        >
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <div class="incidencia-modal-footer">
+
+
+                {% if incidencia.id_colmena %}
+
+
+                    <a
+                        href="{% url 'detalle_apiario_apicultor' incidencia.id_apiario.id_apiario %}"
+                        class="btn-incidencia-ver-apiario"
+                    >
+
+                        <i class="bi bi-flower1"></i>
+
+                        <span>
+
+                            Ver apiario
+
+                        </span>
+
+                    </a>
+
+
+                {% elif incidencia.id_apiario %}
+
+
+                    <a
+                        href="{% url 'detalle_apiario_apicultor' incidencia.id_apiario.id_apiario %}"
+                        class="btn-incidencia-ver-apiario"
+                    >
+
+                        <i class="bi bi-flower1"></i>
+
+                        <span>
+
+                            Ver apiario
+
+                        </span>
+
+                    </a>
+
+
+                {% endif %}
+
+
+
+                <button
+                    type="button"
+                    class="btn-cerrar-modal-incidencia"
+                    data-cerrar-modal-incidencia
+                >
+
+                    Cerrar
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endfor %}
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/incidencias.js' %}?v=1"
+></script>
 
 {% endblock %}

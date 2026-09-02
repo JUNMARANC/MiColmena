@@ -240,8 +240,14 @@
             ============================================== -->
 
             <a
-                href="#"
-                class="sidebar-link"
+                href="{% url 'agenda_apicultor' %}"
+                class="
+                    sidebar-link
+
+                    {% if request.resolver_match.url_name == 'agenda_apicultor' %}
+                        active
+                    {% endif %}
+                "
             >
 
                 <i class="bi bi-calendar3"></i>

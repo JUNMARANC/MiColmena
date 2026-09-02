@@ -11,6 +11,10 @@ from panel_apicultor.views import (
     completar_mantenimiento_apicultor,
     actualizar_observacion_mantenimiento_apicultor,
     incidencias_apicultor,
+    crear_incidencia_apicultor,
+    editar_incidencia_apicultor,
+    reportar_incidencia_apicultor,
+    agenda_apicultor
 )
 
 
@@ -57,5 +61,23 @@ urlpatterns = [
     # ============================================================
 
     path("incidencias/",incidencias_apicultor,name="incidencias_apicultor"),
+    path("incidencias/crear/",crear_incidencia_apicultor,name="crear_incidencia_apicultor"),
+    path("incidencias/<int:id_incidencia>/editar/",editar_incidencia_apicultor,name="editar_incidencia_apicultor"),
+
+    # ============================================================
+    # ACCESO RÁPIDO DESDE UNA COLMENA
+    # ============================================================
+
     path("incidencias/reportar/colmena/<int:id_colmena>/",reportar_incidencia_apicultor,name="reportar_incidencia_apicultor"),
+
+
+    # ============================================================
+    # AGENDA
+    # ============================================================
+
+    path(
+        "agenda/",
+        agenda_apicultor,
+        name="agenda_apicultor"
+    ),
 ]

@@ -1,0 +1,2734 @@
+/* ==========================================================
+   INCIDENCIAS - PANEL APICULTOR
+========================================================== */
+
+
+/* ==========================================================
+   1. CONTENEDOR GENERAL
+========================================================== */
+
+.incidencias-page {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 22px;
+
+}
+
+
+/* ==========================================================
+   2. ENCABEZADO
+========================================================== */
+
+.incidencias-encabezado {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 22px;
+
+}
+
+
+.incidencias-etiqueta {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+
+    padding:
+        5px
+        10px;
+
+    border-radius: 20px;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.3px;
+
+}
+
+
+.incidencias-encabezado h1 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+}
+
+
+.incidencias-encabezado p {
+
+    max-width: 650px;
+
+    margin-top: 7px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   3. ICONO ENCABEZADO
+========================================================== */
+
+.incidencias-encabezado-icono {
+
+    width: 58px;
+
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    font-size: 23px;
+
+}
+
+
+/* ==========================================================
+   4. RESUMEN
+========================================================== */
+
+.incidencias-resumen {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 15px;
+
+}
+
+
+/* ==========================================================
+   5. CARD RESUMEN
+========================================================== */
+
+.incidencia-resumen-card {
+
+    min-height: 105px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 17px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, 0.90);
+
+    box-shadow:
+        0 4px 14px
+        rgba(33, 79, 59, 0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.incidencia-resumen-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 7px 18px
+        rgba(33, 79, 59, 0.09);
+
+}
+
+
+/* ==========================================================
+   6. ICONOS RESUMEN
+========================================================== */
+
+.incidencia-resumen-icono {
+
+    width: 48px;
+
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 13px;
+
+    font-size: 19px;
+
+}
+
+
+.incidencia-resumen-card > div:last-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.incidencia-resumen-card strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+}
+
+
+.incidencia-resumen-card span {
+
+    margin-top: 5px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   7. TOTAL
+========================================================== */
+
+.incidencia-resumen-card.total
+.incidencia-resumen-icono {
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+}
+
+
+/* ==========================================================
+   8. ABIERTAS
+========================================================== */
+
+.incidencia-resumen-card.abierta
+.incidencia-resumen-icono {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+/* ==========================================================
+   9. ESTADOS
+========================================================== */
+
+.incidencia-resumen-card.estados
+.incidencia-resumen-icono {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+/* ==========================================================
+   10. RESULTADOS
+========================================================== */
+
+.incidencia-resumen-card.resultados
+.incidencia-resumen-icono {
+
+    background:
+        #FFF0BE;
+
+    color:
+        #896817;
+
+}
+
+
+/* ==========================================================
+   11. AVISO
+========================================================== */
+
+.incidencias-aviso {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding:
+        14px
+        16px;
+
+    border:
+        1px solid
+        #E8DBA4;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 237, 180, 0.34);
+
+}
+
+
+.incidencias-aviso-icono {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 15px;
+
+}
+
+
+.incidencias-aviso > div:last-child {
+
+    min-width: 0;
+
+}
+
+
+.incidencias-aviso strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+}
+
+
+.incidencias-aviso p {
+
+    margin:
+        4px
+        0
+        0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   12. FILTROS
+========================================================== */
+
+.incidencias-filtros {
+
+    padding: 16px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, 0.82);
+
+    box-shadow:
+        0 4px 14px
+        rgba(33, 79, 59, 0.04);
+
+}
+
+
+/* ==========================================================
+   13. FORM FILTROS
+========================================================== */
+
+.incidencias-form-filtros {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+/* ==========================================================
+   14. BUSCADOR
+========================================================== */
+
+.incidencias-buscador {
+
+    position: relative;
+
+    flex: 1;
+
+    min-width: 250px;
+
+}
+
+
+.incidencias-buscador > i {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 14px;
+
+    transform:
+        translateY(-50%);
+
+    color:
+        #7C8A82;
+
+    font-size: 13px;
+
+    pointer-events: none;
+
+}
+
+
+.incidencias-buscador input {
+
+    width: 100%;
+
+    height: 44px;
+
+    padding:
+        0
+        14px
+        0
+        40px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-texto);
+
+    font-family:
+        inherit;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.incidencias-buscador input::placeholder {
+
+    color:
+        #9AA39E;
+
+}
+
+
+.incidencias-buscador input:focus {
+
+    border-color:
+        #D7B94E;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.20);
+
+}
+
+
+/* ==========================================================
+   15. SELECTS
+========================================================== */
+
+.incidencias-select {
+
+    height: 44px;
+
+    min-width: 150px;
+
+    padding:
+        0
+        12px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-texto);
+
+    font-family:
+        inherit;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+.incidencias-select:focus {
+
+    border-color:
+        #D7B94E;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.20);
+
+}
+
+
+/* ==========================================================
+   16. BOTÓN FILTRAR
+========================================================== */
+
+.btn-filtrar-incidencias {
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        15px;
+
+    border:
+        1px solid
+        #E0C050;
+
+    border-radius: 11px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family:
+        inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-filtrar-incidencias:hover {
+
+    background:
+        #F4CB51;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   17. LIMPIAR FILTROS
+========================================================== */
+
+.btn-limpiar-incidencias {
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        14px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #66746C;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+}
+
+
+.btn-limpiar-incidencias:hover {
+
+    background:
+        #F4F6F4;
+
+}
+
+
+/* ==========================================================
+   18. CABECERA RESULTADOS
+========================================================== */
+
+.incidencias-resultados-header {
+
+    min-height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+}
+
+
+.incidencias-resultados-header p {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+}
+
+
+.incidencias-resultados-header p strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   19. ETIQUETA RESULTADOS
+========================================================== */
+
+.resultado-incidencias {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        6px
+        10px;
+
+    border-radius: 20px;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   20. CONTENEDOR TABLA
+========================================================== */
+
+.incidencias-tabla-card {
+
+    width: 100%;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 17px;
+
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    box-shadow:
+        0 4px 15px
+        rgba(33, 79, 59, 0.05);
+
+}
+
+
+/* ==========================================================
+   21. TABLA RESPONSIVE
+========================================================== */
+
+.incidencias-tabla-responsive {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    scrollbar-width: thin;
+
+}
+
+
+/* ==========================================================
+   22. TABLA
+========================================================== */
+
+.tabla-incidencias {
+
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse: collapse;
+
+}
+
+
+/* ==========================================================
+   23. CABECERA TABLA
+========================================================== */
+
+.tabla-incidencias thead th {
+
+    padding:
+        13px
+        14px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    background:
+        rgba(255, 237, 180, 0.24);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   24. CELDAS
+========================================================== */
+
+.tabla-incidencias tbody td {
+
+    padding:
+        13px
+        14px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+
+    color:
+        #58665E;
+
+    font-size: 8px;
+
+    vertical-align: middle;
+
+}
+
+
+.tabla-incidencias tbody tr {
+
+    transition:
+        background 0.2s ease;
+
+}
+
+
+.tabla-incidencias tbody tr:hover {
+
+    background:
+        rgba(252, 226, 222, 0.18);
+
+}
+
+
+.tabla-incidencias tbody tr:last-child td {
+
+    border-bottom:
+        none;
+
+}
+
+
+/* ==========================================================
+   25. TÍTULO INCIDENCIA
+========================================================== */
+
+.incidencia-tabla-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.incidencia-tabla-icono {
+
+    width: 35px;
+
+    height: 35px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    font-size: 13px;
+
+}
+
+
+.incidencia-tabla-titulo > div:last-child {
+
+    min-width: 0;
+
+}
+
+
+.incidencia-tabla-titulo strong {
+
+    display: block;
+
+    max-width: 210px;
+
+    overflow: hidden;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+.incidencia-tabla-titulo span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color:
+        #98A19B;
+
+    font-size: 7px;
+
+}
+
+
+/* ==========================================================
+   26. ORIGEN
+========================================================== */
+
+.incidencia-origen-tabla {
+
+    min-width: 0;
+
+}
+
+
+.incidencia-origen-tabla strong {
+
+    display: block;
+
+    max-width: 190px;
+
+    overflow: hidden;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+.incidencia-origen-tabla span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 4px;
+
+    color:
+        #738078;
+
+    font-size: 7px;
+
+}
+
+
+.incidencia-origen-tabla span i {
+
+    color:
+        #B68E17;
+
+}
+
+
+/* ==========================================================
+   27. FECHA
+========================================================== */
+
+.incidencia-fecha {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    white-space: nowrap;
+
+}
+
+
+.incidencia-fecha i {
+
+    color:
+        #A98113;
+
+}
+
+
+/* ==========================================================
+   28. PRIORIDAD
+========================================================== */
+
+.incidencia-prioridad {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 26px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+}
+
+
+.incidencia-prioridad.baja {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+.incidencia-prioridad.media {
+
+    background:
+        #FFF0BE;
+
+    color:
+        #896817;
+
+}
+
+
+.incidencia-prioridad.alta {
+
+    background:
+        #FBE3CF;
+
+    color:
+        #A46329;
+
+}
+
+
+.incidencia-prioridad.critica {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+/* ==========================================================
+   29. ESTADO
+========================================================== */
+
+.incidencia-estado {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    min-height: 26px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+}
+
+
+.incidencia-estado > span {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+}
+
+
+.incidencia-estado.abierta {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+.incidencia-estado.abierta > span {
+
+    background:
+        #D86659;
+
+}
+
+
+.incidencia-estado.otro {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+.incidencia-estado.otro > span {
+
+    background:
+        #74A66D;
+
+}
+
+
+/* ==========================================================
+   30. RESPONSABLE
+========================================================== */
+
+.incidencia-responsable-tabla {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    max-width: 180px;
+
+}
+
+
+.incidencia-responsable-tabla i {
+
+    flex-shrink: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 13px;
+
+}
+
+
+.incidencia-responsable-tabla span {
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   31. ACCIONES
+========================================================== */
+
+.tabla-acciones-incidencia {
+
+    text-align: right !important;
+
+}
+
+
+.btn-ver-incidencia {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 9px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-ver-incidencia:hover {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   32. PAGINACIÓN
+========================================================== */
+
+.incidencias-paginacion {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+}
+
+
+.incidencias-pagina {
+
+    width: 36px;
+
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #E3DAB3;
+
+    border-radius: 9px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+}
+
+
+.incidencias-pagina:hover {
+
+    background:
+        var(--apicultor-activo);
+
+}
+
+
+.incidencias-pagina.active {
+
+    border-color:
+        #D8B844;
+
+    background:
+        var(--apicultor-sidebar);
+
+}
+
+
+/* ==========================================================
+   33. ESTADO VACÍO
+========================================================== */
+
+.incidencias-vacio {
+
+    min-height: 330px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 30px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.80);
+
+    text-align: center;
+
+}
+
+
+.incidencias-vacio-icono {
+
+    width: 70px;
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom: 16px;
+
+    border-radius: 50%;
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+    font-size: 27px;
+
+}
+
+
+.incidencias-vacio h2 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+}
+
+
+.incidencias-vacio p {
+
+    max-width: 430px;
+
+    margin:
+        8px
+        auto
+        0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.6;
+
+}
+
+
+.btn-ver-todas-incidencias {
+
+    margin-top: 15px;
+
+    padding:
+        9px
+        14px;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+}
+
+
+/* ==========================================================
+   34. MODAL OVERLAY
+========================================================== */
+
+.incidencia-modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 22px;
+
+    background:
+        rgba(17, 38, 27, 0.60);
+
+    backdrop-filter:
+        blur(5px);
+
+}
+
+
+.incidencia-modal-overlay.activo {
+
+    display: flex;
+
+}
+
+
+/* ==========================================================
+   35. MODAL
+========================================================== */
+
+.incidencia-modal {
+
+    width: 100%;
+
+    max-width: 760px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 20px;
+
+    background:
+        #FFFFF7;
+
+    box-shadow:
+        0 25px 70px
+        rgba(17, 38, 27, 0.26);
+
+    animation:
+        aparecerModalIncidencia
+        0.22s ease;
+
+}
+
+
+@keyframes aparecerModalIncidencia {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(14px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* ==========================================================
+   36. HEADER MODAL
+========================================================== */
+
+.incidencia-modal-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    background:
+        rgba(252, 226, 222, 0.18);
+
+}
+
+
+.incidencia-modal-header > div {
+
+    min-width: 0;
+
+}
+
+
+.incidencia-modal-header span {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color:
+        #A84D44;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+}
+
+
+.incidencia-modal-header h2 {
+
+    margin: 0;
+
+    max-width: 590px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* ==========================================================
+   37. CERRAR MODAL
+========================================================== */
+
+.incidencia-modal-cerrar {
+
+    width: 36px;
+
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        transparent;
+
+    color:
+        #728078;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+}
+
+
+.incidencia-modal-cerrar:hover {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+/* ==========================================================
+   38. BODY MODAL
+========================================================== */
+
+.incidencia-modal-body {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+
+    padding: 22px;
+
+}
+
+
+/* ==========================================================
+   39. DATO MODAL
+========================================================== */
+
+.incidencia-modal-dato {
+
+    min-height: 75px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 12px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+
+    border-radius: 11px;
+
+    background:
+        rgba(255, 237, 180, 0.24);
+
+}
+
+
+.incidencia-modal-dato span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+}
+
+
+.incidencia-modal-dato strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* ==========================================================
+   40. OBSERVACIONES
+========================================================== */
+
+.incidencia-modal-observaciones {
+
+    margin:
+        0
+        22px
+        22px;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 255, 255, 0.70);
+
+}
+
+
+.incidencia-modal-observaciones h3 {
+
+    margin:
+        0
+        0
+        8px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+.incidencia-modal-observaciones p {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.7;
+
+    white-space: pre-line;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+.incidencia-modal-observaciones
+.sin-observaciones {
+
+    color:
+        #9AA39E;
+
+    font-style: italic;
+
+}
+
+
+/* ==========================================================
+   41. EVIDENCIA
+========================================================== */
+
+.incidencia-modal-evidencia {
+
+    margin:
+        0
+        22px
+        22px;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 255, 255, 0.75);
+
+}
+
+
+/* ==========================================================
+   42. HEADER EVIDENCIA
+========================================================== */
+
+.incidencia-evidencia-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 12px;
+
+}
+
+
+.incidencia-evidencia-header h3 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+.incidencia-evidencia-header span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 7px;
+
+}
+
+
+.incidencia-evidencia-header > i {
+
+    width: 34px;
+
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    font-size: 14px;
+
+}
+
+
+/* ==========================================================
+   43. IMAGEN EVIDENCIA
+========================================================== */
+
+.incidencia-evidencia-imagen {
+
+    width: 100%;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 12px;
+
+    background:
+        #F1F4F2;
+
+}
+
+
+.incidencia-evidencia-imagen img {
+
+    display: block;
+
+    width: 100%;
+
+    max-height: 430px;
+
+    object-fit: contain;
+
+    background:
+        #F5F7F5;
+
+}
+
+
+/* ==========================================================
+   44. FOOTER MODAL
+========================================================== */
+
+.incidencia-modal-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    padding:
+        15px
+        22px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+}
+
+
+/* ==========================================================
+   45. VER APIARIO
+========================================================== */
+
+.btn-incidencia-ver-apiario {
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #C9DFC5;
+
+    border-radius: 10px;
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-incidencia-ver-apiario:hover {
+
+    background:
+        #D8EAD4;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   46. CERRAR FOOTER
+========================================================== */
+
+.btn-cerrar-modal-incidencia {
+
+    min-height: 40px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #E0C258;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family:
+        inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+}
+
+
+/* ==========================================================
+   47. SCROLL DEL MODAL
+========================================================== */
+
+.incidencia-modal {
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #D8C26A
+        transparent;
+
+}
+
+
+.incidencia-modal::-webkit-scrollbar {
+
+    width: 7px;
+
+}
+
+
+.incidencia-modal::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+
+}
+
+
+.incidencia-modal::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background:
+        #D8C26A;
+
+}
+
+
+/* ==========================================================
+   48. RESPONSIVE - 1400px
+========================================================== */
+
+@media (max-width: 1400px) {
+
+
+    .incidencias-form-filtros {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .incidencias-buscador {
+
+        flex-basis: 100%;
+
+    }
+
+
+    .incidencias-select {
+
+        flex: 1;
+
+    }
+
+
+}
+
+
+/* ==========================================================
+   49. RESPONSIVE - 1100px
+========================================================== */
+
+@media (max-width: 1100px) {
+
+
+    .incidencias-resumen {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+
+}
+
+
+/* ==========================================================
+   50. RESPONSIVE - 820px
+========================================================== */
+
+@media (max-width: 820px) {
+
+
+    .incidencias-page {
+
+        gap: 18px;
+
+    }
+
+
+    .incidencias-encabezado {
+
+        align-items: flex-start;
+
+    }
+
+
+    .incidencias-encabezado h1 {
+
+        font-size: 24px;
+
+    }
+
+
+    .incidencias-encabezado-icono {
+
+        width: 50px;
+
+        height: 50px;
+
+    }
+
+
+    .incidencias-resultados-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+}
+
+
+/* ==========================================================
+   51. RESPONSIVE - 600px
+========================================================== */
+
+@media (max-width: 600px) {
+
+
+    /* ======================================================
+       RESUMEN
+    ====================================================== */
+
+    .incidencias-resumen {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+        gap: 10px;
+
+    }
+
+
+    .incidencia-resumen-card {
+
+        min-height: 88px;
+
+        padding: 12px;
+
+    }
+
+
+    .incidencia-resumen-icono {
+
+        width: 40px;
+
+        height: 40px;
+
+        font-size: 16px;
+
+    }
+
+
+    .incidencia-resumen-card strong {
+
+        font-size: 18px;
+
+    }
+
+
+
+    /* ======================================================
+       ENCABEZADO
+    ====================================================== */
+
+    .incidencias-encabezado-icono {
+
+        display: none;
+
+    }
+
+
+
+    /* ======================================================
+       FILTROS
+    ====================================================== */
+
+    .incidencias-form-filtros {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .incidencias-buscador,
+    .incidencias-select,
+    .btn-filtrar-incidencias,
+    .btn-limpiar-incidencias {
+
+        width: 100%;
+
+        min-width: 100%;
+
+    }
+
+
+
+    /* ======================================================
+       AVISO
+    ====================================================== */
+
+    .incidencias-aviso {
+
+        padding: 12px;
+
+    }
+
+
+
+    /* ======================================================
+       MODAL
+    ====================================================== */
+
+    .incidencia-modal-overlay {
+
+        padding: 10px;
+
+    }
+
+
+    .incidencia-modal {
+
+        border-radius: 16px;
+
+    }
+
+
+    .incidencia-modal-header {
+
+        padding: 16px;
+
+    }
+
+
+    .incidencia-modal-header h2 {
+
+        font-size: 18px;
+
+    }
+
+
+    .incidencia-modal-body {
+
+        grid-template-columns:
+            1fr;
+
+        padding: 16px;
+
+    }
+
+
+    .incidencia-modal-observaciones {
+
+        margin:
+            0
+            16px
+            16px;
+
+    }
+
+
+    .incidencia-modal-evidencia {
+
+        margin:
+            0
+            16px
+            16px;
+
+    }
+
+
+    .incidencia-modal-footer {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        padding:
+            14px
+            16px;
+
+    }
+
+
+    .btn-incidencia-ver-apiario,
+    .btn-cerrar-modal-incidencia {
+
+        width: 100%;
+
+    }
+
+
+}
+
+
+/* ==========================================================
+   52. RESPONSIVE - 430px
+========================================================== */
+
+@media (max-width: 430px) {
+
+
+    .incidencias-resumen {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .incidencias-encabezado h1 {
+
+        font-size: 21px;
+
+    }
+
+
+    .incidencias-encabezado p {
+
+        font-size: 9px;
+
+    }
+
+
+    .incidencia-evidencia-header {
+
+        align-items: flex-start;
+
+    }
+
+
+}
+
+
+/* ==========================================================
+   ACCIONES DE INCIDENCIA
+========================================================== */
+
+.acciones-incidencia-tabla {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 6px;
+
+}
+
+
+/* ==========================================================
+   EDITAR INCIDENCIA
+========================================================== */
+
+.btn-editar-incidencia {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #E3CA6C;
+
+    border-radius: 9px;
+
+    background:
+        #FFF4C9;
+
+    color:
+        #806419;
+
+    font-size: 12px;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.btn-editar-incidencia:hover {
+
+    border-color:
+        #D9B83F;
+
+    background:
+        #FFDD71;
+
+    color:
+        #214F3B;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   ESTADOS DE INCIDENCIA
+========================================================== */
+
+.incidencia-estado.pendiente {
+
+    background:
+        #FFF0BE;
+
+    color:
+        #896817;
+
+}
+
+
+.incidencia-estado.pendiente > span {
+
+    background:
+        #D4A62A;
+
+}
+
+
+.incidencia-estado.proceso {
+
+    background:
+        #E7EFFA;
+
+    color:
+        #456889;
+
+}
+
+
+.incidencia-estado.proceso > span {
+
+    background:
+        #6591BC;
+
+}
+
+
+.incidencia-estado.resuelta {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+.incidencia-estado.resuelta > span {
+
+    background:
+        #74A66D;
+
+}
+
+
+/* ==========================================================
+   ACCIONES DEL ENCABEZADO
+========================================================== */
+
+.incidencias-encabezado-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+/* ==========================================================
+   REPORTAR INCIDENCIA
+========================================================== */
+
+.btn-reportar-incidencia {
+
+    min-height: 43px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        9px
+        16px;
+
+    border:
+        1px solid
+        #DDBA3F;
+
+    border-radius: 11px;
+
+    background:
+        #FFDD71;
+
+    color:
+        #214F3B;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 4px 12px
+        rgba(159, 126, 25, 0.10);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-reportar-incidencia:hover {
+
+    background:
+        #F4CC51;
+
+    color:
+        #214F3B;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 7px 15px
+        rgba(159, 126, 25, 0.14);
+
+}
+
+
+.btn-reportar-incidencia i {
+
+    font-size: 12px;
+
+}
