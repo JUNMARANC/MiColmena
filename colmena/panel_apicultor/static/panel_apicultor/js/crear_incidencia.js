@@ -14,25 +14,22 @@ document.addEventListener("DOMContentLoaded", function () {
         "formCrearIncidencia"
     );
 
-
     if (!formulario) {
         return;
     }
 
 
-
     /* ======================================================
-       2. TIPO DE INCIDENCIA
+       2. TIPO DE ENTIDAD
     ====================================================== */
 
-    const radiosTipoEntidad = document.querySelectorAll(
+    const radiosTipoEntidad = formulario.querySelectorAll(
         ".tipo-entidad-radio"
     );
 
-    const opcionesTipoEntidad = document.querySelectorAll(
+    const opcionesTipoEntidad = formulario.querySelectorAll(
         ".tipo-incidencia-opcion"
     );
-
 
 
     /* ======================================================
@@ -52,9 +49,8 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       4. INFORMACIÓN
+       4. INFORMACIÓN DE LA INCIDENCIA
     ====================================================== */
 
     const inputTitulo = document.getElementById(
@@ -74,7 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
        5. CONTADORES
     ====================================================== */
@@ -88,39 +83,41 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       6. EVIDENCIA
+       6. EVIDENCIAS FOTOGRÁFICAS
     ====================================================== */
 
-    const inputImagen = document.getElementById(
-        "imagenIncidencia"
+    const contenedorEvidencias = document.getElementById(
+        "contenedorEvidenciasProblema"
     );
 
-    const selectorImagen = document.getElementById(
-        "selectorImagenIncidencia"
+    const inputEvidencias = document.getElementById(
+        "evidenciasProblema"
     );
 
-    const previewImagen = document.getElementById(
-        "previewImagenIncidencia"
+    const selectorEvidencias = document.getElementById(
+        "selectorEvidenciasProblema"
     );
 
-    const imagenPreview = document.getElementById(
-        "imagenPreview"
+    const contadorEvidencias = document.getElementById(
+        "contadorEvidenciasProblema"
     );
 
-    const nombreImagen = document.getElementById(
-        "nombreImagen"
+    const btnLimpiarEvidencias = document.getElementById(
+        "btnLimpiarEvidenciasProblema"
     );
 
-    const pesoImagen = document.getElementById(
-        "pesoImagen"
+    const errorEvidencias = document.getElementById(
+        "errorEvidenciasProblema"
     );
 
-    const btnEliminarImagen = document.getElementById(
-        "btnEliminarImagen"
+    const previewEvidencias = document.getElementById(
+        "previewEvidenciasProblema"
     );
 
+    const gridEvidencias = document.getElementById(
+        "gridEvidenciasProblema"
+    );
 
 
     /* ======================================================
@@ -132,12 +129,35 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       8. CONFIGURACIÓN
+       8. CONFIGURACIÓN GENERAL
     ====================================================== */
 
-    const MAX_IMAGEN = 5 * 1024 * 1024;
+    const MAX_TITULO = 150;
+
+    const MIN_TITULO = 3;
+
+    const MAX_OBSERVACIONES = 1000;
+
+
+    /* ======================================================
+       9. CONFIGURACIÓN DE EVIDENCIAS
+    ====================================================== */
+
+    const MAX_EVIDENCIAS = Number(
+        contenedorEvidencias?.dataset.maxArchivos || 6
+    );
+
+    const MAX_MB = Number(
+        contenedorEvidencias?.dataset.maxMb || 5
+    );
+
+    const MAX_BYTES = (
+        MAX_MB *
+        1024 *
+        1024
+    );
+
 
     const TIPOS_IMAGEN_VALIDOS = [
         "image/jpeg",
@@ -146,34 +166,36 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
-    let urlPreviewActual = null;
+    /* ======================================================
+       10. ESTADO DE LAS EVIDENCIAS
+    ====================================================== */
 
+    let archivosSeleccionados = [];
+
+    let urlsPreview = [];
 
 
     /* ======================================================
-       9. OBTENER TIPO ACTUAL
+       11. OBTENER TIPO DE ENTIDAD
     ====================================================== */
 
     function obtenerTipoEntidad() {
 
-        const radioSeleccionado = document.querySelector(
-            '.tipo-entidad-radio:checked'
+        const radioSeleccionado = formulario.querySelector(
+            'input[name="tipo_entidad"]:checked'
         );
-
 
         if (!radioSeleccionado) {
             return "";
         }
-
 
         return radioSeleccionado.value;
 
     }
 
 
-
     /* ======================================================
-       10. OBTENER CONTENEDOR DE CAMPO
+       12. OBTENER CONTENEDOR DE CAMPO
     ====================================================== */
 
     function obtenerContenedorCampo(elemento) {
@@ -182,7 +204,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return null;
         }
 
-
         return elemento.closest(
             ".campo-incidencia"
         );
@@ -190,9 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       11. ELIMINAR ERROR DE UN CAMPO
+       13. LIMPIAR ERROR DE CAMPO
     ====================================================== */
 
     function limpiarError(elemento) {
@@ -201,21 +221,17 @@ document.addEventListener("DOMContentLoaded", function () {
             elemento
         );
 
-
         if (!campo) {
             return;
         }
-
 
         campo.classList.remove(
             "error"
         );
 
-
         const mensaje = campo.querySelector(
             ".campo-error-mensaje"
         );
-
 
         if (mensaje) {
             mensaje.remove();
@@ -224,9 +240,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       12. MOSTRAR ERROR
+       14. MOSTRAR ERROR DE CAMPO
     ====================================================== */
 
     function mostrarError(
@@ -238,36 +253,37 @@ document.addEventListener("DOMContentLoaded", function () {
             elemento
         );
 
-
         if (!campo) {
             return;
         }
-
 
         limpiarError(
             elemento
         );
 
-
         campo.classList.add(
             "error"
         );
-
 
         const mensajeError = document.createElement(
             "div"
         );
 
-
         mensajeError.className =
             "campo-error-mensaje";
 
-
         mensajeError.innerHTML = `
             <i class="bi bi-exclamation-circle-fill"></i>
-            <span>${mensaje}</span>
+            <span></span>
         `;
 
+        const span = mensajeError.querySelector(
+            "span"
+        );
+
+        if (span) {
+            span.textContent = mensaje;
+        }
 
         campo.appendChild(
             mensajeError
@@ -276,40 +292,54 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       13. LIMPIAR TODOS LOS ERRORES
+       15. ERROR DE EVIDENCIAS
     ====================================================== */
 
-    function limpiarTodosLosErrores() {
+    function mostrarErrorEvidencias(mensaje) {
 
-        document.querySelectorAll(
-            ".campo-incidencia.error"
-        ).forEach(
-            function (campo) {
+        if (!errorEvidencias) {
+            return;
+        }
 
-                campo.classList.remove(
-                    "error"
-                );
-
-            }
+        const texto = errorEvidencias.querySelector(
+            "span"
         );
 
+        if (texto) {
+            texto.textContent = mensaje;
+        }
 
-        document.querySelectorAll(
-            ".campo-error-mensaje"
-        ).forEach(
-            function (mensaje) {
+        errorEvidencias.hidden = false;
 
-                mensaje.remove();
+        if (selectorEvidencias) {
+            selectorEvidencias.classList.add(
+                "error"
+            );
+        }
 
+    }
+
+
+    function limpiarErrorEvidencias() {
+
+        if (errorEvidencias) {
+
+            errorEvidencias.hidden = true;
+
+            const texto = errorEvidencias.querySelector(
+                "span"
+            );
+
+            if (texto) {
+                texto.textContent = "";
             }
-        );
 
+        }
 
-        if (selectorImagen) {
+        if (selectorEvidencias) {
 
-            selectorImagen.classList.remove(
+            selectorEvidencias.classList.remove(
                 "error"
             );
 
@@ -318,9 +348,39 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /* ======================================================
+       16. LIMPIAR TODOS LOS ERRORES
+    ====================================================== */
+
+    function limpiarTodosLosErrores() {
+
+        formulario.querySelectorAll(
+            ".campo-incidencia.error"
+        ).forEach(function (campo) {
+
+            campo.classList.remove(
+                "error"
+            );
+
+        });
+
+
+        formulario.querySelectorAll(
+            ".campo-error-mensaje"
+        ).forEach(function (mensaje) {
+
+            mensaje.remove();
+
+        });
+
+
+        limpiarErrorEvidencias();
+
+    }
+
 
     /* ======================================================
-       14. MARCAR VISUALMENTE TIPO SELECCIONADO
+       17. ESTADO VISUAL DEL TIPO
     ====================================================== */
 
     function actualizarTipoVisual() {
@@ -332,23 +392,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     ".tipo-entidad-radio"
                 );
 
-
-                if (
-                    radio &&
-                    radio.checked
-                ) {
-
-                    opcion.classList.add(
-                        "activa"
-                    );
-
-                } else {
-
-                    opcion.classList.remove(
-                        "activa"
-                    );
-
-                }
+                opcion.classList.toggle(
+                    "activa",
+                    Boolean(
+                        radio &&
+                        radio.checked
+                    )
+                );
 
             }
         );
@@ -356,15 +406,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       15. MOSTRAR / OCULTAR COLMENA
+       18. MOSTRAR / OCULTAR COLMENA
     ====================================================== */
 
     function actualizarCampoColmena() {
-
-        const tipoEntidad = obtenerTipoEntidad();
-
 
         if (
             !contenedorColmena ||
@@ -374,20 +420,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        const tipoEntidad =
+            obtenerTipoEntidad();
+
+
         if (tipoEntidad === "Colmena") {
 
             contenedorColmena.classList.remove(
                 "oculto"
             );
 
-
             selectColmena.disabled =
                 false;
 
-
             selectColmena.required =
                 true;
-
 
             filtrarColmenasPorApiario(
                 false
@@ -399,14 +446,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 "oculto"
             );
 
-
             selectColmena.required =
                 false;
 
-
             selectColmena.disabled =
                 true;
-
 
             limpiarError(
                 selectColmena
@@ -417,9 +461,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       16. FILTRAR COLMENAS SEGÚN APIARIO
+       19. FILTRAR COLMENAS POR APIARIO
     ====================================================== */
 
     function filtrarColmenasPorApiario(
@@ -434,63 +477,62 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const idApiario = selectApiario.value;
+        const idApiario =
+            selectApiario.value;
 
-        const valorActual = selectColmena.value;
+        const valorActual =
+            selectColmena.value;
 
-        let valorActualSigueDisponible = false;
+        let valorActualDisponible =
+            false;
 
 
         Array.from(
             selectColmena.options
         ).forEach(
-            function (
-                opcion,
-                indice
-            ) {
+            function (opcion, indice) {
+
 
                 /*
-                 * La primera opción es:
+                 * Primera opción:
                  * "Selecciona una colmena"
                  */
 
                 if (indice === 0) {
 
-                    opcion.hidden = false;
+                    opcion.hidden =
+                        false;
 
-                    opcion.disabled = false;
+                    opcion.disabled =
+                        false;
 
                     return;
 
                 }
 
 
-                const idApiarioOpcion = (
-                    opcion.dataset.apiarioId || ""
-                );
+                const idApiarioOpcion =
+                    opcion.dataset.apiarioId || "";
 
 
-                const perteneceApiario = (
-                    idApiario !== ""
-                    &&
-                    idApiarioOpcion === idApiario
-                );
+                const pertenece =
+                    idApiario !== "" &&
+                    idApiarioOpcion === idApiario;
 
 
                 opcion.hidden =
-                    !perteneceApiario;
-
+                    !pertenece;
 
                 opcion.disabled =
-                    !perteneceApiario;
+                    !pertenece;
 
 
                 if (
-                    perteneceApiario &&
+                    pertenece &&
                     opcion.value === valorActual
                 ) {
 
-                    valorActualSigueDisponible =
+                    valorActualDisponible =
                         true;
 
                 }
@@ -499,21 +541,18 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        /*
-         * Si el usuario acaba de cambiar el apiario,
-         * dejamos la colmena sin seleccionar.
-         */
-
         if (reiniciarSeleccion) {
 
-            selectColmena.value = "";
+            selectColmena.value =
+                "";
 
         } else if (
             valorActual &&
-            !valorActualSigueDisponible
+            !valorActualDisponible
         ) {
 
-            selectColmena.value = "";
+            selectColmena.value =
+                "";
 
         }
 
@@ -525,9 +564,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       17. CAMBIO TIPO APIARIO / COLMENA
+       20. CAMBIO DE TIPO
     ====================================================== */
 
     radiosTipoEntidad.forEach(
@@ -548,9 +586,8 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       18. CAMBIO DE APIARIO
+       21. CAMBIO DE APIARIO
     ====================================================== */
 
     if (selectApiario) {
@@ -560,7 +597,7 @@ document.addEventListener("DOMContentLoaded", function () {
             function () {
 
                 limpiarError(
-                    this
+                    selectApiario
                 );
 
 
@@ -581,9 +618,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       19. CAMBIO DE COLMENA
+       22. CAMBIO DE COLMENA
     ====================================================== */
 
     if (selectColmena) {
@@ -593,7 +629,7 @@ document.addEventListener("DOMContentLoaded", function () {
             function () {
 
                 limpiarError(
-                    this
+                    selectColmena
                 );
 
             }
@@ -602,9 +638,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       20. CONTADOR GENÉRICO
+       23. CONTADOR DE TEXTO
     ====================================================== */
 
     function actualizarContador(
@@ -625,11 +660,8 @@ document.addEventListener("DOMContentLoaded", function () {
             elemento.value.length;
 
 
-        contador.textContent = (
-            usados +
-            " / " +
-            maximo
-        );
+        contador.textContent =
+            `${usados} / ${maximo}`;
 
 
         contador.classList.remove(
@@ -638,13 +670,9 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        /*
-         * Desde el 80% mostramos advertencia.
-         */
-
         if (
-            usados >=
-            maximo * 0.8
+            usados >= maximo * 0.8 &&
+            usados < maximo
         ) {
 
             contador.classList.add(
@@ -654,14 +682,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        if (
-            usados >= maximo
-        ) {
-
-            contador.classList.remove(
-                "cerca-limite"
-            );
-
+        if (usados >= maximo) {
 
             contador.classList.add(
                 "limite-alcanzado"
@@ -672,9 +693,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       21. CONTADOR TÍTULO
+       24. TÍTULO
     ====================================================== */
 
     if (inputTitulo) {
@@ -682,7 +702,7 @@ document.addEventListener("DOMContentLoaded", function () {
         actualizarContador(
             inputTitulo,
             contadorTitulo,
-            150
+            MAX_TITULO
         );
 
 
@@ -691,18 +711,19 @@ document.addEventListener("DOMContentLoaded", function () {
             function () {
 
                 actualizarContador(
-                    this,
+                    inputTitulo,
                     contadorTitulo,
-                    150
+                    MAX_TITULO
                 );
 
 
                 if (
-                    this.value.trim()
+                    inputTitulo.value.trim().length >=
+                    MIN_TITULO
                 ) {
 
                     limpiarError(
-                        this
+                        inputTitulo
                     );
 
                 }
@@ -713,9 +734,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       22. CONTADOR OBSERVACIONES
+       25. OBSERVACIONES
     ====================================================== */
 
     if (textareaObservaciones) {
@@ -723,7 +743,7 @@ document.addEventListener("DOMContentLoaded", function () {
         actualizarContador(
             textareaObservaciones,
             contadorObservaciones,
-            1000
+            MAX_OBSERVACIONES
         );
 
 
@@ -732,10 +752,22 @@ document.addEventListener("DOMContentLoaded", function () {
             function () {
 
                 actualizarContador(
-                    this,
+                    textareaObservaciones,
                     contadorObservaciones,
-                    1000
+                    MAX_OBSERVACIONES
                 );
+
+
+                if (
+                    textareaObservaciones.value.length <=
+                    MAX_OBSERVACIONES
+                ) {
+
+                    limpiarError(
+                        textareaObservaciones
+                    );
+
+                }
 
             }
         );
@@ -743,9 +775,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       23. PRIORIDAD
+       26. PRIORIDAD
     ====================================================== */
 
     if (selectPrioridad) {
@@ -754,10 +785,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "change",
             function () {
 
-                if (this.value) {
+                if (selectPrioridad.value) {
 
                     limpiarError(
-                        this
+                        selectPrioridad
                     );
 
                 }
@@ -768,9 +799,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       24. FECHA
+       27. FECHA
     ====================================================== */
 
     if (inputFecha) {
@@ -779,10 +809,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "change",
             function () {
 
-                if (this.value) {
+                if (inputFecha.value) {
 
                     limpiarError(
-                        this
+                        inputFecha
                     );
 
                 }
@@ -793,32 +823,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       25. FORMATEAR TAMAÑO DE ARCHIVO
+       28. FORMATEAR PESO
     ====================================================== */
 
-    function formatearPeso(
-        bytes
-    ) {
+    function formatearPeso(bytes) {
 
-        if (
-            bytes === 0
-        ) {
-
+        if (!bytes) {
             return "0 KB";
-
         }
 
 
-        const kb = bytes / 1024;
+        const kb =
+            bytes / 1024;
 
 
         if (kb < 1024) {
 
             return (
-                kb.toFixed(1) +
-                " KB"
+                `${kb.toFixed(1)} KB`
             );
 
         }
@@ -829,167 +852,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         return (
-            mb.toFixed(2) +
-            " MB"
+            `${mb.toFixed(2)} MB`
         );
 
     }
 
 
-
     /* ======================================================
-       26. LIBERAR URL DE PREVIEW
+       29. IDENTIFICADOR ÚNICO DEL ARCHIVO
     ====================================================== */
 
-    function liberarPreviewAnterior() {
+    function obtenerClaveArchivo(archivo) {
 
-        if (urlPreviewActual) {
-
-            URL.revokeObjectURL(
-                urlPreviewActual
-            );
-
-
-            urlPreviewActual = null;
-
-        }
+        return [
+            archivo.name,
+            archivo.size,
+            archivo.lastModified,
+            archivo.type
+        ].join("::");
 
     }
 
 
-
     /* ======================================================
-       27. MOSTRAR PREVIEW
+       30. VALIDAR UNA IMAGEN
     ====================================================== */
 
-    function mostrarPreviewArchivo(
-        archivo
-    ) {
-
-        if (
-            !archivo ||
-            !previewImagen ||
-            !imagenPreview
-        ) {
-
-            return;
-        }
-
-
-        liberarPreviewAnterior();
-
-
-        urlPreviewActual =
-            URL.createObjectURL(
-                archivo
-            );
-
-
-        imagenPreview.src =
-            urlPreviewActual;
-
-
-        if (nombreImagen) {
-
-            nombreImagen.textContent =
-                archivo.name;
-
-        }
-
-
-        if (pesoImagen) {
-
-            pesoImagen.textContent =
-                formatearPeso(
-                    archivo.size
-                );
-
-        }
-
-
-        previewImagen.hidden =
-            false;
-
-
-        if (selectorImagen) {
-
-            selectorImagen.style.display =
-                "none";
-
-        }
-
-    }
-
-
-
-    /* ======================================================
-       28. OCULTAR PREVIEW
-    ====================================================== */
-
-    function ocultarPreviewArchivo() {
-
-        liberarPreviewAnterior();
-
-
-        if (imagenPreview) {
-
-            imagenPreview.src = "";
-
-        }
-
-
-        if (nombreImagen) {
-
-            nombreImagen.textContent =
-                "Imagen";
-
-        }
-
-
-        if (pesoImagen) {
-
-            pesoImagen.textContent =
-                "—";
-
-        }
-
-
-        if (previewImagen) {
-
-            previewImagen.hidden =
-                true;
-
-        }
-
-
-        if (selectorImagen) {
-
-            selectorImagen.style.display =
-                "";
-
-            selectorImagen.classList.remove(
-                "error"
-            );
-
-        }
-
-    }
-
-
-
-    /* ======================================================
-       29. VALIDAR ARCHIVO
-    ====================================================== */
-
-    function validarArchivoImagen(
-        archivo
-    ) {
+    function validarArchivoImagen(archivo) {
 
         if (!archivo) {
 
             return {
-                valido: true,
-                mensaje: ""
+                valido: false,
+                mensaje: "No se pudo leer la fotografía."
+            };
+
+        }
+
+
+        if (archivo.size <= 0) {
+
+            return {
+                valido: false,
+                mensaje:
+                    `La fotografía "${archivo.name}" está vacía.`
             };
 
         }
@@ -1002,12 +908,9 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return {
-
                 valido: false,
-
                 mensaje:
-                    "Selecciona una imagen JPG, PNG o WEBP."
-
+                    `La fotografía "${archivo.name}" debe ser JPG, PNG o WEBP.`
             };
 
         }
@@ -1015,203 +918,417 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (
             archivo.size >
-            MAX_IMAGEN
+            MAX_BYTES
         ) {
 
             return {
-
                 valido: false,
-
                 mensaje:
-                    "La imagen no puede superar los 5 MB."
-
+                    `La fotografía "${archivo.name}" supera los ${MAX_MB} MB.`
             };
 
         }
 
 
         return {
-
             valido: true,
-
             mensaje: ""
-
         };
 
     }
 
 
-
     /* ======================================================
-       30. MOSTRAR ERROR DE IMAGEN
+       31. REVOCAR URLS DE PREVISUALIZACIÓN
     ====================================================== */
 
-    function mostrarErrorImagen(
-        mensaje
-    ) {
+    function liberarUrlsPreview() {
 
-        if (!selectorImagen) {
+        urlsPreview.forEach(
+            function (url) {
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            }
+        );
+
+
+        urlsPreview = [];
+
+    }
+
+
+    /* ======================================================
+       32. SINCRONIZAR ARCHIVOS CON EL INPUT REAL
+    ====================================================== */
+
+    function sincronizarInputEvidencias() {
+
+        if (!inputEvidencias) {
             return;
         }
 
 
-        selectorImagen.classList.add(
-            "error"
-        );
+        try {
+
+            const transferencia =
+                new DataTransfer();
 
 
-        /*
-         * Eliminamos mensaje anterior.
-         */
+            archivosSeleccionados.forEach(
+                function (archivo) {
 
-        const existente =
-            document.querySelector(
-                ".evidencia-error-mensaje"
+                    transferencia.items.add(
+                        archivo
+                    );
+
+                }
             );
 
 
-        if (existente) {
+            inputEvidencias.files =
+                transferencia.files;
 
-            existente.remove();
+
+        } catch (error) {
+
+            console.warn(
+                "No fue posible sincronizar el selector de evidencias.",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* ======================================================
+       33. ACTUALIZAR CONTADOR DE EVIDENCIAS
+    ====================================================== */
+
+    function actualizarContadorEvidencias() {
+
+        const cantidad =
+            archivosSeleccionados.length;
+
+
+        if (contadorEvidencias) {
+
+            contadorEvidencias.textContent =
+                cantidad;
 
         }
 
 
-        const mensajeError =
+        if (btnLimpiarEvidencias) {
+
+            btnLimpiarEvidencias.hidden =
+                cantidad === 0;
+
+        }
+
+
+        if (selectorEvidencias) {
+
+            selectorEvidencias.classList.toggle(
+                "limite-alcanzado",
+                cantidad >= MAX_EVIDENCIAS
+            );
+
+        }
+
+    }
+
+
+    /* ======================================================
+       34. ELIMINAR UNA EVIDENCIA
+    ====================================================== */
+
+    function eliminarEvidencia(claveArchivo) {
+
+        archivosSeleccionados =
+            archivosSeleccionados.filter(
+                function (archivo) {
+
+                    return (
+                        obtenerClaveArchivo(
+                            archivo
+                        )
+                        !==
+                        claveArchivo
+                    );
+
+                }
+            );
+
+
+        sincronizarInputEvidencias();
+
+        limpiarErrorEvidencias();
+
+        renderizarEvidencias();
+
+    }
+
+
+    /* ======================================================
+       35. CREAR TARJETA DE PREVISUALIZACIÓN
+    ====================================================== */
+
+    function crearTarjetaEvidencia(
+        archivo,
+        indice
+    ) {
+
+        const articulo = document.createElement(
+            "article"
+        );
+
+        articulo.className =
+            "evidencia-preview-item";
+
+
+        /* ===============================================
+           IMAGEN
+        =============================================== */
+
+        const contenedorImagen =
             document.createElement(
                 "div"
             );
 
-
-        mensajeError.className =
-            "campo-error-mensaje evidencia-error-mensaje";
-
-
-        mensajeError.innerHTML = `
-            <i class="bi bi-exclamation-circle-fill"></i>
-            <span>${mensaje}</span>
-        `;
+        contenedorImagen.className =
+            "evidencia-preview-item-imagen";
 
 
-        selectorImagen.insertAdjacentElement(
-            "afterend",
-            mensajeError
-        );
-
-    }
-
-
-
-    /* ======================================================
-       31. LIMPIAR ERROR DE IMAGEN
-    ====================================================== */
-
-    function limpiarErrorImagen() {
-
-        if (selectorImagen) {
-
-            selectorImagen.classList.remove(
-                "error"
-            );
-
-        }
-
-
-        const mensaje =
-            document.querySelector(
-                ".evidencia-error-mensaje"
+        const imagen =
+            document.createElement(
+                "img"
             );
 
 
-        if (mensaje) {
-
-            mensaje.remove();
-
-        }
-
-    }
-
-
-
-    /* ======================================================
-       32. PROCESAR ARCHIVO
-    ====================================================== */
-
-    function procesarImagen(
-        archivo
-    ) {
-
-        if (!archivo) {
-
-            ocultarPreviewArchivo();
-
-            return false;
-
-        }
-
-
-        const validacion =
-            validarArchivoImagen(
+        const url =
+            URL.createObjectURL(
                 archivo
             );
 
 
-        if (!validacion.valido) {
-
-            mostrarErrorImagen(
-                validacion.mensaje
-            );
-
-
-            if (inputImagen) {
-
-                inputImagen.value = "";
-
-            }
-
-
-            ocultarPreviewArchivo();
-
-
-            return false;
-
-        }
-
-
-        limpiarErrorImagen();
-
-
-        mostrarPreviewArchivo(
-            archivo
+        urlsPreview.push(
+            url
         );
 
 
-        return true;
+        imagen.src =
+            url;
+
+        imagen.alt =
+            `Evidencia ${indice + 1}`;
+
+
+        contenedorImagen.appendChild(
+            imagen
+        );
+
+
+        /* ===============================================
+           NÚMERO
+        =============================================== */
+
+        const numero =
+            document.createElement(
+                "span"
+            );
+
+        numero.className =
+            "evidencia-preview-numero";
+
+        numero.textContent =
+            indice + 1;
+
+
+        contenedorImagen.appendChild(
+            numero
+        );
+
+
+        /* ===============================================
+           BOTÓN ELIMINAR
+        =============================================== */
+
+        const botonEliminar =
+            document.createElement(
+                "button"
+            );
+
+        botonEliminar.type =
+            "button";
+
+        botonEliminar.className =
+            "btn-eliminar-evidencia";
+
+        botonEliminar.title =
+            "Quitar fotografía";
+
+        botonEliminar.setAttribute(
+            "aria-label",
+            `Quitar ${archivo.name}`
+        );
+
+
+        botonEliminar.innerHTML = `
+            <i class="bi bi-x-lg"></i>
+        `;
+
+
+        const claveArchivo =
+            obtenerClaveArchivo(
+                archivo
+            );
+
+
+        botonEliminar.addEventListener(
+            "click",
+            function () {
+
+                eliminarEvidencia(
+                    claveArchivo
+                );
+
+            }
+        );
+
+
+        contenedorImagen.appendChild(
+            botonEliminar
+        );
+
+
+        /* ===============================================
+           INFORMACIÓN
+        =============================================== */
+
+        const informacion =
+            document.createElement(
+                "div"
+            );
+
+        informacion.className =
+            "evidencia-preview-item-info";
+
+
+        const nombre =
+            document.createElement(
+                "strong"
+            );
+
+        nombre.textContent =
+            archivo.name;
+
+        nombre.title =
+            archivo.name;
+
+
+        const peso =
+            document.createElement(
+                "span"
+            );
+
+        peso.textContent =
+            formatearPeso(
+                archivo.size
+            );
+
+
+        informacion.appendChild(
+            nombre
+        );
+
+        informacion.appendChild(
+            peso
+        );
+
+
+        /* ===============================================
+           ARMAR TARJETA
+        =============================================== */
+
+        articulo.appendChild(
+            contenedorImagen
+        );
+
+        articulo.appendChild(
+            informacion
+        );
+
+
+        return articulo;
 
     }
 
 
-
     /* ======================================================
-       33. CAMBIO INPUT IMAGEN
+       36. RENDERIZAR TODAS LAS EVIDENCIAS
     ====================================================== */
 
-    if (inputImagen) {
+    function renderizarEvidencias() {
 
-        inputImagen.addEventListener(
-            "change",
-            function () {
-
-                const archivo = (
-                    this.files &&
-                    this.files.length
-                )
-                    ? this.files[0]
-                    : null;
+        liberarUrlsPreview();
 
 
-                procesarImagen(
-                    archivo
+        if (gridEvidencias) {
+
+            gridEvidencias.innerHTML =
+                "";
+
+        }
+
+
+        actualizarContadorEvidencias();
+
+
+        if (
+            archivosSeleccionados.length === 0
+        ) {
+
+            if (previewEvidencias) {
+
+                previewEvidencias.hidden =
+                    true;
+
+            }
+
+            return;
+
+        }
+
+
+        if (previewEvidencias) {
+
+            previewEvidencias.hidden =
+                false;
+
+        }
+
+
+        archivosSeleccionados.forEach(
+            function (archivo, indice) {
+
+                if (!gridEvidencias) {
+                    return;
+                }
+
+
+                const tarjeta =
+                    crearTarjetaEvidencia(
+                        archivo,
+                        indice
+                    );
+
+
+                gridEvidencias.appendChild(
+                    tarjeta
                 );
 
             }
@@ -1220,28 +1337,161 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       34. QUITAR IMAGEN
+       37. AGREGAR ARCHIVOS
     ====================================================== */
 
-    if (btnEliminarImagen) {
+    function agregarArchivos(listaArchivos) {
 
-        btnEliminarImagen.addEventListener(
-            "click",
-            function () {
+        limpiarErrorEvidencias();
 
-                if (inputImagen) {
 
-                    inputImagen.value =
-                        "";
+        const nuevosArchivos =
+            Array.from(
+                listaArchivos || []
+            );
+
+
+        if (
+            nuevosArchivos.length === 0
+        ) {
+            return;
+        }
+
+
+        const clavesExistentes =
+            new Set(
+                archivosSeleccionados.map(
+                    obtenerClaveArchivo
+                )
+            );
+
+
+        let mensajeError =
+            "";
+
+
+        for (
+            const archivo of nuevosArchivos
+        ) {
+
+
+            /* ===========================================
+               YA LLEGAMOS AL MÁXIMO
+            =========================================== */
+
+            if (
+                archivosSeleccionados.length >=
+                MAX_EVIDENCIAS
+            ) {
+
+                mensajeError =
+                    `Puedes seleccionar un máximo de ${MAX_EVIDENCIAS} fotografías.`;
+
+                break;
+
+            }
+
+
+            /* ===========================================
+               VALIDAR ARCHIVO
+            =========================================== */
+
+            const validacion =
+                validarArchivoImagen(
+                    archivo
+                );
+
+
+            if (!validacion.valido) {
+
+                if (!mensajeError) {
+
+                    mensajeError =
+                        validacion.mensaje;
 
                 }
 
+                continue;
 
-                limpiarErrorImagen();
+            }
 
-                ocultarPreviewArchivo();
+
+            /* ===========================================
+               EVITAR DUPLICADOS
+            =========================================== */
+
+            const clave =
+                obtenerClaveArchivo(
+                    archivo
+                );
+
+
+            if (
+                clavesExistentes.has(
+                    clave
+                )
+            ) {
+
+                if (!mensajeError) {
+
+                    mensajeError =
+                        `La fotografía "${archivo.name}" ya fue seleccionada.`;
+
+                }
+
+                continue;
+
+            }
+
+
+            archivosSeleccionados.push(
+                archivo
+            );
+
+
+            clavesExistentes.add(
+                clave
+            );
+
+        }
+
+
+        sincronizarInputEvidencias();
+
+        renderizarEvidencias();
+
+
+        if (mensajeError) {
+
+            mostrarErrorEvidencias(
+                mensajeError
+            );
+
+        }
+
+    }
+
+
+    /* ======================================================
+       38. CAMBIO DEL INPUT
+    ====================================================== */
+
+    if (inputEvidencias) {
+
+        inputEvidencias.addEventListener(
+            "change",
+            function () {
+
+                const archivos =
+                    Array.from(
+                        inputEvidencias.files || []
+                    );
+
+
+                agregarArchivos(
+                    archivos
+                );
 
             }
         );
@@ -1249,14 +1499,46 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /* ======================================================
+       39. QUITAR TODAS LAS EVIDENCIAS
+    ====================================================== */
+
+    function limpiarTodasLasEvidencias() {
+
+        archivosSeleccionados =
+            [];
+
+
+        sincronizarInputEvidencias();
+
+        limpiarErrorEvidencias();
+
+        renderizarEvidencias();
+
+    }
+
+
+    if (btnLimpiarEvidencias) {
+
+        btnLimpiarEvidencias.addEventListener(
+            "click",
+            function () {
+
+                limpiarTodasLasEvidencias();
+
+            }
+        );
+
+    }
+
 
     /* ======================================================
-       35. DRAG & DROP
+       40. DRAG & DROP
     ====================================================== */
 
     if (
-        selectorImagen &&
-        inputImagen
+        selectorEvidencias &&
+        inputEvidencias
     ) {
 
 
@@ -1264,10 +1546,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "dragenter",
             "dragover"
         ].forEach(
-            function (eventoNombre) {
+            function (nombreEvento) {
 
-                selectorImagen.addEventListener(
-                    eventoNombre,
+                selectorEvidencias.addEventListener(
+                    nombreEvento,
                     function (evento) {
 
                         evento.preventDefault();
@@ -1275,7 +1557,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         evento.stopPropagation();
 
 
-                        selectorImagen.classList.add(
+                        selectorEvidencias.classList.add(
                             "arrastrando"
                         );
 
@@ -1288,12 +1570,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         [
             "dragleave",
-            "drop"
+            "dragend"
         ].forEach(
-            function (eventoNombre) {
+            function (nombreEvento) {
 
-                selectorImagen.addEventListener(
-                    eventoNombre,
+                selectorEvidencias.addEventListener(
+                    nombreEvento,
                     function (evento) {
 
                         evento.preventDefault();
@@ -1301,7 +1583,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         evento.stopPropagation();
 
 
-                        selectorImagen.classList.remove(
+                        selectorEvidencias.classList.remove(
                             "arrastrando"
                         );
 
@@ -1312,79 +1594,35 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        selectorImagen.addEventListener(
+        selectorEvidencias.addEventListener(
             "drop",
             function (evento) {
 
+                evento.preventDefault();
+
+                evento.stopPropagation();
+
+
+                selectorEvidencias.classList.remove(
+                    "arrastrando"
+                );
+
+
                 const archivos =
-                    evento.dataTransfer.files;
+                    evento.dataTransfer?.files;
 
 
                 if (
                     !archivos ||
-                    !archivos.length
+                    archivos.length === 0
                 ) {
-
                     return;
-
                 }
 
 
-                const archivo =
-                    archivos[0];
-
-
-                const validacion =
-                    validarArchivoImagen(
-                        archivo
-                    );
-
-
-                if (!validacion.valido) {
-
-                    mostrarErrorImagen(
-                        validacion.mensaje
-                    );
-
-                    return;
-
-                }
-
-
-                /*
-                 * Intentamos asignar el archivo soltado
-                 * al input real.
-                 */
-
-                try {
-
-                    const transferencia =
-                        new DataTransfer();
-
-
-                    transferencia.items.add(
-                        archivo
-                    );
-
-
-                    inputImagen.files =
-                        transferencia.files;
-
-
-                    procesarImagen(
-                        archivo
-                    );
-
-                } catch (error) {
-
-                    /*
-                     * Si el navegador no permite asignarlo,
-                     * no rompemos el formulario.
-                     */
-
-                    inputImagen.click();
-
-                }
+                agregarArchivos(
+                    archivos
+                );
 
             }
         );
@@ -1392,9 +1630,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       36. VALIDAR TIPO
+       41. VALIDAR TIPO
     ====================================================== */
 
     function validarTipoEntidad() {
@@ -1411,9 +1648,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       37. VALIDAR APIARIO
+       42. VALIDAR APIARIO
     ====================================================== */
 
     function validarApiario() {
@@ -1428,7 +1664,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Selecciona el apiario donde ocurrió la incidencia."
             );
 
-
             return false;
 
         }
@@ -1438,15 +1673,13 @@ document.addEventListener("DOMContentLoaded", function () {
             selectApiario
         );
 
-
         return true;
 
     }
 
 
-
     /* ======================================================
-       38. VALIDAR COLMENA
+       43. VALIDAR COLMENA
     ====================================================== */
 
     function validarColmena() {
@@ -1471,6 +1704,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Selecciona la colmena afectada."
             );
 
+            return false;
+
+        }
+
+
+        if (
+            !selectApiario ||
+            !selectApiario.value
+        ) {
+
+            mostrarError(
+                selectColmena,
+                "Primero selecciona un apiario."
+            );
 
             return false;
 
@@ -1486,15 +1733,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (
             !opcionSeleccionada ||
             opcionSeleccionada.dataset.apiarioId
-            !==
-            selectApiario.value
+                !== selectApiario.value
         ) {
 
             mostrarError(
                 selectColmena,
                 "La colmena seleccionada no pertenece al apiario indicado."
             );
-
 
             return false;
 
@@ -1505,23 +1750,19 @@ document.addEventListener("DOMContentLoaded", function () {
             selectColmena
         );
 
-
         return true;
 
     }
 
 
-
     /* ======================================================
-       39. VALIDAR TÍTULO
+       44. VALIDAR TÍTULO
     ====================================================== */
 
     function validarTitulo() {
 
         if (!inputTitulo) {
-
             return false;
-
         }
 
 
@@ -1536,6 +1777,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Escribe un título para la incidencia."
             );
 
+            return false;
+
+        }
+
+
+        if (
+            inputTitulo.value.length <
+            MIN_TITULO
+        ) {
+
+            mostrarError(
+                inputTitulo,
+                `El título debe tener al menos ${MIN_TITULO} caracteres.`
+            );
 
             return false;
 
@@ -1543,29 +1798,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            inputTitulo.value.length < 3
+            inputTitulo.value.length >
+            MAX_TITULO
         ) {
 
             mostrarError(
                 inputTitulo,
-                "El título debe tener al menos 3 caracteres."
+                `El título no puede superar los ${MAX_TITULO} caracteres.`
             );
-
-
-            return false;
-
-        }
-
-
-        if (
-            inputTitulo.value.length > 150
-        ) {
-
-            mostrarError(
-                inputTitulo,
-                "El título no puede superar los 150 caracteres."
-            );
-
 
             return false;
 
@@ -1576,15 +1816,13 @@ document.addEventListener("DOMContentLoaded", function () {
             inputTitulo
         );
 
-
         return true;
 
     }
 
 
-
     /* ======================================================
-       40. VALIDAR PRIORIDAD
+       45. VALIDAR PRIORIDAD
     ====================================================== */
 
     function validarPrioridad() {
@@ -1598,7 +1836,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 selectPrioridad,
                 "Selecciona la prioridad de la incidencia."
             );
-
 
             return false;
 
@@ -1624,7 +1861,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 "La prioridad seleccionada no es válida."
             );
 
-
             return false;
 
         }
@@ -1634,15 +1870,13 @@ document.addEventListener("DOMContentLoaded", function () {
             selectPrioridad
         );
 
-
         return true;
 
     }
 
 
-
     /* ======================================================
-       41. VALIDAR FECHA
+       46. VALIDAR FECHA
     ====================================================== */
 
     function validarFecha() {
@@ -1657,16 +1891,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Selecciona la fecha de detección."
             );
 
-
             return false;
 
         }
 
-
-        /*
-         * El formato de input[type=date]
-         * es YYYY-MM-DD.
-         */
 
         const fechaMaxima =
             inputFecha.getAttribute(
@@ -1685,7 +1913,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 "La fecha de detección no puede ser futura."
             );
 
-
             return false;
 
         }
@@ -1695,23 +1922,19 @@ document.addEventListener("DOMContentLoaded", function () {
             inputFecha
         );
 
-
         return true;
 
     }
 
 
-
     /* ======================================================
-       42. VALIDAR OBSERVACIONES
+       47. VALIDAR OBSERVACIONES
     ====================================================== */
 
     function validarObservaciones() {
 
         if (!textareaObservaciones) {
-
             return true;
-
         }
 
 
@@ -1721,14 +1944,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (
             textareaObservaciones.value.length >
-            1000
+            MAX_OBSERVACIONES
         ) {
 
             mostrarError(
                 textareaObservaciones,
-                "La descripción no puede superar los 1000 caracteres."
+                `La descripción no puede superar los ${MAX_OBSERVACIONES} caracteres.`
             );
-
 
             return false;
 
@@ -1739,55 +1961,68 @@ document.addEventListener("DOMContentLoaded", function () {
             textareaObservaciones
         );
 
-
         return true;
 
     }
 
 
-
     /* ======================================================
-       43. VALIDAR IMAGEN ACTUAL
+       48. VALIDAR TODAS LAS EVIDENCIAS
     ====================================================== */
 
-    function validarImagenActual() {
+    function validarEvidencias() {
+
+        limpiarErrorEvidencias();
+
+
+        /*
+         * Las fotografías son opcionales.
+         */
 
         if (
-            !inputImagen ||
-            !inputImagen.files ||
-            !inputImagen.files.length
+            archivosSeleccionados.length === 0
         ) {
-
-            limpiarErrorImagen();
 
             return true;
 
         }
 
 
-        const archivo =
-            inputImagen.files[0];
+        if (
+            archivosSeleccionados.length >
+            MAX_EVIDENCIAS
+        ) {
 
-
-        const validacion =
-            validarArchivoImagen(
-                archivo
+            mostrarErrorEvidencias(
+                `Puedes subir un máximo de ${MAX_EVIDENCIAS} fotografías.`
             );
-
-
-        if (!validacion.valido) {
-
-            mostrarErrorImagen(
-                validacion.mensaje
-            );
-
 
             return false;
 
         }
 
 
-        limpiarErrorImagen();
+        for (
+            const archivo of archivosSeleccionados
+        ) {
+
+            const validacion =
+                validarArchivoImagen(
+                    archivo
+                );
+
+
+            if (!validacion.valido) {
+
+                mostrarErrorEvidencias(
+                    validacion.mensaje
+                );
+
+                return false;
+
+            }
+
+        }
 
 
         return true;
@@ -1795,9 +2030,90 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /* ======================================================
+       49. VALIDAR FORMULARIO COMPLETO
+    ====================================================== */
+
+    function validarFormulario() {
+
+        limpiarTodosLosErrores();
+
+
+        let valido =
+            true;
+
+
+        if (!validarTipoEntidad()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarApiario()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarColmena()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarTitulo()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarPrioridad()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarFecha()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarObservaciones()) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (!validarEvidencias()) {
+
+            valido =
+                false;
+
+        }
+
+
+        return valido;
+
+    }
+
 
     /* ======================================================
-       44. IR AL PRIMER ERROR
+       50. ENFOCAR PRIMER ERROR
     ====================================================== */
 
     function enfocarPrimerError() {
@@ -1816,9 +2132,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
 
-            const elemento = primerCampoError.querySelector(
-                "input, select, textarea"
-            );
+            const elemento =
+                primerCampoError.querySelector(
+                    "input, select, textarea"
+                );
 
 
             if (elemento) {
@@ -1829,7 +2146,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         elemento.focus();
 
                     },
-                    350
+                    300
                 );
 
             }
@@ -1841,13 +2158,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            selectorImagen &&
-            selectorImagen.classList.contains(
-                "error"
-            )
+            errorEvidencias &&
+            !errorEvidencias.hidden
         ) {
 
-            selectorImagen.scrollIntoView({
+            contenedorEvidencias?.scrollIntoView({
                 behavior: "smooth",
                 block: "center"
             });
@@ -1857,83 +2172,60 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       45. VALIDAR FORMULARIO COMPLETO
+       51. ESTADO DEL BOTÓN AL GUARDAR
     ====================================================== */
 
-    function validarFormulario() {
+    function activarEstadoGuardando() {
 
-        limpiarTodosLosErrores();
-
-
-        let valido = true;
-
-
-        if (!validarTipoEntidad()) {
-
-            valido = false;
-
+        if (!btnGuardar) {
+            return;
         }
 
 
-        if (!validarApiario()) {
-
-            valido = false;
-
-        }
+        btnGuardar.disabled =
+            true;
 
 
-        if (!validarColmena()) {
+        btnGuardar.innerHTML = `
+            <i class="bi bi-arrow-repeat"></i>
 
-            valido = false;
-
-        }
-
-
-        if (!validarTitulo()) {
-
-            valido = false;
-
-        }
-
-
-        if (!validarPrioridad()) {
-
-            valido = false;
-
-        }
-
-
-        if (!validarFecha()) {
-
-            valido = false;
-
-        }
-
-
-        if (!validarObservaciones()) {
-
-            valido = false;
-
-        }
-
-
-        if (!validarImagenActual()) {
-
-            valido = false;
-
-        }
-
-
-        return valido;
+            <span>
+                Reportando...
+            </span>
+        `;
 
     }
 
 
+    /* ======================================================
+       52. RESTAURAR BOTÓN
+    ====================================================== */
+
+    function restaurarBotonGuardar() {
+
+        if (!btnGuardar) {
+            return;
+        }
+
+
+        btnGuardar.disabled =
+            false;
+
+
+        btnGuardar.innerHTML = `
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+            <span>
+                Reportar incidencia
+            </span>
+        `;
+
+    }
+
 
     /* ======================================================
-       46. ENVIAR FORMULARIO
+       53. ENVIAR FORMULARIO
     ====================================================== */
 
     formulario.addEventListener(
@@ -1957,9 +2249,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /*
-             * Si es incidencia de apiario,
-             * dejamos explícitamente la colmena
-             * deshabilitada para que no se envíe.
+             * Nos aseguramos de que el input real tenga
+             * exactamente los archivos que aparecen
+             * en la vista previa.
+             */
+
+            sincronizarInputEvidencias();
+
+
+            /*
+             * Si la incidencia es del apiario,
+             * la colmena no debe enviarse.
              */
 
             if (
@@ -1975,31 +2275,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            /*
-             * Evitar doble envío.
-             */
-
-            if (btnGuardar) {
-
-                btnGuardar.disabled =
-                    true;
-
-
-                btnGuardar.innerHTML = `
-                    <span>
-                        Reportando...
-                    </span>
-                `;
-
-            }
+            activarEstadoGuardando();
 
 
             /*
-             * Enviar de forma nativa.
-             *
-             * No usamos requestSubmit()
-             * porque volvería a ejecutar
-             * este mismo listener.
+             * Envío nativo para no volver a ejecutar
+             * este listener.
              */
 
             HTMLFormElement.prototype.submit.call(
@@ -2010,103 +2291,163 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       47. ESTADO INICIAL
+       54. ESTADO INICIAL DE LA COLMENA
     ====================================================== */
 
-    actualizarTipoVisual();
+    function inicializarUbicacion() {
+
+        actualizarTipoVisual();
 
 
-    /*
-     * Es importante ejecutar primero el filtrado
-     * sin eliminar el valor que Django dejó
-     * preseleccionado.
-     */
+        if (
+            obtenerTipoEntidad() ===
+            "Colmena"
+        ) {
 
-    if (
-        obtenerTipoEntidad() ===
-        "Colmena"
-    ) {
+            if (selectColmena) {
 
-        if (selectColmena) {
+                selectColmena.disabled =
+                    false;
 
-            selectColmena.disabled =
-                false;
+                selectColmena.required =
+                    true;
 
-            selectColmena.required =
-                true;
-
-        }
+            }
 
 
-        filtrarColmenasPorApiario(
-            false
-        );
-
-
-        if (contenedorColmena) {
-
-            contenedorColmena.classList.remove(
-                "oculto"
+            filtrarColmenasPorApiario(
+                false
             );
 
+
+            if (contenedorColmena) {
+
+                contenedorColmena.classList.remove(
+                    "oculto"
+                );
+
+            }
+
+        } else {
+
+            actualizarCampoColmena();
+
         }
-
-    } else {
-
-        actualizarCampoColmena();
 
     }
 
 
+    /* ======================================================
+       55. INICIALIZAR EVIDENCIAS
+    ====================================================== */
+
+    function inicializarEvidencias() {
+
+        if (!inputEvidencias) {
+            return;
+        }
+
+
+        archivosSeleccionados =
+            Array.from(
+                inputEvidencias.files || []
+            );
+
+
+        /*
+         * Por seguridad, si el navegador recuperó más
+         * archivos de los permitidos, dejamos solo 6.
+         */
+
+        if (
+            archivosSeleccionados.length >
+            MAX_EVIDENCIAS
+        ) {
+
+            archivosSeleccionados =
+                archivosSeleccionados.slice(
+                    0,
+                    MAX_EVIDENCIAS
+                );
+
+
+            sincronizarInputEvidencias();
+
+        }
+
+
+        renderizarEvidencias();
+
+    }
+
 
     /* ======================================================
-       48. RESTAURAR AL VOLVER CON EL NAVEGADOR
+       56. RESTAURAR AL VOLVER ATRÁS
     ====================================================== */
 
     window.addEventListener(
         "pageshow",
         function () {
 
-            if (btnGuardar) {
+            restaurarBotonGuardar();
 
-                btnGuardar.disabled =
-                    false;
+            inicializarUbicacion();
 
+            actualizarContador(
+                inputTitulo,
+                contadorTitulo,
+                MAX_TITULO
+            );
 
-                btnGuardar.innerHTML = `
-                    <i class="bi bi-exclamation-triangle-fill"></i>
+            actualizarContador(
+                textareaObservaciones,
+                contadorObservaciones,
+                MAX_OBSERVACIONES
+            );
 
-                    <span>
-                        Reportar incidencia
-                    </span>
-                `;
-
-            }
-
-
-            actualizarTipoVisual();
-
-            actualizarCampoColmena();
+            inicializarEvidencias();
 
         }
     );
 
 
-
     /* ======================================================
-       49. LIMPIAR URL DE PREVIEW AL SALIR
+       57. LIBERAR PREVIEWS AL SALIR
     ====================================================== */
 
     window.addEventListener(
         "beforeunload",
         function () {
 
-            liberarPreviewAnterior();
+            liberarUrlsPreview();
 
         }
     );
+
+
+    /* ======================================================
+       58. INICIALIZACIÓN GENERAL
+    ====================================================== */
+
+    inicializarUbicacion();
+
+
+    actualizarContador(
+        inputTitulo,
+        contadorTitulo,
+        MAX_TITULO
+    );
+
+
+    actualizarContador(
+        textareaObservaciones,
+        contadorObservaciones,
+        MAX_OBSERVACIONES
+    );
+
+
+    inicializarEvidencias();
 
 
 });
