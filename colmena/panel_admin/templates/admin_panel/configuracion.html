@@ -336,6 +336,7 @@
                                         id="nombreSistema"
                                         name="nombre_sistema"
                                         value="{{ configuracion.nombre_sistema }}"
+                                        minlength="2"
                                         maxlength="100"
                                         required
                                     >
@@ -450,16 +451,24 @@
 
                                             maxlength="254"
 
-                                            pattern="[A-Za-z0-9._%+-]+@gmail[.]com"
-
-                                            title="Debes ingresar una dirección de Gmail válida"
-                                            placeholder="Ejemplo: micolmena@gmail.com"
-
                                             autocomplete="email"
+                                            autocapitalize="none"
                                             spellcheck="false"
+
+                                            placeholder="Ejemplo: micolmena@gmail.com"
                                         >
 
                                     </div>
+
+                                    <small class="form-text">
+                                        Se permiten correos de Gmail, Outlook, Hotmail y Yahoo.
+                                    </small>
+
+                                    <small
+                                        id="mensajeCorreoContacto"
+                                        class="form-text d-none"
+                                        aria-live="polite"
+                                    ></small>
 
                                 </div>
 
@@ -507,6 +516,12 @@
                                         >
 
                                     </div>
+
+                                    <small
+                                        id="mensajeTelefonoContacto"
+                                        class="form-text d-none"
+                                        aria-live="polite"
+                                    ></small>
 
                                 </div>
 

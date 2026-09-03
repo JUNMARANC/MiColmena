@@ -10377,16 +10377,6 @@ def guardar_configuracion_general(request):
         .strip()
     )
 
-
-    descripcion = (
-        request.POST.get(
-            "descripcion",
-            ""
-        )
-        .strip()
-    )
-
-
     correo_contacto = (
         request.POST.get(
             "correo_contacto",
@@ -10422,11 +10412,29 @@ def guardar_configuracion_general(request):
         )
 
 
+    if len(nombre_sistema) < 2:
+
+        messages.error(
+            request,
+            (
+                "El nombre del sistema debe tener "
+                "al menos 2 caracteres."
+            )
+        )
+
+        return redirect(
+            f"{reverse('configuracion_admin')}?tab=general"
+        )
+
+
     if len(nombre_sistema) > 100:
 
         messages.error(
             request,
-            "El nombre del sistema no puede superar los 100 caracteres."
+            (
+                "El nombre del sistema no puede "
+                "superar los 100 caracteres."
+            )
         )
 
         return redirect(
@@ -10446,11 +10454,24 @@ def guardar_configuracion_general(request):
         )
 
 
-    if len(descripcion) > 500:
+    # ========================================================
+    # CORREO DE CONTACTO
+    # ========================================================
+
+    if (
+        correo_contacto
+        and
+        not validar_correo_permitido(
+            correo_contacto
+        )
+    ):
 
         messages.error(
             request,
-            "La descripción no puede superar los 500 caracteres."
+            (
+                "El correo electrónico debe pertenecer "
+                "a Gmail, Outlook, Hotmail o Yahoo."
+            )
         )
 
         return redirect(
@@ -10458,34 +10479,20 @@ def guardar_configuracion_general(request):
         )
 
 
-    if correo_contacto:
+    # ========================================================
+    # TELÉFONO DE CONTACTO
+    # ========================================================
 
-        try:
-
-            validate_email(
-                correo_contacto
-            )
-
-        except ValidationError:
-
-            messages.error(
-                request,
-                "El correo electrónico no es válido."
-            )
-
-            return redirect(
-                f"{reverse('configuracion_admin')}?tab=general"
-            )
-
-
-    if (
+    if not validar_celular_colombia(
         telefono_contacto
-        and not telefono_contacto.isdigit()
     ):
 
         messages.error(
             request,
-            "El teléfono solo puede contener números."
+            (
+                "El número celular debe contener exactamente "
+                "10 números y comenzar por 3."
+            )
         )
 
         return redirect(
@@ -10503,10 +10510,6 @@ def guardar_configuracion_general(request):
 
     configuracion.nombre_entidad = (
         nombre_entidad
-    )
-
-    configuracion.descripcion = (
-        descripcion
     )
 
     configuracion.correo_contacto = (

@@ -240,16 +240,15 @@ function inicializarConfiguracionGeneral() {
         );
 
 
-    const descripcion =
+    const correo =
         document.getElementById(
-            "descripcionSistema"
-        );
+            "correoContacto"
+    );
 
-
-    const contador =
+    const mensajeCorreo =
         document.getElementById(
-            "contadorDescripcionConfiguracion"
-        );
+            "mensajeCorreoContacto"
+    );
 
 
     const telefono =
@@ -257,40 +256,362 @@ function inicializarConfiguracionGeneral() {
             "telefonoContacto"
         );
 
+    const mensajeTelefono =
+        document.getElementById(
+            "mensajeTelefonoContacto"
+    );
+
 
     /* ========================================================
-       CONTADOR DE DESCRIPCIÓN
+        VALIDACIÓN DE CORREO DE CONTACTO
     ======================================================== */
 
-    if (
-        descripcion &&
-        contador
-    ) {
+    function validarCorreoContacto() {
 
-        actualizarContadorDescripcion(
-            descripcion,
-            contador
+        if (!correo) {
+            return true;
+        }
+
+
+        const valor =
+            correo.value
+                .trim()
+                .toLowerCase();
+
+
+        correo.value =
+            valor;
+
+
+        correo.setCustomValidity("");
+
+
+        correo.classList.remove(
+            "is-valid",
+            "is-invalid"
         );
 
 
-        descripcion.addEventListener(
-            "input",
-            function () {
+        if (mensajeCorreo) {
 
-                actualizarContadorDescripcion(
-                    descripcion,
-                    contador
+            mensajeCorreo.classList.add(
+                "d-none"
+            );
+
+
+            mensajeCorreo.classList.remove(
+                "text-success",
+                "text-danger"
+            );
+
+
+            mensajeCorreo.textContent =
+                "";
+
+        }
+
+
+        /*
+        * El correo de contacto es opcional.
+        */
+        if (!valor) {
+            return true;
+        }
+
+
+        const regexCorreoPermitido =
+            /^[A-Za-z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/i;
+
+
+        if (
+            !regexCorreoPermitido.test(
+                valor
+            )
+        ) {
+
+            const mensaje =
+                (
+                    "El correo debe pertenecer a "
+                    +
+                    "Gmail, Outlook, Hotmail o Yahoo."
                 );
 
-            }
+
+            correo.setCustomValidity(
+                mensaje
+            );
+
+
+            correo.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeCorreoContacto(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        correo.setCustomValidity("");
+
+
+        correo.classList.add(
+            "is-valid"
         );
+
+
+        mostrarMensajeCorreoContacto(
+            "Correo electrónico válido.",
+            true
+        );
+
+
+        return true;
+
+
+        function mostrarMensajeCorreoContacto(
+            texto,
+            valido
+        ) {
+
+            if (!mensajeCorreo) {
+                return;
+            }
+
+
+            mensajeCorreo.textContent =
+                texto;
+
+
+            mensajeCorreo.classList.remove(
+                "d-none",
+                "text-success",
+                "text-danger"
+            );
+
+
+            mensajeCorreo.classList.add(
+                valido
+                    ? "text-success"
+                    : "text-danger"
+            );
+
+        }
 
     }
 
 
+    if (correo) {
+
+        correo.addEventListener(
+            "input",
+            validarCorreoContacto
+        );
+
+
+        correo.addEventListener(
+            "blur",
+            validarCorreoContacto
+        );
+
+
+        correo.validarCampoConfiguracion =
+            validarCorreoContacto;
+
+    }
+
     /* ========================================================
-       TELÉFONO SOLO NÚMEROS
+        VALIDACIÓN DE TELÉFONO DE CONTACTO
     ======================================================== */
+
+    function validarTelefonoContacto() {
+
+        if (!telefono) {
+            return true;
+        }
+
+
+        const valor =
+            telefono.value.trim();
+
+
+        telefono.setCustomValidity("");
+
+
+        telefono.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        if (mensajeTelefono) {
+
+            mensajeTelefono.classList.add(
+                "d-none"
+            );
+
+
+            mensajeTelefono.classList.remove(
+                "text-success",
+                "text-danger"
+            );
+
+
+            mensajeTelefono.textContent =
+                "";
+
+        }
+
+
+        /*
+        * El teléfono de contacto es opcional.
+        */
+        if (!valor) {
+            return true;
+        }
+
+
+        if (!valor.startsWith("3")) {
+
+            const mensaje =
+                "El celular debe comenzar por 3.";
+
+
+            telefono.setCustomValidity(
+                mensaje
+            );
+
+
+            telefono.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeTelefonoContacto(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        if (valor.length < 10) {
+
+            const faltan =
+                10 - valor.length;
+
+
+            const mensaje =
+                faltan === 1
+                    ? "Falta 1 número para completar el celular."
+                    : `Faltan ${faltan} números para completar el celular.`;
+
+
+            telefono.setCustomValidity(
+                mensaje
+            );
+
+
+            telefono.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeTelefonoContacto(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        if (valor.length !== 10) {
+
+            const mensaje =
+                "El celular debe tener exactamente 10 números.";
+
+
+            telefono.setCustomValidity(
+                mensaje
+            );
+
+
+            telefono.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeTelefonoContacto(
+                mensaje,
+                false
+            );
+
+
+            return false;
+
+        }
+
+
+        telefono.setCustomValidity("");
+
+
+        telefono.classList.add(
+            "is-valid"
+        );
+
+
+        mostrarMensajeTelefonoContacto(
+            "Celular válido.",
+            true
+        );
+
+
+        return true;
+
+
+        function mostrarMensajeTelefonoContacto(
+            texto,
+            valido
+        ) {
+
+            if (!mensajeTelefono) {
+                return;
+            }
+
+
+            mensajeTelefono.textContent =
+                texto;
+
+
+            mensajeTelefono.classList.remove(
+                "d-none",
+                "text-success",
+                "text-danger"
+            );
+
+
+            mensajeTelefono.classList.add(
+                valido
+                    ? "text-success"
+                    : "text-danger"
+            );
+
+        }
+
+    }
+
 
     if (telefono) {
 
@@ -299,13 +620,31 @@ function inicializarConfiguracionGeneral() {
             function () {
 
                 telefono.value =
-                    telefono.value.replace(
-                        /\D/g,
-                        ""
-                    );
+                    telefono.value
+                        .replace(
+                            /[^0-9]/g,
+                            ""
+                        )
+                        .slice(
+                            0,
+                            10
+                        );
+
+
+                validarTelefonoContacto();
 
             }
         );
+
+
+        telefono.addEventListener(
+            "blur",
+            validarTelefonoContacto
+        );
+
+
+        telefono.validarCampoConfiguracion =
+            validarTelefonoContacto;
 
     }
 
@@ -328,7 +667,41 @@ function inicializarConfiguracionGeneral() {
         "submit",
         function (evento) {
 
+            let camposValidos =
+                true;
+
+
+            [
+                correo,
+                telefono
+            ].forEach(
+                function (campo) {
+
+                    if (
+                        campo &&
+                        typeof campo
+                            .validarCampoConfiguracion
+                        === "function"
+                    ) {
+
+                        if (
+                            !campo
+                                .validarCampoConfiguracion()
+                        ) {
+
+                            camposValidos =
+                                false;
+
+                        }
+
+                    }
+
+                }
+            );
+
+
             if (
+                !camposValidos ||
                 !formulario.checkValidity()
             ) {
 
@@ -373,27 +746,7 @@ function inicializarConfiguracionGeneral() {
 }
 
 
-/* ============================================================
-   CONTADOR DE CARACTERES
-============================================================ */
 
-function actualizarContadorDescripcion(
-    textarea,
-    contador
-) {
-
-    const cantidad =
-        textarea.value.length;
-
-
-    const maximo =
-        textarea.maxLength || 500;
-
-
-    contador.textContent =
-        `${cantidad} / ${maximo}`;
-
-}
 
 
 /* ============================================================
