@@ -14,7 +14,8 @@ from panel_apicultor.views import (
     crear_incidencia_apicultor,
     editar_incidencia_apicultor,
     reportar_incidencia_apicultor,
-    agenda_apicultor
+    agenda_apicultor,
+    crear_evento_apicultor,
 )
 
 
@@ -75,9 +76,6 @@ urlpatterns = [
     # AGENDA
     # ============================================================
 
-    path(
-        "agenda/",
-        agenda_apicultor,
-        name="agenda_apicultor"
-    ),
+    path("agenda/",agenda_apicultor,name="agenda_apicultor"),
+    path("agenda/crear/",crear_evento_apicultor,name="crear_evento_apicultor"),
 ]

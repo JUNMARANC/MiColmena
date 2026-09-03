@@ -14,29 +14,34 @@ document.addEventListener("DOMContentLoaded", function () {
         "formEditarIncidencia"
     );
 
-
     if (!formulario) {
         return;
     }
-
 
 
     /* ======================================================
        2. ESTADOS
     ====================================================== */
 
-    const opcionesEstado = document.querySelectorAll(
+    const opcionesEstado = formulario.querySelectorAll(
         ".estado-incidencia-opcion"
     );
 
-    const radiosEstado = document.querySelectorAll(
-        '.estado-incidencia-opcion input[name="estado"]'
+    const radiosEstado = formulario.querySelectorAll(
+        'input[name="estado"]'
     );
 
     const estadoSuperior = document.querySelector(
         ".incidencia-estado-principal"
     );
 
+    const contenedorEstados = document.getElementById(
+        "opcionesEstadoIncidencia"
+    );
+
+    const avisoEvidenciaSolucion = document.getElementById(
+        "avisoEvidenciaSolucion"
+    );
 
 
     /* ======================================================
@@ -52,43 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       4. EVIDENCIA
-    ====================================================== */
-
-    const inputImagen = document.getElementById(
-        "imagenIncidencia"
-    );
-
-    const selectorImagen = document.getElementById(
-        "selectorImagenIncidencia"
-    );
-
-    const previewImagen = document.getElementById(
-        "previewImagenIncidencia"
-    );
-
-    const imagenPreview = document.getElementById(
-        "imagenPreview"
-    );
-
-    const nombreImagen = document.getElementById(
-        "nombreImagen"
-    );
-
-    const pesoImagen = document.getElementById(
-        "pesoImagen"
-    );
-
-    const btnEliminarImagen = document.getElementById(
-        "btnEliminarImagen"
-    );
-
-
-
-    /* ======================================================
-       5. BOTÓN GUARDAR
+       4. BOTÓN GUARDAR
     ====================================================== */
 
     const btnGuardar = document.getElementById(
@@ -96,12 +66,11 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       6. CONFIGURACIÓN
+       5. CONFIGURACIÓN
     ====================================================== */
 
-    const MAX_IMAGEN = 5 * 1024 * 1024;
+    const MAX_OBSERVACIONES = 1000;
 
     const TIPOS_IMAGEN_VALIDOS = [
         "image/jpeg",
@@ -116,12 +85,8 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
-    let urlPreviewActual = null;
-
-
-
     /* ======================================================
-       7. OBTENER ESTADO ACTUAL
+       6. OBTENER ESTADO SELECCIONADO
     ====================================================== */
 
     function obtenerEstadoSeleccionado() {
@@ -130,20 +95,15 @@ document.addEventListener("DOMContentLoaded", function () {
             'input[name="estado"]:checked'
         );
 
-
-        if (!radio) {
-            return "";
-        }
-
-
-        return radio.value;
+        return radio
+            ? radio.value
+            : "";
 
     }
 
 
-
     /* ======================================================
-       8. ACTUALIZAR ESTADOS VISUALES
+       7. ACTUALIZAR ESTADO VISUAL
     ====================================================== */
 
     function actualizarEstadoVisual() {
@@ -155,23 +115,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     'input[name="estado"]'
                 );
 
-
-                if (
-                    radio &&
-                    radio.checked
-                ) {
-
-                    opcion.classList.add(
-                        "activa"
-                    );
-
-                } else {
-
-                    opcion.classList.remove(
-                        "activa"
-                    );
-
-                }
+                opcion.classList.toggle(
+                    "activa",
+                    Boolean(
+                        radio &&
+                        radio.checked
+                    )
+                );
 
             }
         );
@@ -179,12 +129,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         actualizarBadgeSuperior();
 
+        actualizarAvisoSolucion();
+
     }
 
 
-
     /* ======================================================
-       9. ACTUALIZAR BADGE SUPERIOR
+       8. BADGE SUPERIOR
     ====================================================== */
 
     function actualizarBadgeSuperior() {
@@ -194,7 +145,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const estado = obtenerEstadoSeleccionado();
+        const estado =
+            obtenerEstadoSeleccionado();
 
 
         estadoSuperior.classList.remove(
@@ -226,37 +178,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /*
-         * El primer span es el puntico del badge.
-         * Conservamos ese elemento y cambiamos únicamente
-         * el nodo de texto.
+         * Conservamos el primer span del badge,
+         * que representa el indicador visual.
          */
 
-        const nodos = Array.from(
-            estadoSuperior.childNodes
-        );
+        const nodos =
+            Array.from(
+                estadoSuperior.childNodes
+            );
 
 
-        const nodoTexto = nodos.find(
-            function (nodo) {
+        const nodoTexto =
+            nodos.find(
+                function (nodo) {
 
-                return (
-                    nodo.nodeType === Node.TEXT_NODE &&
-                    nodo.textContent.trim() !== ""
-                );
+                    return (
+                        nodo.nodeType === Node.TEXT_NODE
+                        &&
+                        nodo.textContent.trim() !== ""
+                    );
 
-            }
-        );
+                }
+            );
 
 
         if (nodoTexto) {
 
             nodoTexto.textContent =
-                " " + estado;
+                ` ${estado}`;
 
         }
 
     }
 
+
+    /* ======================================================
+       9. AVISO DE SOLUCIÓN
+    ====================================================== */
+
+    function actualizarAvisoSolucion() {
+
+        if (!avisoEvidenciaSolucion) {
+            return;
+        }
+
+
+        const estado =
+            obtenerEstadoSeleccionado();
+
+
+        avisoEvidenciaSolucion.classList.toggle(
+            "activo",
+            estado === "Resuelta"
+        );
+
+    }
 
 
     /* ======================================================
@@ -274,6 +250,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     limpiarErrorEstado();
 
+                    /*
+                     * Si selecciona Resuelta y todavía no existe
+                     * evidencia de solución, dejamos visible
+                     * inmediatamente la advertencia.
+                     */
+
+                    if (
+                        obtenerEstadoSeleccionado() ===
+                        "Resuelta"
+                    ) {
+
+                        validarReglaResuelta(
+                            false
+                        );
+
+                    } else {
+
+                        limpiarErrorEvidencias(
+                            gestorSolucion
+                        );
+
+                    }
+
                 }
             );
 
@@ -281,21 +280,13 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       11. MOSTRAR ERROR DEL ESTADO
+       11. ERROR DE ESTADO
     ====================================================== */
 
-    function mostrarErrorEstado(
-        mensaje
-    ) {
+    function mostrarErrorEstado(mensaje) {
 
-        const contenedor = document.querySelector(
-            ".estado-incidencia-opciones"
-        );
-
-
-        if (!contenedor) {
+        if (!contenedorEstados) {
             return;
         }
 
@@ -303,14 +294,15 @@ document.addEventListener("DOMContentLoaded", function () {
         limpiarErrorEstado();
 
 
-        contenedor.classList.add(
+        contenedorEstados.classList.add(
             "error"
         );
 
 
-        const mensajeError = document.createElement(
-            "div"
-        );
+        const mensajeError =
+            document.createElement(
+                "div"
+            );
 
 
         mensajeError.className =
@@ -319,11 +311,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
         mensajeError.innerHTML = `
             <i class="bi bi-exclamation-circle-fill"></i>
-            <span>${mensaje}</span>
+            <span></span>
         `;
 
 
-        contenedor.insertAdjacentElement(
+        const texto =
+            mensajeError.querySelector(
+                "span"
+            );
+
+
+        if (texto) {
+            texto.textContent = mensaje;
+        }
+
+
+        contenedorEstados.insertAdjacentElement(
             "afterend",
             mensajeError
         );
@@ -331,44 +334,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
-    /* ======================================================
-       12. LIMPIAR ERROR DEL ESTADO
-    ====================================================== */
-
     function limpiarErrorEstado() {
 
-        const contenedor = document.querySelector(
-            ".estado-incidencia-opciones"
-        );
+        if (contenedorEstados) {
 
-
-        if (contenedor) {
-
-            contenedor.classList.remove(
+            contenedorEstados.classList.remove(
                 "error"
             );
 
         }
 
 
-        const mensaje = document.querySelector(
-            ".estado-error-mensaje"
-        );
+        const mensaje =
+            formulario.querySelector(
+                ".estado-error-mensaje"
+            );
 
 
         if (mensaje) {
-
             mensaje.remove();
-
         }
 
     }
 
 
-
     /* ======================================================
-       13. CONTADOR DE OBSERVACIONES
+       12. CONTADOR DE OBSERVACIONES
     ====================================================== */
 
     function actualizarContadorObservaciones() {
@@ -386,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         contadorObservaciones.textContent =
-            cantidad + " / 1000";
+            `${cantidad} / ${MAX_OBSERVACIONES}`;
 
 
         contadorObservaciones.classList.remove(
@@ -396,8 +387,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            cantidad >= 800 &&
-            cantidad < 1000
+            cantidad >= 800
+            &&
+            cantidad < MAX_OBSERVACIONES
         ) {
 
             contadorObservaciones.classList.add(
@@ -407,7 +399,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        if (cantidad >= 1000) {
+        if (
+            cantidad >= MAX_OBSERVACIONES
+        ) {
 
             contadorObservaciones.classList.add(
                 "limite-alcanzado"
@@ -418,15 +412,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       14. EVENTO OBSERVACIONES
+       13. EVENTO DE OBSERVACIONES
     ====================================================== */
 
     if (textareaObservaciones) {
-
-        actualizarContadorObservaciones();
-
 
         textareaObservaciones.addEventListener(
             "input",
@@ -436,7 +426,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 if (
-                    this.value.length <= 1000
+                    textareaObservaciones.value.length <=
+                    MAX_OBSERVACIONES
                 ) {
 
                     limpiarErrorObservaciones();
@@ -449,23 +440,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       15. ERROR OBSERVACIONES
+       14. ERROR DE OBSERVACIONES
     ====================================================== */
 
-    function mostrarErrorObservaciones(
-        mensaje
-    ) {
+    function mostrarErrorObservaciones(mensaje) {
 
         if (!textareaObservaciones) {
             return;
         }
 
 
-        const campo = textareaObservaciones.closest(
-            ".campo-incidencia"
-        );
+        const campo =
+            textareaObservaciones.closest(
+                ".campo-incidencia"
+            );
 
 
         if (!campo) {
@@ -481,9 +470,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        const mensajeError = document.createElement(
-            "div"
-        );
+        const mensajeError =
+            document.createElement(
+                "div"
+            );
 
 
         mensajeError.className =
@@ -492,8 +482,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         mensajeError.innerHTML = `
             <i class="bi bi-exclamation-circle-fill"></i>
-            <span>${mensaje}</span>
+            <span></span>
         `;
+
+
+        const texto =
+            mensajeError.querySelector(
+                "span"
+            );
+
+
+        if (texto) {
+            texto.textContent = mensaje;
+        }
 
 
         campo.appendChild(
@@ -503,18 +504,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
-    /* ======================================================
-       16. LIMPIAR ERROR OBSERVACIONES
-    ====================================================== */
-
     function limpiarErrorObservaciones() {
 
         if (textareaObservaciones) {
 
-            const campo = textareaObservaciones.closest(
-                ".campo-incidencia"
-            );
+            const campo =
+                textareaObservaciones.closest(
+                    ".campo-incidencia"
+                );
 
 
             if (campo) {
@@ -528,42 +525,38 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const mensaje = document.querySelector(
-            ".observaciones-error-mensaje"
-        );
+        const mensaje =
+            formulario.querySelector(
+                ".observaciones-error-mensaje"
+            );
 
 
         if (mensaje) {
-
             mensaje.remove();
-
         }
 
     }
 
 
-
     /* ======================================================
-       17. FORMATEAR PESO
+       15. FORMATEAR PESO
     ====================================================== */
 
-    function formatearPeso(
-        bytes
-    ) {
+    function formatearPeso(bytes) {
 
         if (!bytes) {
             return "0 KB";
         }
 
 
-        const kb = bytes / 1024;
+        const kb =
+            bytes / 1024;
 
 
         if (kb < 1024) {
 
             return (
-                kb.toFixed(1) +
-                " KB"
+                `${kb.toFixed(1)} KB`
             );
 
         }
@@ -574,27 +567,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         return (
-            mb.toFixed(2) +
-            " MB"
+            `${mb.toFixed(2)} MB`
         );
 
     }
 
 
-
     /* ======================================================
-       18. VALIDAR IMAGEN
+       16. CLAVE ÚNICA DEL ARCHIVO
     ====================================================== */
 
-    function validarImagen(
-        archivo
+    function obtenerClaveArchivo(archivo) {
+
+        return [
+            archivo.name,
+            archivo.size,
+            archivo.lastModified,
+            archivo.type
+        ].join("::");
+
+    }
+
+
+    /* ======================================================
+       17. VALIDAR ARCHIVO DE IMAGEN
+    ====================================================== */
+
+    function validarArchivoImagen(
+        archivo,
+        maxBytes,
+        maxMb
     ) {
 
         if (!archivo) {
 
             return {
-                valido: true,
-                mensaje: ""
+                valido: false,
+                mensaje:
+                    "No se pudo leer una de las fotografías."
+            };
+
+        }
+
+
+        if (archivo.size <= 0) {
+
+            return {
+                valido: false,
+                mensaje:
+                    `La fotografía "${archivo.name}" está vacía.`
             };
 
         }
@@ -607,12 +628,9 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return {
-
                 valido: false,
-
                 mensaje:
-                    "Selecciona una imagen JPG, PNG o WEBP."
-
+                    `La fotografía "${archivo.name}" debe ser JPG, PNG o WEBP.`
             };
 
         }
@@ -620,16 +638,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (
             archivo.size >
-            MAX_IMAGEN
+            maxBytes
         ) {
 
             return {
-
                 valido: false,
-
                 mensaje:
-                    "La imagen no puede superar los 5 MB."
-
+                    `La fotografía "${archivo.name}" supera los ${maxMb} MB.`
             };
 
         }
@@ -643,476 +658,1329 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       19. LIBERAR URL PREVIEW
+       18. CREAR GESTOR DE EVIDENCIAS
+       
+       Esta función controla de forma independiente:
+       
+       - Evidencias del problema
+       - Evidencias de la solución
     ====================================================== */
 
-    function liberarPreviewAnterior() {
+    function crearGestorEvidencias(configuracion) {
 
-        if (urlPreviewActual) {
 
-            URL.revokeObjectURL(
-                urlPreviewActual
+        /* ==================================================
+           ELEMENTOS
+        ================================================== */
+
+        const bloque =
+            document.getElementById(
+                configuracion.idBloque
+            );
+
+        const input =
+            document.getElementById(
+                configuracion.idInput
+            );
+
+        const selector =
+            document.getElementById(
+                configuracion.idSelector
+            );
+
+        const contadorNuevas =
+            document.getElementById(
+                configuracion.idContador
+            );
+
+        const btnLimpiar =
+            document.getElementById(
+                configuracion.idBtnLimpiar
+            );
+
+        const error =
+            document.getElementById(
+                configuracion.idError
+            );
+
+        const preview =
+            document.getElementById(
+                configuracion.idPreview
+            );
+
+        const grid =
+            document.getElementById(
+                configuracion.idGrid
             );
 
 
-            urlPreviewActual = null;
+        /* ==================================================
+           CONFIGURACIÓN DEL BLOQUE
+        ================================================== */
+
+        const existentes =
+            Number(
+                bloque?.dataset.existentes || 0
+            );
+
+        const maximo =
+            Number(
+                bloque?.dataset.max || 6
+            );
+
+        const maxMb =
+            Number(
+                bloque?.dataset.maxMb || 5
+            );
+
+        const maxBytes =
+            maxMb *
+            1024 *
+            1024;
+
+
+        /* ==================================================
+           ESTADO
+        ================================================== */
+
+        let archivos =
+            [];
+
+        let urlsPreview =
+            [];
+
+
+        /* ==================================================
+           DISPONIBLES
+        ================================================== */
+
+        function obtenerDisponibles() {
+
+            return Math.max(
+                0,
+                maximo
+                -
+                existentes
+                -
+                archivos.length
+            );
 
         }
 
-    }
+
+        /* ==================================================
+           TOTAL
+        ================================================== */
+
+        function obtenerTotal() {
+
+            return (
+                existentes
+                +
+                archivos.length
+            );
+
+        }
 
 
+        /* ==================================================
+           REVOCAR URLS
+        ================================================== */
 
-    /* ======================================================
-       20. MOSTRAR PREVIEW
-    ====================================================== */
+        function liberarUrls() {
 
-    function mostrarPreview(
-        archivo
-    ) {
+            urlsPreview.forEach(
+                function (url) {
 
-        if (
-            !archivo ||
-            !previewImagen ||
-            !imagenPreview
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                }
+            );
+
+
+            urlsPreview =
+                [];
+
+        }
+
+
+        /* ==================================================
+           ERROR
+        ================================================== */
+
+        function mostrarError(mensaje) {
+
+            if (!error) {
+                return;
+            }
+
+
+            const texto =
+                error.querySelector(
+                    "span"
+                );
+
+
+            if (texto) {
+                texto.textContent = mensaje;
+            }
+
+
+            error.hidden =
+                false;
+
+
+            if (selector) {
+
+                selector.classList.add(
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        function limpiarError() {
+
+            if (error) {
+
+                error.hidden =
+                    true;
+
+
+                const texto =
+                    error.querySelector(
+                        "span"
+                    );
+
+
+                if (texto) {
+                    texto.textContent = "";
+                }
+
+            }
+
+
+            if (selector) {
+
+                selector.classList.remove(
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           SINCRONIZAR CON INPUT REAL
+        ================================================== */
+
+        function sincronizarInput() {
+
+            if (!input) {
+                return;
+            }
+
+
+            try {
+
+                const transferencia =
+                    new DataTransfer();
+
+
+                archivos.forEach(
+                    function (archivo) {
+
+                        transferencia.items.add(
+                            archivo
+                        );
+
+                    }
+                );
+
+
+                input.files =
+                    transferencia.files;
+
+
+            } catch (errorSync) {
+
+                console.warn(
+                    "No fue posible sincronizar las evidencias.",
+                    errorSync
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           ACTUALIZAR CONTADOR
+        ================================================== */
+
+        function actualizarContador() {
+
+            if (contadorNuevas) {
+
+                contadorNuevas.textContent =
+                    archivos.length;
+
+            }
+
+
+            if (btnLimpiar) {
+
+                btnLimpiar.hidden =
+                    archivos.length === 0;
+
+            }
+
+
+            if (selector) {
+
+                const limiteAlcanzado =
+                    obtenerTotal() >= maximo;
+
+
+                selector.classList.toggle(
+                    "limite-alcanzado",
+                    limiteAlcanzado
+                );
+
+
+                selector.setAttribute(
+                    "aria-disabled",
+                    limiteAlcanzado
+                        ? "true"
+                        : "false"
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           ELIMINAR ARCHIVO
+        ================================================== */
+
+        function eliminarArchivo(clave) {
+
+            archivos =
+                archivos.filter(
+                    function (archivo) {
+
+                        return (
+                            obtenerClaveArchivo(
+                                archivo
+                            )
+                            !==
+                            clave
+                        );
+
+                    }
+                );
+
+
+            sincronizarInput();
+
+            limpiarError();
+
+            renderizar();
+
+
+            /*
+             * Si estamos administrando soluciones y
+             * el estado es Resuelta, revisamos nuevamente.
+             */
+
+            if (
+                configuracion.tipo === "solucion"
+                &&
+                obtenerEstadoSeleccionado() ===
+                "Resuelta"
+            ) {
+
+                validarReglaResuelta(
+                    false
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           CREAR TARJETA
+        ================================================== */
+
+        function crearTarjeta(
+            archivo,
+            indice
         ) {
-            return;
-        }
+
+            const articulo =
+                document.createElement(
+                    "article"
+                );
 
 
-        liberarPreviewAnterior();
+            articulo.className =
+                "evidencia-preview-item";
 
 
-        urlPreviewActual =
-            URL.createObjectURL(
-                archivo
+            /* =============================================
+               CONTENEDOR IMAGEN
+            ============================================= */
+
+            const contenedorImagen =
+                document.createElement(
+                    "div"
+                );
+
+
+            contenedorImagen.className =
+                "evidencia-preview-item-imagen";
+
+
+            /* =============================================
+               IMAGEN
+            ============================================= */
+
+            const imagen =
+                document.createElement(
+                    "img"
+                );
+
+
+            const url =
+                URL.createObjectURL(
+                    archivo
+                );
+
+
+            urlsPreview.push(
+                url
             );
 
 
-        imagenPreview.src =
-            urlPreviewActual;
+            imagen.src =
+                url;
 
 
-        if (nombreImagen) {
+            imagen.alt =
+                configuracion.tipo === "solucion"
+                    ? `Nueva evidencia de solución ${indice + 1}`
+                    : `Nueva evidencia del problema ${indice + 1}`;
 
-            nombreImagen.textContent =
+
+            contenedorImagen.appendChild(
+                imagen
+            );
+
+
+            /* =============================================
+               NÚMERO
+            ============================================= */
+
+            const numero =
+                document.createElement(
+                    "span"
+                );
+
+
+            numero.className =
+                "evidencia-preview-numero";
+
+
+            numero.textContent =
+                existentes + indice + 1;
+
+
+            contenedorImagen.appendChild(
+                numero
+            );
+
+
+            /* =============================================
+               BADGE TIPO
+            ============================================= */
+
+            const badge =
+                document.createElement(
+                    "span"
+                );
+
+
+            badge.className =
+                `evidencia-preview-tipo ${configuracion.tipo}`;
+
+
+            badge.textContent =
+                configuracion.tipo === "solucion"
+                    ? "Solución"
+                    : "Problema";
+
+
+            contenedorImagen.appendChild(
+                badge
+            );
+
+
+            /* =============================================
+               BOTÓN ELIMINAR
+            ============================================= */
+
+            const botonEliminar =
+                document.createElement(
+                    "button"
+                );
+
+
+            botonEliminar.type =
+                "button";
+
+
+            botonEliminar.className =
+                "btn-eliminar-evidencia";
+
+
+            botonEliminar.title =
+                "Quitar fotografía";
+
+
+            botonEliminar.setAttribute(
+                "aria-label",
+                `Quitar ${archivo.name}`
+            );
+
+
+            botonEliminar.innerHTML = `
+                <i class="bi bi-x-lg"></i>
+            `;
+
+
+            const clave =
+                obtenerClaveArchivo(
+                    archivo
+                );
+
+
+            botonEliminar.addEventListener(
+                "click",
+                function () {
+
+                    eliminarArchivo(
+                        clave
+                    );
+
+                }
+            );
+
+
+            contenedorImagen.appendChild(
+                botonEliminar
+            );
+
+
+            /* =============================================
+               INFORMACIÓN
+            ============================================= */
+
+            const informacion =
+                document.createElement(
+                    "div"
+                );
+
+
+            informacion.className =
+                "evidencia-preview-item-info";
+
+
+            const nombre =
+                document.createElement(
+                    "strong"
+                );
+
+
+            nombre.textContent =
                 archivo.name;
 
-        }
+
+            nombre.title =
+                archivo.name;
 
 
-        if (pesoImagen) {
+            const peso =
+                document.createElement(
+                    "span"
+                );
 
-            pesoImagen.textContent =
+
+            peso.textContent =
                 formatearPeso(
                     archivo.size
                 );
 
-        }
+
+            informacion.appendChild(
+                nombre
+            );
 
 
-        previewImagen.hidden =
-            false;
+            informacion.appendChild(
+                peso
+            );
 
 
-        if (selectorImagen) {
+            /* =============================================
+               ARMAR
+            ============================================= */
 
-            selectorImagen.style.display =
-                "none";
-
-        }
-
-    }
-
+            articulo.appendChild(
+                contenedorImagen
+            );
 
 
-    /* ======================================================
-       21. OCULTAR PREVIEW
-    ====================================================== */
-
-    function ocultarPreview() {
-
-        liberarPreviewAnterior();
+            articulo.appendChild(
+                informacion
+            );
 
 
-        if (imagenPreview) {
-
-            imagenPreview.src = "";
+            return articulo;
 
         }
 
 
-        if (nombreImagen) {
+        /* ==================================================
+           RENDERIZAR PREVIEWS
+        ================================================== */
 
-            nombreImagen.textContent =
-                "Imagen";
+        function renderizar() {
 
-        }
-
-
-        if (pesoImagen) {
-
-            pesoImagen.textContent =
-                "—";
-
-        }
+            liberarUrls();
 
 
-        if (previewImagen) {
+            if (grid) {
 
-            previewImagen.hidden =
-                true;
+                grid.innerHTML =
+                    "";
 
-        }
-
-
-        if (selectorImagen) {
-
-            selectorImagen.style.display =
-                "";
-
-        }
-
-    }
+            }
 
 
-
-    /* ======================================================
-       22. MOSTRAR ERROR IMAGEN
-    ====================================================== */
-
-    function mostrarErrorImagen(
-        mensaje
-    ) {
-
-        if (!selectorImagen) {
-            return;
-        }
+            actualizarContador();
 
 
-        limpiarErrorImagen();
+            if (
+                archivos.length === 0
+            ) {
+
+                if (preview) {
+
+                    preview.hidden =
+                        true;
+
+                }
 
 
-        selectorImagen.classList.add(
-            "error"
-        );
+                return;
+
+            }
 
 
-        const mensajeError = document.createElement(
-            "div"
-        );
+            if (preview) {
+
+                preview.hidden =
+                    false;
+
+            }
 
 
-        mensajeError.className =
-            "campo-error-mensaje evidencia-error-mensaje";
+            archivos.forEach(
+                function (archivo, indice) {
+
+                    if (!grid) {
+                        return;
+                    }
 
 
-        mensajeError.innerHTML = `
-            <i class="bi bi-exclamation-circle-fill"></i>
-            <span>${mensaje}</span>
-        `;
+                    const tarjeta =
+                        crearTarjeta(
+                            archivo,
+                            indice
+                        );
 
 
-        selectorImagen.insertAdjacentElement(
-            "afterend",
-            mensajeError
-        );
+                    grid.appendChild(
+                        tarjeta
+                    );
 
-    }
-
-
-
-    /* ======================================================
-       23. LIMPIAR ERROR IMAGEN
-    ====================================================== */
-
-    function limpiarErrorImagen() {
-
-        if (selectorImagen) {
-
-            selectorImagen.classList.remove(
-                "error"
+                }
             );
 
         }
 
 
-        const mensaje = document.querySelector(
-            ".evidencia-error-mensaje"
-        );
+        /* ==================================================
+           AGREGAR ARCHIVOS
+        ================================================== */
+
+        function agregarArchivos(lista) {
+
+            limpiarError();
 
 
-        if (mensaje) {
+            const nuevos =
+                Array.from(
+                    lista || []
+                );
 
-            mensaje.remove();
+
+            if (
+                nuevos.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            const claves =
+                new Set(
+                    archivos.map(
+                        obtenerClaveArchivo
+                    )
+                );
+
+
+            let mensajeError =
+                "";
+
+
+            for (
+                const archivo of nuevos
+            ) {
+
+
+                /* =========================================
+                   LÍMITE TOTAL
+                ========================================= */
+
+                if (
+                    obtenerTotal() >=
+                    maximo
+                ) {
+
+                    mensajeError =
+                        `Esta incidencia puede tener un máximo de ${maximo} fotografías de ${configuracion.nombrePlural}.`;
+
+                    break;
+
+                }
+
+
+                /* =========================================
+                   VALIDACIÓN
+                ========================================= */
+
+                const validacion =
+                    validarArchivoImagen(
+                        archivo,
+                        maxBytes,
+                        maxMb
+                    );
+
+
+                if (!validacion.valido) {
+
+                    if (!mensajeError) {
+
+                        mensajeError =
+                            validacion.mensaje;
+
+                    }
+
+                    continue;
+
+                }
+
+
+                /* =========================================
+                   DUPLICADO
+                ========================================= */
+
+                const clave =
+                    obtenerClaveArchivo(
+                        archivo
+                    );
+
+
+                if (
+                    claves.has(
+                        clave
+                    )
+                ) {
+
+                    if (!mensajeError) {
+
+                        mensajeError =
+                            `La fotografía "${archivo.name}" ya fue seleccionada.`;
+
+                    }
+
+                    continue;
+
+                }
+
+
+                /* =========================================
+                   AGREGAR
+                ========================================= */
+
+                archivos.push(
+                    archivo
+                );
+
+
+                claves.add(
+                    clave
+                );
+
+            }
+
+
+            sincronizarInput();
+
+            renderizar();
+
+
+            if (mensajeError) {
+
+                mostrarError(
+                    mensajeError
+                );
+
+            }
+
+
+            /*
+             * Si acabamos de agregar solución mientras
+             * el estado está en Resuelta, quitamos la
+             * advertencia cuando ya haya al menos una.
+             */
+
+            if (
+                configuracion.tipo === "solucion"
+                &&
+                obtenerEstadoSeleccionado() ===
+                "Resuelta"
+            ) {
+
+                validarReglaResuelta(
+                    false
+                );
+
+            }
 
         }
 
-    }
+
+        /* ==================================================
+           INPUT CHANGE
+        ================================================== */
+
+        if (input) {
+
+            input.addEventListener(
+                "change",
+                function () {
+
+                    const seleccionados =
+                        Array.from(
+                            input.files || []
+                        );
 
 
+                    agregarArchivos(
+                        seleccionados
+                    );
 
-    /* ======================================================
-       24. PROCESAR NUEVA IMAGEN
-    ====================================================== */
+                }
+            );
 
-    function procesarImagen(
-        archivo
-    ) {
+        }
 
-        if (!archivo) {
 
-            ocultarPreview();
+        /* ==================================================
+           EVITAR ABRIR SELECTOR SI YA LLEGÓ AL MÁXIMO
+        ================================================== */
 
-            limpiarErrorImagen();
+        if (selector) {
+
+            selector.addEventListener(
+                "click",
+                function (evento) {
+
+                    if (
+                        obtenerTotal() >=
+                        maximo
+                    ) {
+
+                        evento.preventDefault();
+
+
+                        mostrarError(
+                            `Ya alcanzaste el máximo de ${maximo} fotografías de ${configuracion.nombrePlural}.`
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* ==================================================
+           LIMPIAR NUEVAS
+        ================================================== */
+
+        function limpiarArchivos() {
+
+            archivos =
+                [];
+
+
+            sincronizarInput();
+
+            limpiarError();
+
+            renderizar();
+
+
+            if (
+                configuracion.tipo === "solucion"
+                &&
+                obtenerEstadoSeleccionado() ===
+                "Resuelta"
+            ) {
+
+                validarReglaResuelta(
+                    false
+                );
+
+            }
+
+        }
+
+
+        if (btnLimpiar) {
+
+            btnLimpiar.addEventListener(
+                "click",
+                function () {
+
+                    limpiarArchivos();
+
+                }
+            );
+
+        }
+
+
+        /* ==================================================
+           DRAG & DROP
+        ================================================== */
+
+        if (
+            selector &&
+            input
+        ) {
+
+
+            [
+                "dragenter",
+                "dragover"
+            ].forEach(
+                function (nombreEvento) {
+
+                    selector.addEventListener(
+                        nombreEvento,
+                        function (evento) {
+
+                            evento.preventDefault();
+
+                            evento.stopPropagation();
+
+
+                            if (
+                                obtenerTotal() >=
+                                maximo
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            selector.classList.add(
+                                "arrastrando"
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+            [
+                "dragleave",
+                "dragend"
+            ].forEach(
+                function (nombreEvento) {
+
+                    selector.addEventListener(
+                        nombreEvento,
+                        function (evento) {
+
+                            evento.preventDefault();
+
+                            evento.stopPropagation();
+
+
+                            selector.classList.remove(
+                                "arrastrando"
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+            selector.addEventListener(
+                "drop",
+                function (evento) {
+
+                    evento.preventDefault();
+
+                    evento.stopPropagation();
+
+
+                    selector.classList.remove(
+                        "arrastrando"
+                    );
+
+
+                    if (
+                        obtenerTotal() >=
+                        maximo
+                    ) {
+
+                        mostrarError(
+                            `Ya alcanzaste el máximo de ${maximo} fotografías de ${configuracion.nombrePlural}.`
+                        );
+
+                        return;
+
+                    }
+
+
+                    const archivosSoltados =
+                        evento.dataTransfer?.files;
+
+
+                    if (
+                        !archivosSoltados ||
+                        archivosSoltados.length === 0
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    agregarArchivos(
+                        archivosSoltados
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* ==================================================
+           VALIDACIÓN DEL BLOQUE
+        ================================================== */
+
+        function validar() {
+
+            limpiarError();
+
+
+            if (
+                obtenerTotal() >
+                maximo
+            ) {
+
+                mostrarError(
+                    `Solo se permiten ${maximo} fotografías de ${configuracion.nombrePlural}.`
+                );
+
+                return false;
+
+            }
+
+
+            for (
+                const archivo of archivos
+            ) {
+
+                const validacion =
+                    validarArchivoImagen(
+                        archivo,
+                        maxBytes,
+                        maxMb
+                    );
+
+
+                if (!validacion.valido) {
+
+                    mostrarError(
+                        validacion.mensaje
+                    );
+
+                    return false;
+
+                }
+
+            }
+
 
             return true;
 
         }
 
 
-        const validacion =
-            validarImagen(
-                archivo
-            );
+        /* ==================================================
+           INICIALIZAR
+        ================================================== */
 
+        function inicializar() {
 
-        if (!validacion.valido) {
+            if (input) {
 
-            mostrarErrorImagen(
-                validacion.mensaje
-            );
-
-
-            if (inputImagen) {
-
-                inputImagen.value = "";
+                archivos =
+                    Array.from(
+                        input.files || []
+                    );
 
             }
 
 
-            ocultarPreview();
+            /*
+             * Nunca permitimos conservar desde el navegador
+             * más archivos que espacios disponibles.
+             */
+
+            const disponiblesIniciales =
+                Math.max(
+                    0,
+                    maximo - existentes
+                );
 
 
-            return false;
+            if (
+                archivos.length >
+                disponiblesIniciales
+            ) {
+
+                archivos =
+                    archivos.slice(
+                        0,
+                        disponiblesIniciales
+                    );
+
+
+                sincronizarInput();
+
+            }
+
+
+            renderizar();
 
         }
 
 
-        limpiarErrorImagen();
+        /* ==================================================
+           API PÚBLICA DEL GESTOR
+        ================================================== */
 
+        return {
 
-        mostrarPreview(
-            archivo
-        );
+            bloque:
+                bloque,
 
+            selector:
+                selector,
 
-        return true;
+            input:
+                input,
 
-    }
+            inicializar:
+                inicializar,
 
+            validar:
+                validar,
 
+            limpiarError:
+                limpiarError,
 
-    /* ======================================================
-       25. INPUT DE IMAGEN
-    ====================================================== */
+            mostrarError:
+                mostrarError,
 
-    if (inputImagen) {
+            sincronizarInput:
+                sincronizarInput,
 
-        inputImagen.addEventListener(
-            "change",
-            function () {
+            liberarUrls:
+                liberarUrls,
 
-                const archivo = (
-                    this.files &&
-                    this.files.length
-                )
-                    ? this.files[0]
-                    : null;
+            obtenerExistentes:
+                function () {
+                    return existentes;
+                },
 
+            obtenerNuevas:
+                function () {
+                    return archivos.length;
+                },
 
-                procesarImagen(
-                    archivo
-                );
+            obtenerTotal:
+                obtenerTotal,
 
-            }
-        );
+            obtenerMaximo:
+                function () {
+                    return maximo;
+                },
 
-    }
+            obtenerDisponibles:
+                obtenerDisponibles,
 
-
-
-    /* ======================================================
-       26. QUITAR NUEVA IMAGEN
-    ====================================================== */
-
-    if (btnEliminarImagen) {
-
-        btnEliminarImagen.addEventListener(
-            "click",
-            function () {
-
-                if (inputImagen) {
-
-                    inputImagen.value =
-                        "";
-
-                }
-
-
-                limpiarErrorImagen();
-
-                ocultarPreview();
-
-            }
-        );
+        };
 
     }
 
 
-
     /* ======================================================
-       27. DRAG & DROP
+       19. GESTOR - PROBLEMA
     ====================================================== */
 
-    if (
-        selectorImagen &&
-        inputImagen
+    const gestorProblema =
+        crearGestorEvidencias({
+
+            idBloque:
+                "bloqueEvidenciasProblema",
+
+            idInput:
+                "evidenciasProblema",
+
+            idSelector:
+                "selectorEvidenciasProblema",
+
+            idContador:
+                "contadorNuevasProblema",
+
+            idBtnLimpiar:
+                "btnLimpiarProblema",
+
+            idError:
+                "errorEvidenciasProblema",
+
+            idPreview:
+                "previewEvidenciasProblema",
+
+            idGrid:
+                "gridEvidenciasProblema",
+
+            tipo:
+                "problema",
+
+            nombrePlural:
+                "problema"
+
+        });
+
+
+    /* ======================================================
+       20. GESTOR - SOLUCIÓN
+    ====================================================== */
+
+    const gestorSolucion =
+        crearGestorEvidencias({
+
+            idBloque:
+                "bloqueEvidenciasSolucion",
+
+            idInput:
+                "evidenciasSolucion",
+
+            idSelector:
+                "selectorEvidenciasSolucion",
+
+            idContador:
+                "contadorNuevasSolucion",
+
+            idBtnLimpiar:
+                "btnLimpiarSolucion",
+
+            idError:
+                "errorEvidenciasSolucion",
+
+            idPreview:
+                "previewEvidenciasSolucion",
+
+            idGrid:
+                "gridEvidenciasSolucion",
+
+            tipo:
+                "solucion",
+
+            nombrePlural:
+                "solución"
+
+        });
+
+
+    /* ======================================================
+       21. HELPERS DE ERROR DE EVIDENCIAS
+    ====================================================== */
+
+    function limpiarErrorEvidencias(
+        gestor
     ) {
 
-
-        [
-            "dragenter",
-            "dragover"
-        ].forEach(
-            function (nombreEvento) {
-
-                selectorImagen.addEventListener(
-                    nombreEvento,
-                    function (evento) {
-
-                        evento.preventDefault();
-
-                        evento.stopPropagation();
+        if (!gestor) {
+            return;
+        }
 
 
-                        selectorImagen.classList.add(
-                            "arrastrando"
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-        [
-            "dragleave",
-            "drop"
-        ].forEach(
-            function (nombreEvento) {
-
-                selectorImagen.addEventListener(
-                    nombreEvento,
-                    function (evento) {
-
-                        evento.preventDefault();
-
-                        evento.stopPropagation();
-
-
-                        selectorImagen.classList.remove(
-                            "arrastrando"
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-        selectorImagen.addEventListener(
-            "drop",
-            function (evento) {
-
-                const archivos =
-                    evento.dataTransfer.files;
-
-
-                if (
-                    !archivos ||
-                    !archivos.length
-                ) {
-
-                    return;
-
-                }
-
-
-                const archivo =
-                    archivos[0];
-
-
-                const validacion =
-                    validarImagen(
-                        archivo
-                    );
-
-
-                if (!validacion.valido) {
-
-                    mostrarErrorImagen(
-                        validacion.mensaje
-                    );
-
-                    return;
-
-                }
-
-
-                try {
-
-                    const transferencia =
-                        new DataTransfer();
-
-
-                    transferencia.items.add(
-                        archivo
-                    );
-
-
-                    inputImagen.files =
-                        transferencia.files;
-
-
-                    procesarImagen(
-                        archivo
-                    );
-
-                } catch (error) {
-
-                    /*
-                     * Fallback para navegadores donde
-                     * no sea posible asignar DataTransfer.
-                     */
-
-                    inputImagen.click();
-
-                }
-
-            }
-        );
+        gestor.limpiarError();
 
     }
 
 
-
     /* ======================================================
-       28. VALIDAR ESTADO
+       22. VALIDAR ESTADO
     ====================================================== */
 
     function validarEstado() {
@@ -1122,7 +1990,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            !estado ||
+            !estado
+            ||
             !ESTADOS_VALIDOS.includes(
                 estado
             )
@@ -1131,7 +2000,6 @@ document.addEventListener("DOMContentLoaded", function () {
             mostrarErrorEstado(
                 "Selecciona un estado válido para la incidencia."
             );
-
 
             return false;
 
@@ -1146,17 +2014,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       29. VALIDAR OBSERVACIONES
+       23. VALIDAR OBSERVACIONES
     ====================================================== */
 
     function validarObservaciones() {
 
         if (!textareaObservaciones) {
-
             return true;
-
         }
 
 
@@ -1166,13 +2031,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (
             textareaObservaciones.value.length >
-            1000
+            MAX_OBSERVACIONES
         ) {
 
             mostrarErrorObservaciones(
-                "Las observaciones no pueden superar los 1000 caracteres."
+                `Las observaciones no pueden superar los ${MAX_OBSERVACIONES} caracteres.`
             );
-
 
             return false;
 
@@ -1187,37 +2051,67 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       30. VALIDAR IMAGEN ACTUAL
+       24. REGLA PARA MARCAR COMO RESUELTA
+       
+       Debe existir al menos:
+       
+       - 1 solución ya guardada
+       
+       o
+       
+       - 1 nueva solución seleccionada
     ====================================================== */
 
-    function validarImagenActual() {
+    function validarReglaResuelta(
+        mostrarScroll = true
+    ) {
 
         if (
-            !inputImagen ||
-            !inputImagen.files ||
-            !inputImagen.files.length
+            obtenerEstadoSeleccionado() !==
+            "Resuelta"
         ) {
 
-            limpiarErrorImagen();
+            limpiarErrorEvidencias(
+                gestorSolucion
+            );
 
             return true;
 
         }
 
 
-        const validacion =
-            validarImagen(
-                inputImagen.files[0]
-            );
+        const totalSoluciones =
+            gestorSolucion
+                ? gestorSolucion.obtenerTotal()
+                : 0;
 
 
-        if (!validacion.valido) {
+        if (
+            totalSoluciones <= 0
+        ) {
 
-            mostrarErrorImagen(
-                validacion.mensaje
-            );
+            if (gestorSolucion) {
+
+                gestorSolucion.mostrarError(
+                    "Para marcar la incidencia como Resuelta debes agregar al menos una fotografía que evidencie la solución."
+                );
+
+            }
+
+
+            if (
+                mostrarScroll
+                &&
+                gestorSolucion?.bloque
+            ) {
+
+                gestorSolucion.bloque.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }
 
 
             return false;
@@ -1225,7 +2119,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        limpiarErrorImagen();
+        limpiarErrorEvidencias(
+            gestorSolucion
+        );
 
 
         return true;
@@ -1233,33 +2129,77 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       31. VALIDAR FORMULARIO
+       25. VALIDAR FORMULARIO COMPLETO
     ====================================================== */
 
     function validarFormulario() {
 
-        let valido = true;
+        let valido =
+            true;
+
+
+        limpiarErrorEstado();
+
+        limpiarErrorObservaciones();
+
+        limpiarErrorEvidencias(
+            gestorProblema
+        );
+
+        limpiarErrorEvidencias(
+            gestorSolucion
+        );
 
 
         if (!validarEstado()) {
 
-            valido = false;
+            valido =
+                false;
 
         }
 
 
         if (!validarObservaciones()) {
 
-            valido = false;
+            valido =
+                false;
 
         }
 
 
-        if (!validarImagenActual()) {
+        if (
+            gestorProblema
+            &&
+            !gestorProblema.validar()
+        ) {
 
-            valido = false;
+            valido =
+                false;
+
+        }
+
+
+        if (
+            gestorSolucion
+            &&
+            !gestorSolucion.validar()
+        ) {
+
+            valido =
+                false;
+
+        }
+
+
+        if (
+            !validarReglaResuelta(
+                false
+            )
+        ) {
+
+            valido =
+                false;
 
         }
 
@@ -1269,43 +2209,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* ======================================================
-       32. ENFOCAR PRIMER ERROR
+       26. ENFOCAR PRIMER ERROR
     ====================================================== */
 
     function enfocarPrimerError() {
 
-        const errorEstado = document.querySelector(
-            ".estado-error-mensaje"
-        );
 
+        /* ==================================================
+           ESTADO
+        ================================================== */
 
-        if (errorEstado) {
-
-            const opciones = document.querySelector(
-                ".estado-incidencia-opciones"
+        const errorEstado =
+            formulario.querySelector(
+                ".estado-error-mensaje"
             );
 
 
-            if (opciones) {
+        if (
+            errorEstado
+            &&
+            contenedorEstados
+        ) {
 
-                opciones.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-            }
-
+            contenedorEstados.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
 
             return;
 
         }
 
 
-        const campoError = formulario.querySelector(
-            ".campo-incidencia.error"
-        );
+        /* ==================================================
+           OBSERVACIONES
+        ================================================== */
+
+        const campoError =
+            formulario.querySelector(
+                ".campo-incidencia.error"
+            );
 
 
         if (campoError) {
@@ -1316,9 +2260,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
 
-            const elemento = campoError.querySelector(
-                "textarea, input, select"
-            );
+            const elemento =
+                campoError.querySelector(
+                    "textarea, input, select"
+                );
 
 
             if (elemento) {
@@ -1329,7 +2274,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         elemento.focus();
 
                     },
-                    350
+                    300
                 );
 
             }
@@ -1340,14 +2285,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        /* ==================================================
+           PROBLEMA
+        ================================================== */
+
+        const errorProblema =
+            document.getElementById(
+                "errorEvidenciasProblema"
+            );
+
+
         if (
-            selectorImagen &&
-            selectorImagen.classList.contains(
-                "error"
-            )
+            errorProblema &&
+            !errorProblema.hidden
         ) {
 
-            selectorImagen.scrollIntoView({
+            gestorProblema?.bloque?.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+            return;
+
+        }
+
+
+        /* ==================================================
+           SOLUCIÓN
+        ================================================== */
+
+        const errorSolucion =
+            document.getElementById(
+                "errorEvidenciasSolucion"
+            );
+
+
+        if (
+            errorSolucion &&
+            !errorSolucion.hidden
+        ) {
+
+            gestorSolucion?.bloque?.scrollIntoView({
                 behavior: "smooth",
                 block: "center"
             });
@@ -1357,9 +2335,60 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /* ======================================================
+       27. ESTADO DEL BOTÓN GUARDAR
+    ====================================================== */
+
+    function activarEstadoGuardando() {
+
+        if (!btnGuardar) {
+            return;
+        }
+
+
+        btnGuardar.disabled =
+            true;
+
+
+        btnGuardar.innerHTML = `
+            <i class="bi bi-arrow-repeat"></i>
+
+            <span>
+                Guardando...
+            </span>
+        `;
+
+    }
+
 
     /* ======================================================
-       33. GUARDAR FORMULARIO
+       28. RESTAURAR BOTÓN
+    ====================================================== */
+
+    function restaurarBotonGuardar() {
+
+        if (!btnGuardar) {
+            return;
+        }
+
+
+        btnGuardar.disabled =
+            false;
+
+
+        btnGuardar.innerHTML = `
+            <i class="bi bi-check2-circle"></i>
+
+            <span>
+                Guardar cambios
+            </span>
+        `;
+
+    }
+
+
+    /* ======================================================
+       29. SUBMIT
     ====================================================== */
 
     formulario.addEventListener(
@@ -1383,26 +2412,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /*
-             * Evitamos doble envío.
+             * Nos aseguramos de que los dos input reales
+             * tengan exactamente los archivos que aparecen
+             * en las vistas previas.
              */
 
-            if (btnGuardar) {
+            gestorProblema?.sincronizarInput();
 
-                btnGuardar.disabled =
-                    true;
+            gestorSolucion?.sincronizarInput();
 
 
-                btnGuardar.innerHTML = `
-                    <i class="bi bi-arrow-repeat"></i>
-                    <span>Guardando...</span>
-                `;
-
-            }
+            activarEstadoGuardando();
 
 
             /*
-             * Enviamos el formulario de manera nativa
-             * para no volver a ejecutar este listener.
+             * Envío nativo.
              */
 
             HTMLFormElement.prototype.submit.call(
@@ -1413,63 +2437,61 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     /* ======================================================
-       34. RESTAURAR BOTÓN AL VOLVER ATRÁS
+       30. PAGESHOW
     ====================================================== */
 
     window.addEventListener(
         "pageshow",
         function () {
 
-            if (btnGuardar) {
-
-                btnGuardar.disabled =
-                    false;
-
-
-                btnGuardar.innerHTML = `
-                    <i class="bi bi-check2-circle"></i>
-
-                    <span>
-                        Guardar cambios
-                    </span>
-                `;
-
-            }
+            restaurarBotonGuardar();
 
 
             actualizarEstadoVisual();
 
+
             actualizarContadorObservaciones();
+
+
+            gestorProblema?.inicializar();
+
+            gestorSolucion?.inicializar();
 
         }
     );
 
 
-
     /* ======================================================
-       35. LIBERAR PREVIEW AL SALIR
+       31. LIBERAR PREVIEWS
     ====================================================== */
 
     window.addEventListener(
         "beforeunload",
         function () {
 
-            liberarPreviewAnterior();
+            gestorProblema?.liberarUrls();
+
+            gestorSolucion?.liberarUrls();
 
         }
     );
 
 
-
     /* ======================================================
-       36. ESTADO INICIAL
+       32. ESTADO INICIAL
     ====================================================== */
 
     actualizarEstadoVisual();
 
+
     actualizarContadorObservaciones();
+
+
+    gestorProblema?.inicializar();
+
+
+    gestorSolucion?.inicializar();
 
 
 });

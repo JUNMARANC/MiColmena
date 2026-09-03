@@ -58,7 +58,10 @@
 .crear-incidencia-encabezado h1 {
     margin: 0;
 
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: var(
+        --apicultor-verde-oscuro,
+        #214f3b
+    );
 
     font-size: 29px;
     font-weight: 800;
@@ -66,11 +69,14 @@
 }
 
 .crear-incidencia-encabezado p {
-    max-width: 670px;
+    max-width: 720px;
 
     margin: 7px 0 0;
 
-    color: var(--apicultor-texto-secundario, #66746c);
+    color: var(
+        --apicultor-texto-secundario,
+        #66746c
+    );
 
     font-size: 10px;
     font-weight: 500;
@@ -96,7 +102,7 @@
 
     background: rgba(255, 255, 255, 0.78);
 
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: #214f3b;
 
     font-size: 8px;
     font-weight: 700;
@@ -111,6 +117,7 @@
 
 .btn-volver-incidencias:hover {
     background: #ffffff;
+
     border-color: rgba(33, 79, 59, 0.22);
 
     transform: translateX(-2px);
@@ -122,7 +129,7 @@
 
 
 /* ==========================================================
-   4. ICONO ENCABEZADO
+   4. ICONO DEL ENCABEZADO
 ========================================================== */
 
 .crear-incidencia-encabezado-icono {
@@ -188,7 +195,7 @@
 .crear-incidencia-aviso strong {
     display: block;
 
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: #214f3b;
 
     font-size: 10px;
     font-weight: 800;
@@ -197,7 +204,7 @@
 .crear-incidencia-aviso p {
     margin: 4px 0 0;
 
-    color: var(--apicultor-texto-secundario, #66746c);
+    color: #66746c;
 
     font-size: 8px;
     line-height: 1.6;
@@ -205,7 +212,7 @@
 
 
 /* ==========================================================
-   6. FORMULARIO GENERAL
+   6. FORMULARIO
 ========================================================== */
 
 .crear-incidencia-form {
@@ -227,15 +234,19 @@
     border: 1px solid rgba(33, 79, 59, 0.09);
     border-radius: 18px;
 
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
 
     box-shadow:
         0 5px 18px rgba(33, 79, 59, 0.045);
+
+    animation:
+        entradaCrearIncidencia
+        0.32s ease both;
 }
 
 
 /* ==========================================================
-   8. HEADER DE LAS TARJETAS
+   8. HEADER DE TARJETA
 ========================================================== */
 
 .crear-incidencia-card-header {
@@ -286,18 +297,18 @@
 .crear-incidencia-card-header h2 {
     margin: 0;
 
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: #214f3b;
 
     font-size: 14px;
     font-weight: 800;
 }
 
 .crear-incidencia-card-header p {
-    max-width: 650px;
+    max-width: 680px;
 
     margin: 4px 0 0;
 
-    color: var(--apicultor-texto-secundario, #66746c);
+    color: #66746c;
 
     font-size: 8px;
     line-height: 1.6;
@@ -319,7 +330,7 @@
 
 
 /* ==========================================================
-   10. OPCIÓN TIPO
+   10. OPCIÓN DEL TIPO
 ========================================================== */
 
 .tipo-incidencia-opcion {
@@ -397,7 +408,7 @@
 
 
 /* ==========================================================
-   13. TIPO ACTIVO
+   13. TIPO SELECCIONADO
 ========================================================== */
 
 .tipo-incidencia-opcion:has(input:checked),
@@ -412,6 +423,7 @@
 
 .tipo-incidencia-opcion:has(input:checked)
 .tipo-incidencia-radio-visual,
+
 .tipo-incidencia-opcion.activa
 .tipo-incidencia-radio-visual {
     border-color: #c8a72c;
@@ -421,7 +433,7 @@
 
 
 /* ==========================================================
-   14. ICONO TIPO
+   14. ICONO DEL TIPO
 ========================================================== */
 
 .tipo-incidencia-icono {
@@ -449,6 +461,7 @@
 
 .tipo-incidencia-opcion:has(input:checked)
 .tipo-incidencia-icono,
+
 .tipo-incidencia-opcion.activa
 .tipo-incidencia-icono {
     background: #ffedb4;
@@ -458,7 +471,7 @@
 
 
 /* ==========================================================
-   15. TEXTO TIPO
+   15. TEXTO DEL TIPO
 ========================================================== */
 
 .tipo-incidencia-texto {
@@ -470,7 +483,7 @@
 }
 
 .tipo-incidencia-texto strong {
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: #214f3b;
 
     font-size: 11px;
     font-weight: 800;
@@ -479,7 +492,7 @@
 .tipo-incidencia-texto small {
     max-width: 330px;
 
-    color: var(--apicultor-texto-secundario, #66746c);
+    color: #66746c;
 
     font-size: 8px;
     font-weight: 500;
@@ -488,7 +501,7 @@
 
 
 /* ==========================================================
-   16. GRID DE CAMPOS
+   16. GRID DEL FORMULARIO
 ========================================================== */
 
 .crear-incidencia-grid {
@@ -506,7 +519,7 @@
 
 
 /* ==========================================================
-   17. CAMPO
+   17. CAMPOS
 ========================================================== */
 
 .campo-incidencia {
@@ -515,10 +528,6 @@
     display: flex;
     flex-direction: column;
     gap: 7px;
-
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
 }
 
 
@@ -536,14 +545,29 @@
 ========================================================== */
 
 .campo-incidencia > label {
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: #214f3b;
 
     font-size: 8px;
     font-weight: 800;
 }
 
-.campo-incidencia > label > span {
+.campo-incidencia > label > span:not(.campo-opcional) {
     color: #bd554b;
+}
+
+.campo-opcional {
+    margin-left: 6px;
+
+    padding: 3px 6px;
+
+    border-radius: 20px;
+
+    background: #eff3f0;
+
+    color: #7b8880 !important;
+
+    font-size: 6px;
+    font-weight: 700;
 }
 
 
@@ -576,7 +600,7 @@
 
 
 /* ==========================================================
-   21. INPUTS Y SELECTS
+   21. INPUT / SELECT
 ========================================================== */
 
 .campo-incidencia-control input,
@@ -597,7 +621,7 @@
 
     background: #ffffff;
 
-    color: var(--apicultor-texto, #163324);
+    color: #163324;
 
     font-family: inherit;
     font-size: 9px;
@@ -613,11 +637,6 @@
     cursor: pointer;
 }
 
-
-/* ==========================================================
-   22. PLACEHOLDER
-========================================================== */
-
 .campo-incidencia-control input::placeholder {
     color: #a2aca6;
 
@@ -626,7 +645,7 @@
 
 
 /* ==========================================================
-   23. FOCUS
+   22. FOCUS
 ========================================================== */
 
 .campo-incidencia-control input:focus,
@@ -640,7 +659,7 @@
 
 
 /* ==========================================================
-   24. SELECT DESHABILITADO
+   23. SELECT DESHABILITADO
 ========================================================== */
 
 .campo-incidencia-control select:disabled {
@@ -653,7 +672,7 @@
 
 
 /* ==========================================================
-   25. AYUDA
+   24. AYUDA
 ========================================================== */
 
 .campo-ayuda {
@@ -665,7 +684,7 @@
 
 
 /* ==========================================================
-   26. TEXTAREA
+   25. TEXTAREA
 ========================================================== */
 
 .campo-incidencia textarea {
@@ -683,7 +702,7 @@
 
     background: #ffffff;
 
-    color: var(--apicultor-texto, #163324);
+    color: #163324;
 
     font-family: inherit;
     font-size: 9px;
@@ -701,7 +720,7 @@
 
 
 /* ==========================================================
-   27. META / CONTADORES
+   26. META / CONTADORES
 ========================================================== */
 
 .campo-meta {
@@ -727,11 +746,6 @@
     font-weight: 700;
 }
 
-
-/* ==========================================================
-   28. CONTADOR CERCA DEL LÍMITE
-========================================================== */
-
 .campo-meta > span.cerca-limite {
     color: #b2761e;
 }
@@ -742,7 +756,7 @@
 
 
 /* ==========================================================
-   29. CAMPO CON ERROR
+   27. CAMPO CON ERROR
 ========================================================== */
 
 .campo-incidencia.error
@@ -762,7 +776,7 @@
 
 
 /* ==========================================================
-   30. MENSAJE ERROR
+   28. MENSAJE DE ERROR
 ========================================================== */
 
 .campo-error-mensaje {
@@ -780,21 +794,84 @@
 
 
 /* ==========================================================
-   31. EVIDENCIA
+   29. CONTENEDOR DE EVIDENCIAS
 ========================================================== */
 
-.evidencia-incidencia {
+.evidencias-incidencia {
     width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 
 /* ==========================================================
-   32. SELECTOR DE IMAGEN
+   30. INFORMACIÓN DE EVIDENCIAS
+========================================================== */
+
+.evidencias-informacion {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+
+    padding: 13px 14px;
+
+    border: 1px solid #dce7db;
+    border-radius: 12px;
+
+    background: rgba(231, 242, 227, 0.35);
+}
+
+.evidencias-informacion-icono {
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #dcefd7;
+
+    color: #4f744b;
+
+    font-size: 15px;
+}
+
+.evidencias-informacion > div:last-child {
+    min-width: 0;
+}
+
+.evidencias-informacion strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.evidencias-informacion p {
+    margin: 3px 0 0;
+
+    color: #748078;
+
+    font-size: 7px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================================
+   31. SELECTOR DE EVIDENCIAS
 ========================================================== */
 
 .evidencia-selector {
     width: 100%;
-    min-height: 120px;
+    min-height: 126px;
 
     display: flex;
     align-items: center;
@@ -812,7 +889,8 @@
     transition:
         border-color 0.2s ease,
         background 0.2s ease,
-        transform 0.2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .evidencia-selector:hover {
@@ -823,7 +901,7 @@
 
 
 /* ==========================================================
-   33. DRAG / ACTIVO
+   32. SELECTOR ARRASTRANDO
 ========================================================== */
 
 .evidencia-selector.arrastrando {
@@ -831,17 +909,50 @@
 
     background: rgba(255, 237, 180, 0.34);
 
+    box-shadow:
+        0 0 0 4px rgba(255, 221, 113, 0.12);
+
     transform: scale(1.002);
 }
 
 
 /* ==========================================================
-   34. ICONO EVIDENCIA
+   33. SELECTOR CON ERROR
+========================================================== */
+
+.evidencia-selector.error {
+    border-color: #d9665c;
+
+    background: #fff8f7;
+
+    box-shadow:
+        0 0 0 3px rgba(217, 102, 92, 0.08);
+}
+
+
+/* ==========================================================
+   34. SELECTOR CON LÍMITE ALCANZADO
+========================================================== */
+
+.evidencia-selector.limite-alcanzado {
+    border-color: #d9c988;
+
+    background: #fffdf6;
+}
+
+.evidencia-selector.limite-alcanzado
+.evidencia-selector-boton {
+    opacity: 0.75;
+}
+
+
+/* ==========================================================
+   35. ICONO DEL SELECTOR
 ========================================================== */
 
 .evidencia-selector-icono {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
 
     flex-shrink: 0;
 
@@ -849,46 +960,68 @@
     align-items: center;
     justify-content: center;
 
-    border-radius: 13px;
+    border-radius: 14px;
 
     background: #ffedb4;
 
     color: #214f3b;
 
-    font-size: 20px;
+    font-size: 21px;
 }
 
-.evidencia-selector > div:nth-child(2) {
+
+/* ==========================================================
+   36. CONTENIDO DEL SELECTOR
+========================================================== */
+
+.evidencia-selector-contenido {
     min-width: 0;
     flex: 1;
 }
 
-.evidencia-selector strong {
+.evidencia-selector-contenido strong {
     display: block;
 
-    color: var(--apicultor-verde-oscuro, #214f3b);
+    color: #214f3b;
 
     font-size: 10px;
     font-weight: 800;
 }
 
-.evidencia-selector span {
+.evidencia-selector-contenido span {
     display: block;
 
     margin-top: 4px;
 
-    color: #7e8a83;
+    color: #748078;
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.evidencia-selector-contenido small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #919b95;
 
     font-size: 7px;
+    line-height: 1.5;
 }
 
 
 /* ==========================================================
-   35. BOTÓN EXAMINAR
+   37. BOTÓN EXAMINAR
 ========================================================== */
 
 .evidencia-selector-boton {
     flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 
     padding: 9px 14px;
 
@@ -901,118 +1034,69 @@
 
     font-size: 8px;
     font-weight: 800;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.evidencia-selector:hover
+.evidencia-selector-boton {
+    background: #f5cf56;
 }
 
 
 /* ==========================================================
-   36. PREVIEW
+   38. ESTADO DE EVIDENCIAS
 ========================================================== */
 
-.evidencia-preview {
-    width: 100%;
-
-    overflow: hidden;
-
-    border: 1px solid rgba(33, 79, 59, 0.11);
-    border-radius: 14px;
-
-    background: #ffffff;
-}
-
-.evidencia-preview[hidden] {
-    display: none !important;
-}
-
-
-/* ==========================================================
-   37. IMAGEN PREVIEW
-========================================================== */
-
-.evidencia-preview-imagen {
-    width: 100%;
-    height: 320px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-
-    background: #f1f4f2;
-}
-
-.evidencia-preview-imagen img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: contain;
-}
-
-
-/* ==========================================================
-   38. INFORMACIÓN DE IMAGEN
-========================================================== */
-
-.evidencia-preview-info {
+.evidencias-estado {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 15px;
+    gap: 12px;
 
-    padding: 13px 15px;
+    min-height: 34px;
 }
 
-.evidencia-preview-info > div:first-child {
-    min-width: 0;
+.evidencias-contador {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #748078;
+
+    font-size: 8px;
+    font-weight: 600;
 }
 
-.evidencia-preview-info strong {
-    display: block;
+.evidencias-contador i {
+    color: #5f9781;
 
-    max-width: 600px;
+    font-size: 12px;
+}
 
-    overflow: hidden;
-
+.evidencias-contador strong {
     color: #214f3b;
 
-    font-size: 9px;
     font-weight: 800;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.evidencia-preview-info span {
-    display: block;
-
-    margin-top: 3px;
-
-    color: #87928b;
-
-    font-size: 7px;
 }
 
 
 /* ==========================================================
-   39. QUITAR IMAGEN
+   39. QUITAR TODAS
 ========================================================== */
 
-.btn-eliminar-imagen {
-    flex-shrink: 0;
-
-    min-height: 36px;
-
+.btn-limpiar-evidencias {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
 
-    padding: 7px 11px;
+    padding: 7px 10px;
 
     border: 1px solid #efcbc7;
-    border-radius: 9px;
+    border-radius: 8px;
 
     background: #fff8f7;
 
@@ -1025,30 +1109,368 @@
     cursor: pointer;
 
     transition:
+        border-color 0.2s ease,
         background 0.2s ease,
-        border-color 0.2s ease;
+        transform 0.2s ease;
 }
 
-.btn-eliminar-imagen:hover {
+.btn-limpiar-evidencias:hover {
     border-color: #df9c95;
 
     background: #fce2de;
+
+    transform: translateY(-1px);
+}
+
+.btn-limpiar-evidencias[hidden] {
+    display: none !important;
 }
 
 
 /* ==========================================================
-   40. ERROR DE EVIDENCIA
+   40. AYUDA DE EVIDENCIAS
 ========================================================== */
 
-.evidencia-selector.error {
-    border-color: #d9665c;
+.evidencias-ayuda {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
 
-    background: #fff8f7;
+    color: #839087;
+
+    font-size: 7px;
+    line-height: 1.55;
+}
+
+.evidencias-ayuda i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color: #5f9781;
+
+    font-size: 10px;
 }
 
 
 /* ==========================================================
-   41. CONFIRMACIÓN
+   41. ERROR DE EVIDENCIAS
+========================================================== */
+
+.evidencias-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+
+    padding: 9px 11px;
+
+    border: 1px solid #efcbc7;
+    border-radius: 9px;
+
+    background: #fff8f7;
+
+    color: #ad5148;
+
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.evidencias-error i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+}
+
+.evidencias-error[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   42. CONTENEDOR DE PREVIEWS
+========================================================== */
+
+.evidencias-preview {
+    width: 100%;
+
+    padding: 15px;
+
+    border: 1px solid rgba(33, 79, 59, 0.11);
+    border-radius: 14px;
+
+    background: #ffffff;
+}
+
+.evidencias-preview[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   43. HEADER DE PREVIEWS
+========================================================== */
+
+.evidencias-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 13px;
+}
+
+.evidencias-preview-header > div {
+    min-width: 0;
+}
+
+.evidencias-preview-header strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.evidencias-preview-header span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   44. GRID DE FOTOGRAFÍAS
+========================================================== */
+
+.evidencias-preview-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   45. TARJETA DE EVIDENCIA
+========================================================== */
+
+.evidencia-preview-item {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #dfe5e1;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 10px rgba(33, 79, 59, 0.04);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.evidencia-preview-item:hover {
+    border-color: #c9d4cd;
+
+    box-shadow:
+        0 6px 15px rgba(33, 79, 59, 0.07);
+
+    transform: translateY(-2px);
+}
+
+
+/* ==========================================================
+   46. IMAGEN DE LA EVIDENCIA
+========================================================== */
+
+.evidencia-preview-item-imagen {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+
+    background: #f1f4f2;
+}
+
+.evidencia-preview-item-imagen img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.25s ease;
+}
+
+.evidencia-preview-item:hover
+.evidencia-preview-item-imagen img {
+    transform: scale(1.025);
+}
+
+
+/* ==========================================================
+   47. NÚMERO DE EVIDENCIA
+========================================================== */
+
+.evidencia-preview-numero {
+    position: absolute;
+
+    left: 8px;
+    top: 8px;
+
+    min-width: 23px;
+    height: 23px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    border-radius: 20px;
+
+    background: rgba(33, 79, 59, 0.88);
+
+    color: #ffffff;
+
+    font-size: 7px;
+    font-weight: 800;
+
+    backdrop-filter: blur(4px);
+}
+
+
+/* ==========================================================
+   48. QUITAR UNA EVIDENCIA
+========================================================== */
+
+.btn-eliminar-evidencia {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    color: #a84d44;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 8px rgba(30, 45, 36, 0.12);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-eliminar-evidencia:hover {
+    background: #d9665c;
+
+    color: #ffffff;
+
+    transform: scale(1.05);
+}
+
+
+/* ==========================================================
+   49. INFORMACIÓN DE CADA FOTO
+========================================================== */
+
+.evidencia-preview-item-info {
+    min-width: 0;
+
+    padding: 10px 11px;
+}
+
+.evidencia-preview-item-info strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.evidencia-preview-item-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   50. NOTA DE SEGURIDAD DEL NAVEGADOR
+========================================================== */
+
+.evidencias-nota {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+
+    padding-top: 3px;
+
+    color: #929c96;
+
+    font-size: 6.5px;
+    line-height: 1.55;
+}
+
+.evidencias-nota i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color: #78977c;
+
+    font-size: 9px;
+}
+
+
+/* ==========================================================
+   51. CONFIRMACIÓN
 ========================================================== */
 
 .crear-incidencia-confirmacion {
@@ -1103,7 +1525,7 @@
 
 
 /* ==========================================================
-   42. ACCIONES
+   52. ACCIONES
 ========================================================== */
 
 .crear-incidencia-acciones {
@@ -1117,7 +1539,7 @@
 
 
 /* ==========================================================
-   43. CANCELAR
+   53. CANCELAR
 ========================================================== */
 
 .btn-cancelar-incidencia {
@@ -1158,7 +1580,7 @@
 
 
 /* ==========================================================
-   44. REPORTAR
+   54. REPORTAR
 ========================================================== */
 
 .btn-guardar-incidencia {
@@ -1202,11 +1624,6 @@
         0 7px 15px rgba(150, 119, 24, 0.14);
 }
 
-
-/* ==========================================================
-   45. BOTÓN CARGANDO
-========================================================== */
-
 .btn-guardar-incidencia:disabled {
     opacity: 0.65;
 
@@ -1217,14 +1634,8 @@
 
 
 /* ==========================================================
-   46. ANIMACIÓN DE ENTRADA
+   55. ANIMACIONES
 ========================================================== */
-
-.crear-incidencia-card {
-    animation:
-        entradaCrearIncidencia
-        0.32s ease both;
-}
 
 .crear-incidencia-card:nth-of-type(1) {
     animation-delay: 0.02s;
@@ -1247,6 +1658,7 @@
 }
 
 @keyframes entradaCrearIncidencia {
+
     from {
         opacity: 0;
 
@@ -1258,11 +1670,12 @@
 
         transform: translateY(0);
     }
+
 }
 
 
 /* ==========================================================
-   47. RESPONSIVE - 1000px
+   56. RESPONSIVE - 1000px
 ========================================================== */
 
 @media (max-width: 1000px) {
@@ -1275,7 +1688,21 @@
 
 
 /* ==========================================================
-   48. RESPONSIVE - 800px
+   57. RESPONSIVE - 900px
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .evidencias-preview-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ==========================================================
+   58. RESPONSIVE - 800px
 ========================================================== */
 
 @media (max-width: 800px) {
@@ -1313,7 +1740,7 @@
 
 
 /* ==========================================================
-   49. RESPONSIVE - 650px
+   59. RESPONSIVE - 650px
 ========================================================== */
 
 @media (max-width: 650px) {
@@ -1360,23 +1787,38 @@
 
 
     /* ======================================================
-       EVIDENCIA
+       EVIDENCIAS
     ====================================================== */
 
     .evidencia-selector {
+        align-items: flex-start;
+
         flex-wrap: wrap;
+    }
+
+
+    .evidencia-selector-contenido {
+        flex:
+            1
+            1
+            calc(100% - 70px);
     }
 
 
     .evidencia-selector-boton {
         width: 100%;
-
-        text-align: center;
     }
 
 
-    .evidencia-preview-imagen {
-        height: 260px;
+    .evidencias-estado {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .evidencias-preview-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
 
@@ -1386,6 +1828,7 @@
 
     .crear-incidencia-acciones {
         flex-direction: column-reverse;
+
         align-items: stretch;
     }
 
@@ -1399,7 +1842,7 @@
 
 
 /* ==========================================================
-   50. RESPONSIVE - 480px
+   60. RESPONSIVE - 480px
 ========================================================== */
 
 @media (max-width: 480px) {
@@ -1456,19 +1899,92 @@
     }
 
 
-    .evidencia-preview-imagen {
-        height: 220px;
+    /* ======================================================
+       EVIDENCIAS MÓVIL
+    ====================================================== */
+
+    .evidencias-informacion {
+        padding: 11px;
     }
 
 
-    .evidencia-preview-info {
-        align-items: flex-start;
-        flex-direction: column;
+    .evidencias-informacion-icono {
+        width: 34px;
+        height: 34px;
+
+        font-size: 14px;
     }
 
 
-    .btn-eliminar-imagen {
+    .evidencia-selector {
+        min-height: auto;
+
+        padding: 14px;
+    }
+
+
+    .evidencia-selector-icono {
+        width: 45px;
+        height: 45px;
+
+        font-size: 18px;
+    }
+
+
+    .evidencias-preview {
+        padding: 12px;
+    }
+
+
+    .evidencias-preview-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .evidencia-preview-item-imagen {
+        aspect-ratio: 16 / 10;
+    }
+
+
+    .btn-eliminar-evidencia {
+        width: 30px;
+        height: 30px;
+    }
+
+
+    .btn-limpiar-evidencias {
         width: 100%;
+    }
+
+}
+
+
+/* ==========================================================
+   61. RESPONSIVE - 360px
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .crear-incidencia-card {
+        padding: 14px;
+    }
+
+
+    .evidencia-selector {
+        gap: 10px;
+    }
+
+
+    .evidencia-selector-icono {
+        width: 40px;
+        height: 40px;
+
+        font-size: 16px;
+    }
+
+
+    .evidencias-preview-header span {
+        max-width: 250px;
     }
 
 }
