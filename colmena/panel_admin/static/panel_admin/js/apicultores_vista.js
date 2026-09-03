@@ -16,17 +16,19 @@ document.addEventListener("DOMContentLoaded", function () {
     // sin que haya que tocarlo.
  
     // NUEVO: entrada escalonada de filas/tarjetas
-    function aplicarEntradaEscalonadaApicultores(contenedor, selectorHijos, retraso) {
+    function aplicarEntradaEscalonadaApicultores(contenedor, selectorHijos, retraso, claseAnimacion) {
  
         if (!contenedor) {
             return;
         }
  
+        const clase = claseAnimacion || "anim-entrada-lista";
+ 
         contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
-            hijo.classList.remove("anim-entrada-lista");
+            hijo.classList.remove(clase);
             void hijo.offsetWidth; // fuerza reflow para poder re-disparar
             hijo.style.animationDelay = (indice * retraso) + "ms";
-            hijo.classList.add("anim-entrada-lista");
+            hijo.classList.add(clase);
         });
     }
  
@@ -44,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
  
     // NUEVO: entrada escalonada al cargar la página
     aplicarEntradaEscalonadaApicultores(vistaTabla, "tbody tr", 45);
-    aplicarEntradaEscalonadaApicultores(vistaTarjetas, ".tarjeta-apicultor-card", 70);
+    aplicarEntradaEscalonadaApicultores(vistaTarjetas, ".tarjeta-apicultor-card", 70, "anim-entrada-tarjeta");
  
     function activarBoton(botonActivo, botonInactivo) {
         botonActivo.classList.add("activo");
@@ -67,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
  
             // NUEVO: entrada escalonada al cambiar de vista
             if (elementoAMostrar.id === "vistaTarjetasApicultores") {
-                aplicarEntradaEscalonadaApicultores(elementoAMostrar, ".tarjeta-apicultor-card", 70);
+                aplicarEntradaEscalonadaApicultores(elementoAMostrar, ".tarjeta-apicultor-card", 70, "anim-entrada-tarjeta");
             } else {
                 aplicarEntradaEscalonadaApicultores(elementoAMostrar, "tbody tr", 45);
             }
@@ -113,5 +115,86 @@ document.addEventListener("DOMContentLoaded", function () {
         vistaTarjetas.style.display = "none";
         activarBoton(btnVistaTabla, btnVistaTarjetas);
     }
+ 
+    // =========================================================
+    // ENTRADA ESCALONADA DENTRO DE LOS MODALES
+    // (Agregar, Editar y Detalle Apicultor)
+    // =========================================================
+    //
+    // Igual que en Colmenas: cada vez que se abre uno de estos
+    // modales, sus bloques internos (.row > div) entran uno tras
+    // otro en vez de aparecer todos de golpe. Reutiliza la clase
+    // .anim-entrada-modal ya definida en estilos_admin.css.
+
+    document.addEventListener("shown.bs.modal", function (evento) {
+
+        const modal = evento.target;
+
+        if (!modal || !modal.id) {
+            return;
+        }
+
+        const esModalDeApicultor = (
+            modal.id === "modalAgregarApicultor"
+            ||
+            modal.id === "modalEditarApicultor"
+            ||
+            modal.id === "modalDetalleApicultor"
+        );
+
+        if (!esModalDeApicultor) {
+            return;
+        }
+
+        const cuerpoModal = modal.querySelector(".modal-body");
+
+        aplicarEntradaEscalonadaApicultores(cuerpoModal, ".row > div", 35, "anim-entrada-modal");
+
+    });
+
+    // =========================================================
+    // RÁFAGA DE POLEN AL GUARDAR (botón Guardar)
+    // =========================================================
+    //
+    // Mismo recurso visual de Colmenas: al hacer clic en Guardar,
+    // salen partículas del botón hacia afuera. Reutiliza la clase
+    // .particula-rafaga-polen ya definida en estilos_admin.css.
+
+    document
+        .querySelectorAll(".btn-guardar-apicultor")
+        .forEach(function (boton) {
+
+            boton.addEventListener("click", function () {
+
+                const rect = boton.getBoundingClientRect();
+                const centroX = rect.left + rect.width / 2;
+                const centroY = rect.top + rect.height / 2;
+                const CANTIDAD_PARTICULAS = 10;
+
+                for (let i = 0; i < CANTIDAD_PARTICULAS; i++) {
+
+                    const angulo = (Math.PI * 2 * i) / CANTIDAD_PARTICULAS;
+                    const distancia = 40 + Math.random() * 30;
+                    const dx = Math.cos(angulo) * distancia;
+                    const dy = Math.sin(angulo) * distancia;
+
+                    const particula = document.createElement("span");
+                    particula.className = "particula-rafaga-polen";
+                    particula.style.left = centroX + "px";
+                    particula.style.top = centroY + "px";
+                    particula.style.setProperty("--dx", dx.toFixed(1) + "px");
+                    particula.style.setProperty("--dy", dy.toFixed(1) + "px");
+
+                    document.body.appendChild(particula);
+
+                    window.setTimeout(function () {
+                        particula.remove();
+                    }, 700);
+
+                }
+
+            });
+
+        });
  
 });
