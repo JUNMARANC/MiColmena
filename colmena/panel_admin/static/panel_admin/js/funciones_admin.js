@@ -236,248 +236,974 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 })();
  
-/*mantenimientos */
- 
+
+
+/* ==========================================================
+   ==========================================================
+   MÓDULO MANTENIMIENTOS
+   PANEL ADMINISTRADOR
+   ==========================================================
+   ========================================================== */
+
 document.addEventListener("DOMContentLoaded", function () {
- 
-    const radios = document.querySelectorAll(".tipo-mantenimiento-radio");
-    const campoApiario = document.getElementById("campoApiarioMantenimiento");
-    const campoColmena = document.getElementById("campoColmenaMantenimiento");
- 
-    if (!radios.length || !campoApiario || !campoColmena) {
-        return;
-    }
- 
-    radios.forEach(function (radio) {
-        radio.addEventListener("change", function () {
- 
-            if (this.value === "Apiario") {
-                campoApiario.classList.remove("d-none");
-                campoColmena.classList.add("d-none");
-            }
- 
-            if (this.value === "Colmena") {
-                campoColmena.classList.remove("d-none");
-                campoApiario.classList.add("d-none");
-            }
- 
-        });
-    });
- 
-});
- 
-/*Modal agregar mantenimiento */
- 
-document.addEventListener("DOMContentLoaded", function () {
-    const responsable = document.getElementById("responsableMantenimiento");
-    const apiario = document.getElementById("apiarioMantenimiento");
-    const colmena = document.getElementById("colmenaMantenimiento");
-    const campoColmena = document.getElementById("campoColmenaMantenimiento");
-    const radios = document.querySelectorAll(".alcance-mantenimiento-radio");
- 
-    if (!responsable || !apiario || !colmena || !campoColmena || !radios.length) {
-        return;
-    }
- 
-    function obtenerAlcance() {
-        const seleccionado = document.querySelector(".alcance-mantenimiento-radio:checked");
-        return seleccionado ? seleccionado.value : "";
-    }
- 
-    function filtrarApiarios() {
-        const idResponsable = responsable.value;
- 
-        apiario.value = "";
-        colmena.value = "";
-        campoColmena.classList.add("d-none");
- 
-        Array.from(apiario.options).forEach(function (option) {
-            if (!option.value) {
-                option.hidden = false;
+
+
+    /* ======================================================
+       ======================================================
+       1. MODAL AGREGAR MANTENIMIENTO
+       ======================================================
+       ====================================================== */
+
+    const modalAgregarMantenimiento =
+        document.getElementById(
+            "modalAgregarMantenimiento"
+        );
+
+
+    if (modalAgregarMantenimiento) {
+
+
+        /* ==================================================
+           ELEMENTOS
+        ================================================== */
+
+        const responsable =
+            modalAgregarMantenimiento.querySelector(
+                "#responsableMantenimiento"
+            );
+
+
+        const apiario =
+            modalAgregarMantenimiento.querySelector(
+                "#apiarioMantenimiento"
+            );
+
+
+        const colmena =
+            modalAgregarMantenimiento.querySelector(
+                "#colmenaMantenimiento"
+            );
+
+
+        const campoColmena =
+            modalAgregarMantenimiento.querySelector(
+                "#campoColmenaMantenimiento"
+            );
+
+
+        const radiosAlcance =
+            modalAgregarMantenimiento.querySelectorAll(
+                ".alcance-mantenimiento-radio"
+            );
+
+
+        /* ==================================================
+           OBTENER ALCANCE SELECCIONADO
+        ================================================== */
+
+        function obtenerAlcanceMantenimiento() {
+
+            const seleccionado =
+                modalAgregarMantenimiento.querySelector(
+                    ".alcance-mantenimiento-radio:checked"
+                );
+
+
+            return seleccionado
+                ? seleccionado.value
+                : "";
+        }
+
+
+        /* ==================================================
+           FILTRAR APIARIOS POR RESPONSABLE
+        ================================================== */
+
+        function filtrarApiariosPorResponsable() {
+
+            if (
+                !responsable
+                ||
+                !apiario
+            ) {
                 return;
             }
- 
-            option.hidden = option.dataset.apicultor !== idResponsable;
-        });
-    }
- 
-    function filtrarColmenas() {
-        const idApiario = apiario.value;
-        const alcance = obtenerAlcance();
- 
-        colmena.value = "";
- 
-        if (alcance === "Colmena" && idApiario) {
-            campoColmena.classList.remove("d-none");
-            colmena.required = true;
- 
-            Array.from(colmena.options).forEach(function (option) {
-                if (!option.value) {
-                    option.hidden = false;
+
+
+            const idResponsable =
+                responsable.value;
+
+
+            /* ==============================================
+               LIMPIAR SELECCIONES
+            ============================================== */
+
+            apiario.value = "";
+
+
+            if (colmena) {
+                colmena.value = "";
+            }
+
+
+            if (campoColmena) {
+                campoColmena.classList.add(
+                    "d-none"
+                );
+            }
+
+
+            /* ==============================================
+               FILTRAR OPCIONES
+            ============================================== */
+
+            Array.from(
+                apiario.options
+            ).forEach(function (opcion) {
+
+
+                /* ==========================================
+                   OPCIÓN PLACEHOLDER
+                ========================================== */
+
+                if (!opcion.value) {
+
+                    opcion.hidden = false;
+
+                    opcion.disabled = false;
+
                     return;
                 }
- 
-                option.hidden = option.dataset.apiario !== idApiario;
+
+
+                /* ==========================================
+                   SI NO HAY RESPONSABLE
+                   NO MOSTRAMOS APIARIOS
+                ========================================== */
+
+                if (!idResponsable) {
+
+                    opcion.hidden = true;
+
+                    opcion.disabled = true;
+
+                    return;
+                }
+
+
+                /* ==========================================
+                   MOSTRAR SOLO APIARIOS DEL APICULTOR
+                ========================================== */
+
+                const corresponde =
+                    opcion.dataset.apicultor
+                    ===
+                    idResponsable;
+
+
+                opcion.hidden =
+                    !corresponde;
+
+
+                opcion.disabled =
+                    !corresponde;
+
             });
-        } else {
-            campoColmena.classList.add("d-none");
-            colmena.required = false;
+
+
+            /* ==============================================
+               ACTUALIZAR COLMENAS
+            ============================================== */
+
+            filtrarColmenasPorApiario();
+
         }
-    }
- 
-    responsable.addEventListener("change", filtrarApiarios);
-    apiario.addEventListener("change", filtrarColmenas);
- 
-    radios.forEach(function (radio) {
-        radio.addEventListener("change", filtrarColmenas);
-    });
-});
- 
-/*Filtro de Mantenimientos */
- 
-document.addEventListener("DOMContentLoaded", function () {
-    const filtroApiario = document.getElementById("filtroApiario");
-    const filtroColmena = document.getElementById("filtroColmena");
- 
-    if (!filtroApiario || !filtroColmena) {
-        return;
-    }
- 
-    function filtrarColmenasPorApiario() {
-        const idApiario = filtroApiario.value;
-        const colmenaSeleccionada = filtroColmena.value;
- 
-        Array.from(filtroColmena.options).forEach(function (option) {
-            if (!option.value) {
-                option.hidden = false;
+
+
+        /* ==================================================
+           FILTRAR COLMENAS POR APIARIO
+        ================================================== */
+
+        function filtrarColmenasPorApiario() {
+
+            if (
+                !apiario
+                ||
+                !colmena
+                ||
+                !campoColmena
+            ) {
                 return;
             }
- 
-            if (!idApiario) {
-                option.hidden = false;
-            } else {
-                option.hidden = option.dataset.apiario !== idApiario;
-            }
-        });
- 
-        const opcionActual = filtroColmena.options[filtroColmena.selectedIndex];
- 
-        if (opcionActual && opcionActual.hidden) {
-            filtroColmena.value = "";
-        }
-    }
- 
-    filtroApiario.addEventListener("change", filtrarColmenasPorApiario);
- 
-    filtrarColmenasPorApiario();
-});
- 
-/* Selector de vista Tabla/Tarjetas — Mantenimientos */
- 
-document.addEventListener("DOMContentLoaded", function () {
- 
-    // Igual que en apiarios/colmenas: los modales quedan anidados
-    // dentro de la vista de tabla por cómo el navegador corrige el
-    // HTML, así que se reubican como hijos directos de <body>.
-    document
-        .querySelectorAll("#vistaTablaMantenimientos .modal, #vistaTarjetasMantenimientos .modal")
-        .forEach(function (modal) {
-            document.body.appendChild(modal);
-        });
- 
-    // NUEVO: entrada escalonada de filas/tarjetas
-    function aplicarEntradaEscalonadaMantenimientos(contenedor, selectorHijos, retraso, claseAnimacion) {
-        if (!contenedor) return;
- 
-        var clase = claseAnimacion || "anim-entrada-lista";
 
-        contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
-            hijo.classList.remove(clase);
-            void hijo.offsetWidth;
-            hijo.style.animationDelay = (indice * retraso) + "ms";
-            hijo.classList.add(clase);
-        });
-    }
- 
-    const CLAVE_LOCALSTORAGE = "vistaMantenimientos";
- 
-    const btnVistaTabla = document.getElementById("btnVistaTabla");
-    const btnVistaTarjetas = document.getElementById("btnVistaTarjetas");
- 
-    const vistaTabla = document.getElementById("vistaTablaMantenimientos");
-    const vistaTarjetas = document.getElementById("vistaTarjetasMantenimientos");
- 
-    if (!btnVistaTabla || !btnVistaTarjetas || !vistaTabla || !vistaTarjetas) {
-        return;
-    }
- 
-    // NUEVO: entrada escalonada al cargar la página
-    aplicarEntradaEscalonadaMantenimientos(vistaTabla, "tbody tr", 45);
-    aplicarEntradaEscalonadaMantenimientos(vistaTarjetas, ".tarjeta-mantenimiento", 70, "anim-entrada-tarjeta");
- 
-    function activarBoton(botonActivo, botonInactivo) {
-        botonActivo.classList.add("activo");
-        botonInactivo.classList.remove("activo");
-    }
- 
-    function mostrarVista(elementoAMostrar, elementoAOcultar) {
-        elementoAOcultar.classList.add("vista-saliendo");
- 
-        window.setTimeout(function () {
-            elementoAOcultar.style.display = "none";
-            elementoAOcultar.classList.remove("vista-saliendo");
- 
-            elementoAMostrar.style.display =
-                elementoAMostrar.id === "vistaTarjetasMantenimientos" ? "grid" : "block";
- 
-            elementoAMostrar.classList.add("vista-entrando");
- 
-            // NUEVO: entrada escalonada al cambiar de vista
-            if (elementoAMostrar.id === "vistaTarjetasMantenimientos") {
-                aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, ".tarjeta-mantenimiento", 70, "anim-entrada-tarjeta");
-            } else {
-                aplicarEntradaEscalonadaMantenimientos(elementoAMostrar, "tbody tr", 45);
+
+            const idApiario =
+                apiario.value;
+
+
+            const alcance =
+                obtenerAlcanceMantenimiento();
+
+
+            /* ==============================================
+               SI EL ALCANCE ES APIARIO
+            ============================================== */
+
+            if (
+                alcance !== "Colmena"
+            ) {
+
+                campoColmena.classList.add(
+                    "d-none"
+                );
+
+
+                colmena.required =
+                    false;
+
+
+                colmena.value =
+                    "";
+
+
+                return;
             }
- 
-            window.setTimeout(function () {
-                elementoAMostrar.classList.remove("vista-entrando");
-            }, 340);
-        }, 180);
-    }
- 
-    function irAVistaTabla() {
-        if (vistaTabla.style.display !== "none" && !btnVistaTarjetas.classList.contains("activo")) {
-            return;
+
+
+            /* ==============================================
+               SI TODAVÍA NO HAY APIARIO
+            ============================================== */
+
+            if (!idApiario) {
+
+                campoColmena.classList.add(
+                    "d-none"
+                );
+
+
+                colmena.required =
+                    false;
+
+
+                colmena.value =
+                    "";
+
+
+                return;
+            }
+
+
+            /* ==============================================
+               MOSTRAR SELECT DE COLMENA
+            ============================================== */
+
+            campoColmena.classList.remove(
+                "d-none"
+            );
+
+
+            colmena.required =
+                true;
+
+
+            /* ==============================================
+               FILTRAR OPCIONES
+            ============================================== */
+
+            Array.from(
+                colmena.options
+            ).forEach(function (opcion) {
+
+
+                /* ==========================================
+                   PLACEHOLDER
+                ========================================== */
+
+                if (!opcion.value) {
+
+                    opcion.hidden =
+                        false;
+
+
+                    opcion.disabled =
+                        false;
+
+
+                    return;
+                }
+
+
+                /* ==========================================
+                   COLMENAS DEL APIARIO
+                ========================================== */
+
+                const corresponde =
+                    opcion.dataset.apiario
+                    ===
+                    idApiario;
+
+
+                opcion.hidden =
+                    !corresponde;
+
+
+                opcion.disabled =
+                    !corresponde;
+
+            });
+
+
+            /* ==============================================
+               VALIDAR SELECCIÓN ACTUAL
+            ============================================== */
+
+            const opcionActual =
+                colmena.options[
+                    colmena.selectedIndex
+                ];
+
+
+            if (
+                opcionActual
+                &&
+                opcionActual.value
+                &&
+                opcionActual.dataset.apiario
+                !==
+                idApiario
+            ) {
+
+                colmena.value =
+                    "";
+
+            }
+
         }
-        mostrarVista(vistaTabla, vistaTarjetas);
-        activarBoton(btnVistaTabla, btnVistaTarjetas);
-        localStorage.setItem(CLAVE_LOCALSTORAGE, "tabla");
-    }
- 
-    function irAVistaTarjetas() {
-        if (vistaTarjetas.style.display !== "none" && btnVistaTarjetas.classList.contains("activo")) {
-            return;
+
+
+        /* ==================================================
+           CAMBIO DE RESPONSABLE
+        ================================================== */
+
+        if (responsable) {
+
+            responsable.addEventListener(
+                "change",
+                function () {
+
+                    filtrarApiariosPorResponsable();
+
+                }
+            );
+
         }
-        mostrarVista(vistaTarjetas, vistaTabla);
-        activarBoton(btnVistaTarjetas, btnVistaTabla);
-        localStorage.setItem(CLAVE_LOCALSTORAGE, "tarjetas");
+
+
+        /* ==================================================
+           CAMBIO DE APIARIO
+        ================================================== */
+
+        if (apiario) {
+
+            apiario.addEventListener(
+                "change",
+                function () {
+
+                    if (colmena) {
+                        colmena.value = "";
+                    }
+
+
+                    filtrarColmenasPorApiario();
+
+                }
+            );
+
+        }
+
+
+        /* ==================================================
+           CAMBIO DE ALCANCE
+        ================================================== */
+
+        radiosAlcance.forEach(
+            function (radio) {
+
+                radio.addEventListener(
+                    "change",
+                    function () {
+
+                        if (colmena) {
+                            colmena.value = "";
+                        }
+
+
+                        filtrarColmenasPorApiario();
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* ==================================================
+           ESTADO INICIAL
+        ================================================== */
+
+        filtrarApiariosPorResponsable();
+
+        filtrarColmenasPorApiario();
+
     }
- 
-    btnVistaTabla.addEventListener("click", irAVistaTabla);
-    btnVistaTarjetas.addEventListener("click", irAVistaTarjetas);
- 
-    const vistaGuardada = localStorage.getItem(CLAVE_LOCALSTORAGE);
- 
-    if (vistaGuardada === "tarjetas") {
-        vistaTabla.style.display = "none";
-        vistaTarjetas.style.display = "grid";
-        activarBoton(btnVistaTarjetas, btnVistaTabla);
-    } else {
-        vistaTabla.style.display = "block";
-        vistaTarjetas.style.display = "none";
-        activarBoton(btnVistaTabla, btnVistaTarjetas);
+
+
+
+    /* ======================================================
+       ======================================================
+       2. FILTRO SUPERIOR
+       APIARIO -> COLMENA
+       ======================================================
+       ====================================================== */
+
+    const filtroApiario =
+        document.getElementById(
+            "filtroApiario"
+        );
+
+
+    const filtroColmena =
+        document.getElementById(
+            "filtroColmena"
+        );
+
+
+    if (
+        filtroApiario
+        &&
+        filtroColmena
+    ) {
+
+
+        /* ==================================================
+           FILTRAR COLMENAS
+        ================================================== */
+
+        function filtrarColmenasFiltro() {
+
+            const idApiario =
+                filtroApiario.value;
+
+
+            Array.from(
+                filtroColmena.options
+            ).forEach(function (opcion) {
+
+
+                /* ==========================================
+                   PLACEHOLDER
+                ========================================== */
+
+                if (!opcion.value) {
+
+                    opcion.hidden =
+                        false;
+
+
+                    opcion.disabled =
+                        false;
+
+
+                    return;
+                }
+
+
+                /* ==========================================
+                   SIN APIARIO:
+                   MOSTRAR TODAS LAS COLMENAS
+                ========================================== */
+
+                if (!idApiario) {
+
+                    opcion.hidden =
+                        false;
+
+
+                    opcion.disabled =
+                        false;
+
+
+                    return;
+                }
+
+
+                /* ==========================================
+                   FILTRAR POR APIARIO
+                ========================================== */
+
+                const corresponde =
+                    opcion.dataset.apiario
+                    ===
+                    idApiario;
+
+
+                opcion.hidden =
+                    !corresponde;
+
+
+                opcion.disabled =
+                    !corresponde;
+
+            });
+
+
+            /* ==============================================
+               VALIDAR OPCIÓN SELECCIONADA
+            ============================================== */
+
+            const opcionActual =
+                filtroColmena.options[
+                    filtroColmena.selectedIndex
+                ];
+
+
+            if (
+                opcionActual
+                &&
+                opcionActual.value
+                &&
+                opcionActual.hidden
+            ) {
+
+                filtroColmena.value =
+                    "";
+
+            }
+
+        }
+
+
+        /* ==================================================
+           EVENTO
+        ================================================== */
+
+        filtroApiario.addEventListener(
+            "change",
+            function () {
+
+                filtrarColmenasFiltro();
+
+            }
+        );
+
+
+        /* ==================================================
+           ESTADO INICIAL
+        ================================================== */
+
+        filtrarColmenasFiltro();
+
     }
- 
+
+
+
+    /* ======================================================
+       ======================================================
+       3. SELECTOR DE VISTA
+       TABLA / TARJETAS
+       ======================================================
+       ====================================================== */
+
+    const btnVistaTabla =
+        document.getElementById(
+            "btnVistaTabla"
+        );
+
+
+    const btnVistaTarjetas =
+        document.getElementById(
+            "btnVistaTarjetas"
+        );
+
+
+    const vistaTabla =
+        document.getElementById(
+            "vistaTablaMantenimientos"
+        );
+
+
+    const vistaTarjetas =
+        document.getElementById(
+            "vistaTarjetasMantenimientos"
+        );
+
+
+    /* ======================================================
+       SOLO EJECUTAR SI EXISTEN LAS DOS VISTAS
+    ====================================================== */
+
+    if (
+        btnVistaTabla
+        &&
+        btnVistaTarjetas
+        &&
+        vistaTabla
+        &&
+        vistaTarjetas
+    ) {
+
+
+        /* ==================================================
+           CONFIGURACIÓN
+        ================================================== */
+
+        const CLAVE_LOCALSTORAGE =
+            "vistaMantenimientos";
+
+
+        /* ==================================================
+           ANIMACIÓN ESCALONADA
+        ================================================== */
+
+        function aplicarEntradaEscalonadaMantenimientos(
+            contenedor,
+            selectorHijos,
+            retraso,
+            claseAnimacion
+        ) {
+
+            if (!contenedor) {
+                return;
+            }
+
+
+            const clase =
+                claseAnimacion
+                ||
+                "anim-entrada-lista";
+
+
+            contenedor
+                .querySelectorAll(
+                    selectorHijos
+                )
+                .forEach(
+                    function (
+                        hijo,
+                        indice
+                    ) {
+
+                        hijo.classList.remove(
+                            clase
+                        );
+
+
+                        void hijo.offsetWidth;
+
+
+                        hijo.style.animationDelay =
+                            (
+                                indice
+                                *
+                                retraso
+                            )
+                            +
+                            "ms";
+
+
+                        hijo.classList.add(
+                            clase
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* ==================================================
+           ACTIVAR BOTÓN
+        ================================================== */
+
+        function activarBoton(
+            activo,
+            inactivo
+        ) {
+
+            activo.classList.add(
+                "activo"
+            );
+
+
+            inactivo.classList.remove(
+                "activo"
+            );
+
+        }
+
+
+        /* ==================================================
+           GUARDAR VISTA
+        ================================================== */
+
+        function guardarVista(
+            vista
+        ) {
+
+            try {
+
+                localStorage.setItem(
+                    CLAVE_LOCALSTORAGE,
+                    vista
+                );
+
+            } catch (error) {
+
+                /*
+                 * localStorage puede no estar disponible.
+                 * No debe romper el módulo.
+                 */
+
+            }
+
+        }
+
+
+        /* ==================================================
+           LEER VISTA
+        ================================================== */
+
+        function obtenerVistaGuardada() {
+
+            try {
+
+                return localStorage.getItem(
+                    CLAVE_LOCALSTORAGE
+                );
+
+            } catch (error) {
+
+                return null;
+
+            }
+
+        }
+
+
+        /* ==================================================
+           MOSTRAR TABLA
+        ================================================== */
+
+        function mostrarTabla(
+            animar = true
+        ) {
+
+            vistaTarjetas.style.display =
+                "none";
+
+
+            vistaTabla.style.display =
+                "block";
+
+
+            activarBoton(
+                btnVistaTabla,
+                btnVistaTarjetas
+            );
+
+
+            if (animar) {
+
+                vistaTabla.classList.add(
+                    "vista-entrando"
+                );
+
+
+                aplicarEntradaEscalonadaMantenimientos(
+                    vistaTabla,
+                    "tbody tr",
+                    45,
+                    "anim-entrada-lista"
+                );
+
+
+                window.setTimeout(
+                    function () {
+
+                        vistaTabla.classList.remove(
+                            "vista-entrando"
+                        );
+
+                    },
+                    340
+                );
+
+            }
+
+
+            guardarVista(
+                "tabla"
+            );
+
+        }
+
+
+        /* ==================================================
+           MOSTRAR TARJETAS
+        ================================================== */
+
+        function mostrarTarjetas(
+            animar = true
+        ) {
+
+            vistaTabla.style.display =
+                "none";
+
+
+            vistaTarjetas.style.display =
+                "grid";
+
+
+            activarBoton(
+                btnVistaTarjetas,
+                btnVistaTabla
+            );
+
+
+            if (animar) {
+
+                vistaTarjetas.classList.add(
+                    "vista-entrando"
+                );
+
+
+                aplicarEntradaEscalonadaMantenimientos(
+                    vistaTarjetas,
+                    ".tarjeta-mantenimiento",
+                    70,
+                    "anim-entrada-tarjeta"
+                );
+
+
+                window.setTimeout(
+                    function () {
+
+                        vistaTarjetas.classList.remove(
+                            "vista-entrando"
+                        );
+
+                    },
+                    340
+                );
+
+            }
+
+
+            guardarVista(
+                "tarjetas"
+            );
+
+        }
+
+
+        /* ==================================================
+           EVENTO TABLA
+        ================================================== */
+
+        btnVistaTabla.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    btnVistaTabla
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+                ) {
+                    return;
+                }
+
+
+                mostrarTabla(
+                    true
+                );
+
+            }
+        );
+
+
+        /* ==================================================
+           EVENTO TARJETAS
+        ================================================== */
+
+        btnVistaTarjetas.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    btnVistaTarjetas
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+                ) {
+                    return;
+                }
+
+
+                mostrarTarjetas(
+                    true
+                );
+
+            }
+        );
+
+
+        /* ==================================================
+           VISTA INICIAL
+        ================================================== */
+
+        const vistaGuardada =
+            obtenerVistaGuardada();
+
+
+        if (
+            vistaGuardada
+            ===
+            "tarjetas"
+        ) {
+
+            mostrarTarjetas(
+                false
+            );
+
+
+            aplicarEntradaEscalonadaMantenimientos(
+                vistaTarjetas,
+                ".tarjeta-mantenimiento",
+                70,
+                "anim-entrada-tarjeta"
+            );
+
+        } else {
+
+            mostrarTabla(
+                false
+            );
+
+
+            aplicarEntradaEscalonadaMantenimientos(
+                vistaTabla,
+                "tbody tr",
+                45,
+                "anim-entrada-lista"
+            );
+
+        }
+
+    }
+
 });
  
 /* JS DE INCIDENCIAS */
@@ -788,151 +1514,1644 @@ document.addEventListener("DOMContentLoaded", function () {
 });
  
 /* ==========================================================
-   VALIDACIONES NUEVAS - MÓDULO DE MANTENIMIENTOS
+   ==========================================================
+   VALIDACIONES - MÓDULO DE MANTENIMIENTOS
+   PANEL ADMINISTRADOR
+   ==========================================================
    ========================================================== */
- 
-/* Validación de Colmena en el modal Editar Mantenimiento */
+
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".modal-editar-mantenimiento").forEach(function (modal) {
-        const entidad = modal.querySelector(".entidad-editar");
-        const apiario = modal.querySelector(".apiario-editar");
-        const colmena = modal.querySelector(".colmena-editar");
-        const campoColmena = colmena ? colmena.closest(".col-md-6") : null;
- 
-        if (!entidad || !apiario || !colmena) return;
- 
-        function actualizar() {
-            const idApiario = apiario.value;
-            const esColmena = entidad.value === "Colmena";
- 
-            if (campoColmena) campoColmena.classList.toggle("d-none", !esColmena);
-            colmena.required = esColmena;
-            if (!esColmena) colmena.value = "";
- 
-            Array.from(colmena.options).forEach(function (option) {
-                if (!option.value) {
-                    option.hidden = false;
+
+
+    /* ======================================================
+       CONFIGURACIÓN GENERAL
+    ====================================================== */
+
+    const MAX_EVIDENCIAS_MANTENIMIENTO = 6;
+
+    const MAX_TAMANO_MB = 5;
+
+    const MAX_TAMANO_BYTES =
+        MAX_TAMANO_MB
+        *
+        1024
+        *
+        1024;
+
+
+    const TIPOS_IMAGEN_VALIDOS = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+
+    const EXTENSIONES_VALIDAS = [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp"
+    ];
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       MOSTRAR MENSAJE
+    ====================================================== */
+
+    /* ======================================================
+    VENTANA EMERGENTE DE VALIDACIÓN
+    ====================================================== */
+
+    function mostrarErrorMantenimiento(
+        mensaje,
+        titulo = "Revisa la información"
+    ) {
+
+        /* ==================================================
+        BUSCAR MODAL EXISTENTE
+        ================================================== */
+
+        let modal =
+            document.getElementById(
+                "modalValidacionMantenimiento"
+            );
+
+
+        /* ==================================================
+        CREAR MODAL SI TODAVÍA NO EXISTE
+        ================================================== */
+
+        if (!modal) {
+
+            modal =
+                document.createElement(
+                    "div"
+                );
+
+
+            modal.id =
+                "modalValidacionMantenimiento";
+
+
+            modal.className =
+                "modal fade";
+
+
+            modal.tabIndex =
+                -1;
+
+
+            modal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+            modal.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div
+                        class="
+                            modal-content
+                            border-0
+                            shadow
+                            rounded-4
+                        "
+                    >
+
+                        <!-- =====================================
+                            ENCABEZADO
+                        ====================================== -->
+
+                        <div
+                            class="
+                                modal-header
+                                border-0
+                                modal-validacion-mantenimiento-header
+                            "
+                        >
+
+                            <div
+                                class="
+                                    d-flex
+                                    align-items-center
+                                    gap-3
+                                "
+                            >
+
+                                <div
+                                    class="
+                                        modal-validacion-mantenimiento-icono
+                                    "
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-exclamation-triangle-fill
+                                        "
+                                    ></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5
+                                        class="
+                                            modal-title
+                                            fw-bold
+                                            mb-1
+                                        "
+                                    >
+                                        ${titulo}
+                                    </h5>
+
+
+                                    <small
+                                        class="
+                                            text-muted
+                                        "
+                                    >
+                                        Hay un detalle que debes corregir.
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Cerrar"
+                            ></button>
+
+                        </div>
+
+
+                        <!-- =====================================
+                            CONTENIDO
+                        ====================================== -->
+
+                        <div
+                            class="
+                                modal-body
+                                modal-validacion-mantenimiento-body
+                            "
+                        >
+
+                            <div
+                                class="
+                                    modal-validacion-mantenimiento-aviso
+                                "
+                            >
+
+                                <i
+                                    class="
+                                        bi
+                                        bi-info-circle-fill
+                                    "
+                                ></i>
+
+
+                                <p
+                                    id="mensajeValidacionMantenimiento"
+                                    class="mb-0"
+                                ></p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================
+                            FOOTER
+                        ====================================== -->
+
+                        <div
+                            class="
+                                modal-footer
+                                border-0
+                            "
+                        >
+
+                            <button
+                                type="button"
+                                class="
+                                    btn
+                                    btn-success
+                                    px-4
+                                    rounded-3
+                                "
+                                data-bs-dismiss="modal"
+                            >
+
+                                <i
+                                    class="
+                                        bi
+                                        bi-check-lg
+                                        me-1
+                                    "
+                                ></i>
+
+                                Entendido
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+
+            document.body.appendChild(
+                modal
+            );
+
+        }
+
+
+        /* ==================================================
+        MENSAJE
+        ================================================== */
+
+        const mensajeElemento =
+            modal.querySelector(
+                "#mensajeValidacionMantenimiento"
+            );
+
+
+        if (mensajeElemento) {
+
+            mensajeElemento.textContent =
+                mensaje;
+
+        }
+
+
+        /* ==================================================
+        MOSTRAR CON BOOTSTRAP
+        ================================================== */
+
+        if (
+            typeof bootstrap
+            !==
+            "undefined"
+            &&
+            bootstrap.Modal
+        ) {
+
+            const instancia =
+                bootstrap.Modal.getOrCreateInstance(
+                    modal
+                );
+
+
+            instancia.show();
+
+        }
+
+    }
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       OBTENER EXTENSIÓN
+    ====================================================== */
+
+    function obtenerExtensionArchivo(
+        nombre
+    ) {
+
+        if (!nombre) {
+            return "";
+        }
+
+
+        const partes =
+            nombre
+            .toLowerCase()
+            .split(".");
+
+
+        if (
+            partes.length
+            <
+            2
+        ) {
+            return "";
+        }
+
+
+        return partes[
+            partes.length - 1
+        ];
+
+    }
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       VALIDAR UNA IMAGEN
+    ====================================================== */
+
+    function validarArchivoImagen(
+        archivo
+    ) {
+
+
+        /* ==================================================
+           ARCHIVO VACÍO
+        ================================================== */
+
+        if (!archivo) {
+
+            return (
+                "No se pudo leer una de las fotografías "
+                +
+                "seleccionadas."
+            );
+
+        }
+
+
+        /* ==================================================
+           ARCHIVO SIN CONTENIDO
+        ================================================== */
+
+        if (
+            archivo.size
+            <=
+            0
+        ) {
+
+            return (
+                `La imagen "${archivo.name}" está vacía.`
+            );
+
+        }
+
+
+        /* ==================================================
+           TAMAÑO
+        ================================================== */
+
+        if (
+            archivo.size
+            >
+            MAX_TAMANO_BYTES
+        ) {
+
+            return (
+                `La imagen "${archivo.name}" supera `
+                +
+                `el límite de ${MAX_TAMANO_MB} MB.`
+            );
+
+        }
+
+
+        /* ==================================================
+           FORMATO
+        ================================================== */
+
+        const extension =
+            obtenerExtensionArchivo(
+                archivo.name
+            );
+
+
+        const tipoMime =
+            archivo.type
+            ?
+            archivo.type.toLowerCase()
+            :
+            "";
+
+
+        const extensionValida =
+            EXTENSIONES_VALIDAS.includes(
+                extension
+            );
+
+
+        const mimeValido =
+            !tipoMime
+            ||
+            TIPOS_IMAGEN_VALIDOS.includes(
+                tipoMime
+            );
+
+
+        if (
+            !extensionValida
+            ||
+            !mimeValido
+        ) {
+
+            return (
+                `La imagen "${archivo.name}" tiene un `
+                +
+                "formato no permitido. "
+                +
+                "Utiliza JPG, JPEG, PNG o WEBP."
+            );
+
+        }
+
+
+        return null;
+
+    }
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       OBTENER INPUTS DE EVIDENCIAS
+    ====================================================== */
+
+    function obtenerInputsEvidencias(
+        formulario
+    ) {
+
+        return Array.from(
+            formulario.querySelectorAll(
+                'input[type="file"][name="evidencias_antes"], '
+                +
+                'input[type="file"][name="evidencias_durante"], '
+                +
+                'input[type="file"][name="evidencias_despues"]'
+            )
+        );
+
+    }
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       OBTENER TODOS LOS ARCHIVOS NUEVOS
+    ====================================================== */
+
+    function obtenerArchivosSeleccionados(
+        formulario
+    ) {
+
+        const archivos = [];
+
+
+        obtenerInputsEvidencias(
+            formulario
+        ).forEach(
+            function (input) {
+
+                Array.from(
+                    input.files || []
+                ).forEach(
+                    function (archivo) {
+
+                        archivos.push({
+                            archivo: archivo,
+                            input: input
+                        });
+
+                    }
+                );
+
+            }
+        );
+
+
+        return archivos;
+
+    }
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       LIMPIAR ERRORES DE LOS INPUT FILE
+    ====================================================== */
+
+    function limpiarErroresEvidencias(
+        formulario
+    ) {
+
+        obtenerInputsEvidencias(
+            formulario
+        ).forEach(
+            function (input) {
+
+                input.classList.remove(
+                    "is-invalid"
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /* ======================================================
+       UTILIDAD:
+       CONTAR EVIDENCIAS EXISTENTES
+       SOLO EN MODAL EDITAR
+    ====================================================== */
+
+    function contarEvidenciasExistentes(
+        formulario
+    ) {
+
+        const modal =
+            formulario.closest(
+                ".modal-editar-mantenimiento"
+            );
+
+
+        if (!modal) {
+            return 0;
+        }
+
+
+        return modal.querySelectorAll(
+            ".mantenimiento-evidencia-item"
+        ).length;
+
+    }
+
+
+
+    /* ======================================================
+       VALIDAR TODAS LAS EVIDENCIAS DEL FORMULARIO
+    ====================================================== */
+
+    function validarEvidenciasFormulario(
+        formulario
+    ) {
+
+        limpiarErroresEvidencias(
+            formulario
+        );
+
+
+        const elementosArchivo =
+            obtenerArchivosSeleccionados(
+                formulario
+            );
+
+
+        const cantidadNuevas =
+            elementosArchivo.length;
+
+
+        const cantidadExistentes =
+            contarEvidenciasExistentes(
+                formulario
+            );
+
+
+        const cantidadTotal =
+            cantidadExistentes
+            +
+            cantidadNuevas;
+
+
+        /* ==================================================
+           MÁXIMO 6 FOTOS
+        ================================================== */
+
+        if (
+            cantidadTotal
+            >
+            MAX_EVIDENCIAS_MANTENIMIENTO
+        ) {
+
+            const disponibles =
+                Math.max(
+                    0,
+                    MAX_EVIDENCIAS_MANTENIMIENTO
+                    -
+                    cantidadExistentes
+                );
+
+
+            obtenerInputsEvidencias(
+                formulario
+            ).forEach(
+                function (input) {
+
+                    if (
+                        input.files
+                        &&
+                        input.files.length
+                    ) {
+
+                        input.classList.add(
+                            "is-invalid"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            return {
+                valido: false,
+
+                mensaje:
+                    "Un mantenimiento puede tener un máximo de "
+                    +
+                    `${MAX_EVIDENCIAS_MANTENIMIENTO} fotografías `
+                    +
+                    "en total.\n\n"
+                    +
+                    `Actualmente hay ${cantidadExistentes} `
+                    +
+                    "fotografía(s) guardada(s).\n"
+                    +
+                    `Puedes agregar máximo ${disponibles} más.`
+            };
+
+        }
+
+
+
+        /* ==================================================
+           VALIDAR CADA ARCHIVO
+        ================================================== */
+
+        for (
+            const elemento
+            of
+            elementosArchivo
+        ) {
+
+            const error =
+                validarArchivoImagen(
+                    elemento.archivo
+                );
+
+
+            if (error) {
+
+                elemento.input.classList.add(
+                    "is-invalid"
+                );
+
+
+                return {
+                    valido: false,
+                    mensaje: error
+                };
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           ARCHIVOS DUPLICADOS
+        ================================================== */
+
+        const archivosVistos =
+            new Set();
+
+
+        for (
+            const elemento
+            of
+            elementosArchivo
+        ) {
+
+            const archivo =
+                elemento.archivo;
+
+
+            const clave =
+                archivo.name.toLowerCase()
+                +
+                "|"
+                +
+                archivo.size
+                +
+                "|"
+                +
+                archivo.lastModified;
+
+
+            if (
+                archivosVistos.has(
+                    clave
+                )
+            ) {
+
+                elemento.input.classList.add(
+                    "is-invalid"
+                );
+
+
+                return {
+
+                    valido: false,
+
+                    mensaje:
+                        `La fotografía "${archivo.name}" `
+                        +
+                        "fue seleccionada más de una vez."
+
+                };
+
+            }
+
+
+            archivosVistos.add(
+                clave
+            );
+
+        }
+
+
+        return {
+            valido: true,
+            mensaje: ""
+        };
+
+    }
+
+
+
+    /* ======================================================
+       ======================================================
+       1. VALIDACIÓN EN EDITAR:
+       APIARIO / COLMENA
+       ======================================================
+       ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".modal-editar-mantenimiento"
+        )
+        .forEach(
+            function (modal) {
+
+
+                const entidad =
+                    modal.querySelector(
+                        ".entidad-editar"
+                    );
+
+
+                const apiario =
+                    modal.querySelector(
+                        ".apiario-editar"
+                    );
+
+
+                const colmena =
+                    modal.querySelector(
+                        ".colmena-editar"
+                    );
+
+
+                const campoColmena =
+                    colmena
+                    ?
+                    colmena.closest(
+                        ".col-md-6"
+                    )
+                    :
+                    null;
+
+
+                if (
+                    !entidad
+                    ||
+                    !apiario
+                    ||
+                    !colmena
+                ) {
                     return;
                 }
-                option.hidden = option.dataset.apiario !== idApiario;
-            });
-        }
- 
-        entidad.addEventListener("change", actualizar);
-        apiario.addEventListener("change", actualizar);
-        actualizar();
-    });
-});
- 
-/* Evitar textos vacíos (solo espacios) en formularios de mantenimiento */
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".form-mantenimiento").forEach(function (form) {
-        form.addEventListener("submit", function (e) {
-            let valido = true;
- 
-            form.querySelectorAll('input[type="text"][required], textarea[required]').forEach(function (campo) {
-                campo.value = campo.value.trim();
-                if (campo.value === "") {
-                    valido = false;
-                    campo.classList.add("is-invalid");
-                } else {
-                    campo.classList.remove("is-invalid");
+
+
+
+                /* ==========================================
+                   ACTUALIZAR COLMENAS
+                ========================================== */
+
+                function actualizarEntidadEditar() {
+
+                    const idApiario =
+                        apiario.value;
+
+
+                    const esColmena =
+                        entidad.value
+                        ===
+                        "Colmena";
+
+
+                    /* ======================================
+                       MOSTRAR / OCULTAR
+                    ====================================== */
+
+                    if (campoColmena) {
+
+                        campoColmena.classList.toggle(
+                            "d-none",
+                            !esColmena
+                        );
+
+                    }
+
+
+                    colmena.required =
+                        esColmena;
+
+
+                    /* ======================================
+                       SI ES APIARIO
+                    ====================================== */
+
+                    if (!esColmena) {
+
+                        colmena.value =
+                            "";
+
+                        return;
+
+                    }
+
+
+                    /* ======================================
+                       FILTRAR COLMENAS
+                    ====================================== */
+
+                    Array.from(
+                        colmena.options
+                    ).forEach(
+                        function (opcion) {
+
+
+                            if (!opcion.value) {
+
+                                opcion.hidden =
+                                    false;
+
+                                opcion.disabled =
+                                    false;
+
+                                return;
+
+                            }
+
+
+                            const corresponde =
+                                opcion.dataset.apiario
+                                ===
+                                idApiario;
+
+
+                            opcion.hidden =
+                                !corresponde;
+
+
+                            opcion.disabled =
+                                !corresponde;
+
+                        }
+                    );
+
+
+                    /* ======================================
+                       VALIDAR SELECCIÓN ACTUAL
+                    ====================================== */
+
+                    const seleccionada =
+                        colmena.options[
+                            colmena.selectedIndex
+                        ];
+
+
+                    if (
+                        seleccionada
+                        &&
+                        seleccionada.value
+                        &&
+                        seleccionada.dataset.apiario
+                        !==
+                        idApiario
+                    ) {
+
+                        colmena.value =
+                            "";
+
+                    }
+
                 }
-            });
- 
-            if (!valido) e.preventDefault();
-        });
-    });
-});
- 
-/* Reglas de fecha para Mantenimientos: Agregar y Editar */
-document.addEventListener("DOMContentLoaded", function () {
- 
-    // Construye "hoy" en formato YYYY-MM-DD usando componentes LOCALES,
-    // sin pasar por toISOString() (eso convierte a UTC y puede desfasar
-    // el día según la zona horaria del navegador).
+
+
+                entidad.addEventListener(
+                    "change",
+                    actualizarEntidadEditar
+                );
+
+
+                apiario.addEventListener(
+                    "change",
+                    function () {
+
+                        colmena.value =
+                            "";
+
+
+                        actualizarEntidadEditar();
+
+                    }
+                );
+
+
+                actualizarEntidadEditar();
+
+            }
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       2. VALIDAR TEXTOS VACÍOS
+       ======================================================
+       ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".form-mantenimiento"
+        )
+        .forEach(
+            function (formulario) {
+
+
+                formulario.addEventListener(
+                    "submit",
+                    function (evento) {
+
+
+                        let valido =
+                            true;
+
+
+                        formulario
+                            .querySelectorAll(
+                                'input[type="text"][required], '
+                                +
+                                'textarea[required]'
+                            )
+                            .forEach(
+                                function (campo) {
+
+
+                                    campo.value =
+                                        campo.value.trim();
+
+
+                                    if (
+                                        campo.value
+                                        ===
+                                        ""
+                                    ) {
+
+                                        valido =
+                                            false;
+
+
+                                        campo.classList.add(
+                                            "is-invalid"
+                                        );
+
+                                    } else {
+
+                                        campo.classList.remove(
+                                            "is-invalid"
+                                        );
+
+                                    }
+
+                                }
+                            );
+
+
+                        if (!valido) {
+
+                            evento.preventDefault();
+
+
+                            mostrarErrorMantenimiento(
+                                "Completa correctamente los campos obligatorios."
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       3. VALIDACIONES DE FECHAS
+       ======================================================
+       ====================================================== */
+
+
+    /* ======================================================
+       OBTENER FECHA LOCAL YYYY-MM-DD
+    ====================================================== */
+
     function hoyComoTexto() {
-        const ahora = new Date();
-        const año = ahora.getFullYear();
-        const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-        const dia = String(ahora.getDate()).padStart(2, "0");
-        return `${año}-${mes}-${dia}`;
+
+        const ahora =
+            new Date();
+
+
+        const anio =
+            ahora.getFullYear();
+
+
+        const mes =
+            String(
+                ahora.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        const dia =
+            String(
+                ahora.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        return (
+            `${anio}-${mes}-${dia}`
+        );
+
     }
- 
-    const hoyTexto = hoyComoTexto(); // ej: "2026-08-27"
- 
-    // AGREGAR: la fecha nunca puede ser anterior a hoy
-    const formAgregar = document.getElementById("modalAgregarMantenimiento")?.querySelector("form");
-    const fechaAgregar = formAgregar?.querySelector('input[name="fecha_ejecucion"]');
- 
-    if (formAgregar && fechaAgregar) {
-        fechaAgregar.min = hoyTexto;
- 
-        formAgregar.addEventListener("submit", function (e) {
-            if (!fechaAgregar.value || fechaAgregar.value < hoyTexto) {
-                e.preventDefault();
-                fechaAgregar.classList.add("is-invalid");
-                alert("La fecha programada no puede ser anterior a hoy.");
-            } else {
-                fechaAgregar.classList.remove("is-invalid");
+
+
+    const hoyTexto =
+        hoyComoTexto();
+
+
+
+    /* ======================================================
+       3.1 AGREGAR:
+       NO PERMITIR FECHAS ANTERIORES A HOY
+    ====================================================== */
+
+    const modalAgregar =
+        document.getElementById(
+            "modalAgregarMantenimiento"
+        );
+
+
+    const formAgregar =
+        modalAgregar
+        ?
+        modalAgregar.querySelector(
+            "form"
+        )
+        :
+        null;
+
+
+    const fechaAgregar =
+        formAgregar
+        ?
+        formAgregar.querySelector(
+            'input[name="fecha_ejecucion"]'
+        )
+        :
+        null;
+
+
+    if (
+        formAgregar
+        &&
+        fechaAgregar
+    ) {
+
+
+        fechaAgregar.min =
+            hoyTexto;
+
+
+        formAgregar.addEventListener(
+            "submit",
+            function (evento) {
+
+
+                if (
+                    !fechaAgregar.value
+                    ||
+                    fechaAgregar.value
+                    <
+                    hoyTexto
+                ) {
+
+                    evento.preventDefault();
+
+
+                    fechaAgregar.classList.add(
+                        "is-invalid"
+                    );
+
+
+                    mostrarErrorMantenimiento(
+                        "La fecha programada no puede ser anterior a hoy."
+                    );
+
+
+                    return;
+
+                }
+
+
+                fechaAgregar.classList.remove(
+                    "is-invalid"
+                );
+
             }
-        });
+        );
+
     }
- 
-    // EDITAR: se compara SIEMPRE el valor actual contra el original y
-    // contra hoy en el momento del submit — no se confía en que el
-    // navegador respete "readonly" o "min" en el selector de fecha.
-    document.querySelectorAll(".modal-editar-mantenimiento").forEach(function (modal) {
-        const form = modal.querySelector("form");
-        const fecha = modal.querySelector(".fecha-editar");
-        if (!form || !fecha) return;
- 
-        const valorOriginal = fecha.value; // YYYY-MM-DD tal como llegó del servidor
-        if (!valorOriginal) return;
- 
-        const yaVencido = valorOriginal < hoyTexto;
- 
-        if (yaVencido) {
-            // Ya venció: se deshabilita visualmente (referencia, no es la
-            // única protección) y queda marcado para la validación real.
-            fecha.readOnly = true;
-            fecha.classList.add("bg-light");
-            fecha.title = "Esta fecha ya venció y no puede modificarse.";
-        } else {
-            // Aún no vence: se puede mover hacia adelante, nunca hacia atrás.
-            fecha.min = hoyTexto;
-        }
- 
-        form.addEventListener("submit", function (e) {
-            let bloquear = false;
-            let mensaje = "";
- 
-            if (yaVencido) {
-                // Pase lo que pase en la UI, si ya venció el valor enviado
-                // debe ser exactamente el mismo que tenía originalmente.
-                if (fecha.value !== valorOriginal) {
-                    bloquear = true;
-                    mensaje = "Esta fecha ya venció y no puede modificarse.";
+
+
+
+    /* ======================================================
+       3.2 EDITAR:
+       CONTROLAR FECHA ORIGINAL
+    ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".modal-editar-mantenimiento"
+        )
+        .forEach(
+            function (modal) {
+
+
+                const formulario =
+                    modal.querySelector(
+                        "form"
+                    );
+
+
+                const fecha =
+                    modal.querySelector(
+                        ".fecha-editar"
+                    );
+
+
+                if (
+                    !formulario
+                    ||
+                    !fecha
+                ) {
+                    return;
                 }
-            } else {
-                // Aún no vence: el valor enviado no puede ser anterior a hoy.
-                if (!fecha.value || fecha.value < hoyTexto) {
-                    bloquear = true;
-                    mensaje = "La fecha programada no puede ser anterior a hoy.";
+
+
+                const valorOriginal =
+                    fecha.value;
+
+
+                if (!valorOriginal) {
+                    return;
                 }
+
+
+                const yaVencido =
+                    valorOriginal
+                    <
+                    hoyTexto;
+
+
+                /* ==========================================
+                   FECHA YA VENCIDA
+                ========================================== */
+
+                if (yaVencido) {
+
+                    fecha.readOnly =
+                        true;
+
+
+                    fecha.classList.add(
+                        "bg-light"
+                    );
+
+
+                    fecha.title =
+                        "Esta fecha ya venció y no puede modificarse.";
+
+                } else {
+
+                    fecha.min =
+                        hoyTexto;
+
+                }
+
+
+
+                /* ==========================================
+                   VALIDAR AL ENVIAR
+                ========================================== */
+
+                formulario.addEventListener(
+                    "submit",
+                    function (evento) {
+
+
+                        let bloquear =
+                            false;
+
+
+                        let mensaje =
+                            "";
+
+
+                        /* ==================================
+                           YA VENCIDO
+                        ================================== */
+
+                        if (yaVencido) {
+
+                            if (
+                                fecha.value
+                                !==
+                                valorOriginal
+                            ) {
+
+                                bloquear =
+                                    true;
+
+
+                                mensaje =
+                                    "Esta fecha ya venció y no puede modificarse.";
+
+                            }
+
+                        }
+
+
+                        /* ==================================
+                           FECHA AÚN VÁLIDA
+                        ================================== */
+
+                        else {
+
+                            if (
+                                !fecha.value
+                                ||
+                                fecha.value
+                                <
+                                hoyTexto
+                            ) {
+
+                                bloquear =
+                                    true;
+
+
+                                mensaje =
+                                    "La fecha programada no puede ser anterior a hoy.";
+
+                            }
+
+                        }
+
+
+                        if (bloquear) {
+
+                            evento.preventDefault();
+
+
+                            fecha.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            mostrarErrorMantenimiento(
+                                mensaje
+                            );
+
+
+                        } else {
+
+                            fecha.classList.remove(
+                                "is-invalid"
+                            );
+
+                        }
+
+                    }
+                );
+
             }
- 
-            if (bloquear) {
-                e.preventDefault();
-                fecha.classList.add("is-invalid");
-                alert(mensaje);
-            } else {
-                fecha.classList.remove("is-invalid");
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       4. VALIDACIONES DE EVIDENCIAS
+       ANTES / DURANTE / DESPUÉS
+       ======================================================
+       ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".form-mantenimiento"
+        )
+        .forEach(
+            function (formulario) {
+
+
+                const inputs =
+                    obtenerInputsEvidencias(
+                        formulario
+                    );
+
+
+                if (!inputs.length) {
+                    return;
+                }
+
+
+
+                /* ==========================================
+                   VALIDAR AL SELECCIONAR ARCHIVOS
+                ========================================== */
+
+                inputs.forEach(
+                    function (input) {
+
+
+                        input.addEventListener(
+                            "change",
+                            function () {
+
+
+                                const resultado =
+                                    validarEvidenciasFormulario(
+                                        formulario
+                                    );
+
+
+                                if (
+                                    !resultado.valido
+                                ) {
+
+                                    mostrarErrorMantenimiento(
+                                        resultado.mensaje
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                /* ==========================================
+                   VALIDACIÓN DEFINITIVA ANTES DEL SUBMIT
+                ========================================== */
+
+                formulario.addEventListener(
+                    "submit",
+                    function (evento) {
+
+
+                        const resultado =
+                            validarEvidenciasFormulario(
+                                formulario
+                            );
+
+
+                        if (
+                            !resultado.valido
+                        ) {
+
+                            evento.preventDefault();
+
+
+                            mostrarErrorMantenimiento(
+                                resultado.mensaje
+                            );
+
+                        }
+
+                    }
+                );
+
             }
-        });
-    });
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       5. VALIDACIÓN EXTRA:
+       APIARIO / COLMENA ANTES DE EDITAR
+       ======================================================
+       ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".modal-editar-mantenimiento"
+        )
+        .forEach(
+            function (modal) {
+
+
+                const formulario =
+                    modal.querySelector(
+                        "form"
+                    );
+
+
+                const entidad =
+                    modal.querySelector(
+                        ".entidad-editar"
+                    );
+
+
+                const apiario =
+                    modal.querySelector(
+                        ".apiario-editar"
+                    );
+
+
+                const colmena =
+                    modal.querySelector(
+                        ".colmena-editar"
+                    );
+
+
+                if (
+                    !formulario
+                    ||
+                    !entidad
+                    ||
+                    !apiario
+                    ||
+                    !colmena
+                ) {
+                    return;
+                }
+
+
+                formulario.addEventListener(
+                    "submit",
+                    function (evento) {
+
+
+                        /* ==================================
+                           APIARIO OBLIGATORIO
+                        ================================== */
+
+                        if (!apiario.value) {
+
+                            evento.preventDefault();
+
+
+                            apiario.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            mostrarErrorMantenimiento(
+                                "Debes seleccionar un apiario."
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        apiario.classList.remove(
+                            "is-invalid"
+                        );
+
+
+                        /* ==================================
+                           SI ES COLMENA
+                        ================================== */
+
+                        if (
+                            entidad.value
+                            ===
+                            "Colmena"
+                        ) {
+
+
+                            if (!colmena.value) {
+
+                                evento.preventDefault();
+
+
+                                colmena.classList.add(
+                                    "is-invalid"
+                                );
+
+
+                                mostrarErrorMantenimiento(
+                                    "Debes seleccionar una colmena."
+                                );
+
+
+                                return;
+
+                            }
+
+
+                            const opcion =
+                                colmena.options[
+                                    colmena.selectedIndex
+                                ];
+
+
+                            if (
+                                opcion
+                                &&
+                                opcion.dataset.apiario
+                                !==
+                                apiario.value
+                            ) {
+
+                                evento.preventDefault();
+
+
+                                colmena.classList.add(
+                                    "is-invalid"
+                                );
+
+
+                                mostrarErrorMantenimiento(
+                                    "La colmena seleccionada no pertenece al apiario indicado."
+                                );
+
+
+                                return;
+
+                            }
+
+
+                            colmena.classList.remove(
+                                "is-invalid"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
 });
- 
+
+
+/* ==========================================================
+   FIN VALIDACIONES - MÓDULO MANTENIMIENTOS
+========================================================== */
+
+
+
 /* ==========================================================
    VALIDACIONES NUEVAS - MÓDULO DE INCIDENCIAS
    ========================================================== */

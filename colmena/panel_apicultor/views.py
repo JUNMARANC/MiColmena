@@ -1754,17 +1754,19 @@ def actualizar_observacion_mantenimiento_apicultor(
 def incidencias_apicultor(request):
 
     # ========================================================
-    # APICULTOR AUTENTICADO
+    # 1. APICULTOR AUTENTICADO
     # ========================================================
 
     apicultor = get_object_or_404(
-        Apicultor,
+        Apicultor.objects.select_related(
+            "user"
+        ),
         user=request.user
     )
 
 
     # ========================================================
-    # APIARIOS DEL APICULTOR
+    # 2. APIARIOS DEL APICULTOR
     # ========================================================
 
     apiarios = (
@@ -1779,82 +1781,159 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # INCIDENCIAS ASIGNADAS AL APICULTOR
+    # 3. REGLA DE ACCESO A INCIDENCIAS
     #
-    # id_apicultor representa al apicultor encargado
-    # de gestionar la incidencia.
+    # El apicultor puede ver una incidencia cuando:
     #
-    # Aquí aparecerán:
+    # - Está asignada directamente a él.
+    # - Pertenece a uno de sus apiarios.
+    # - Pertenece a una colmena de uno de sus apiarios.
     #
-    # - Las incidencias creadas por él mismo.
-    # - Las incidencias asignadas por un administrador.
+    # Esto permite que también aparezcan incidencias
+    # registradas por el administrador.
+    # ========================================================
+
+    acceso_incidencias = (
+
+        Q(
+            id_apicultor=apicultor
+        )
+
+        |
+
+        Q(
+            id_apiario__id_apicultor=apicultor
+        )
+
+        |
+
+        Q(
+            id_colmena__id_apiario__id_apicultor=apicultor
+        )
+
+    )
+
+
+    # ========================================================
+    # 4. CONSULTA BASE
     # ========================================================
 
     incidencias_base = (
         Incidencia.objects
+
         .filter(
-            id_apicultor=apicultor
+            acceso_incidencias
         )
+
+        .distinct()
+
         .select_related(
             "id_apicultor",
+            "id_apicultor__user",
             "id_apiario",
-            "id_colmena"
+            "id_apiario__id_apicultor",
+            "id_colmena",
+            "id_colmena__id_apiario",
         )
+
         .prefetch_related(
 
-            # ============================================
+            # =================================================
             # EVIDENCIAS DEL PROBLEMA
-            # ============================================
+            # =================================================
 
             Prefetch(
                 "evidencias",
+
                 queryset=(
                     EvidenciaIncidencia.objects
+
                     .filter(
-                        tipo=EvidenciaIncidencia
-                        .TipoEvidencia
-                        .PROBLEMA
+                        tipo=(
+                            EvidenciaIncidencia
+                            .TipoEvidencia
+                            .PROBLEMA
+                        )
                     )
+
                     .select_related(
                         "subido_por"
                     )
+
                     .order_by(
                         "fecha_registro",
                         "id_evidencia"
                     )
                 ),
+
                 to_attr="evidencias_problema_modal"
             ),
 
-            # ============================================
+
+            # =================================================
             # EVIDENCIAS DE LA SOLUCIÓN
-            # ============================================
+            # =================================================
 
             Prefetch(
                 "evidencias",
+
                 queryset=(
                     EvidenciaIncidencia.objects
+
                     .filter(
-                        tipo=EvidenciaIncidencia
-                        .TipoEvidencia
-                        .SOLUCION
+                        tipo=(
+                            EvidenciaIncidencia
+                            .TipoEvidencia
+                            .SOLUCION
+                        )
                     )
+
                     .select_related(
                         "subido_por"
                     )
+
                     .order_by(
                         "fecha_registro",
                         "id_evidencia"
                     )
                 ),
+
                 to_attr="evidencias_solucion_modal"
             ),
+
         )
     )
 
 
     # ========================================================
-    # CONTADORES GENERALES
+    # 5. ESTADOS OFICIALES
+    # ========================================================
+
+    estados_disponibles = [
+        "Pendiente",
+        "En proceso",
+        "Resuelta",
+    ]
+
+
+    # ========================================================
+    # 6. PRIORIDADES OFICIALES
+    # ========================================================
+
+    prioridades_disponibles = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
+
+
+    # ========================================================
+    # 7. CONTADORES GENERALES
+    #
+    # Estos contadores representan todas las incidencias
+    # disponibles para el apicultor, independientemente
+    # de los filtros seleccionados.
     # ========================================================
 
     total_incidencias = (
@@ -1890,123 +1969,151 @@ def incidencias_apicultor(request):
 
 
     # ========================================================
-    # ESTADOS OFICIALES
+    # 8. FILTROS GET
     # ========================================================
 
-    estados_disponibles = [
-        "Pendiente",
-        "En proceso",
-        "Resuelta",
-    ]
+    busqueda = (
+        request.GET.get(
+            "q",
+            ""
+        )
+        .strip()
+    )
 
 
-    # ========================================================
-    # PRIORIDADES OFICIALES
-    # ========================================================
-
-    prioridades_disponibles = [
-        "Baja",
-        "Media",
-        "Alta",
-        "Crítica",
-    ]
+    apiario_seleccionado = (
+        request.GET.get(
+            "apiario",
+            ""
+        )
+        .strip()
+    )
 
 
-    # ========================================================
-    # FILTROS GET
-    # ========================================================
-
-    busqueda = request.GET.get(
-        "q",
-        ""
-    ).strip()
-
-
-    apiario_seleccionado = request.GET.get(
-        "apiario",
-        ""
-    ).strip()
+    estado_seleccionado = (
+        request.GET.get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
 
 
-    estado_seleccionado = request.GET.get(
-        "estado",
-        ""
-    ).strip()
-
-
-    prioridad_seleccionada = request.GET.get(
-        "prioridad",
-        ""
-    ).strip()
+    prioridad_seleccionada = (
+        request.GET.get(
+            "prioridad",
+            ""
+        )
+        .strip()
+    )
 
 
     # ========================================================
-    # CONSULTA PARA FILTRAR
+    # 9. CONSULTA FILTRABLE
     # ========================================================
 
     incidencias = incidencias_base
 
 
     # ========================================================
-    # BUSCADOR
+    # 10. BUSCADOR
+    #
+    # Busca por:
+    #
+    # - Título
+    # - Observaciones
+    # - Responsable
+    # - Tipo de entidad
+    # - Nombre del apiario
+    # - Código de colmena
     # ========================================================
 
     if busqueda:
 
-        incidencias = incidencias.filter(
+        incidencias = (
+            incidencias.filter(
 
-            Q(
-                titulo__icontains=busqueda
+                Q(
+                    titulo__icontains=busqueda
+                )
+
+                |
+
+                Q(
+                    observaciones__icontains=busqueda
+                )
+
+                |
+
+                Q(
+                    responsable__icontains=busqueda
+                )
+
+                |
+
+                Q(
+                    entidadincidencia__icontains=busqueda
+                )
+
+                |
+
+                Q(
+                    id_apiario__nombreapiario__icontains=busqueda
+                )
+
+                |
+
+                Q(
+                    id_colmena__codigocolmena__icontains=busqueda
+                )
+
+                |
+
+                Q(
+                    id_colmena__id_apiario__nombreapiario__icontains=busqueda
+                )
+
             )
-
-            |
-
-            Q(
-                observaciones__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                responsable__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                entidadincidencia__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                id_apiario__nombreapiario__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                id_colmena__codigocolmena__icontains=busqueda
-            )
-
+            .distinct()
         )
 
 
     # ========================================================
-    # FILTRO POR APIARIO
+    # 11. FILTRO POR APIARIO
+    #
+    # Incluye:
+    #
+    # - Incidencias directamente asociadas al apiario.
+    # - Incidencias asociadas a colmenas de ese apiario.
     # ========================================================
 
     if apiario_seleccionado.isdigit():
 
-        incidencias = incidencias.filter(
-            id_apiario__id_apiario=int(
-                apiario_seleccionado
+        id_apiario_filtro = int(
+            apiario_seleccionado
+        )
+
+
+        incidencias = (
+            incidencias.filter(
+
+                Q(
+                    id_apiario_id=id_apiario_filtro
+                )
+
+                |
+
+                Q(
+                    id_colmena__id_apiario_id=id_apiario_filtro
+                )
+
             )
+            .distinct()
         )
 
 
     # ========================================================
-    # FILTRO POR ESTADO
+    # 12. FILTRO POR ESTADO
     # ========================================================
 
     if (
@@ -2015,13 +2122,15 @@ def incidencias_apicultor(request):
         estado_seleccionado in estados_disponibles
     ):
 
-        incidencias = incidencias.filter(
-            estado__iexact=estado_seleccionado
+        incidencias = (
+            incidencias.filter(
+                estado__iexact=estado_seleccionado
+            )
         )
 
 
     # ========================================================
-    # FILTRO POR PRIORIDAD
+    # 13. FILTRO POR PRIORIDAD
     # ========================================================
 
     if (
@@ -2030,23 +2139,30 @@ def incidencias_apicultor(request):
         prioridad_seleccionada in prioridades_disponibles
     ):
 
-        incidencias = incidencias.filter(
-            prioridad__iexact=prioridad_seleccionada
+        incidencias = (
+            incidencias.filter(
+                prioridad__iexact=prioridad_seleccionada
+            )
         )
 
 
     # ========================================================
-    # ORDEN
+    # 14. ORDENAMIENTO
+    #
+    # Primero las incidencias más recientes.
     # ========================================================
 
-    incidencias = incidencias.order_by(
-        "-fechadeteccion",
-        "-id_incidencia"
+    incidencias = (
+        incidencias
+        .order_by(
+            "-fechadeteccion",
+            "-id_incidencia"
+        )
     )
 
 
     # ========================================================
-    # PAGINACIÓN
+    # 15. PAGINACIÓN
     # ========================================================
 
     paginator = Paginator(
@@ -2055,33 +2171,53 @@ def incidencias_apicultor(request):
     )
 
 
-    pagina = request.GET.get(
-        "page"
+    numero_pagina = (
+        request.GET.get(
+            "page"
+        )
     )
 
 
-    incidencias_pagina = paginator.get_page(
-        pagina
+    incidencias_pagina = (
+        paginator.get_page(
+            numero_pagina
+        )
     )
 
 
     # ========================================================
-    # CONTEXTO
+    # 16. CONTEXTO
     # ========================================================
 
     contexto = {
 
+        # ====================================================
+        # USUARIO
+        # ====================================================
+
         "apicultor":
             apicultor,
 
+
+        # ====================================================
+        # APIARIOS
+        # ====================================================
+
         "apiarios":
             apiarios,
+
+
+        # ====================================================
+        # INCIDENCIAS
+        # ====================================================
 
         "incidencias":
             incidencias_pagina,
 
 
-        # CONTADORES
+        # ====================================================
+        # CONTADORES GENERALES
+        # ====================================================
 
         "total_incidencias":
             total_incidencias,
@@ -2095,11 +2231,18 @@ def incidencias_apicultor(request):
         "total_resueltas":
             total_resueltas,
 
+
+        # ====================================================
+        # RESULTADOS DESPUÉS DE FILTROS
+        # ====================================================
+
         "total_resultados":
             paginator.count,
 
 
+        # ====================================================
         # OPCIONES
+        # ====================================================
 
         "estados_disponibles":
             estados_disponibles,
@@ -2108,7 +2251,9 @@ def incidencias_apicultor(request):
             prioridades_disponibles,
 
 
-        # FILTROS
+        # ====================================================
+        # FILTROS ACTUALES
+        # ====================================================
 
         "busqueda":
             busqueda,
@@ -2124,6 +2269,10 @@ def incidencias_apicultor(request):
 
     }
 
+
+    # ========================================================
+    # 17. RENDER
+    # ========================================================
 
     return render(
         request,
@@ -3169,41 +3318,87 @@ def editar_incidencia_apicultor(
     id_incidencia
 ):
 
-
     # ========================================================
     # 1. APICULTOR AUTENTICADO
     # ========================================================
 
     apicultor = get_object_or_404(
-        Apicultor,
+        Apicultor.objects.select_related(
+            "user"
+        ),
         user=request.user
     )
 
 
     # ========================================================
-    # 2. INCIDENCIA ASIGNADA AL APICULTOR
+    # 2. REGLA DE ACCESO A LA INCIDENCIA
     #
-    # El apicultor solamente puede gestionar incidencias
-    # que estén asignadas a él.
+    # El apicultor puede gestionar una incidencia cuando:
+    #
+    # - Está asignada directamente a él.
+    # - Pertenece a uno de sus apiarios.
+    # - Pertenece a una colmena de uno de sus apiarios.
+    #
+    # Esto permite gestionar también incidencias creadas
+    # por el administrador.
     # ========================================================
 
-    incidencia = get_object_or_404(
+    acceso_incidencia = (
 
-        Incidencia.objects.select_related(
-            "id_apicultor",
-            "id_apiario",
-            "id_colmena"
-        ),
+        Q(
+            id_apicultor=apicultor
+        )
 
-        id_incidencia=id_incidencia,
+        |
 
-        id_apicultor=apicultor
+        Q(
+            id_apiario__id_apicultor=apicultor
+        )
+
+        |
+
+        Q(
+            id_colmena__id_apiario__id_apicultor=apicultor
+        )
 
     )
 
 
     # ========================================================
-    # 3. ESTADOS DISPONIBLES
+    # 3. OBTENER INCIDENCIA
+    #
+    # IMPORTANTE:
+    # No usamos solamente id_apicultor=apicultor porque una
+    # incidencia creada por el administrador puede estar
+    # relacionada al apiario o a una de sus colmenas.
+    # ========================================================
+
+    incidencia = get_object_or_404(
+
+        Incidencia.objects
+
+        .filter(
+            acceso_incidencia
+        )
+
+        .distinct()
+
+        .select_related(
+            "id_apicultor",
+            "id_apicultor__user",
+            "id_apiario",
+            "id_apiario__id_apicultor",
+            "id_colmena",
+            "id_colmena__id_apiario",
+        ),
+
+        id_incidencia=id_incidencia
+
+    )
+
+
+    # ========================================================
+    # 4. ESTADOS DISPONIBLES
     # ========================================================
 
     estados_disponibles = [
@@ -3214,7 +3409,7 @@ def editar_incidencia_apicultor(
 
 
     # ========================================================
-    # 4. CONFIGURACIÓN DE EVIDENCIAS
+    # 5. CONFIGURACIÓN DE EVIDENCIAS
     # ========================================================
 
     MAX_EVIDENCIAS_PROBLEMA = 6
@@ -3225,36 +3420,24 @@ def editar_incidencia_apicultor(
 
 
     # ========================================================
-    # 5. EVIDENCIAS EXISTENTES
+    # 6. EVIDENCIAS EXISTENTES DEL PROBLEMA
     # ========================================================
 
     evidencias_problema = (
         incidencia.evidencias
+
         .filter(
-            tipo=EvidenciaIncidencia
-            .TipoEvidencia
-            .PROBLEMA
+            tipo=(
+                EvidenciaIncidencia
+                .TipoEvidencia
+                .PROBLEMA
+            )
         )
+
         .select_related(
             "subido_por"
         )
-        .order_by(
-            "fecha_registro",
-            "id_evidencia"
-        )
-    )
 
-
-    evidencias_solucion = (
-        incidencia.evidencias
-        .filter(
-            tipo=EvidenciaIncidencia
-            .TipoEvidencia
-            .SOLUCION
-        )
-        .select_related(
-            "subido_por"
-        )
         .order_by(
             "fecha_registro",
             "id_evidencia"
@@ -3263,12 +3446,39 @@ def editar_incidencia_apicultor(
 
 
     # ========================================================
-    # 6. CANTIDADES EXISTENTES
+    # 7. EVIDENCIAS EXISTENTES DE SOLUCIÓN
+    # ========================================================
+
+    evidencias_solucion = (
+        incidencia.evidencias
+
+        .filter(
+            tipo=(
+                EvidenciaIncidencia
+                .TipoEvidencia
+                .SOLUCION
+            )
+        )
+
+        .select_related(
+            "subido_por"
+        )
+
+        .order_by(
+            "fecha_registro",
+            "id_evidencia"
+        )
+    )
+
+
+    # ========================================================
+    # 8. CANTIDADES EXISTENTES
     # ========================================================
 
     cantidad_problema_actual = (
         evidencias_problema.count()
     )
+
 
     cantidad_solucion_actual = (
         evidencias_solucion.count()
@@ -3276,454 +3486,501 @@ def editar_incidencia_apicultor(
 
 
     # ========================================================
-    # 7. POST
+    # 9. COMPATIBILIDAD CON INCIDENCIA.IMAGEN
+    #
+    # Una incidencia antigua puede tener:
+    #
+    # incidencia.imagen
+    #
+    # pero todavía no tener un registro en
+    # EvidenciaIncidencia.
+    #
+    # La consideramos una evidencia del problema para
+    # efectos del límite máximo.
     # ========================================================
 
-    if request.method == "POST":
+    tiene_imagen_legacy = (
+        bool(incidencia.imagen)
+        and
+        cantidad_problema_actual == 0
+    )
 
 
-        # ====================================================
-        # 7.1. ESTADO
-        # ====================================================
+    cantidad_problema_para_limite = (
+        cantidad_problema_actual
+        +
+        (
+            1
+            if tiene_imagen_legacy
+            else 0
+        )
+    )
 
-        estado = request.POST.get(
+
+    # ========================================================
+    # 10. FUNCIÓN LOCAL PARA CONSTRUIR CONTEXTO
+    #
+    # Evita repetir el mismo diccionario varias veces.
+    # ========================================================
+
+    def construir_contexto():
+
+        return {
+
+            "apicultor":
+                apicultor,
+
+            "incidencia":
+                incidencia,
+
+            "estados_disponibles":
+                estados_disponibles,
+
+            "evidencias_problema":
+                evidencias_problema,
+
+            "evidencias_solucion":
+                evidencias_solucion,
+
+            "cantidad_problema_actual":
+                cantidad_problema_para_limite,
+
+            "cantidad_solucion_actual":
+                cantidad_solucion_actual,
+
+            "max_evidencias_problema":
+                MAX_EVIDENCIAS_PROBLEMA,
+
+            "max_evidencias_solucion":
+                MAX_EVIDENCIAS_SOLUCION,
+
+            "max_tamano_imagen_mb":
+                MAX_TAMANO_IMAGEN_MB,
+
+        }
+
+
+    # ========================================================
+    # 11. GET
+    # ========================================================
+
+    if request.method != "POST":
+
+        return render(
+            request,
+            "panel_apicultor/editar_incidencia.html",
+            construir_contexto()
+        )
+
+
+    # ========================================================
+    # 12. ESTADO
+    # ========================================================
+
+    estado = (
+        request.POST.get(
             "estado",
             ""
-        ).strip()
+        )
+        .strip()
+    )
 
 
-        # ====================================================
-        # 7.2. OBSERVACIONES
-        # ====================================================
+    # ========================================================
+    # 13. OBSERVACIONES
+    # ========================================================
 
-        observaciones = request.POST.get(
+    observaciones = (
+        request.POST.get(
             "observaciones",
             ""
-        ).strip()
-
-
-        # ====================================================
-        # 7.3. NUEVAS EVIDENCIAS DEL PROBLEMA
-        # ====================================================
-
-        nuevas_evidencias_problema = (
-            request.FILES.getlist(
-                "evidencias_problema"
-            )
         )
+        .strip()
+    )
 
 
-        # ====================================================
-        # 7.4. NUEVAS EVIDENCIAS DE SOLUCIÓN
-        # ====================================================
+    # ========================================================
+    # 14. NUEVAS EVIDENCIAS DEL PROBLEMA
+    # ========================================================
 
-        nuevas_evidencias_solucion = (
-            request.FILES.getlist(
-                "evidencias_solucion"
-            )
+    nuevas_evidencias_problema = (
+        request.FILES.getlist(
+            "evidencias_problema"
         )
+    )
 
 
-        # ====================================================
-        # COMPATIBILIDAD TEMPORAL
-        #
-        # Mientras actualizamos editar_incidencia.html,
-        # el formulario antiguo todavía puede enviar:
-        #
-        # name="imagen"
-        #
-        # Si ocurre:
-        #
-        # - si va a Resuelta -> solución
-        # - en otro estado -> problema
-        # ====================================================
+    # ========================================================
+    # 15. NUEVAS EVIDENCIAS DE SOLUCIÓN
+    # ========================================================
 
-        imagen_antigua = request.FILES.get(
+    nuevas_evidencias_solucion = (
+        request.FILES.getlist(
+            "evidencias_solucion"
+        )
+    )
+
+
+    # ========================================================
+    # 16. COMPATIBILIDAD TEMPORAL CON FORMULARIO ANTIGUO
+    #
+    # Si todavía existe algún formulario que envíe:
+    #
+    # name="imagen"
+    #
+    # la tratamos automáticamente como:
+    #
+    # - Problema si no está resuelta.
+    # - Solución si pasa a Resuelta.
+    # ========================================================
+
+    imagen_antigua_formulario = (
+        request.FILES.get(
             "imagen"
         )
+    )
 
 
-        if (
-            imagen_antigua
-            and
-            not nuevas_evidencias_problema
-            and
-            not nuevas_evidencias_solucion
-        ):
-
-            if estado == "Resuelta":
-
-                nuevas_evidencias_solucion = [
-                    imagen_antigua
-                ]
-
-            else:
-
-                nuevas_evidencias_problema = [
-                    imagen_antigua
-                ]
-
-
-        # ====================================================
-        # 8. ERRORES
-        # ====================================================
-
-        errores = []
-
-
-        # ====================================================
-        # 9. VALIDAR ESTADO
-        # ====================================================
-
-        if estado not in estados_disponibles:
-
-            errores.append(
-                "Selecciona un estado válido."
-            )
-
-
-        # ====================================================
-        # 10. VALIDAR OBSERVACIONES
-        # ====================================================
-
-        if len(observaciones) > 1000:
-
-            errores.append(
-                "Las observaciones no pueden superar "
-                "los 1000 caracteres."
-            )
-
-
-        # ====================================================
-        # 11. TOTAL DE EVIDENCIAS DEL PROBLEMA
-        # ====================================================
-
-        cantidad_nueva_problema = len(
-            nuevas_evidencias_problema
-        )
-
-
-        total_problema = (
-            cantidad_problema_actual
-            +
-            cantidad_nueva_problema
-        )
-
-
-        if (
-            total_problema
-            >
-            MAX_EVIDENCIAS_PROBLEMA
-        ):
-
-            disponibles = max(
-                0,
-                MAX_EVIDENCIAS_PROBLEMA
-                -
-                cantidad_problema_actual
-            )
-
-
-            errores.append(
-                "La incidencia puede tener un máximo de "
-                f"{MAX_EVIDENCIAS_PROBLEMA} fotografías "
-                "del problema. "
-                f"Actualmente puedes agregar {disponibles} más."
-            )
-
-
-        # ====================================================
-        # 12. TOTAL DE EVIDENCIAS DE SOLUCIÓN
-        # ====================================================
-
-        cantidad_nueva_solucion = len(
-            nuevas_evidencias_solucion
-        )
-
-
-        total_solucion = (
-            cantidad_solucion_actual
-            +
-            cantidad_nueva_solucion
-        )
-
-
-        if (
-            total_solucion
-            >
-            MAX_EVIDENCIAS_SOLUCION
-        ):
-
-            disponibles = max(
-                0,
-                MAX_EVIDENCIAS_SOLUCION
-                -
-                cantidad_solucion_actual
-            )
-
-
-            errores.append(
-                "La incidencia puede tener un máximo de "
-                f"{MAX_EVIDENCIAS_SOLUCION} fotografías "
-                "de solución. "
-                f"Actualmente puedes agregar {disponibles} más."
-            )
-
-
-        # ====================================================
-        # 13. VALIDAR FOTOGRAFÍAS DEL PROBLEMA
-        # ====================================================
-
-        if (
-            total_problema
-            <=
-            MAX_EVIDENCIAS_PROBLEMA
-        ):
-
-            for imagen in nuevas_evidencias_problema:
-
-                error_imagen = (
-                    validar_imagen_evidencia(
-                        imagen
-                    )
-                )
-
-
-                if error_imagen:
-
-                    errores.append(
-                        error_imagen
-                    )
-
-
-        # ====================================================
-        # 14. VALIDAR FOTOGRAFÍAS DE SOLUCIÓN
-        # ====================================================
-
-        if (
-            total_solucion
-            <=
-            MAX_EVIDENCIAS_SOLUCION
-        ):
-
-            for imagen in nuevas_evidencias_solucion:
-
-                error_imagen = (
-                    validar_imagen_evidencia(
-                        imagen
-                    )
-                )
-
-
-                if error_imagen:
-
-                    errores.append(
-                        error_imagen
-                    )
-
-
-        # ====================================================
-        # 15. REGLA PARA MARCAR COMO RESUELTA
-        #
-        # Para cerrar una incidencia tiene que existir
-        # por lo menos una fotografía de solución.
-        #
-        # Puede ser:
-        #
-        # - una fotografía subida anteriormente
-        # - una fotografía subida en este mismo POST
-        # ====================================================
+    if (
+        imagen_antigua_formulario
+        and
+        not nuevas_evidencias_problema
+        and
+        not nuevas_evidencias_solucion
+    ):
 
         if estado == "Resuelta":
 
-            total_soluciones_despues = (
-                cantidad_solucion_actual
-                +
-                cantidad_nueva_solucion
+            nuevas_evidencias_solucion = [
+                imagen_antigua_formulario
+            ]
+
+        else:
+
+            nuevas_evidencias_problema = [
+                imagen_antigua_formulario
+            ]
+
+
+    # ========================================================
+    # 17. ERRORES
+    # ========================================================
+
+    errores = []
+
+
+    # ========================================================
+    # 18. VALIDAR ESTADO
+    # ========================================================
+
+    if estado not in estados_disponibles:
+
+        errores.append(
+            "Selecciona un estado válido."
+        )
+
+
+    # ========================================================
+    # 19. VALIDAR OBSERVACIONES
+    # ========================================================
+
+    if len(observaciones) > 1000:
+
+        errores.append(
+            "Las observaciones no pueden superar "
+            "los 1000 caracteres."
+        )
+
+
+    # ========================================================
+    # 20. CANTIDAD DE NUEVAS EVIDENCIAS
+    # ========================================================
+
+    cantidad_nueva_problema = len(
+        nuevas_evidencias_problema
+    )
+
+
+    cantidad_nueva_solucion = len(
+        nuevas_evidencias_solucion
+    )
+
+
+    # ========================================================
+    # 21. TOTAL DEL PROBLEMA DESPUÉS DEL GUARDADO
+    # ========================================================
+
+    total_problema = (
+        cantidad_problema_para_limite
+        +
+        cantidad_nueva_problema
+    )
+
+
+    # ========================================================
+    # 22. TOTAL DE SOLUCIÓN DESPUÉS DEL GUARDADO
+    # ========================================================
+
+    total_solucion = (
+        cantidad_solucion_actual
+        +
+        cantidad_nueva_solucion
+    )
+
+
+    # ========================================================
+    # 23. VALIDAR LÍMITE DEL PROBLEMA
+    # ========================================================
+
+    if (
+        total_problema
+        >
+        MAX_EVIDENCIAS_PROBLEMA
+    ):
+
+        disponibles = max(
+            0,
+            MAX_EVIDENCIAS_PROBLEMA
+            -
+            cantidad_problema_para_limite
+        )
+
+
+        errores.append(
+            "La incidencia puede tener un máximo de "
+            f"{MAX_EVIDENCIAS_PROBLEMA} fotografías "
+            "del problema. "
+            f"Actualmente puedes agregar {disponibles} más."
+        )
+
+
+    # ========================================================
+    # 24. VALIDAR LÍMITE DE SOLUCIÓN
+    # ========================================================
+
+    if (
+        total_solucion
+        >
+        MAX_EVIDENCIAS_SOLUCION
+    ):
+
+        disponibles = max(
+            0,
+            MAX_EVIDENCIAS_SOLUCION
+            -
+            cantidad_solucion_actual
+        )
+
+
+        errores.append(
+            "La incidencia puede tener un máximo de "
+            f"{MAX_EVIDENCIAS_SOLUCION} fotografías "
+            "de solución. "
+            f"Actualmente puedes agregar {disponibles} más."
+        )
+
+
+    # ========================================================
+    # 25. VALIDAR FOTOGRAFÍAS DEL PROBLEMA
+    # ========================================================
+
+    if (
+        total_problema
+        <=
+        MAX_EVIDENCIAS_PROBLEMA
+    ):
+
+        for imagen in nuevas_evidencias_problema:
+
+            error_imagen = (
+                validar_imagen_evidencia(
+                    imagen
+                )
             )
 
 
-            if total_soluciones_despues <= 0:
+            if error_imagen:
 
                 errores.append(
-                    "Para marcar la incidencia como Resuelta "
-                    "debes agregar al menos una fotografía "
-                    "que evidencie la solución."
+                    error_imagen
                 )
 
 
-        # ====================================================
-        # 16. SI HAY ERRORES
-        # ====================================================
+    # ========================================================
+    # 26. VALIDAR FOTOGRAFÍAS DE SOLUCIÓN
+    # ========================================================
 
-        if errores:
+    if (
+        total_solucion
+        <=
+        MAX_EVIDENCIAS_SOLUCION
+    ):
 
+        for imagen in nuevas_evidencias_solucion:
 
-            for error in errores:
-
-                messages.error(
-                    request,
-                    error
+            error_imagen = (
+                validar_imagen_evidencia(
+                    imagen
                 )
-
-
-            contexto = {
-
-                "apicultor":
-                    apicultor,
-
-                "incidencia":
-                    incidencia,
-
-                "estados_disponibles":
-                    estados_disponibles,
-
-                "evidencias_problema":
-                    evidencias_problema,
-
-                "evidencias_solucion":
-                    evidencias_solucion,
-
-                "cantidad_problema_actual":
-                    cantidad_problema_actual,
-
-                "cantidad_solucion_actual":
-                    cantidad_solucion_actual,
-
-                "max_evidencias_problema":
-                    MAX_EVIDENCIAS_PROBLEMA,
-
-                "max_evidencias_solucion":
-                    MAX_EVIDENCIAS_SOLUCION,
-
-                "max_tamano_imagen_mb":
-                    MAX_TAMANO_IMAGEN_MB,
-
-            }
-
-
-            return render(
-                request,
-                "panel_apicultor/editar_incidencia.html",
-                contexto
             )
 
 
-        # ====================================================
-        # 17. ACTUALIZAR INCIDENCIA Y GUARDAR EVIDENCIAS
-        # ====================================================
+            if error_imagen:
 
-        try:
-
-            with transaction.atomic():
-
-
-                # ============================================
-                # ACTUALIZAR DATOS PRINCIPALES
-                # ============================================
-
-                incidencia.estado = (
-                    estado
-                )
-
-                incidencia.observaciones = (
-                    observaciones
-                )
-
-                incidencia.save(
-                    update_fields=[
-                        "estado",
-                        "observaciones",
-                    ]
+                errores.append(
+                    error_imagen
                 )
 
 
-                # ============================================
-                # PRIMERA EVIDENCIA NUEVA DEL PROBLEMA
-                #
-                # La utilizaremos únicamente para mantener
-                # compatibilidad con Incidencia.imagen
-                # cuando ese campo todavía esté vacío.
-                # ============================================
+    # ========================================================
+    # 27. REGLA PARA MARCAR COMO RESUELTA
+    #
+    # Una incidencia solamente puede pasar a Resuelta cuando
+    # exista por lo menos una fotografía de solución.
+    # ========================================================
 
-                primera_evidencia_problema = None
+    if (
+        estado == "Resuelta"
+        and
+        total_solucion <= 0
+    ):
 
-
-                # ============================================
-                # GUARDAR EVIDENCIAS DEL PROBLEMA
-                # ============================================
-
-                for imagen in nuevas_evidencias_problema:
-
-
-                    try:
-
-                        imagen.seek(0)
-
-                    except Exception:
-
-                        pass
+        errores.append(
+            "Para marcar la incidencia como Resuelta "
+            "debes agregar al menos una fotografía "
+            "que evidencie la solución."
+        )
 
 
-                    evidencia = (
-                        EvidenciaIncidencia.objects.create(
+    # ========================================================
+    # 28. MOSTRAR ERRORES
+    # ========================================================
 
-                            id_incidencia=
-                                incidencia,
+    if errores:
 
-                            tipo=
-                                EvidenciaIncidencia
-                                .TipoEvidencia
-                                .PROBLEMA,
+        for error in errores:
 
-                            imagen=
-                                imagen,
+            messages.error(
+                request,
+                error
+            )
 
-                            descripcion=
-                                None,
 
-                            subido_por=
-                                request.user,
+        return render(
+            request,
+            "panel_apicultor/editar_incidencia.html",
+            construir_contexto()
+        )
 
-                        )
+
+    # ========================================================
+    # 29. GUARDAR
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+
+            # =================================================
+            # 29.1 ACTUALIZAR INCIDENCIA
+            # =================================================
+
+            incidencia.estado = (
+                estado
+            )
+
+
+            incidencia.observaciones = (
+                observaciones
+                or
+                None
+            )
+
+
+            incidencia.save(
+                update_fields=[
+                    "estado",
+                    "observaciones",
+                ]
+            )
+
+
+            # =================================================
+            # 29.2 MIGRAR IMAGEN LEGACY
+            #
+            # Si existe una imagen antigua y ahora el usuario
+            # agrega nuevas evidencias del problema, registramos
+            # la antigua también en EvidenciaIncidencia.
+            #
+            # No copiamos el archivo físicamente.
+            # =================================================
+
+            if (
+                tiene_imagen_legacy
+                and
+                nuevas_evidencias_problema
+            ):
+
+                evidencia_legacy = (
+                    EvidenciaIncidencia(
+                        id_incidencia=incidencia,
+
+                        tipo=(
+                            EvidenciaIncidencia
+                            .TipoEvidencia
+                            .PROBLEMA
+                        ),
+
+                        descripcion=None,
+
+                        subido_por=None,
                     )
+                )
 
 
-                    if (
-                        primera_evidencia_problema
-                        is None
-                    ):
-
-                        primera_evidencia_problema = (
-                            evidencia
-                        )
+                evidencia_legacy.imagen.name = (
+                    incidencia.imagen.name
+                )
 
 
-                # ============================================
-                # GUARDAR EVIDENCIAS DE SOLUCIÓN
-                # ============================================
-
-                for imagen in nuevas_evidencias_solucion:
+                evidencia_legacy.save()
 
 
-                    try:
+            # =================================================
+            # 29.3 PRIMERA EVIDENCIA NUEVA DEL PROBLEMA
+            # =================================================
 
-                        imagen.seek(0)
-
-                    except Exception:
-
-                        pass
+            primera_evidencia_problema = None
 
 
+            # =================================================
+            # 29.4 GUARDAR EVIDENCIAS DEL PROBLEMA
+            # =================================================
+
+            for imagen in nuevas_evidencias_problema:
+
+
+                try:
+
+                    imagen.seek(0)
+
+                except Exception:
+
+                    pass
+
+
+                evidencia = (
                     EvidenciaIncidencia.objects.create(
 
                         id_incidencia=
                             incidencia,
 
-                        tipo=
+                        tipo=(
                             EvidenciaIncidencia
                             .TipoEvidencia
-                            .SOLUCION,
+                            .PROBLEMA
+                        ),
 
                         imagen=
                             imagen,
@@ -3735,162 +3992,152 @@ def editar_incidencia_apicultor(
                             request.user,
 
                     )
+                )
 
-
-                # ============================================
-                # COMPATIBILIDAD CON EL CAMPO ANTIGUO
-                #
-                # Importante:
-                #
-                # NO reemplazamos Incidencia.imagen si ya
-                # tiene una fotografía.
-                #
-                # Así conservamos la foto original.
-                # ============================================
 
                 if (
-                    not incidencia.imagen
-                    and
                     primera_evidencia_problema
+                    is None
                 ):
 
-                    incidencia.imagen.name = (
-                        primera_evidencia_problema
-                        .imagen
-                        .name
+                    primera_evidencia_problema = (
+                        evidencia
                     )
 
 
-                    incidencia.save(
-                        update_fields=[
-                            "imagen"
-                        ]
-                    )
+            # =================================================
+            # 29.5 GUARDAR EVIDENCIAS DE SOLUCIÓN
+            # =================================================
+
+            for imagen in nuevas_evidencias_solucion:
 
 
-        except Exception:
+                try:
 
-            messages.error(
-                request,
-                "Ocurrió un error al actualizar la incidencia "
-                "o guardar las evidencias fotográficas."
-            )
+                    imagen.seek(0)
 
+                except Exception:
 
-            contexto = {
-
-                "apicultor":
-                    apicultor,
-
-                "incidencia":
-                    incidencia,
-
-                "estados_disponibles":
-                    estados_disponibles,
-
-                "evidencias_problema":
-                    evidencias_problema,
-
-                "evidencias_solucion":
-                    evidencias_solucion,
-
-                "cantidad_problema_actual":
-                    cantidad_problema_actual,
-
-                "cantidad_solucion_actual":
-                    cantidad_solucion_actual,
-
-                "max_evidencias_problema":
-                    MAX_EVIDENCIAS_PROBLEMA,
-
-                "max_evidencias_solucion":
-                    MAX_EVIDENCIAS_SOLUCION,
-
-                "max_tamano_imagen_mb":
-                    MAX_TAMANO_IMAGEN_MB,
-
-            }
+                    pass
 
 
-            return render(
-                request,
-                "panel_apicultor/editar_incidencia.html",
-                contexto
-            )
+                EvidenciaIncidencia.objects.create(
+
+                    id_incidencia=
+                        incidencia,
+
+                    tipo=(
+                        EvidenciaIncidencia
+                        .TipoEvidencia
+                        .SOLUCION
+                    ),
+
+                    imagen=
+                        imagen,
+
+                    descripcion=
+                        None,
+
+                    subido_por=
+                        request.user,
+
+                )
 
 
-        # ====================================================
-        # 18. MENSAJE
-        # ====================================================
+            # =================================================
+            # 29.6 COMPATIBILIDAD CON INCIDENCIA.IMAGEN
+            #
+            # Si la incidencia nunca tuvo imagen antigua,
+            # apuntamos el campo legacy a la primera nueva
+            # evidencia del problema.
+            #
+            # No duplicamos el archivo.
+            # =================================================
 
-        if estado == "Resuelta":
+            if (
+                not incidencia.imagen
+                and
+                primera_evidencia_problema
+            ):
 
-            messages.success(
-                request,
-                "La incidencia fue marcada como Resuelta "
-                "y las evidencias de solución fueron guardadas."
-            )
-
-        else:
-
-            messages.success(
-                request,
-                "La incidencia fue actualizada correctamente."
-            )
+                incidencia.imagen.name = (
+                    primera_evidencia_problema
+                    .imagen
+                    .name
+                )
 
 
-        # ====================================================
-        # 19. VOLVER AL LISTADO
-        # ====================================================
+                incidencia.save(
+                    update_fields=[
+                        "imagen"
+                    ]
+                )
 
-        return redirect(
-            "incidencias_apicultor"
+
+    # ========================================================
+    # 30. ERROR DE GUARDADO
+    # ========================================================
+
+    except Exception:
+
+        messages.error(
+            request,
+            "Ocurrió un error al actualizar la incidencia "
+            "o guardar las evidencias fotográficas."
+        )
+
+
+        return render(
+            request,
+            "panel_apicultor/editar_incidencia.html",
+            construir_contexto()
         )
 
 
     # ========================================================
-    # 20. GET
+    # 31. MENSAJE FINAL
     # ========================================================
 
-    contexto = {
-
-        "apicultor":
-            apicultor,
-
-        "incidencia":
-            incidencia,
-
-        "estados_disponibles":
-            estados_disponibles,
-
-        "evidencias_problema":
-            evidencias_problema,
-
-        "evidencias_solucion":
-            evidencias_solucion,
-
-        "cantidad_problema_actual":
-            cantidad_problema_actual,
-
-        "cantidad_solucion_actual":
-            cantidad_solucion_actual,
-
-        "max_evidencias_problema":
-            MAX_EVIDENCIAS_PROBLEMA,
-
-        "max_evidencias_solucion":
-            MAX_EVIDENCIAS_SOLUCION,
-
-        "max_tamano_imagen_mb":
-            MAX_TAMANO_IMAGEN_MB,
-
-    }
+    total_nuevas_evidencias = (
+        cantidad_nueva_problema
+        +
+        cantidad_nueva_solucion
+    )
 
 
-    return render(
-        request,
-        "panel_apicultor/editar_incidencia.html",
-        contexto
+    if estado == "Resuelta":
+
+        messages.success(
+            request,
+            "La incidencia fue marcada como Resuelta "
+            "y las evidencias de solución fueron guardadas."
+        )
+
+
+    elif total_nuevas_evidencias > 0:
+
+        messages.success(
+            request,
+            "La incidencia fue actualizada correctamente. "
+            f"Se agregaron {total_nuevas_evidencias} "
+            "evidencia(s) fotográfica(s)."
+        )
+
+
+    else:
+
+        messages.success(
+            request,
+            "La incidencia fue actualizada correctamente."
+        )
+
+
+    # ========================================================
+    # 32. VOLVER AL LISTADO
+    # ========================================================
+
+    return redirect(
+        "incidencias_apicultor"
     )
 
 

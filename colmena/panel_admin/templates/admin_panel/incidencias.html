@@ -834,17 +834,7 @@
 
                 <div class="modal-body">
 
-                    {% if incidencia.imagen %}
-                        <img
-                            src="{{ incidencia.imagen.url }}"
-                            alt="{{ incidencia.titulo }}"
-                            class="imagen-incidencia mb-4">
-                    {% else %}
-                        <div class="sin-imagen mb-4">
-                            <i class="bi bi-image fs-1"></i>
-                            <p class="mb-0 mt-2">Sin evidencia fotográfica</p>
-                        </div>
-                    {% endif %}
+                    
 
                     <div class="row g-3">
 
@@ -925,6 +915,430 @@
                                 </strong>
                             </div>
                         </div>
+
+                        <!-- =====================================================
+                            EVIDENCIAS FOTOGRÁFICAS
+                        ====================================================== -->
+
+                        <div class="col-12">
+
+                            <div class="admin-incidencia-evidencias-detalle">
+
+
+                                <!-- =================================================
+                                    EVIDENCIAS DEL PROBLEMA
+                                ================================================== -->
+
+                                <section class="admin-evidencias-bloque problema">
+
+
+                                    <div class="admin-evidencias-header">
+
+
+                                        <div class="admin-evidencias-header-info">
+
+
+                                            <div class="admin-evidencias-icono problema">
+
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <h6>
+                                                    Evidencias del problema
+                                                </h6>
+
+                                                <span>
+                                                    Fotografías registradas para documentar
+                                                    la incidencia.
+                                                </span>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                        <span class="admin-evidencias-contador problema">
+
+
+                                            {% if incidencia.evidencias_problema_admin %}
+
+                                                {{ incidencia.evidencias_problema_admin|length }}
+                                                foto{{ incidencia.evidencias_problema_admin|length|pluralize:"s" }}
+
+                                            {% elif incidencia.imagen %}
+
+                                                1 foto
+
+                                            {% else %}
+
+                                                0 fotos
+
+                                            {% endif %}
+
+
+                                        </span>
+
+
+                                    </div>
+
+
+
+                                    <!-- =============================================
+                                        EVIDENCIAS NUEVAS DEL SISTEMA
+                                    ============================================== -->
+
+                                    {% if incidencia.evidencias_problema_admin %}
+
+
+                                        <div class="admin-evidencias-grid">
+
+
+                                            {% for evidencia in incidencia.evidencias_problema_admin %}
+
+
+                                                <article class="admin-evidencia-item problema">
+
+
+                                                    <div class="admin-evidencia-imagen">
+
+
+                                                        <img
+                                                            src="{{ evidencia.imagen.url }}"
+                                                            alt="Evidencia del problema {{ forloop.counter }}"
+                                                            loading="lazy"
+                                                        >
+
+
+                                                        <span class="admin-evidencia-numero">
+
+                                                            {{ forloop.counter }}
+
+                                                        </span>
+
+
+                                                        <span class="admin-evidencia-badge problema">
+
+                                                            Problema
+
+                                                        </span>
+
+
+                                                    </div>
+
+
+                                                    <div class="admin-evidencia-info">
+
+
+                                                        <div>
+
+                                                            <strong>
+                                                                Evidencia {{ forloop.counter }}
+                                                            </strong>
+
+
+                                                            <span>
+
+                                                                {% if evidencia.fecha_registro %}
+
+                                                                    {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                                {% else %}
+
+                                                                    Sin fecha
+
+                                                                {% endif %}
+
+                                                            </span>
+
+                                                        </div>
+
+
+                                                        <i class="bi bi-image"></i>
+
+
+                                                    </div>
+
+
+                                                </article>
+
+
+                                            {% endfor %}
+
+
+                                        </div>
+
+
+
+                                    <!-- =============================================
+                                        COMPATIBILIDAD CON INCIDENCIA ANTIGUA
+                                    ============================================== -->
+
+                                    {% elif incidencia.imagen %}
+
+
+                                        <div class="admin-evidencias-grid">
+
+
+                                            <article class="admin-evidencia-item problema">
+
+
+                                                <div class="admin-evidencia-imagen">
+
+
+                                                    <img
+                                                        src="{{ incidencia.imagen.url }}"
+                                                        alt="Evidencia original de {{ incidencia.titulo }}"
+                                                        loading="lazy"
+                                                    >
+
+
+                                                    <span class="admin-evidencia-numero">
+                                                        1
+                                                    </span>
+
+
+                                                    <span class="admin-evidencia-badge problema">
+
+                                                        Problema
+
+                                                    </span>
+
+
+                                                </div>
+
+
+                                                <div class="admin-evidencia-info">
+
+
+                                                    <div>
+
+                                                        <strong>
+                                                            Evidencia original
+                                                        </strong>
+
+                                                        <span>
+                                                            Registro anterior
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <i class="bi bi-image"></i>
+
+
+                                                </div>
+
+
+                                            </article>
+
+
+                                        </div>
+
+
+
+                                    {% else %}
+
+
+                                        <div class="admin-evidencias-vacio problema">
+
+
+                                            <i class="bi bi-image"></i>
+
+
+                                            <div>
+
+                                                <strong>
+                                                    Sin fotografías del problema
+                                                </strong>
+
+                                                <span>
+                                                    No existen evidencias registradas.
+                                                </span>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+                                </section>
+
+
+
+                                <!-- =================================================
+                                    EVIDENCIAS DE LA SOLUCIÓN
+                                ================================================== -->
+
+                                <section class="admin-evidencias-bloque solucion">
+
+
+                                    <div class="admin-evidencias-header">
+
+
+                                        <div class="admin-evidencias-header-info">
+
+
+                                            <div class="admin-evidencias-icono solucion">
+
+                                                <i class="bi bi-check-circle-fill"></i>
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <h6>
+                                                    Evidencias de la solución
+                                                </h6>
+
+                                                <span>
+                                                    Fotografías registradas después
+                                                    de atender la incidencia.
+                                                </span>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                        <span class="admin-evidencias-contador solucion">
+
+                                            {{ incidencia.evidencias_solucion_admin|length }}
+
+                                            foto{{ incidencia.evidencias_solucion_admin|length|pluralize:"s" }}
+
+                                        </span>
+
+
+                                    </div>
+
+
+
+                                    {% if incidencia.evidencias_solucion_admin %}
+
+
+                                        <div class="admin-evidencias-grid">
+
+
+                                            {% for evidencia in incidencia.evidencias_solucion_admin %}
+
+
+                                                <article class="admin-evidencia-item solucion">
+
+
+                                                    <div class="admin-evidencia-imagen">
+
+
+                                                        <img
+                                                            src="{{ evidencia.imagen.url }}"
+                                                            alt="Evidencia de solución {{ forloop.counter }}"
+                                                            loading="lazy"
+                                                        >
+
+
+                                                        <span class="admin-evidencia-numero">
+
+                                                            {{ forloop.counter }}
+
+                                                        </span>
+
+
+                                                        <span class="admin-evidencia-badge solucion">
+
+                                                            Solución
+
+                                                        </span>
+
+
+                                                    </div>
+
+
+                                                    <div class="admin-evidencia-info">
+
+
+                                                        <div>
+
+                                                            <strong>
+                                                                Solución {{ forloop.counter }}
+                                                            </strong>
+
+
+                                                            <span>
+
+                                                                {% if evidencia.fecha_registro %}
+
+                                                                    {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                                {% else %}
+
+                                                                    Sin fecha
+
+                                                                {% endif %}
+
+                                                            </span>
+
+                                                        </div>
+
+
+                                                        <i class="bi bi-check-circle"></i>
+
+
+                                                    </div>
+
+
+                                                </article>
+
+
+                                            {% endfor %}
+
+
+                                        </div>
+
+
+                                    {% else %}
+
+
+                                        <div class="admin-evidencias-vacio solucion">
+
+
+                                            <i class="bi bi-camera"></i>
+
+
+                                            <div>
+
+                                                <strong>
+                                                    Sin fotografías de solución
+                                                </strong>
+
+                                                <span>
+                                                    Aún no existen evidencias de solución.
+                                                </span>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+                                </section>
+
+
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
 
@@ -1170,34 +1584,481 @@
                                     rows="4">{{ incidencia.observaciones|default:'' }}</textarea>
                             </div>
 
+                            <!-- =====================================================
+                                EVIDENCIAS DEL PROBLEMA
+                            ====================================================== -->
+
                             <div class="col-12">
-                                <label>Nueva imagen</label>
 
-                                <input
-                                    type="file"
-                                    name="imagen"
-                                    class="form-control"
-                                    accept="image/*">
-                            </div>
 
-                            {% if incidencia.imagen %}
-                                <div class="col-12">
-                                    <div class="form-check">
-                                        <input
-                                            type="checkbox"
-                                            name="eliminar_imagen"
-                                            value="1"
-                                            class="form-check-input"
-                                            id="eliminarImagen{{ incidencia.pk }}">
+                                <section class="admin-editar-evidencias problema">
+
+
+                                    <!-- =============================================
+                                        HEADER
+                                    ============================================== -->
+
+                                    <div class="admin-editar-evidencias-header">
+
+
+                                        <div>
+
+
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+
+                                            <div>
+
+                                                <h6>
+                                                    Evidencias del problema
+                                                </h6>
+
+                                                <span>
+                                                    Fotografías registradas actualmente.
+                                                </span>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                        <span class="admin-evidencias-contador problema">
+
+
+                                            {% if incidencia.evidencias_problema_admin %}
+
+                                                {{ incidencia.evidencias_problema_admin|length }}
+                                                foto{{ incidencia.evidencias_problema_admin|length|pluralize:"s" }}
+
+                                            {% elif incidencia.imagen %}
+
+                                                1 foto
+
+                                            {% else %}
+
+                                                0 fotos
+
+                                            {% endif %}
+
+
+                                        </span>
+
+
+                                    </div>
+
+
+
+                                    <!-- =============================================
+                                        EXISTENTES
+                                    ============================================== -->
+
+                                    {% if incidencia.evidencias_problema_admin %}
+
+
+                                        <div class="admin-evidencias-grid editar">
+
+
+                                            {% for evidencia in incidencia.evidencias_problema_admin %}
+
+
+                                                <article class="admin-evidencia-item problema">
+
+
+                                                    <div class="admin-evidencia-imagen">
+
+
+                                                        <img
+                                                            src="{{ evidencia.imagen.url }}"
+                                                            alt="Evidencia del problema {{ forloop.counter }}"
+                                                            loading="lazy"
+                                                        >
+
+
+                                                        <span class="admin-evidencia-numero">
+
+                                                            {{ forloop.counter }}
+
+                                                        </span>
+
+
+                                                        <span class="admin-evidencia-badge problema">
+
+                                                            Problema
+
+                                                        </span>
+
+
+                                                    </div>
+
+
+                                                    <div class="admin-evidencia-info">
+
+
+                                                        <div>
+
+                                                            <strong>
+                                                                Evidencia {{ forloop.counter }}
+                                                            </strong>
+
+
+                                                            <span>
+
+                                                                {% if evidencia.fecha_registro %}
+
+                                                                    {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                                {% else %}
+
+                                                                    Sin fecha
+
+                                                                {% endif %}
+
+                                                            </span>
+
+                                                        </div>
+
+
+                                                    </div>
+
+
+                                                </article>
+
+
+                                            {% endfor %}
+
+
+                                        </div>
+
+
+
+                                    {% elif incidencia.imagen %}
+
+
+                                        <!-- =========================================
+                                            FOTO ANTIGUA
+                                        ========================================== -->
+
+                                        <div class="admin-evidencias-grid editar">
+
+
+                                            <article class="admin-evidencia-item problema">
+
+
+                                                <div class="admin-evidencia-imagen">
+
+
+                                                    <img
+                                                        src="{{ incidencia.imagen.url }}"
+                                                        alt="Evidencia original"
+                                                        loading="lazy"
+                                                    >
+
+
+                                                    <span class="admin-evidencia-numero">
+                                                        1
+                                                    </span>
+
+
+                                                    <span class="admin-evidencia-badge problema">
+
+                                                        Problema
+
+                                                    </span>
+
+
+                                                </div>
+
+
+                                                <div class="admin-evidencia-info">
+
+
+                                                    <div>
+
+                                                        <strong>
+                                                            Evidencia original
+                                                        </strong>
+
+                                                        <span>
+                                                            Registro anterior
+                                                        </span>
+
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </article>
+
+
+                                        </div>
+
+
+                                    {% else %}
+
+
+                                        <div class="admin-evidencias-vacio problema">
+
+                                            <i class="bi bi-image"></i>
+
+                                            <span>
+                                                Sin evidencias del problema.
+                                            </span>
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+
+                                    <!-- =============================================
+                                        AGREGAR NUEVAS
+                                    ============================================== -->
+
+                                    <div class="admin-agregar-evidencias">
+
 
                                         <label
-                                            class="form-check-label"
-                                            for="eliminarImagen{{ incidencia.pk }}">
-                                            Eliminar imagen actual
+                                            for="evidenciasProblemaAdmin{{ incidencia.pk }}"
+                                            class="form-label"
+                                        >
+
+                                            <i class="bi bi-plus-circle me-1"></i>
+
+                                            Agregar fotografías del problema
+
                                         </label>
+
+
+                                        <input
+                                            type="file"
+                                            name="evidencias_problema"
+                                            id="evidenciasProblemaAdmin{{ incidencia.pk }}"
+                                            class="form-control"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                        >
+
+
+                                        <div class="form-text">
+
+                                            Puedes seleccionar varias fotografías.
+
+                                        </div>
+
+
                                     </div>
-                                </div>
-                            {% endif %}
+
+
+                                </section>
+
+
+                            </div>
+
+
+
+                            <!-- =====================================================
+                                EVIDENCIAS DE LA SOLUCIÓN
+                            ====================================================== -->
+
+                            <div class="col-12">
+
+
+                                <section class="admin-editar-evidencias solucion">
+
+
+                                    <!-- =============================================
+                                        HEADER
+                                    ============================================== -->
+
+                                    <div class="admin-editar-evidencias-header">
+
+
+                                        <div>
+
+
+                                            <i class="bi bi-check-circle-fill"></i>
+
+
+                                            <div>
+
+                                                <h6>
+                                                    Evidencias de la solución
+                                                </h6>
+
+                                                <span>
+                                                    Fotografías registradas después
+                                                    de atender la incidencia.
+                                                </span>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                        <span class="admin-evidencias-contador solucion">
+
+                                            {{ incidencia.evidencias_solucion_admin|length }}
+
+                                            foto{{ incidencia.evidencias_solucion_admin|length|pluralize:"s" }}
+
+                                        </span>
+
+
+                                    </div>
+
+
+
+                                    <!-- =============================================
+                                        EXISTENTES
+                                    ============================================== -->
+
+                                    {% if incidencia.evidencias_solucion_admin %}
+
+
+                                        <div class="admin-evidencias-grid editar">
+
+
+                                            {% for evidencia in incidencia.evidencias_solucion_admin %}
+
+
+                                                <article class="admin-evidencia-item solucion">
+
+
+                                                    <div class="admin-evidencia-imagen">
+
+
+                                                        <img
+                                                            src="{{ evidencia.imagen.url }}"
+                                                            alt="Evidencia de solución {{ forloop.counter }}"
+                                                            loading="lazy"
+                                                        >
+
+
+                                                        <span class="admin-evidencia-numero">
+
+                                                            {{ forloop.counter }}
+
+                                                        </span>
+
+
+                                                        <span class="admin-evidencia-badge solucion">
+
+                                                            Solución
+
+                                                        </span>
+
+
+                                                    </div>
+
+
+                                                    <div class="admin-evidencia-info">
+
+
+                                                        <div>
+
+                                                            <strong>
+                                                                Solución {{ forloop.counter }}
+                                                            </strong>
+
+
+                                                            <span>
+
+                                                                {% if evidencia.fecha_registro %}
+
+                                                                    {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                                {% else %}
+
+                                                                    Sin fecha
+
+                                                                {% endif %}
+
+                                                            </span>
+
+                                                        </div>
+
+
+                                                    </div>
+
+
+                                                </article>
+
+
+                                            {% endfor %}
+
+
+                                        </div>
+
+
+                                    {% else %}
+
+
+                                        <div class="admin-evidencias-vacio solucion">
+
+
+                                            <i class="bi bi-camera"></i>
+
+                                            <span>
+                                                Sin evidencias de solución.
+                                            </span>
+
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+
+                                    <!-- =============================================
+                                        AGREGAR NUEVAS
+                                    ============================================== -->
+
+                                    <div class="admin-agregar-evidencias">
+
+
+                                        <label
+                                            for="evidenciasSolucionAdmin{{ incidencia.pk }}"
+                                            class="form-label"
+                                        >
+
+                                            <i class="bi bi-plus-circle me-1"></i>
+
+                                            Agregar fotografías de la solución
+
+                                        </label>
+
+
+                                        <input
+                                            type="file"
+                                            name="evidencias_solucion"
+                                            id="evidenciasSolucionAdmin{{ incidencia.pk }}"
+                                            class="form-control"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                        >
+
+
+                                        <div class="form-text">
+
+                                            Puedes seleccionar varias fotografías.
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </section>
+
+
+                            </div>
+
+
                         </div>
                     </div>
 

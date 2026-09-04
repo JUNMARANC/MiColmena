@@ -1,122 +1,402 @@
 {% extends 'admin_panel/base_admin.html' %}
 {% load static %}
 
-{% block title %}Mantenimientos | Panel Administrador{% endblock %}
-{% block page_title %}Mantenimientos{% endblock %}
+{% block title %}
+    Mantenimientos | Panel Administrador
+{% endblock %}
+
+{% block page_title %}
+    Mantenimientos
+{% endblock %}
+
 
 {% block content %}
 
+
+<!-- =========================================================
+     ENCABEZADO
+========================================================= -->
+
 <div class="dashboard-fondo-panal encabezado-mantenimientos-panal mb-4">
 
-    <div class="particulas-flotantes" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span>
+    <div
+        class="particulas-flotantes"
+        aria-hidden="true"
+    >
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
 
-    <div class="dashboard-fondo-panal-contenido d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-        <h2 class="titulo-panel mb-0">
-            <i class="bi bi-tools me-2" style="color: var(--miel);"></i>
-            Gestión de Mantenimientos
-        </h2>
+    <div
+        class="
+            dashboard-fondo-panal-contenido
+            d-flex
+            justify-content-between
+            align-items-center
+            flex-wrap
+            gap-3
+        "
+    >
+
+        <div>
+
+            <h2 class="titulo-panel mb-1">
+
+                <i
+                    class="bi bi-tools me-2"
+                    style="color: var(--miel);"
+                ></i>
+
+                Gestión de Mantenimientos
+
+            </h2>
+
+            <p class="mb-0 text-muted">
+
+                Registra, consulta y realiza seguimiento
+                a los mantenimientos de apiarios y colmenas.
+
+            </p>
+
+        </div>
+
 
         <div class="d-flex align-items-center gap-3">
 
-            <div class="selector-vista" role="group" aria-label="Modo de visualización">
-                <button type="button"
-                        id="btnVistaTabla"
-                        class="selector-vista-btn activo"
-                        title="Ver en tabla">
+
+            <!-- =============================================
+                 SELECTOR DE VISTA
+            ============================================== -->
+
+            <div
+                class="selector-vista"
+                role="group"
+                aria-label="Modo de visualización"
+            >
+
+                <button
+                    type="button"
+                    id="btnVistaTabla"
+                    class="selector-vista-btn activo"
+                    title="Ver en tabla"
+                >
+
                     <i class="bi bi-table"></i>
+
                 </button>
 
-                <button type="button"
-                        id="btnVistaTarjetas"
-                        class="selector-vista-btn"
-                        title="Ver en tarjetas">
+
+                <button
+                    type="button"
+                    id="btnVistaTarjetas"
+                    class="selector-vista-btn"
+                    title="Ver en tarjetas"
+                >
+
                     <i class="bi bi-grid-3x3-gap-fill"></i>
+
                 </button>
+
             </div>
+
+
+            <!-- =============================================
+                 AGREGAR
+            ============================================== -->
+
             {% if "mr" in permisos_usuario %}
-                <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarMantenimiento">
+
+                <button
+                    type="button"
+                    class="btn btn-success rounded-3 px-4"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalAgregarMantenimiento"
+                >
+
                     <i class="bi bi-plus-circle me-2"></i>
+
                     Agregar
+
                 </button>
+
             {% endif %}
+
         </div>
 
     </div>
 
 </div>
 
+
+
+<!-- =========================================================
+     MENSAJES
+========================================================= -->
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div
+            class="
+                alert
+                alert-{{ message.tags }}
+                alert-dismissible
+                fade
+                show
+            "
+            role="alert"
+        >
+
+            {{ message }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar"
+            ></button>
+
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     FILTROS
+========================================================= -->
+
 <div class="card-admin mb-4">
 
     <form method="GET">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div
+            class="
+                d-flex
+                justify-content-between
+                align-items-center
+                flex-wrap
+                gap-3
+                mb-4
+            "
+        >
+
             <div>
-                <h5 class="mb-0 fw-bold" style="color:#234F39;">
+
+                <h5
+                    class="mb-0 fw-bold"
+                    style="color:#234F39;"
+                >
+
                     <i class="bi bi-funnel me-2"></i>
+
                     Filtros de búsqueda
+
                 </h5>
+
+
                 <small class="text-muted">
+
                     Filtra por apiario, colmena o estado.
+
                 </small>
+
             </div>
 
-            <a href="{% url 'mantenimientos_admin' %}" class="btn btn-outline-secondary">
+
+            <a
+                href="{% url 'mantenimientos_admin' %}"
+                class="btn btn-outline-secondary"
+            >
+
                 <i class="bi bi-arrow-clockwise me-2"></i>
+
                 Limpiar
+
             </a>
+
         </div>
+
 
         <div class="row g-3 align-items-end">
 
+
+            <!-- =============================================
+                 APIARIO
+            ============================================== -->
+
             <div class="col-md-4">
-                <label class="form-label">Apiario</label>
-                <select name="apiario" id="filtroApiario" class="form-select">
-                    <option value="">Todos los apiarios</option>
+
+                <label
+                    for="filtroApiario"
+                    class="form-label"
+                >
+                    Apiario
+                </label>
+
+
+                <select
+                    name="apiario"
+                    id="filtroApiario"
+                    class="form-select"
+                >
+
+                    <option value="">
+                        Todos los apiarios
+                    </option>
+
 
                     {% for apiario in apiarios %}
-                        <option value="{{ apiario.id_apiario }}"
-                                {% if request.GET.apiario == apiario.id_apiario|stringformat:"s" %}selected{% endif %}>
+
+                        <option
+                            value="{{ apiario.id_apiario }}"
+                            {% if filtro_apiario == apiario.id_apiario|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+
                             {{ apiario.nombreapiario }}
+
                         </option>
+
                     {% endfor %}
+
                 </select>
+
             </div>
 
+
+            <!-- =============================================
+                 COLMENA
+            ============================================== -->
+
             <div class="col-md-3">
-                <label class="form-label">Colmena</label>
-                <select name="colmena" id="filtroColmena" class="form-select">
-                    <option value="">Todas las colmenas</option>
+
+                <label
+                    for="filtroColmena"
+                    class="form-label"
+                >
+                    Colmena
+                </label>
+
+
+                <select
+                    name="colmena"
+                    id="filtroColmena"
+                    class="form-select"
+                >
+
+                    <option value="">
+                        Todas las colmenas
+                    </option>
+
 
                     {% for colmena in colmenas %}
-                        <option value="{{ colmena.id_colmena }}"
-                                data-apiario="{{ colmena.id_apiario.id_apiario }}"
-                                {% if request.GET.colmena == colmena.id_colmena|stringformat:"s" %}selected{% endif %}>
-                            {{ colmena.codigocolmena }} - {{ colmena.id_apiario.nombreapiario }}
+
+                        <option
+                            value="{{ colmena.id_colmena }}"
+                            data-apiario="{{ colmena.id_apiario.id_apiario }}"
+                            {% if filtro_colmena == colmena.id_colmena|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ colmena.codigocolmena }}
+                            -
+                            {{ colmena.id_apiario.nombreapiario }}
+
                         </option>
+
                     {% endfor %}
+
                 </select>
+
             </div>
+
+
+            <!-- =============================================
+                 ESTADO
+            ============================================== -->
 
             <div class="col-md-3">
-                <label class="form-label">Estado</label>
-                <select name="estado" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="Pendiente" {% if request.GET.estado == "Pendiente" %}selected{% endif %}>Pendiente</option>
-                    <option value="Completado" {% if request.GET.estado == "Completado" %}selected{% endif %}>Completado</option>
-                    <option value="Cancelado" {% if request.GET.estado == "Cancelado" %}selected{% endif %}>Cancelado</option>
+
+                <label class="form-label">
+                    Estado
+                </label>
+
+
+                <select
+                    name="estado"
+                    class="form-select"
+                >
+
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option
+                        value="Pendiente"
+                        {% if filtro_estado == "Pendiente" %}
+                            selected
+                        {% endif %}
+                    >
+                        Pendiente
+                    </option>
+
+                    <option
+                        value="Completado"
+                        {% if filtro_estado == "Completado" %}
+                            selected
+                        {% endif %}
+                    >
+                        Completado
+                    </option>
+
+                    <option
+                        value="Cancelado"
+                        {% if filtro_estado == "Cancelado" %}
+                            selected
+                        {% endif %}
+                    >
+                        Cancelado
+                    </option>
+
                 </select>
+
             </div>
 
+
+            <!-- =============================================
+                 FILTRAR
+            ============================================== -->
+
             <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-search"></i>
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+
+                    <i class="bi bi-search me-1"></i>
+
                     Filtrar
+
                 </button>
+
             </div>
 
         </div>
@@ -125,740 +405,2961 @@
 
 </div>
 
-<div class="card-admin" id="vistaTablaMantenimientos">
+
+
+<!-- =========================================================
+     VISTA TABLA
+========================================================= -->
+
+<div
+    class="card-admin"
+    id="vistaTablaMantenimientos"
+>
+
     <div class="table-responsive">
+
         <table class="table align-middle mb-0">
+
             <thead>
+
                 <tr>
-                    <th>Tarea</th>
-                    <th>Tipo</th>
-                    <th>Asignado a</th>
-                    <th>Responsable</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th class="text-center">Acciones</th>
+
+                    <th>
+                        Tarea
+                    </th>
+
+                    <th>
+                        Tipo
+                    </th>
+
+                    <th>
+                        Asignado a
+                    </th>
+
+                    <th>
+                        Responsable
+                    </th>
+
+                    <th>
+                        Fecha
+                    </th>
+
+                    <th>
+                        Prioridad
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
+                    <th class="text-center">
+                        Acciones
+                    </th>
+
                 </tr>
+
             </thead>
 
+
             <tbody>
+
                 {% for mantenimiento in mantenimientos %}
-                <tr>
-                    <td>{{ mantenimiento.tipo }}</td>
 
-                    <td>
-                        {% if mantenimiento.entidadmantenimiento == "Apiario" %}
-                            <span class="badge-estado badge-bueno"
-                                  data-bs-toggle="tooltip"
-                                  title="Este mantenimiento aplica a todo el apiario.">Apiario</span>
-                        {% else %}
-                            <span class="badge-estado badge-precaucion"
-                                  data-bs-toggle="tooltip"
-                                  title="Este mantenimiento aplica a una colmena específica.">Colmena</span>
-                        {% endif %}
-                    </td>
+                    <tr>
 
-                    <td>
-                        {% if mantenimiento.entidadmantenimiento == "Apiario" %}
-                            {{ mantenimiento.id_apiario.nombreapiario }}
-                        {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
-                            {{ mantenimiento.id_colmena.codigocolmena }} - {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
-                        {% else %}
-                            Sin asignar
-                        {% endif %}
-                    </td>
 
-                    <td>{{ mantenimiento.responsable }}</td>
-                    <td>{{ mantenimiento.fechaejecucion }}</td>
+                        <!-- =================================
+                             TAREA
+                        ================================== -->
 
-                    <td>
-                        {% if mantenimiento.estado == "Pendiente" %}
-                            <span class="badge-estado badge-precaucion"
-                                  data-bs-toggle="tooltip"
-                                  title="Aún no se ha realizado.">Pendiente</span>
-                        {% elif mantenimiento.estado == "Completado" %}
-                            <span class="badge-estado badge-bueno"
-                                  data-bs-toggle="tooltip"
-                                  title="Ya se realizó.">Completado</span>
-                        {% else %}
-                            <span class="badge-estado badge-deficiente"
-                                  data-bs-toggle="tooltip"
-                                  title="No se llegó a realizar.">{{ mantenimiento.estado }}</span>
-                        {% endif %}
-                    </td>
+                        <td>
 
-                    <td>
-                        <div class="acciones">
-                            <button type="button" class="btn-accion btn-ver" data-bs-toggle="modal" data-bs-target="#modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                                <i class="bi bi-eye"></i>
-                            </button>
+                            <strong>
+                                {{ mantenimiento.tipo }}
+                            </strong>
 
-                            {% if "mg" in permisos_usuario %}
-                            <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
+                        </td>
 
-                            <button type="button" class="btn-accion btn-borrar" data-bs-toggle="modal" data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                                <i class="bi bi-trash"></i>
-                            </button>
+
+                        <!-- =================================
+                             TIPO
+                        ================================== -->
+
+                        <td>
+
+                            {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+
+                                <span
+                                    class="badge-estado badge-bueno"
+                                    title="Este mantenimiento aplica a todo el apiario."
+                                >
+
+                                    <i class="bi bi-geo-alt me-1"></i>
+
+                                    Apiario
+
+                                </span>
+
+                            {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
+
+                                <span
+                                    class="badge-estado badge-precaucion"
+                                    title="Este mantenimiento aplica a una colmena específica."
+                                >
+
+                                    <i class="bi bi-box-seam me-1"></i>
+
+                                    Colmena
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    Sin definir
+                                </span>
+
                             {% endif %}
-                        </div>
-                    </td>
-                </tr>
 
-                <!-- MODAL DETALLE -->
-                <div class="modal fade" id="modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}" tabindex="-1">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
+                        </td>
 
-                            <div class="modal-header border-0" style="background:#E8F7E9;">
-                                <div>
-                                    <h4 class="fw-bold mb-1" style="color:#234F39;">
-                                        <i class="bi bi-eye-fill me-2"></i>
-                                        Detalle del Mantenimiento
-                                    </h4>
-                                    <p class="text-muted mb-0">Información completa del mantenimiento.</p>
-                                </div>
 
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
+                        <!-- =================================
+                             ASIGNADO A
+                        ================================== -->
 
-                            <div class="modal-body">
-                                <div class="row g-3">
+                        <td>
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box verde">
-                                            <small>Tarea</small>
-                                            <h5>{{ mantenimiento.tipo }}</h5>
-                                        </div>
-                                    </div>
+                            {% if mantenimiento.entidadmantenimiento == "Apiario" %}
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Responsable</small>
-                                            <h5>{{ mantenimiento.responsable }}</h5>
-                                        </div>
-                                    </div>
+                                {% if mantenimiento.id_apiario %}
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Apiario</small>
-                                            <h5>
-                                                {% if mantenimiento.id_apiario %}
-                                                    {{ mantenimiento.id_apiario.nombreapiario }}
-                                                {% elif mantenimiento.id_colmena %}
-                                                    {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
-                                                {% else %}
-                                                    No aplica
-                                                {% endif %}
-                                            </h5>
-                                        </div>
-                                    </div>
+                                    {{ mantenimiento.id_apiario.nombreapiario }}
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Alcance</small>
-                                            <h5>
-                                                {% if mantenimiento.entidadmantenimiento == "Apiario" %}
-                                                    Todo el apiario
-                                                {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
-                                                    Colmena específica
-                                                {% else %}
-                                                    Sin definir
-                                                {% endif %}
-                                            </h5>
-                                        </div>
-                                    </div>
+                                {% else %}
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Colmena</small>
-                                            <h5>
-                                                {% if mantenimiento.id_colmena %}
-                                                    {{ mantenimiento.id_colmena.codigocolmena }}
-                                                {% else %}
-                                                    No aplica
-                                                {% endif %}
-                                            </h5>
-                                        </div>
-                                    </div>
+                                    Sin apiario
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Fecha programada</small>
-                                            <h5>{{ mantenimiento.fechaejecucion }}</h5>
-                                        </div>
-                                    </div>
+                                {% endif %}
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Estado</small>
-                                            <h5>{{ mantenimiento.estado }}</h5>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-md-6">
-                                        <div class="modal-info-box">
-                                            <small>Prioridad</small>
-                                            <h5>{{ mantenimiento.prioridad }}</h5>
-                                        </div>
-                                    </div>
+                            {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
 
-                                    <div class="col-12">
-                                        <div class="modal-info-box">
-                                            <small>Observaciones</small>
-                                            <p class="mb-0">
-                                                {{ mantenimiento.observaciones|default:"Sin observaciones." }}
-                                            </p>
-                                        </div>
-                                    </div>
+                                {% if mantenimiento.id_colmena %}
 
-                                </div>
-                            </div>
+                                    {{ mantenimiento.id_colmena.codigocolmena }}
 
-                            <div class="modal-footer border-0">
-                                <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                    Cerrar
+                                    <small class="text-muted d-block">
+
+                                        {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
+
+                                    </small>
+
+                                {% else %}
+
+                                    Sin colmena
+
+                                {% endif %}
+
+
+                            {% else %}
+
+                                Sin asignar
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- =================================
+                             RESPONSABLE
+                        ================================== -->
+
+                        <td>
+
+                            {{ mantenimiento.responsable|default:"Sin Responsable" }}
+
+                        </td>
+
+
+                        <!-- =================================
+                             FECHA
+                        ================================== -->
+
+                        <td>
+
+                            {{ mantenimiento.fechaejecucion|date:"d/m/Y" }}
+
+                        </td>
+
+
+                        <!-- =================================
+                             PRIORIDAD
+                        ================================== -->
+
+                        <td>
+
+                            {% if mantenimiento.prioridad == "Baja" %}
+
+                                <span class="badge-prioridad prioridad-baja">
+                                    Baja
+                                </span>
+
+                            {% elif mantenimiento.prioridad == "Media" %}
+
+                                <span class="badge-prioridad prioridad-media">
+                                    Media
+                                </span>
+
+                            {% elif mantenimiento.prioridad == "Alta" %}
+
+                                <span class="badge-prioridad prioridad-alta">
+                                    Alta
+                                </span>
+
+                            {% elif mantenimiento.prioridad == "Crítica" %}
+
+                                <span class="badge-prioridad prioridad-critica">
+                                    Crítica
+                                </span>
+
+                            {% else %}
+
+                                {{ mantenimiento.prioridad|default:"Sin prioridad" }}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- =================================
+                             ESTADO
+                        ================================== -->
+
+                        <td>
+
+                            {% if mantenimiento.estado == "Pendiente" %}
+
+                                <span
+                                    class="badge-estado badge-precaucion"
+                                    title="Aún no se ha realizado."
+                                >
+                                    Pendiente
+                                </span>
+
+
+                            {% elif mantenimiento.estado == "Completado" %}
+
+                                <span
+                                    class="badge-estado badge-bueno"
+                                    title="Ya se realizó."
+                                >
+                                    Completado
+                                </span>
+
+
+                            {% else %}
+
+                                <span
+                                    class="badge-estado badge-deficiente"
+                                    title="No se llegó a realizar."
+                                >
+
+                                    {{ mantenimiento.estado }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- =================================
+                             ACCIONES
+                        ================================== -->
+
+                        <td>
+
+                            <div class="acciones">
+
+
+                                <!-- VER -->
+
+                                <button
+                                    type="button"
+                                    class="btn-accion btn-ver"
+                                    title="Ver detalle"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                >
+
+                                    <i class="bi bi-eye"></i>
+
                                 </button>
+
+
+                                {% if "mg" in permisos_usuario %}
+
+
+                                    <!-- EDITAR -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-accion btn-editar"
+                                        title="Editar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                    >
+
+                                        <i class="bi bi-pencil-square"></i>
+
+                                    </button>
+
+
+                                    <!-- ELIMINAR -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-accion btn-borrar"
+                                        title="Eliminar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                    >
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </button>
+
+                                {% endif %}
+
                             </div>
 
-                        </div>
-                    </div>
-                </div>
+                        </td>
 
-                <!-- MODAL EDITAR -->
-                <div class="modal fade modal-editar-mantenimiento" id="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}" tabindex="-1">
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
+                    </tr>
 
-                            <form method="POST" action="{% url 'editar_mantenimiento' mantenimiento.id_mantenimiento %}" class="form-mantenimiento">
-                                {% csrf_token %}
-
-                                <div class="modal-header border-0" style="background:#E8F7E9;">
-                                    <div>
-                                        <h4 class="fw-bold mb-1" style="color:#234F39;">
-                                            <i class="bi bi-pencil-square me-2"></i>
-                                            Editar Mantenimiento
-                                        </h4>
-                                        <p class="text-muted mb-0">Modifica la información del mantenimiento.</p>
-                                    </div>
-
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-                                    <div class="row g-3">
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Alcance</label>
-                                            <select name="entidad_mantenimiento" class="form-select entidad-editar" required>
-                                                <option value="Apiario" {% if mantenimiento.entidadmantenimiento == "Apiario" %}selected{% endif %}>
-                                                    Todo el apiario
-                                                </option>
-                                                <option value="Colmena" {% if mantenimiento.entidadmantenimiento == "Colmena" %}selected{% endif %}>
-                                                    Colmena específica
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Apiario</label>
-                                            <select name="id_apiario" class="form-select apiario-editar" required>
-                                                <option value="">Seleccione un apiario</option>
-
-                                                {% for apiario in apiarios %}
-                                                    <option value="{{ apiario.id_apiario }}"
-                                                        {% if mantenimiento.id_apiario and apiario.id_apiario == mantenimiento.id_apiario.id_apiario %}
-                                                            selected
-                                                        {% elif mantenimiento.id_colmena and apiario.id_apiario == mantenimiento.id_colmena.id_apiario.id_apiario %}
-                                                            selected
-                                                        {% endif %}>
-                                                        {{ apiario.nombreapiario }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Colmena</label>
-                                            <select name="id_colmena" class="form-select colmena-editar">
-                                                <option value="">No aplica / Todo el apiario</option>
-
-                                                {% for colmena in colmenas %}
-                                                    <option value="{{ colmena.id_colmena }}"
-                                                        data-apiario="{{ colmena.id_apiario.id_apiario }}"
-                                                        {% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}
-                                                            selected
-                                                        {% endif %}>
-                                                        {{ colmena.codigocolmena }} - {{ colmena.id_apiario.nombreapiario }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Responsable</label>
-                                            <input type="text"
-                                                name="responsable"
-                                                class="form-control"
-                                                value="{{ mantenimiento.responsable }}"
-                                                required>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Tarea</label>
-                                            <input type="text"
-                                                name="tipo"
-                                                class="form-control"
-                                                value="{{ mantenimiento.tipo }}"
-                                                required>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Fecha programada</label>
-                                            <input type="date"
-                                                name="fecha_ejecucion"
-                                                class="form-control fecha-editar"
-                                                value="{{ mantenimiento.fechaejecucion|date:'Y-m-d' }}"
-                                                required>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Estado</label>
-                                            <select name="estado" class="form-select" required>
-                                                <option value="Pendiente" {% if mantenimiento.estado == "Pendiente" %}selected{% endif %}>Pendiente</option>
-                                                <option value="Completado" {% if mantenimiento.estado == "Completado" %}selected{% endif %}>Completado</option>
-                                                <option value="Cancelado" {% if mantenimiento.estado == "Cancelado" %}selected{% endif %}>Cancelado</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Prioridad</label>
-                                            <select name="prioridad" class="form-select">
-                                                <option value="Baja" {% if mantenimiento.prioridad == "Baja" %}selected{% endif %}>Baja</option>
-                                                <option value="Media" {% if mantenimiento.prioridad == "Media" %}selected{% endif %}>Media</option>
-                                                <option value="Alta" {% if mantenimiento.prioridad == "Alta" %}selected{% endif %}>Alta</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label">Observaciones</label>
-                                            <textarea name="observaciones" class="form-control" rows="4">{{ mantenimiento.observaciones }}</textarea>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                        Cancelar
-                                    </button>
-
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-save me-2"></i>
-                                        Guardar Cambios
-                                    </button>
-                                </div>
-
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MODAL ELIMINAR -->
-                <div class="modal fade" id="modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}" tabindex="-1">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
-
-                            <form method="POST" action="{% url 'eliminar_mantenimiento' mantenimiento.id_mantenimiento %}">
-                                {% csrf_token %}
-
-                                <div class="modal-header border-0 modal-delete-header">
-                                    <div>
-                                        <h4 class="fw-bold text-danger mb-1">
-                                            <i class="bi bi-trash-fill me-2"></i>
-                                            Eliminar Mantenimiento
-                                        </h4>
-                                        <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
-                                    </div>
-
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-                                    <div class="alerta-eliminar mb-3">
-                                        <strong>Advertencia:</strong> se eliminará este mantenimiento.
-                                    </div>
-
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box verde">
-                                                <small>Tarea</small>
-                                                <h5>{{ mantenimiento.tipo }}</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Alcance</small>
-                                                <h5>
-                                                    {% if mantenimiento.entidadmantenimiento == "Apiario" %}
-                                                        Todo el apiario
-                                                    {% else %}
-                                                        Colmena específica
-                                                    {% endif %}
-                                                </h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                        Cancelar
-                                    </button>
-
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash me-2"></i>
-                                        Sí, eliminar
-                                    </button>
-                                </div>
-
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
 
                 {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        {% if request.GET.apiario or request.GET.colmena or request.GET.estado %}
-                            No se encontraron mantenimientos con esos filtros.
-                        {% else %}
-                            No hay mantenimientos registrados.
-                        {% endif %}
-                    </td>
-                </tr>
+
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center py-5"
+                        >
+
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+
+
+                            <p class="text-muted mt-2 mb-0">
+
+                                {% if filtro_apiario or filtro_colmena or filtro_estado %}
+
+                                    No se encontraron mantenimientos
+                                    con los filtros seleccionados.
+
+                                {% else %}
+
+                                    No hay mantenimientos registrados.
+
+                                {% endif %}
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
                 {% endfor %}
+
             </tbody>
+
         </table>
+
     </div>
+
 </div>
 
-<!-- VISTA EN TARJETAS -->
-<div class="grid-tarjetas-mantenimientos" id="vistaTarjetasMantenimientos" style="display:none;">
+
+
+<!-- =========================================================
+     VISTA TARJETAS
+========================================================= -->
+
+<div
+    class="grid-tarjetas-mantenimientos"
+    id="vistaTarjetasMantenimientos"
+    style="display:none;"
+>
 
     {% for mantenimiento in mantenimientos %}
-    <div class="tarjeta-mantenimiento prioridad-{{ mantenimiento.prioridad|lower }}">
 
-        <div class="tarjeta-mantenimiento-encabezado">
-            <h5>{{ mantenimiento.tipo }}</h5>
+        <article
+            class="
+                tarjeta-mantenimiento
+                prioridad-{{ mantenimiento.prioridad|lower }}
+            "
+        >
 
-            {% if mantenimiento.estado == "Pendiente" %}
-                <span class="badge-estado badge-precaucion"
-                      data-bs-toggle="tooltip"
-                      title="Aún no se ha realizado.">Pendiente</span>
-            {% elif mantenimiento.estado == "Completado" %}
-                <span class="badge-estado badge-bueno"
-                      data-bs-toggle="tooltip"
-                      title="Ya se realizó.">Completado</span>
-            {% else %}
-                <span class="badge-estado badge-deficiente"
-                      data-bs-toggle="tooltip"
-                      title="No se llegó a realizar.">{{ mantenimiento.estado }}</span>
-            {% endif %}
-        </div>
 
-        <div class="tarjeta-mantenimiento-cuerpo">
+            <!-- =============================================
+                 HEADER
+            ============================================== -->
 
-            <div class="tarjeta-mantenimiento-dato">
-                <i class="bi bi-diagram-3-fill"></i>
-                <span>
-                    {% if mantenimiento.entidadmantenimiento == "Apiario" %}
-                        {{ mantenimiento.id_apiario.nombreapiario }} <small>(apiario completo)</small>
-                    {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
-                        {{ mantenimiento.id_colmena.codigocolmena }} - {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
-                    {% else %}
-                        Sin asignar
-                    {% endif %}
-                </span>
-            </div>
+            <div class="tarjeta-mantenimiento-encabezado">
 
-            <div class="tarjeta-mantenimiento-dato">
-                <i class="bi bi-person-badge-fill"></i>
-                <span>{{ mantenimiento.responsable }}</span>
-            </div>
+                <h5>
+                    {{ mantenimiento.tipo }}
+                </h5>
 
-            <div class="tarjeta-mantenimiento-dato">
-                <i class="bi bi-calendar-event"></i>
-                <span>{{ mantenimiento.fechaejecucion }}</span>
-            </div>
 
-            <span class="tarjeta-mantenimiento-prioridad">
-                <i class="bi bi-flag-fill"></i> Prioridad {{ mantenimiento.prioridad }}
-            </span>
+                {% if mantenimiento.estado == "Pendiente" %}
 
-            <div class="acciones mt-3">
-                <button type="button" class="btn-accion btn-ver" data-bs-toggle="modal" data-bs-target="#modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                    <i class="bi bi-eye"></i>
-                </button>
+                    <span class="badge-estado badge-precaucion">
+                        Pendiente
+                    </span>
 
-                {% if "mg" in permisos_usuario %}
-                    <button type="button" class="btn-accion btn-editar" data-bs-toggle="modal" data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
+                {% elif mantenimiento.estado == "Completado" %}
 
-                    <button type="button" class="btn-accion btn-borrar" data-bs-toggle="modal" data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <span class="badge-estado badge-bueno">
+                        Completado
+                    </span>
+
+                {% else %}
+
+                    <span class="badge-estado badge-deficiente">
+                        {{ mantenimiento.estado }}
+                    </span>
+
                 {% endif %}
+
             </div>
+
+
+            <!-- =============================================
+                 CUERPO
+            ============================================== -->
+
+            <div class="tarjeta-mantenimiento-cuerpo">
+
+
+                <div class="tarjeta-mantenimiento-dato">
+
+                    <i class="bi bi-diagram-3-fill"></i>
+
+                    <span>
+
+                        {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+
+                            {% if mantenimiento.id_apiario %}
+
+                                {{ mantenimiento.id_apiario.nombreapiario }}
+
+                                <small>
+                                    (apiario completo)
+                                </small>
+
+                            {% endif %}
+
+
+                        {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
+
+                            {% if mantenimiento.id_colmena %}
+
+                                {{ mantenimiento.id_colmena.codigocolmena }}
+
+                                -
+
+                                {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
+
+                            {% endif %}
+
+                        {% else %}
+
+                            Sin asignar
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="tarjeta-mantenimiento-dato">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+
+                        {{ mantenimiento.responsable|default:"Sin Responsable" }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="tarjeta-mantenimiento-dato">
+
+                    <i class="bi bi-calendar-event"></i>
+
+                    <span>
+
+                        {{ mantenimiento.fechaejecucion|date:"d/m/Y" }}
+
+                    </span>
+
+                </div>
+
+
+                <span class="tarjeta-mantenimiento-prioridad">
+
+                    <i class="bi bi-flag-fill"></i>
+
+                    Prioridad
+                    {{ mantenimiento.prioridad }}
+
+                </span>
+
+
+                <div class="acciones mt-3">
+
+
+                    <button
+                        type="button"
+                        class="btn-accion btn-ver"
+                        title="Ver"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                    >
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+
+                    {% if "mg" in permisos_usuario %}
+
+                        <button
+                            type="button"
+                            class="btn-accion btn-editar"
+                            title="Editar"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                        >
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="btn-accion btn-borrar"
+                            title="Eliminar"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                        >
+
+                            <i class="bi bi-trash"></i>
+
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+    {% empty %}
+
+        <div class="text-center py-5 w-100">
+
+            <i class="bi bi-inbox fs-1 text-muted"></i>
+
+            <p class="text-muted mt-2 mb-0">
+
+                No hay mantenimientos para mostrar.
+
+            </p>
 
         </div>
 
-    </div>
-    {% empty %}
-    <p class="text-center text-muted py-4 w-100">
-        {% if request.GET.apiario or request.GET.colmena or request.GET.estado %}
-            No se encontraron mantenimientos con esos filtros.
-        {% else %}
-            No hay mantenimientos registrados.
-        {% endif %}
-    </p>
     {% endfor %}
 
 </div>
 
+
+
+<!-- =========================================================
+     PAGINACIÓN
+========================================================= -->
+
 {% if mantenimientos.has_other_pages %}
-<nav class="mt-4">
-    <ul class="pagination justify-content-center align-items-center">
 
-        {% if mantenimientos.has_previous %}
-            <li class="page-item">
-                <a class="page-link"
-                   href="?page={{ mantenimientos.previous_page_number }}&apiario={{ request.GET.apiario }}&colmena={{ request.GET.colmena }}&estado={{ request.GET.estado }}">
-                    Anterior
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Anterior</span>
-            </li>
-        {% endif %}
+    <nav class="mt-4">
 
-        {% for num in mantenimientos.paginator.page_range %}
-            {% if mantenimientos.number == num %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
-            {% else %}
+        <ul
+            class="
+                pagination
+                justify-content-center
+                align-items-center
+            "
+        >
+
+
+            <!-- =============================================
+                 ANTERIOR
+            ============================================== -->
+
+            {% if mantenimientos.has_previous %}
+
                 <li class="page-item">
-                    <a class="page-link"
-                       href="?page={{ num }}&apiario={{ request.GET.apiario }}&colmena={{ request.GET.colmena }}&estado={{ request.GET.estado }}">
-                        {{ num }}
+
+                    <a
+                        class="page-link"
+                        href="?page={{ mantenimientos.previous_page_number }}&apiario={{ filtro_apiario }}&colmena={{ filtro_colmena }}&estado={{ filtro_estado }}"
+                    >
+                        Anterior
                     </a>
+
                 </li>
+
+            {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+                        Anterior
+                    </span>
+
+                </li>
+
             {% endif %}
-        {% endfor %}
 
-        {% if mantenimientos.has_next %}
-            <li class="page-item">
-                <a class="page-link"
-                   href="?page={{ mantenimientos.next_page_number }}&apiario={{ request.GET.apiario }}&colmena={{ request.GET.colmena }}&estado={{ request.GET.estado }}">
-                    Siguiente
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Siguiente</span>
-            </li>
-        {% endif %}
 
-    </ul>
-</nav>
+            <!-- =============================================
+                 PÁGINAS
+            ============================================== -->
+
+            {% for num in mantenimientos.paginator.page_range %}
+
+                {% if mantenimientos.number == num %}
+
+                    <li class="page-item active">
+
+                        <span class="page-link">
+
+                            {{ num }}
+
+                        </span>
+
+                    </li>
+
+                {% else %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ num }}&apiario={{ filtro_apiario }}&colmena={{ filtro_colmena }}&estado={{ filtro_estado }}"
+                        >
+
+                            {{ num }}
+
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            <!-- =============================================
+                 SIGUIENTE
+            ============================================== -->
+
+            {% if mantenimientos.has_next %}
+
+                <li class="page-item">
+
+                    <a
+                        class="page-link"
+                        href="?page={{ mantenimientos.next_page_number }}&apiario={{ filtro_apiario }}&colmena={{ filtro_colmena }}&estado={{ filtro_estado }}"
+                    >
+                        Siguiente
+                    </a>
+
+                </li>
+
+            {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+                        Siguiente
+                    </span>
+
+                </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
 {% endif %}
 
-<!-- MODAL AGREGAR -->
-<div class="modal fade" id="modalAgregarMantenimiento" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+
+<!-- =========================================================
+     MODAL AGREGAR MANTENIMIENTO
+========================================================= -->
+
+<div
+    class="modal fade"
+    id="modalAgregarMantenimiento"
+    tabindex="-1"
+>
+
+    <div
+        class="
+            modal-dialog
+            modal-xl
+            modal-dialog-centered
+            modal-dialog-scrollable
+        "
+    >
+
         <div class="modal-content border-0 shadow rounded-4">
 
-            <form method="POST" action="{% url 'crear_mantenimiento' %}" class="form-mantenimiento">
+
+            <form
+                method="POST"
+                action="{% url 'crear_mantenimiento' %}"
+                enctype="multipart/form-data"
+                class="form-mantenimiento"
+                id="formAgregarMantenimiento"
+            >
+
                 {% csrf_token %}
 
-                <div class="modal-header border-0" style="background:#E8F7E9;">
+
+                <!-- =========================================
+                     HEADER
+                ========================================== -->
+
+                <div
+                    class="modal-header border-0"
+                    style="background:#E8F7E9;"
+                >
+
                     <div>
-                        <h4 class="fw-bold mb-1" style="color:#234F39;">
+
+                        <h4
+                            class="fw-bold mb-1"
+                            style="color:#234F39;"
+                        >
+
                             <i class="bi bi-plus-circle me-2"></i>
+
                             Agregar Mantenimiento
+
                         </h4>
-                        <p class="text-muted mb-0">Registra un nuevo mantenimiento.</p>
+
+
+                        <p class="text-muted mb-0">
+
+                            Registra un nuevo mantenimiento
+                            para un apiario o una colmena.
+
+                        </p>
+
                     </div>
 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
                 </div>
+
+
+
+                <!-- =========================================
+                     BODY
+                ========================================== -->
 
                 <div class="modal-body">
-                    <div class="row g-3">
 
-                        <!-- RESPONSABLE -->
-                        <div class="col-md-6">
 
-                            <label
-                                for="responsableMantenimiento"
-                                class="form-label"
-                            >
-                                Responsable
-                            </label>
+                    <!-- =====================================
+                         INFORMACIÓN
+                    ====================================== -->
 
-                            <select
-                                name="responsable_id"
-                                id="responsableMantenimiento"
-                                class="form-select"
-                                required
-                            >
+                    <div class="mantenimiento-form-seccion mb-4">
 
-                                <option value="">
-                                    Seleccione un responsable
-                                </option>
+                        <div class="mantenimiento-form-seccion-header">
 
-                                {% for apicultor in apicultores %}
+                            <i class="bi bi-card-checklist"></i>
 
-                                    <option value="{{ apicultor.id_apicultor }}">
-                                        {{ apicultor.nombre_completo }}
-                                    </option>
+                            <div>
 
-                                {% endfor %}
+                                <h5>
+                                    Información del mantenimiento
+                                </h5>
 
-                            </select>
+                                <p>
+                                    Define dónde se realizará y quién será
+                                    el responsable.
+                                </p>
+
+                            </div>
 
                         </div>
 
-                        <!-- APIARIO -->
-                        <div class="col-md-6">
-                            <label class="form-label">Apiario</label>
-                            <select name="id_apiario"
+
+                        <div class="row g-3">
+
+
+                            <!-- RESPONSABLE -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="responsableMantenimiento"
+                                    class="form-label"
+                                >
+                                    Responsable *
+                                </label>
+
+
+                                <select
+                                    name="responsable_id"
+                                    id="responsableMantenimiento"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Seleccione un responsable
+                                    </option>
+
+
+                                    {% for apicultor in apicultores %}
+
+                                        <option
+                                            value="{{ apicultor.id_apicultor }}"
+                                        >
+
+                                            {{ apicultor.nombre_completo }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- APIARIO -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="apiarioMantenimiento"
+                                    class="form-label"
+                                >
+                                    Apiario *
+                                </label>
+
+
+                                <select
+                                    name="id_apiario"
                                     id="apiarioMantenimiento"
                                     class="form-select"
-                                    required>
-                                <option value="">Seleccione un apiario</option>
+                                    required
+                                >
 
-                                {% for apiario in apiarios %}
-                                    <option value="{{ apiario.id_apiario }}"
-                                            data-apicultor="{{ apiario.id_apicultor.id_apicultor }}">
-                                        {{ apiario.nombreapiario }}
+                                    <option value="">
+                                        Seleccione un apiario
                                     </option>
-                                {% endfor %}
-                            </select>
-                        </div>
 
-                        <!-- ALCANCE -->
-                        <div class="col-12">
-                            <label class="form-label">Alcance del mantenimiento</label>
 
-                            <div class="d-flex gap-3 flex-wrap">
-                                <label class="btn btn-outline-success rounded-3 px-4">
-                                    <input type="radio"
-                                           name="entidad_mantenimiento"
-                                           value="Apiario"
-                                           class="alcance-mantenimiento-radio"
-                                           required>
-                                    Todo el apiario
-                                </label>
+                                    {% for apiario in apiarios %}
 
-                                <label class="btn btn-outline-success rounded-3 px-4">
-                                    <input type="radio"
-                                           name="entidad_mantenimiento"
-                                           value="Colmena"
-                                           class="alcance-mantenimiento-radio"
-                                           required>
-                                    Una colmena del apiario
-                                </label>
+                                        <option
+                                            value="{{ apiario.id_apiario }}"
+                                            data-apicultor="{{ apiario.id_apicultor.id_apicultor }}"
+                                        >
+
+                                            {{ apiario.nombreapiario }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
                             </div>
-                        </div>
 
-                        <!-- COLMENA -->
-                        <div class="col-md-6 d-none" id="campoColmenaMantenimiento">
-                            <label class="form-label">Colmena</label>
-                            <select name="id_colmena"
+
+                            <!-- ALCANCE -->
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Alcance del mantenimiento *
+                                </label>
+
+
+                                <div
+                                    class="
+                                        mantenimiento-alcance-opciones
+                                        d-flex
+                                        gap-3
+                                        flex-wrap
+                                    "
+                                >
+
+                                    <label
+                                        class="
+                                            mantenimiento-alcance-opcion
+                                            btn
+                                            btn-outline-success
+                                            rounded-3
+                                            px-4
+                                        "
+                                    >
+
+                                        <input
+                                            type="radio"
+                                            name="entidad_mantenimiento"
+                                            value="Apiario"
+                                            class="alcance-mantenimiento-radio"
+                                            required
+                                        >
+
+                                        <i class="bi bi-geo-alt me-1"></i>
+
+                                        Todo el apiario
+
+                                    </label>
+
+
+                                    <label
+                                        class="
+                                            mantenimiento-alcance-opcion
+                                            btn
+                                            btn-outline-success
+                                            rounded-3
+                                            px-4
+                                        "
+                                    >
+
+                                        <input
+                                            type="radio"
+                                            name="entidad_mantenimiento"
+                                            value="Colmena"
+                                            class="alcance-mantenimiento-radio"
+                                            required
+                                        >
+
+                                        <i class="bi bi-box-seam me-1"></i>
+
+                                        Una colmena
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- COLMENA -->
+
+                            <div
+                                class="col-md-6 d-none"
+                                id="campoColmenaMantenimiento"
+                            >
+
+                                <label
+                                    for="colmenaMantenimiento"
+                                    class="form-label"
+                                >
+                                    Colmena *
+                                </label>
+
+
+                                <select
+                                    name="id_colmena"
                                     id="colmenaMantenimiento"
-                                    class="form-select">
-                                <option value="">Seleccione una colmena</option>
+                                    class="form-select"
+                                >
 
-                                {% for colmena in colmenas %}
-                                    <option value="{{ colmena.id_colmena }}"
-                                            data-apiario="{{ colmena.id_apiario.id_apiario }}">
-                                        {{ colmena.codigocolmena }} - {{ colmena.estadocolmena }}
+                                    <option value="">
+                                        Seleccione una colmena
                                     </option>
-                                {% endfor %}
-                            </select>
-                        </div>
 
-                        <!-- DATOS DEL MANTENIMIENTO -->
-                        <div class="col-md-6">
-                            <label class="form-label">Tarea</label>
-                            <input type="text"
-                                   name="tipo"
-                                   class="form-control"
-                                   placeholder="Ej: Revisión general"
-                                   required>
-                        </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Fecha programada</label>
-                            <input type="date"
-                                name="fecha_ejecucion"
-                                class="form-control"
-                                min="{% now 'Y-m-d' %}"
-                                required>
-                        </div>
+                                    {% for colmena in colmenas %}
 
-                        <div class="col-md-6">
-                            <label class="form-label">Estado</label>
-                            <select name="estado" class="form-select" required disabled>
-                                <option value="Pendiente" selected>Pendiente</option>
-                            </select>
-                            <input type="hidden" name="estado" value="Pendiente">
-                            <div class="form-text">
-                                Todo mantenimiento nuevo inicia como Pendiente. El estado se cambia desde Editar.
+                                        <option
+                                            value="{{ colmena.id_colmena }}"
+                                            data-apiario="{{ colmena.id_apiario.id_apiario }}"
+                                        >
+
+                                            {{ colmena.codigocolmena }}
+                                            -
+                                            {{ colmena.estadocolmena }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
                             </div>
-                        </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Prioridad</label>
-                            <select name="prioridad" class="form-select">
-                                <option value="Baja">Baja</option>
-                                <option value="Media">Media</option>
-                                <option value="Alta">Alta</option>
-                            </select>
-                        </div>
 
-                        <div class="col-12">
-                            <label class="form-label">Observaciones</label>
-                            <textarea name="observaciones"
+                            <!-- TAREA -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Tarea *
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    name="tipo"
                                     class="form-control"
-                                    rows="4"></textarea>
+                                    maxlength="100"
+                                    placeholder="Ej: Revisión general"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- FECHA -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Fecha programada *
+                                </label>
+
+
+                                <input
+                                    type="date"
+                                    name="fecha_ejecucion"
+                                    class="form-control"
+                                    min="{% now 'Y-m-d' %}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- ESTADO -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Estado
+                                </label>
+
+
+                                <select
+                                    class="form-select"
+                                    disabled
+                                >
+
+                                    <option selected>
+                                        Pendiente
+                                    </option>
+
+                                </select>
+
+
+                                <input
+                                    type="hidden"
+                                    name="estado"
+                                    value="Pendiente"
+                                >
+
+
+                                <div class="form-text">
+
+                                    Todo mantenimiento nuevo inicia
+                                    como Pendiente.
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PRIORIDAD -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Prioridad *
+                                </label>
+
+
+                                <select
+                                    name="prioridad"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option value="Baja">
+                                        Baja
+                                    </option>
+
+                                    <option
+                                        value="Media"
+                                        selected
+                                    >
+                                        Media
+                                    </option>
+
+                                    <option value="Alta">
+                                        Alta
+                                    </option>
+
+                                    <option value="Crítica">
+                                        Crítica
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- OBSERVACIONES -->
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Observaciones
+                                </label>
+
+
+                                <textarea
+                                    name="observaciones"
+                                    class="form-control"
+                                    rows="4"
+                                    maxlength="255"
+                                    placeholder="Describe detalles importantes del mantenimiento..."
+                                ></textarea>
+
+                            </div>
+
                         </div>
 
                     </div>
+
+
+
+                    <!-- =====================================
+                         EVIDENCIAS FOTOGRÁFICAS
+                    ====================================== -->
+
+                    <div class="mantenimiento-form-seccion">
+
+
+                        <div class="mantenimiento-form-seccion-header">
+
+                            <i class="bi bi-images"></i>
+
+                            <div>
+
+                                <h5>
+                                    Evidencias fotográficas
+                                </h5>
+
+                                <p>
+
+                                    Puedes agregar hasta
+                                    {{ max_evidencias_mantenimiento|default:6 }}
+                                    fotografías en total.
+
+                                    JPG, PNG o WEBP.
+
+                                    Máximo
+                                    {{ max_tamano_imagen_mb|default:5 }}
+                                    MB por fotografía.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="row g-3">
+
+
+                            <!-- =================================
+                                 ANTES
+                            ================================== -->
+
+                            <div class="col-lg-4">
+
+                                <div class="mantenimiento-evidencia-input antes">
+
+                                    <div class="mantenimiento-evidencia-input-header">
+
+                                        <span class="mantenimiento-evidencia-icono antes">
+
+                                            <i class="bi bi-camera"></i>
+
+                                        </span>
+
+
+                                        <div>
+
+                                            <h6>
+                                                Antes
+                                            </h6>
+
+                                            <span>
+                                                Estado inicial
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <input
+                                        type="file"
+                                        name="evidencias_antes"
+                                        class="form-control mantenimiento-input-evidencias"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        multiple
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 DURANTE
+                            ================================== -->
+
+                            <div class="col-lg-4">
+
+                                <div class="mantenimiento-evidencia-input durante">
+
+                                    <div class="mantenimiento-evidencia-input-header">
+
+                                        <span class="mantenimiento-evidencia-icono durante">
+
+                                            <i class="bi bi-tools"></i>
+
+                                        </span>
+
+
+                                        <div>
+
+                                            <h6>
+                                                Durante
+                                            </h6>
+
+                                            <span>
+                                                Proceso realizado
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <input
+                                        type="file"
+                                        name="evidencias_durante"
+                                        class="form-control mantenimiento-input-evidencias"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        multiple
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 DESPUÉS
+                            ================================== -->
+
+                            <div class="col-lg-4">
+
+                                <div class="mantenimiento-evidencia-input despues">
+
+                                    <div class="mantenimiento-evidencia-input-header">
+
+                                        <span class="mantenimiento-evidencia-icono despues">
+
+                                            <i class="bi bi-check-circle"></i>
+
+                                        </span>
+
+
+                                        <div>
+
+                                            <h6>
+                                                Después
+                                            </h6>
+
+                                            <span>
+                                                Resultado final
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <input
+                                        type="file"
+                                        name="evidencias_despues"
+                                        class="form-control mantenimiento-input-evidencias"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        multiple
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
+
+
+                <!-- =========================================
+                     FOOTER
+                ========================================== -->
+
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
+
+                    <button
+                        type="button"
+                        class="btn btn-cancelar"
+                        data-bs-dismiss="modal"
+                    >
+
                         Cancelar
+
                     </button>
 
-                    <button type="submit" class="btn btn-success">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+
                         <i class="bi bi-save me-2"></i>
+
                         Guardar Mantenimiento
+
                     </button>
+
                 </div>
 
             </form>
 
         </div>
+
     </div>
+
 </div>
+
+
+
+<!-- =========================================================
+     MODALES POR MANTENIMIENTO
+========================================================= -->
+
+{% for mantenimiento in mantenimientos %}
+
+
+    <!-- =====================================================
+         DETALLE DEL MANTENIMIENTO
+    ====================================================== -->
+
+    <div
+        class="modal fade"
+        id="modalDetalleMantenimiento{{ mantenimiento.id_mantenimiento }}"
+        tabindex="-1"
+    >
+
+        <div
+            class="
+                modal-dialog
+                modal-xl
+                modal-dialog-centered
+                modal-dialog-scrollable
+            "
+        >
+
+            <div class="modal-content border-0 shadow rounded-4">
+
+
+                <!-- =========================================
+                     HEADER
+                ========================================== -->
+
+                <div
+                    class="modal-header border-0"
+                    style="background:#E8F7E9;"
+                >
+
+                    <div>
+
+                        <h4
+                            class="fw-bold mb-1"
+                            style="color:#234F39;"
+                        >
+
+                            <i class="bi bi-eye-fill me-2"></i>
+
+                            Detalle del Mantenimiento
+
+                        </h4>
+
+
+                        <p class="text-muted mb-0">
+
+                            Información y evidencias del mantenimiento
+                            #{{ mantenimiento.id_mantenimiento }}.
+
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     BODY
+                ========================================== -->
+
+                <div class="modal-body">
+
+
+                    <!-- =====================================
+                         INFORMACIÓN
+                    ====================================== -->
+
+                    <div class="row g-3">
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box verde">
+
+                                <small>
+                                    Tarea
+                                </small>
+
+                                <h5>
+                                    {{ mantenimiento.tipo }}
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Responsable
+                                </small>
+
+                                <h5>
+
+                                    {{ mantenimiento.responsable|default:"Sin Responsable" }}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Apiario
+                                </small>
+
+                                <h5>
+
+                                    {% if mantenimiento.id_apiario %}
+
+                                        {{ mantenimiento.id_apiario.nombreapiario }}
+
+                                    {% elif mantenimiento.id_colmena %}
+
+                                        {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
+
+                                    {% else %}
+
+                                        No aplica
+
+                                    {% endif %}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Alcance
+                                </small>
+
+                                <h5>
+
+                                    {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+
+                                        Todo el apiario
+
+                                    {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
+
+                                        Colmena específica
+
+                                    {% else %}
+
+                                        Sin definir
+
+                                    {% endif %}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Colmena
+                                </small>
+
+                                <h5>
+
+                                    {% if mantenimiento.id_colmena %}
+
+                                        {{ mantenimiento.id_colmena.codigocolmena }}
+
+                                    {% else %}
+
+                                        No aplica
+
+                                    {% endif %}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Fecha programada
+                                </small>
+
+                                <h5>
+
+                                    {{ mantenimiento.fechaejecucion|date:"d/m/Y" }}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Estado
+                                </small>
+
+                                <h5>
+
+                                    {{ mantenimiento.estado }}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Prioridad
+                                </small>
+
+                                <h5>
+
+                                    {{ mantenimiento.prioridad }}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-12">
+
+                            <div class="modal-info-box">
+
+                                <small>
+                                    Observaciones
+                                </small>
+
+                                <p class="mb-0">
+
+                                    {{ mantenimiento.observaciones|default:"Sin observaciones." }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         EVIDENCIAS
+                    ====================================== -->
+
+                    <div class="mantenimiento-evidencias-detalle mt-4">
+
+
+                        <!-- =================================
+                             ANTES
+                        ================================== -->
+
+                        <section class="mantenimiento-evidencia-bloque antes">
+
+
+                            <div class="mantenimiento-evidencia-header">
+
+                                <div class="mantenimiento-evidencia-titulo">
+
+                                    <span class="mantenimiento-evidencia-icono antes">
+
+                                        <i class="bi bi-camera"></i>
+
+                                    </span>
+
+
+                                    <div>
+
+                                        <h5>
+                                            Antes del mantenimiento
+                                        </h5>
+
+                                        <span>
+                                            Condición inicial registrada.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <span class="mantenimiento-evidencia-contador antes">
+
+                                    {{ mantenimiento.evidencias_antes_admin|length }}
+
+                                    foto{{ mantenimiento.evidencias_antes_admin|length|pluralize:"s" }}
+
+                                </span>
+
+                            </div>
+
+
+                            {% if mantenimiento.evidencias_antes_admin %}
+
+                                <div class="mantenimiento-evidencias-grid">
+
+                                    {% for evidencia in mantenimiento.evidencias_antes_admin %}
+
+                                        <article class="mantenimiento-evidencia-item antes">
+
+                                            <div class="mantenimiento-evidencia-imagen">
+
+                                                <img
+                                                    src="{{ evidencia.imagen.url }}"
+                                                    alt="Evidencia antes {{ forloop.counter }}"
+                                                    loading="lazy"
+                                                >
+
+                                                <span class="mantenimiento-evidencia-numero">
+                                                    {{ forloop.counter }}
+                                                </span>
+
+                                                <span class="mantenimiento-evidencia-badge antes">
+                                                    Antes
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="mantenimiento-evidencia-info">
+
+                                                <div>
+
+                                                    <strong>
+                                                        Evidencia {{ forloop.counter }}
+                                                    </strong>
+
+                                                    <span>
+
+                                                        {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                    </span>
+
+                                                </div>
+
+                                                <i class="bi bi-image"></i>
+
+                                            </div>
+
+                                        </article>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="mantenimiento-evidencias-vacio">
+
+                                    <i class="bi bi-image"></i>
+
+                                    <span>
+                                        No hay fotografías del estado inicial.
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+                        </section>
+
+
+
+                        <!-- =================================
+                             DURANTE
+                        ================================== -->
+
+                        <section class="mantenimiento-evidencia-bloque durante">
+
+
+                            <div class="mantenimiento-evidencia-header">
+
+                                <div class="mantenimiento-evidencia-titulo">
+
+                                    <span class="mantenimiento-evidencia-icono durante">
+
+                                        <i class="bi bi-tools"></i>
+
+                                    </span>
+
+
+                                    <div>
+
+                                        <h5>
+                                            Durante el mantenimiento
+                                        </h5>
+
+                                        <span>
+                                            Evidencias del trabajo realizado.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <span class="mantenimiento-evidencia-contador durante">
+
+                                    {{ mantenimiento.evidencias_durante_admin|length }}
+
+                                    foto{{ mantenimiento.evidencias_durante_admin|length|pluralize:"s" }}
+
+                                </span>
+
+                            </div>
+
+
+                            {% if mantenimiento.evidencias_durante_admin %}
+
+                                <div class="mantenimiento-evidencias-grid">
+
+                                    {% for evidencia in mantenimiento.evidencias_durante_admin %}
+
+                                        <article class="mantenimiento-evidencia-item durante">
+
+                                            <div class="mantenimiento-evidencia-imagen">
+
+                                                <img
+                                                    src="{{ evidencia.imagen.url }}"
+                                                    alt="Evidencia durante {{ forloop.counter }}"
+                                                    loading="lazy"
+                                                >
+
+                                                <span class="mantenimiento-evidencia-numero">
+                                                    {{ forloop.counter }}
+                                                </span>
+
+                                                <span class="mantenimiento-evidencia-badge durante">
+                                                    Durante
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="mantenimiento-evidencia-info">
+
+                                                <div>
+
+                                                    <strong>
+                                                        Evidencia {{ forloop.counter }}
+                                                    </strong>
+
+                                                    <span>
+
+                                                        {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                    </span>
+
+                                                </div>
+
+                                                <i class="bi bi-tools"></i>
+
+                                            </div>
+
+                                        </article>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="mantenimiento-evidencias-vacio">
+
+                                    <i class="bi bi-tools"></i>
+
+                                    <span>
+                                        No hay fotografías del proceso.
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+                        </section>
+
+
+
+                        <!-- =================================
+                             DESPUÉS
+                        ================================== -->
+
+                        <section class="mantenimiento-evidencia-bloque despues">
+
+
+                            <div class="mantenimiento-evidencia-header">
+
+                                <div class="mantenimiento-evidencia-titulo">
+
+                                    <span class="mantenimiento-evidencia-icono despues">
+
+                                        <i class="bi bi-check-circle"></i>
+
+                                    </span>
+
+
+                                    <div>
+
+                                        <h5>
+                                            Después del mantenimiento
+                                        </h5>
+
+                                        <span>
+                                            Resultado final del trabajo.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <span class="mantenimiento-evidencia-contador despues">
+
+                                    {{ mantenimiento.evidencias_despues_admin|length }}
+
+                                    foto{{ mantenimiento.evidencias_despues_admin|length|pluralize:"s" }}
+
+                                </span>
+
+                            </div>
+
+
+                            {% if mantenimiento.evidencias_despues_admin %}
+
+                                <div class="mantenimiento-evidencias-grid">
+
+                                    {% for evidencia in mantenimiento.evidencias_despues_admin %}
+
+                                        <article class="mantenimiento-evidencia-item despues">
+
+                                            <div class="mantenimiento-evidencia-imagen">
+
+                                                <img
+                                                    src="{{ evidencia.imagen.url }}"
+                                                    alt="Evidencia después {{ forloop.counter }}"
+                                                    loading="lazy"
+                                                >
+
+                                                <span class="mantenimiento-evidencia-numero">
+                                                    {{ forloop.counter }}
+                                                </span>
+
+                                                <span class="mantenimiento-evidencia-badge despues">
+                                                    Después
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="mantenimiento-evidencia-info">
+
+                                                <div>
+
+                                                    <strong>
+                                                        Evidencia {{ forloop.counter }}
+                                                    </strong>
+
+                                                    <span>
+
+                                                        {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                    </span>
+
+                                                </div>
+
+                                                <i class="bi bi-check-circle"></i>
+
+                                            </div>
+
+                                        </article>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="mantenimiento-evidencias-vacio">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    <span>
+                                        No hay fotografías del resultado final.
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+                        </section>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FOOTER
+                ========================================== -->
+
+                <div class="modal-footer border-0">
+
+                    <button
+                        type="button"
+                        class="btn btn-cancelar"
+                        data-bs-dismiss="modal"
+                    >
+
+                        Cerrar
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         EDITAR MANTENIMIENTO
+    ====================================================== -->
+
+    <div
+        class="modal fade modal-editar-mantenimiento"
+        id="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+        tabindex="-1"
+    >
+
+        <div
+            class="
+                modal-dialog
+                modal-xl
+                modal-dialog-centered
+                modal-dialog-scrollable
+            "
+        >
+
+            <div class="modal-content border-0 shadow rounded-4">
+
+
+                <form
+                    method="POST"
+                    action="{% url 'editar_mantenimiento' mantenimiento.id_mantenimiento %}"
+                    enctype="multipart/form-data"
+                    class="form-mantenimiento"
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- =====================================
+                         HEADER
+                    ====================================== -->
+
+                    <div
+                        class="modal-header border-0"
+                        style="background:#E8F7E9;"
+                    >
+
+                        <div>
+
+                            <h4
+                                class="fw-bold mb-1"
+                                style="color:#234F39;"
+                            >
+
+                                <i class="bi bi-pencil-square me-2"></i>
+
+                                Editar Mantenimiento
+
+                            </h4>
+
+
+                            <p class="text-muted mb-0">
+
+                                Modifica la información y agrega nuevas
+                                evidencias fotográficas.
+
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                        ></button>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         BODY
+                    ====================================== -->
+
+                    <div class="modal-body">
+
+
+                        <!-- =================================
+                             DATOS
+                        ================================== -->
+
+                        <div class="row g-3">
+
+
+                            <!-- ALCANCE -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Alcance *
+                                </label>
+
+
+                                <select
+                                    name="entidad_mantenimiento"
+                                    class="form-select entidad-editar"
+                                    required
+                                >
+
+                                    <option
+                                        value="Apiario"
+                                        {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+                                            selected
+                                        {% endif %}
+                                    >
+
+                                        Todo el apiario
+
+                                    </option>
+
+
+                                    <option
+                                        value="Colmena"
+                                        {% if mantenimiento.entidadmantenimiento == "Colmena" %}
+                                            selected
+                                        {% endif %}
+                                    >
+
+                                        Colmena específica
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- APIARIO -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Apiario *
+                                </label>
+
+
+                                <select
+                                    name="id_apiario"
+                                    class="form-select apiario-editar"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Seleccione un apiario
+                                    </option>
+
+
+                                    {% for apiario in apiarios %}
+
+                                        <option
+                                            value="{{ apiario.id_apiario }}"
+                                            {% if mantenimiento.id_apiario and apiario.id_apiario == mantenimiento.id_apiario.id_apiario %}
+                                                selected
+                                            {% elif mantenimiento.id_colmena and apiario.id_apiario == mantenimiento.id_colmena.id_apiario.id_apiario %}
+                                                selected
+                                            {% endif %}
+                                        >
+
+                                            {{ apiario.nombreapiario }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- COLMENA -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Colmena
+                                </label>
+
+
+                                <select
+                                    name="id_colmena"
+                                    class="form-select colmena-editar"
+                                >
+
+                                    <option value="">
+                                        No aplica / Todo el apiario
+                                    </option>
+
+
+                                    {% for colmena in colmenas %}
+
+                                        <option
+                                            value="{{ colmena.id_colmena }}"
+                                            data-apiario="{{ colmena.id_apiario.id_apiario }}"
+                                            {% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}
+                                                selected
+                                            {% endif %}
+                                        >
+
+                                            {{ colmena.codigocolmena }}
+                                            -
+                                            {{ colmena.id_apiario.nombreapiario }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- RESPONSABLE -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Responsable
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    name="responsable"
+                                    class="form-control"
+                                    maxlength="100"
+                                    value="{{ mantenimiento.responsable|default:'' }}"
+                                >
+
+                            </div>
+
+
+                            <!-- TAREA -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Tarea *
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    name="tipo"
+                                    class="form-control"
+                                    maxlength="100"
+                                    value="{{ mantenimiento.tipo }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- FECHA -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Fecha programada *
+                                </label>
+
+
+                                <input
+                                    type="date"
+                                    name="fecha_ejecucion"
+                                    class="form-control fecha-editar"
+                                    value="{{ mantenimiento.fechaejecucion|date:'Y-m-d' }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- ESTADO -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Estado *
+                                </label>
+
+
+                                <select
+                                    name="estado"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option
+                                        value="Pendiente"
+                                        {% if mantenimiento.estado == "Pendiente" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Pendiente
+                                    </option>
+
+                                    <option
+                                        value="Completado"
+                                        {% if mantenimiento.estado == "Completado" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Completado
+                                    </option>
+
+                                    <option
+                                        value="Cancelado"
+                                        {% if mantenimiento.estado == "Cancelado" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Cancelado
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- PRIORIDAD -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Prioridad *
+                                </label>
+
+
+                                <select
+                                    name="prioridad"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option
+                                        value="Baja"
+                                        {% if mantenimiento.prioridad == "Baja" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Baja
+                                    </option>
+
+                                    <option
+                                        value="Media"
+                                        {% if mantenimiento.prioridad == "Media" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Media
+                                    </option>
+
+                                    <option
+                                        value="Alta"
+                                        {% if mantenimiento.prioridad == "Alta" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Alta
+                                    </option>
+
+                                    <option
+                                        value="Crítica"
+                                        {% if mantenimiento.prioridad == "Crítica" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Crítica
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- OBSERVACIONES -->
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Observaciones
+                                </label>
+
+
+                                <textarea
+                                    name="observaciones"
+                                    class="form-control"
+                                    rows="4"
+                                    maxlength="255"
+                                >{{ mantenimiento.observaciones|default:'' }}</textarea>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================
+                             EVIDENCIAS EXISTENTES
+                        ================================== -->
+
+                        <div class="mantenimiento-editar-evidencias mt-4">
+
+                            <div class="mantenimiento-form-seccion-header">
+
+                                <i class="bi bi-images"></i>
+
+                                <div>
+
+                                    <h5>
+                                        Evidencias existentes
+                                    </h5>
+
+                                    <p>
+                                        Estas fotografías ya forman parte
+                                        del mantenimiento.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- =============================
+                                 ANTES EXISTENTES
+                            ============================== -->
+
+                            {% if mantenimiento.evidencias_antes_admin %}
+
+                                <h6 class="mantenimiento-subtitulo-evidencia">
+
+                                    <i class="bi bi-camera me-1"></i>
+
+                                    Antes
+
+                                </h6>
+
+
+                                <div class="mantenimiento-evidencias-grid editar">
+
+                                    {% for evidencia in mantenimiento.evidencias_antes_admin %}
+
+                                        <article class="mantenimiento-evidencia-item antes">
+
+                                            <div class="mantenimiento-evidencia-imagen">
+
+                                                <img
+                                                    src="{{ evidencia.imagen.url }}"
+                                                    alt="Antes {{ forloop.counter }}"
+                                                >
+
+                                                <span class="mantenimiento-evidencia-badge antes">
+                                                    Antes
+                                                </span>
+
+                                            </div>
+
+                                        </article>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            <!-- =============================
+                                 DURANTE EXISTENTES
+                            ============================== -->
+
+                            {% if mantenimiento.evidencias_durante_admin %}
+
+                                <h6 class="mantenimiento-subtitulo-evidencia">
+
+                                    <i class="bi bi-tools me-1"></i>
+
+                                    Durante
+
+                                </h6>
+
+
+                                <div class="mantenimiento-evidencias-grid editar">
+
+                                    {% for evidencia in mantenimiento.evidencias_durante_admin %}
+
+                                        <article class="mantenimiento-evidencia-item durante">
+
+                                            <div class="mantenimiento-evidencia-imagen">
+
+                                                <img
+                                                    src="{{ evidencia.imagen.url }}"
+                                                    alt="Durante {{ forloop.counter }}"
+                                                >
+
+                                                <span class="mantenimiento-evidencia-badge durante">
+                                                    Durante
+                                                </span>
+
+                                            </div>
+
+                                        </article>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            <!-- =============================
+                                 DESPUÉS EXISTENTES
+                            ============================== -->
+
+                            {% if mantenimiento.evidencias_despues_admin %}
+
+                                <h6 class="mantenimiento-subtitulo-evidencia">
+
+                                    <i class="bi bi-check-circle me-1"></i>
+
+                                    Después
+
+                                </h6>
+
+
+                                <div class="mantenimiento-evidencias-grid editar">
+
+                                    {% for evidencia in mantenimiento.evidencias_despues_admin %}
+
+                                        <article class="mantenimiento-evidencia-item despues">
+
+                                            <div class="mantenimiento-evidencia-imagen">
+
+                                                <img
+                                                    src="{{ evidencia.imagen.url }}"
+                                                    alt="Después {{ forloop.counter }}"
+                                                >
+
+                                                <span class="mantenimiento-evidencia-badge despues">
+                                                    Después
+                                                </span>
+
+                                            </div>
+
+                                        </article>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if not mantenimiento.evidencias_antes_admin and not mantenimiento.evidencias_durante_admin and not mantenimiento.evidencias_despues_admin %}
+
+                                <div class="mantenimiento-evidencias-vacio">
+
+                                    <i class="bi bi-images"></i>
+
+                                    <span>
+
+                                        Este mantenimiento todavía no tiene
+                                        evidencias fotográficas.
+
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- =================================
+                             AGREGAR NUEVAS EVIDENCIAS
+                        ================================== -->
+
+                        <div class="mantenimiento-form-seccion mt-4">
+
+                            <div class="mantenimiento-form-seccion-header">
+
+                                <i class="bi bi-plus-circle"></i>
+
+                                <div>
+
+                                    <h5>
+                                        Agregar nuevas evidencias
+                                    </h5>
+
+                                    <p>
+
+                                        Máximo
+                                        {{ max_evidencias_mantenimiento|default:6 }}
+                                        fotografías en total por mantenimiento.
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="row g-3">
+
+
+                                <div class="col-lg-4">
+
+                                    <div class="mantenimiento-evidencia-input antes">
+
+                                        <label class="form-label">
+
+                                            <i class="bi bi-camera me-1"></i>
+
+                                            Antes
+
+                                        </label>
+
+
+                                        <input
+                                            type="file"
+                                            name="evidencias_antes"
+                                            class="form-control mantenimiento-input-evidencias"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-lg-4">
+
+                                    <div class="mantenimiento-evidencia-input durante">
+
+                                        <label class="form-label">
+
+                                            <i class="bi bi-tools me-1"></i>
+
+                                            Durante
+
+                                        </label>
+
+
+                                        <input
+                                            type="file"
+                                            name="evidencias_durante"
+                                            class="form-control mantenimiento-input-evidencias"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-lg-4">
+
+                                    <div class="mantenimiento-evidencia-input despues">
+
+                                        <label class="form-label">
+
+                                            <i class="bi bi-check-circle me-1"></i>
+
+                                            Después
+
+                                        </label>
+
+
+                                        <input
+                                            type="file"
+                                            name="evidencias_despues"
+                                            class="form-control mantenimiento-input-evidencias"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         FOOTER
+                    ====================================== -->
+
+                    <div class="modal-footer border-0">
+
+                        <button
+                            type="button"
+                            class="btn btn-cancelar"
+                            data-bs-dismiss="modal"
+                        >
+
+                            Cancelar
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                        >
+
+                            <i class="bi bi-save me-2"></i>
+
+                            Guardar Cambios
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ELIMINAR MANTENIMIENTO
+    ====================================================== -->
+
+    <div
+        class="modal fade"
+        id="modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+        tabindex="-1"
+    >
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow rounded-4">
+
+
+                <form
+                    method="POST"
+                    action="{% url 'eliminar_mantenimiento' mantenimiento.id_mantenimiento %}"
+                >
+
+                    {% csrf_token %}
+
+
+                    <div class="modal-header border-0 modal-delete-header">
+
+                        <div>
+
+                            <h4 class="fw-bold text-danger mb-1">
+
+                                <i class="bi bi-trash-fill me-2"></i>
+
+                                Eliminar Mantenimiento
+
+                            </h4>
+
+
+                            <p class="text-muted mb-0">
+
+                                Esta acción no se puede deshacer.
+
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                        ></button>
+
+                    </div>
+
+
+                    <div class="modal-body">
+
+
+                        <div class="alerta-eliminar mb-3">
+
+                            <strong>
+                                Advertencia:
+                            </strong>
+
+                            se eliminará este mantenimiento
+                            y sus evidencias fotográficas asociadas.
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <div class="col-md-6">
+
+                                <div class="modal-info-box verde">
+
+                                    <small>
+                                        Tarea
+                                    </small>
+
+                                    <h5>
+                                        {{ mantenimiento.tipo }}
+                                    </h5>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="modal-info-box">
+
+                                    <small>
+                                        Alcance
+                                    </small>
+
+                                    <h5>
+
+                                        {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+
+                                            Todo el apiario
+
+                                        {% else %}
+
+                                            Colmena específica
+
+                                        {% endif %}
+
+                                    </h5>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="modal-footer border-0">
+
+                        <button
+                            type="button"
+                            class="btn btn-cancelar"
+                            data-bs-dismiss="modal"
+                        >
+
+                            Cancelar
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger"
+                        >
+
+                            <i class="bi bi-trash me-2"></i>
+
+                            Sí, eliminar
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+{% endfor %}
+
 
 {% endblock %}
