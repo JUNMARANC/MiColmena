@@ -3271,3 +3271,2371 @@
     }
 
 }
+
+/* ==========================================================
+   ==========================================================
+   ACTUALIZACIÓN MANTENIMIENTOS
+   PANEL APICULTOR
+   REGISTRO / EDICIÓN / EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   1. ACCIONES DEL ENCABEZADO
+========================================================== */
+
+.mantenimientos-encabezado-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================
+   BOTÓN REGISTRAR MANTENIMIENTO
+========================================================== */
+
+.btn-registrar-mantenimiento {
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        16px;
+
+    border:
+        1px solid
+        #DEC252;
+
+    border-radius: 12px;
+
+    background:
+        var(
+            --apicultor-sidebar,
+            #FFDD71
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 4px 12px
+        rgba(151, 119, 20, 0.10);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.btn-registrar-mantenimiento:hover {
+
+    background:
+        #F5CD52;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 7px 17px
+        rgba(151, 119, 20, 0.16);
+}
+
+
+.btn-registrar-mantenimiento i {
+
+    font-size: 13px;
+}
+
+
+
+/* ==========================================================
+   2. BOTÓN EDITAR EN TABLA
+========================================================== */
+
+.btn-editar-mantenimiento {
+
+    width: 34px;
+
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #E6D594;
+
+    border-radius: 9px;
+
+    background:
+        #FFF9E3;
+
+    color:
+        #957215;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.btn-editar-mantenimiento:hover {
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 3px 9px
+        rgba(151, 119, 20, 0.10);
+}
+
+
+
+/* ==========================================================
+   3. MODAL FORMULARIO
+   CREAR / EDITAR
+========================================================== */
+
+.mantenimiento-form-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 11000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 18px;
+
+    background:
+        rgba(17, 38, 27, 0.64);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+.mantenimiento-form-overlay.activo {
+
+    display: flex;
+}
+
+
+
+/* ==========================================================
+   CONTENEDOR DEL MODAL
+========================================================== */
+
+.mantenimiento-form-modal {
+
+    width: 100%;
+
+    max-width: 920px;
+
+    height:
+        min(
+            92vh,
+            850px
+        );
+
+    height:
+        min(
+            92dvh,
+            850px
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 22px;
+
+    background:
+        #FFFFF7;
+
+    box-shadow:
+        0 28px 80px
+        rgba(17, 38, 27, 0.30);
+
+    animation:
+        aparecerFormularioMantenimiento
+        0.24s ease;
+}
+
+
+@keyframes aparecerFormularioMantenimiento {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(18px)
+            scale(0.98);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+
+/* ==========================================================
+   FORMULARIO INTERNO
+========================================================== */
+
+.form-mantenimiento-apicultor {
+
+    min-height: 0;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+
+/* ==========================================================
+   4. HEADER FORMULARIO
+========================================================== */
+
+.mantenimiento-form-header {
+
+    flex:
+        0 0 auto;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 237, 180, 0.70),
+            rgba(255, 255, 247, 0.95)
+        );
+}
+
+
+.mantenimiento-form-etiqueta {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin-bottom: 6px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.3px;
+}
+
+
+.mantenimiento-form-header h2 {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-form-header h2 i {
+
+    color:
+        #947116;
+}
+
+
+.mantenimiento-form-header p {
+
+    max-width: 600px;
+
+    margin:
+        6px
+        0
+        0;
+
+    color:
+        var(
+            --apicultor-texto-secundario,
+            #6D786F
+        );
+
+    font-size: 8px;
+
+    line-height: 1.55;
+}
+
+
+
+/* ==========================================================
+   CERRAR FORMULARIO
+========================================================== */
+
+.mantenimiento-form-cerrar {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.70);
+
+    color:
+        #68766D;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.mantenimiento-form-cerrar:hover {
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+}
+
+
+
+/* ==========================================================
+   5. BODY FORMULARIO
+   AQUÍ ESTÁ EL SCROLL
+========================================================== */
+
+.mantenimiento-form-body {
+
+    flex:
+        1 1 auto;
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+    padding:
+        20px
+        22px;
+
+    overflow-x: hidden;
+
+    overflow-y: auto;
+
+    overscroll-behavior:
+        contain;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #CCB34F
+        #F7F2DC;
+}
+
+
+
+/* ==========================================================
+   SCROLL CHROME / EDGE
+========================================================== */
+
+.mantenimiento-form-body::-webkit-scrollbar {
+
+    width: 9px;
+}
+
+
+.mantenimiento-form-body::-webkit-scrollbar-track {
+
+    background:
+        #F7F2DC;
+
+    border-radius: 20px;
+}
+
+
+.mantenimiento-form-body::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #F7F2DC;
+
+    border-radius: 20px;
+
+    background:
+        #CCB34F;
+}
+
+
+.mantenimiento-form-body::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #A88B27;
+}
+
+
+
+/* ==========================================================
+   6. SECCIONES FORMULARIO
+========================================================== */
+
+.mantenimiento-form-seccion {
+
+    padding: 17px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 15px;
+
+    background:
+        rgba(255, 255, 255, 0.68);
+}
+
+
+.mantenimiento-form-seccion.evidencias {
+
+    background:
+        rgba(255, 248, 219, 0.55);
+}
+
+
+
+/* ==========================================================
+   ENCABEZADO SECCIÓN
+========================================================== */
+
+.mantenimiento-form-seccion-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin-bottom: 17px;
+}
+
+
+.mantenimiento-form-seccion-icono {
+
+    width: 39px;
+
+    height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 14px;
+}
+
+
+.mantenimiento-form-seccion-header h3 {
+
+    margin: 0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-form-seccion-header p {
+
+    margin:
+        4px
+        0
+        0;
+
+    color:
+        var(
+            --apicultor-texto-secundario,
+            #6D786F
+        );
+
+    font-size: 7.5px;
+
+    line-height: 1.5;
+}
+
+
+
+/* ==========================================================
+   7. GRID FORMULARIO
+========================================================== */
+
+.mantenimiento-form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+
+
+/* ==========================================================
+   CAMPOS
+========================================================== */
+
+.mantenimiento-campo {
+
+    min-width: 0;
+
+    margin-bottom: 14px;
+}
+
+
+.mantenimiento-form-grid
+.mantenimiento-campo {
+
+    margin-bottom: 0;
+}
+
+
+.mantenimiento-campo > label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-campo > label span {
+
+    color:
+        #C25C4F;
+}
+
+
+
+/* ==========================================================
+   INPUTS / SELECT / TEXTAREA
+========================================================== */
+
+.mantenimiento-campo input[type="text"],
+.mantenimiento-campo input[type="date"],
+.mantenimiento-campo select,
+.mantenimiento-campo textarea {
+
+    width: 100%;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(
+            --apicultor-texto,
+            #163324
+        );
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.mantenimiento-campo input[type="text"],
+.mantenimiento-campo input[type="date"],
+.mantenimiento-campo select {
+
+    height: 43px;
+
+    padding:
+        0
+        12px;
+}
+
+
+.mantenimiento-campo textarea {
+
+    min-height: 100px;
+
+    padding: 12px;
+
+    resize: vertical;
+
+    line-height: 1.55;
+}
+
+
+.mantenimiento-campo input:focus,
+.mantenimiento-campo select:focus,
+.mantenimiento-campo textarea:focus {
+
+    border-color:
+        #D7B94E;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.20);
+}
+
+
+.mantenimiento-campo small {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color:
+        #89938D;
+
+    font-size: 7px;
+}
+
+
+
+/* ==========================================================
+   CAMPO INVÁLIDO
+========================================================== */
+
+.form-mantenimiento-apicultor
+.is-invalid {
+
+    border-color:
+        #D86C60 !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(216, 108, 96, 0.10) !important;
+}
+
+
+
+/* ==========================================================
+   8. RESPONSABLE PROPIO
+========================================================== */
+
+.mantenimiento-responsable-propio {
+
+    min-height: 43px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        0
+        12px;
+
+    border:
+        1px solid
+        #D6E5D3;
+
+    border-radius: 10px;
+
+    background:
+        #F2F8F0;
+
+    color:
+        #4F744B;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+.mantenimiento-responsable-propio i {
+
+    font-size: 14px;
+}
+
+
+
+/* ==========================================================
+   9. ALCANCE
+========================================================== */
+
+.mantenimiento-campo-alcance {
+
+    margin-bottom: 14px;
+}
+
+
+.mantenimiento-alcance-opciones {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+}
+
+
+.mantenimiento-alcance-opcion {
+
+    position: relative;
+
+    margin: 0;
+
+    cursor: pointer;
+}
+
+
+.mantenimiento-alcance-opcion input {
+
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+.mantenimiento-alcance-opcion > span {
+
+    min-height: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        9px
+        12px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #66746C;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.mantenimiento-alcance-opcion:hover > span {
+
+    border-color:
+        #E1C75D;
+
+    background:
+        #FFFBEA;
+}
+
+
+.mantenimiento-alcance-opcion
+input:checked
++
+span {
+
+    border-color:
+        #D8B844;
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.16);
+}
+
+
+
+/* ==========================================================
+   D-NONE
+========================================================== */
+
+.mantenimiento-form-overlay
+.d-none {
+
+    display: none !important;
+}
+
+
+
+/* ==========================================================
+   10. ESTADO INICIAL
+========================================================== */
+
+.mantenimiento-estado-inicial {
+
+    min-height: 43px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        12px;
+
+    border:
+        1px solid
+        #E6D89F;
+
+    border-radius: 10px;
+
+    background:
+        #FFF9E3;
+
+    color:
+        #896817;
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-estado-inicial > span {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background:
+        #E4B52F;
+}
+
+
+
+/* ==========================================================
+   11. INPUTS DE EVIDENCIAS
+========================================================== */
+
+.mantenimiento-evidencias-input-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+.mantenimiento-evidencia-input {
+
+    min-width: 0;
+
+    padding: 14px;
+
+    border:
+        1px solid
+        #E1E5E2;
+
+    border-radius: 13px;
+
+    background:
+        #FFFFFF;
+}
+
+
+.mantenimiento-evidencia-input > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 6px;
+}
+
+
+.mantenimiento-evidencia-input > div i {
+
+    font-size: 13px;
+}
+
+
+.mantenimiento-evidencia-input strong {
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-evidencia-input p {
+
+    min-height: 25px;
+
+    margin:
+        0
+        0
+        10px;
+
+    color:
+        #7A867E;
+
+    font-size: 7px;
+
+    line-height: 1.45;
+}
+
+
+.mantenimiento-evidencia-input input[type="file"] {
+
+    width: 100%;
+
+    padding: 7px;
+
+    border:
+        1px dashed
+        #D6DDD8;
+
+    border-radius: 9px;
+
+    background:
+        #FAFBFA;
+
+    color:
+        #66746C;
+
+    font-family: inherit;
+
+    font-size: 7px;
+
+    cursor: pointer;
+}
+
+
+
+/* ==========================================================
+   COLORES POR FASE
+========================================================== */
+
+.mantenimiento-evidencia-input.antes {
+
+    border-top:
+        3px solid
+        #D1A533;
+}
+
+
+.mantenimiento-evidencia-input.antes
+> div i {
+
+    color:
+        #A47A12;
+}
+
+
+.mantenimiento-evidencia-input.durante {
+
+    border-top:
+        3px solid
+        #709981;
+}
+
+
+.mantenimiento-evidencia-input.durante
+> div i {
+
+    color:
+        #527963;
+}
+
+
+.mantenimiento-evidencia-input.despues {
+
+    border-top:
+        3px solid
+        #72A866;
+}
+
+
+.mantenimiento-evidencia-input.despues
+> div i {
+
+    color:
+        #54864C;
+}
+
+
+
+/* ==========================================================
+   BOTÓN FILE
+========================================================== */
+
+.mantenimiento-evidencia-input
+input[type="file"]::file-selector-button {
+
+    margin-right: 8px;
+
+    padding:
+        7px
+        10px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-family: inherit;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+
+/* ==========================================================
+   12. FOOTER FORMULARIO
+========================================================== */
+
+.mantenimiento-form-footer {
+
+    flex:
+        0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding:
+        14px
+        22px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        #FFFFF7;
+}
+
+
+.btn-cancelar-form-mantenimiento,
+.btn-guardar-form-mantenimiento {
+
+    min-height: 41px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        15px;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-cancelar-form-mantenimiento {
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #68766D;
+}
+
+
+.btn-cancelar-form-mantenimiento:hover {
+
+    background:
+        #F3F6F4;
+}
+
+
+.btn-guardar-form-mantenimiento {
+
+    border:
+        1px solid
+        #DFC24C;
+
+    background:
+        var(
+            --apicultor-sidebar,
+            #FFDD71
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+}
+
+
+.btn-guardar-form-mantenimiento:hover {
+
+    background:
+        #F3CA4D;
+
+    transform:
+        translateY(-1px);
+}
+
+
+
+/* ==========================================================
+   13. MEJORA MODAL DETALLE
+   HEADER Y FOOTER FIJOS
+   CENTRO CON SCROLL
+========================================================== */
+
+.mantenimiento-modal {
+
+    max-width: 820px;
+
+    height:
+        min(
+            90vh,
+            790px
+        );
+
+    height:
+        min(
+            90dvh,
+            790px
+        );
+
+    max-height: none;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+.mantenimiento-modal-header {
+
+    flex:
+        0 0 auto;
+}
+
+
+.mantenimiento-modal-contenido {
+
+    flex:
+        1 1 auto;
+
+    min-height: 0;
+
+    overflow-x: hidden;
+
+    overflow-y: auto;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #CCB34F
+        #F7F2DC;
+}
+
+
+.mantenimiento-modal-contenido::-webkit-scrollbar {
+
+    width: 9px;
+}
+
+
+.mantenimiento-modal-contenido::-webkit-scrollbar-track {
+
+    background:
+        #F7F2DC;
+}
+
+
+.mantenimiento-modal-contenido::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #F7F2DC;
+
+    border-radius: 20px;
+
+    background:
+        #CCB34F;
+}
+
+
+.mantenimiento-modal-footer {
+
+    flex:
+        0 0 auto;
+
+    background:
+        #FFFFF7;
+}
+
+
+
+/* ==========================================================
+   14. EVIDENCIAS EN DETALLE
+========================================================== */
+
+.mantenimiento-detalle-evidencias {
+
+    margin:
+        0
+        22px
+        20px;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.68);
+}
+
+
+.mantenimiento-detalle-evidencias-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+
+.mantenimiento-detalle-evidencias-header > div:first-child {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+}
+
+
+.mantenimiento-detalle-evidencias-header h3 {
+
+    margin: 0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-detalle-evidencias-header p {
+
+    margin:
+        3px
+        0
+        0;
+
+    color:
+        #7B877F;
+
+    font-size: 7px;
+}
+
+
+
+/* ==========================================================
+   BLOQUE DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-bloque {
+
+    margin-top: 12px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        #E1E5E2;
+
+    border-radius: 12px;
+
+    background:
+        #FFFFFF;
+}
+
+
+.mantenimiento-evidencia-bloque-header {
+
+    min-height: 39px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding:
+        9px
+        12px;
+
+    border-bottom:
+        1px solid
+        #EDF0EE;
+}
+
+
+.mantenimiento-evidencia-bloque-header span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-evidencia-bloque-header strong {
+
+    min-width: 25px;
+
+    height: 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        #F2F4F2;
+
+    color:
+        #68766D;
+
+    font-size: 7px;
+}
+
+
+
+/* ==========================================================
+   FASES
+========================================================== */
+
+.mantenimiento-evidencia-bloque.antes
+.mantenimiento-evidencia-bloque-header {
+
+    background:
+        #FFF8DE;
+}
+
+
+.mantenimiento-evidencia-bloque.durante
+.mantenimiento-evidencia-bloque-header {
+
+    background:
+        #EEF5F0;
+}
+
+
+.mantenimiento-evidencia-bloque.despues
+.mantenimiento-evidencia-bloque-header {
+
+    background:
+        #EEF7EC;
+}
+
+
+
+/* ==========================================================
+   GRID FOTOGRAFÍAS
+========================================================== */
+
+.mantenimiento-evidencias-grid,
+.mantenimiento-editar-evidencias-existentes {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    padding: 11px;
+}
+
+
+.mantenimiento-editar-evidencias-existentes {
+
+    padding: 0;
+}
+
+
+
+/* ==========================================================
+   ITEM FOTOGRAFÍA
+========================================================== */
+
+.mantenimiento-evidencia-item {
+
+    min-width: 0;
+
+    margin: 0;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        #E1E5E2;
+
+    border-radius: 10px;
+
+    background:
+        #FFFFFF;
+
+    box-shadow:
+        0 2px 7px
+        rgba(33, 79, 59, 0.04);
+}
+
+
+.mantenimiento-evidencia-imagen {
+
+    width: 100%;
+
+    height: 105px;
+
+    display: block;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border: none;
+
+    background:
+        #EFF2EF;
+
+    cursor: zoom-in;
+}
+
+
+.mantenimiento-evidencia-imagen img {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.25s ease;
+}
+
+
+.mantenimiento-evidencia-imagen:hover img {
+
+    transform:
+        scale(1.05);
+}
+
+
+.mantenimiento-evidencia-item figcaption {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 6px;
+
+    padding:
+        7px
+        8px;
+}
+
+
+.mantenimiento-evidencia-item figcaption span {
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 7px;
+
+    font-weight: 800;
+}
+
+
+.mantenimiento-evidencia-item figcaption small {
+
+    color:
+        #8C9690;
+
+    font-size: 6px;
+
+    white-space: nowrap;
+}
+
+
+
+/* ==========================================================
+   SIN EVIDENCIAS
+========================================================== */
+
+.mantenimiento-evidencias-vacio {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 55px;
+
+    padding: 12px;
+
+    color:
+        #939D97;
+
+    font-size: 7px;
+
+    font-style: italic;
+}
+
+
+
+/* ==========================================================
+   15. EDITAR DESDE DETALLE
+========================================================== */
+
+.btn-editar-modal-mantenimiento {
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #E5D28D;
+
+    border-radius: 10px;
+
+    background:
+        #FFF8DD;
+
+    color:
+        #8D6D18;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.btn-editar-modal-mantenimiento:hover {
+
+    background:
+        var(
+            --apicultor-activo,
+            #FFEDB4
+        );
+}
+
+
+
+/* ==========================================================
+   16. VISOR DE FOTOGRAFÍAS
+========================================================== */
+
+.mantenimiento-visor-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 15000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 30px;
+
+    background:
+        rgba(8, 18, 12, 0.88);
+
+    backdrop-filter:
+        blur(6px);
+}
+
+
+.mantenimiento-visor-overlay.activo {
+
+    display: flex;
+}
+
+
+.mantenimiento-visor-contenido {
+
+    max-width:
+        min(
+            1100px,
+            94vw
+        );
+
+    max-height:
+        88vh;
+
+    max-height:
+        88dvh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.mantenimiento-visor-contenido img {
+
+    display: block;
+
+    max-width: 100%;
+
+    max-height:
+        88vh;
+
+    max-height:
+        88dvh;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 20px 70px
+        rgba(0, 0, 0, 0.45);
+}
+
+
+.mantenimiento-visor-cerrar {
+
+    position: fixed;
+
+    top: 20px;
+
+    right: 24px;
+
+    width: 44px;
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.18);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+
+    color:
+        #FFFFFF;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+
+.mantenimiento-visor-cerrar:hover {
+
+    background:
+        rgba(255, 255, 255, 0.20);
+}
+
+
+
+/* ==========================================================
+   17. RESPONSIVE 950
+========================================================== */
+
+@media (max-width: 950px) {
+
+    .mantenimiento-evidencias-input-grid {
+
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+
+
+    .mantenimiento-evidencia-input:last-child {
+
+        grid-column:
+            1 / -1;
+    }
+
+
+    .mantenimiento-evidencias-grid,
+    .mantenimiento-editar-evidencias-existentes {
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+
+/* ==========================================================
+   18. RESPONSIVE 760
+========================================================== */
+
+@media (max-width: 760px) {
+
+    .mantenimientos-encabezado {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .mantenimientos-encabezado-acciones {
+
+        justify-content: space-between;
+    }
+
+
+    .btn-registrar-mantenimiento {
+
+        flex: 1;
+    }
+
+
+    .mantenimiento-form-overlay {
+
+        padding: 10px;
+    }
+
+
+    .mantenimiento-form-modal {
+
+        height:
+            calc(100vh - 20px);
+
+        height:
+            calc(100dvh - 20px);
+
+        max-height: none;
+
+        border-radius: 17px;
+    }
+
+
+    .mantenimiento-form-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-alcance-opciones {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencias-input-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencia-input:last-child {
+
+        grid-column:
+            auto;
+    }
+
+
+    .mantenimiento-evidencias-grid,
+    .mantenimiento-editar-evidencias-existentes {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .mantenimiento-modal {
+
+        height:
+            calc(100vh - 20px);
+
+        height:
+            calc(100dvh - 20px);
+    }
+
+}
+
+
+
+/* ==========================================================
+   19. RESPONSIVE 600
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .mantenimientos-encabezado-acciones {
+
+        width: 100%;
+    }
+
+
+    .mantenimientos-encabezado-icono {
+
+        display: none;
+    }
+
+
+    .btn-registrar-mantenimiento {
+
+        width: 100%;
+    }
+
+
+    .mantenimiento-form-header {
+
+        padding:
+            16px
+            15px;
+    }
+
+
+    .mantenimiento-form-header h2 {
+
+        font-size: 17px;
+    }
+
+
+    .mantenimiento-form-body {
+
+        padding:
+            15px;
+    }
+
+
+    .mantenimiento-form-seccion {
+
+        padding: 13px;
+    }
+
+
+    .mantenimiento-form-footer {
+
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+
+        padding:
+            12px
+            15px;
+    }
+
+
+    .btn-cancelar-form-mantenimiento,
+    .btn-guardar-form-mantenimiento {
+
+        width: 100%;
+    }
+
+
+    .mantenimiento-modal-footer {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .btn-editar-modal-mantenimiento,
+    .form-completar-modal,
+    .btn-completar-modal,
+    .btn-cerrar-modal-mantenimiento {
+
+        width: 100%;
+    }
+
+
+    .mantenimiento-detalle-evidencias {
+
+        margin:
+            0
+            16px
+            16px;
+
+        padding: 13px;
+    }
+
+
+    .mantenimiento-evidencias-grid {
+
+        padding: 8px;
+    }
+
+
+    .mantenimiento-visor-overlay {
+
+        padding: 12px;
+    }
+
+}
+
+
+
+/* ==========================================================
+   20. RESPONSIVE 420
+========================================================== */
+
+@media (max-width: 420px) {
+
+    .mantenimiento-evidencias-grid,
+    .mantenimiento-editar-evidencias-existentes {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencia-imagen {
+
+        height: 170px;
+    }
+
+
+    .mantenimiento-form-header p {
+
+        display: none;
+    }
+
+
+    .mantenimiento-form-seccion-header p {
+
+        font-size: 7px;
+    }
+
+
+    .mantenimiento-modal-body {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+
+/* ==========================================================
+   21. EVITAR SCROLL DEL FONDO
+   JS AGREGARÁ ESTA CLASE AL BODY
+========================================================== */
+
+body.modal-mantenimiento-abierto {
+
+    overflow: hidden;
+}
+
+
+
+/* ==========================================================
+   22. ACCESIBILIDAD
+========================================================== */
+
+.btn-registrar-mantenimiento:focus-visible,
+.btn-editar-mantenimiento:focus-visible,
+.btn-editar-modal-mantenimiento:focus-visible,
+.mantenimiento-form-cerrar:focus-visible,
+.mantenimiento-evidencia-imagen:focus-visible,
+.mantenimiento-visor-cerrar:focus-visible {
+
+    outline:
+        3px solid
+        rgba(215, 185, 78, 0.38);
+
+    outline-offset:
+        2px;
+}
+
+
+
+/* ==========================================================
+   23. MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mantenimiento-form-modal,
+    .btn-registrar-mantenimiento,
+    .btn-editar-mantenimiento,
+    .mantenimiento-evidencia-imagen img {
+
+        animation: none;
+
+        transition: none;
+    }
+
+}
+
+
+/* ==========================================================
+   FIN ACTUALIZACIÓN MANTENIMIENTOS - PANEL APICULTOR
+========================================================== */
