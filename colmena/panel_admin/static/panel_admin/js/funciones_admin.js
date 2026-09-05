@@ -543,12 +543,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     idApiario;
 
 
+                const estaInactiva =
+                    opcion.dataset.inactiva
+                    ===
+                    "1";
+
+
                 opcion.hidden =
                     !corresponde;
 
 
                 opcion.disabled =
-                    !corresponde;
+                    !corresponde
+                    ||
+                    estaInactiva;
 
             });
 
@@ -568,9 +576,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 &&
                 opcionActual.value
                 &&
-                opcionActual.dataset.apiario
-                !==
-                idApiario
+                (
+                    opcionActual.dataset.apiario
+                    !==
+                    idApiario
+
+                    ||
+
+                    opcionActual.dataset.inactiva
+                    ===
+                    "1"
+                )
             ) {
 
                 colmena.value =
@@ -1382,23 +1398,81 @@ document.addEventListener("DOMContentLoaded", function () {
         );
  
         opciones.forEach(function (opcion) {
+
             const corresponde =
-                !apiarioId ||
-                opcion.dataset.apiario === apiarioId;
- 
-            opcion.hidden = !corresponde;
-            opcion.disabled = !corresponde;
+                !apiarioId
+                ||
+                opcion.dataset.apiario
+                ===
+                apiarioId;
+
+
+            const estaInactiva =
+                opcion.dataset.inactiva
+                ===
+                "1";
+
+
+            const esActual =
+                opcion.dataset.esActual
+                ===
+                "1";
+
+
+            opcion.hidden =
+                !corresponde;
+
+
+            opcion.disabled =
+                !corresponde
+                ||
+                (
+                    estaInactiva
+                    &&
+                    !esActual
+                );
         });
- 
+
+
         const opcionSeleccionada =
-            colmenaSelect.options[colmenaSelect.selectedIndex];
- 
+            colmenaSelect.options[
+                colmenaSelect.selectedIndex
+            ];
+
+
         if (
-            opcionSeleccionada &&
-            opcionSeleccionada.dataset.apiario &&
-            opcionSeleccionada.dataset.apiario !== apiarioId
+            opcionSeleccionada
+            &&
+            opcionSeleccionada.value
+            &&
+            (
+                (
+                    opcionSeleccionada.dataset.apiario
+                    &&
+                    opcionSeleccionada.dataset.apiario
+                    !==
+                    apiarioId
+                )
+
+                ||
+
+                (
+                    opcionSeleccionada.dataset.inactiva
+                    ===
+                    "1"
+
+                    &&
+
+                    opcionSeleccionada.dataset.esActual
+                    !==
+                    "1"
+                )
+            )
         ) {
-            colmenaSelect.value = "";
+
+            colmenaSelect.value =
+                "";
+
         }
     }
  
@@ -2424,12 +2498,30 @@ document.addEventListener("DOMContentLoaded", function () {
                                 idApiario;
 
 
+                            const estaInactiva =
+                                opcion.dataset.inactiva
+                                ===
+                                "1";
+
+
+                            const esActual =
+                                opcion.dataset.esActual
+                                ===
+                                "1";
+
+
                             opcion.hidden =
                                 !corresponde;
 
 
                             opcion.disabled =
-                                !corresponde;
+                                !corresponde
+                                ||
+                                (
+                                    estaInactiva
+                                    &&
+                                    !esActual
+                                );
 
                         }
                     );
@@ -2450,9 +2542,25 @@ document.addEventListener("DOMContentLoaded", function () {
                         &&
                         seleccionada.value
                         &&
-                        seleccionada.dataset.apiario
-                        !==
-                        idApiario
+                        (
+                            seleccionada.dataset.apiario
+                            !==
+                            idApiario
+
+                            ||
+
+                            (
+                                seleccionada.dataset.inactiva
+                                ===
+                                "1"
+
+                                &&
+
+                                seleccionada.dataset.esActual
+                                !==
+                                "1"
+                            )
+                        )
                     ) {
 
                         colmena.value =
@@ -3155,6 +3263,248 @@ document.addEventListener("DOMContentLoaded", function () {
 /* ==========================================================
    VALIDACIONES NUEVAS - MÓDULO DE INCIDENCIAS
    ========================================================== */
+
+/* ==========================================================
+   RESPONSABLE DE LA INCIDENCIA
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const regexResponsable =
+            /^(?=.*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ])[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+
+
+        document
+            .querySelectorAll(
+                ".responsable-incidencia"
+            )
+            .forEach(
+                function (campo) {
+
+                    const mensaje =
+                        campo
+                            .closest(".col-md-4")
+                            ?.querySelector(
+                                ".mensaje-responsable-incidencia"
+                            );
+
+
+                    function validarResponsable() {
+
+                        const valor =
+                            campo.value.trim();
+
+
+                        campo.setCustomValidity("");
+
+                        campo.classList.remove(
+                            "is-valid",
+                            "is-invalid"
+                        );
+
+
+                        if (mensaje) {
+
+                            mensaje.classList.add(
+                                "d-none"
+                            );
+
+                            mensaje.classList.remove(
+                                "text-success",
+                                "text-danger"
+                            );
+
+                            mensaje.textContent =
+                                "";
+
+                        }
+
+
+                        /*
+                         * Responsable es opcional.
+                         */
+                        if (!valor) {
+                            return true;
+                        }
+
+
+                        if (valor.length < 2) {
+
+                            campo.setCustomValidity(
+                                "El responsable debe tener al menos 2 caracteres."
+                            );
+
+                            campo.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            mostrarMensaje(
+                                "El responsable debe tener al menos 2 caracteres.",
+                                false
+                            );
+
+                            return false;
+
+                        }
+
+
+                        if (valor.length > 150) {
+
+                            campo.setCustomValidity(
+                                "El responsable no puede superar los 150 caracteres."
+                            );
+
+                            campo.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            mostrarMensaje(
+                                "El responsable no puede superar los 150 caracteres.",
+                                false
+                            );
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            !regexResponsable.test(
+                                valor
+                            )
+                        ) {
+
+                            campo.setCustomValidity(
+                                "Ingresa un nombre válido para el responsable."
+                            );
+
+                            campo.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            mostrarMensaje(
+                                (
+                                    "El responsable solo puede contener "
+                                    +
+                                    "letras, espacios, apóstrofes y guiones."
+                                ),
+                                false
+                            );
+
+                            return false;
+
+                        }
+
+
+                        campo.setCustomValidity("");
+
+                        campo.classList.add(
+                            "is-valid"
+                        );
+
+
+                        mostrarMensaje(
+                            "Responsable válido.",
+                            true
+                        );
+
+
+                        return true;
+
+                    }
+
+
+                    function mostrarMensaje(
+                        texto,
+                        valido
+                    ) {
+
+                        if (!mensaje) {
+                            return;
+                        }
+
+
+                        mensaje.textContent =
+                            texto;
+
+
+                        mensaje.classList.remove(
+                            "d-none",
+                            "text-success",
+                            "text-danger"
+                        );
+
+
+                        mensaje.classList.add(
+                            valido
+                                ? "text-success"
+                                : "text-danger"
+                        );
+
+                    }
+
+
+                    campo.addEventListener(
+                        "input",
+                        function () {
+
+                            campo.value =
+                                campo.value.replace(
+                                    /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]/g,
+                                    ""
+                                );
+
+                            validarResponsable();
+
+                        }
+                    );
+
+
+                    campo.addEventListener(
+                        "blur",
+                        validarResponsable
+                    );
+
+
+                    const formulario =
+                        campo.closest(
+                            ".form-incidencia"
+                        );
+
+
+                    if (formulario) {
+
+                        formulario.addEventListener(
+                            "submit",
+                            function (evento) {
+
+                                if (
+                                    !validarResponsable()
+                                ) {
+
+                                    evento.preventDefault();
+
+                                    evento.stopPropagation();
+
+                                    campo.focus();
+
+                                }
+
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+);
  
 /* La fecha de detección nunca puede ser una fecha futura */
 document.addEventListener("DOMContentLoaded", function () {

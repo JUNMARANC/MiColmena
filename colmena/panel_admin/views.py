@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento, Incidencia, Administrador, Rol,  EventoAgenda, HistorialReporte,EvidenciaIncidencia,EvidenciaMantenimiento
+from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento, Incidencia, Administrador, Rol,  EventoAgenda, HistorialReporte,EvidenciaIncidencia,EvidenciaMantenimiento, Seguimientoapicola
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.db.models import Q, Count, Sum, Prefetch
@@ -701,6 +701,62 @@ def apiarios_admin(request):
             .count()
         )
 
+        # ========================================================
+        # HISTORIAL RELACIONADO PARA ELIMINACIÓN
+        # ========================================================
+
+        apiario.total_mantenimientos_historial = (
+            Mantenimiento.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        apiario.total_incidencias_historial = (
+            Incidencia.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        apiario.total_seguimientos_historial = (
+            Seguimientoapicola.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        apiario.total_eventos_agenda = (
+            EventoAgenda.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        # ========================================================
+        # SOLO PUEDE ELIMINARSE SI NO TIENE NADA RELACIONADO
+        # ========================================================
+
+        apiario.puede_eliminar = (
+            apiario.total_colmenas_reales == 0
+            and
+            apiario.total_mantenimientos_historial == 0
+            and
+            apiario.total_incidencias_historial == 0
+            and
+            apiario.total_seguimientos_historial == 0
+            and
+            apiario.total_eventos_agenda == 0
+        )
+
         apiario.fecha_colmena_mas_antigua = (
             Colmena.objects
             .filter(
@@ -1136,17 +1192,15 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # SOLO SE PERMITE ELIMINAR MEDIANTE POST
+    # SOLO POST
     # ========================================================
 
     if request.method != "POST":
 
         messages.warning(
             request,
-            "La solicitud para eliminar "
-            "el apiario no es válida."
+            "La solicitud para eliminar el apiario no es válida."
         )
-
 
         return redirect(
             "apiarios_admin"
@@ -1154,39 +1208,112 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # COMPROBAR COLMENAS ASOCIADAS
+    # COMPROBAR TODAS LAS RELACIONES
     # ========================================================
 
-    colmenas_asociadas = (
+    cantidad_colmenas = (
         Colmena.objects
         .filter(
             id_apiario=apiario
         )
+        .count()
     )
 
 
-    cantidad_colmenas = (
-        colmenas_asociadas
+    cantidad_mantenimientos = (
+        Mantenimiento.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .count()
+    )
+
+
+    cantidad_incidencias = (
+        Incidencia.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .count()
+    )
+
+
+    cantidad_seguimientos = (
+        Seguimientoapicola.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .count()
+    )
+
+
+    cantidad_eventos = (
+        EventoAgenda.objects
+        .filter(
+            id_apiario=apiario
+        )
         .count()
     )
 
 
     # ========================================================
-    # NO PERMITIR ELIMINAR SI TIENE COLMENAS
+    # CONSTRUIR MOTIVOS
     # ========================================================
+
+    motivos = []
+
 
     if cantidad_colmenas > 0:
 
-        messages.warning(
+        motivos.append(
+            f"{cantidad_colmenas} colmena(s)"
+        )
+
+
+    if cantidad_mantenimientos > 0:
+
+        motivos.append(
+            f"{cantidad_mantenimientos} mantenimiento(s)"
+        )
+
+
+    if cantidad_incidencias > 0:
+
+        motivos.append(
+            f"{cantidad_incidencias} incidencia(s)"
+        )
+
+
+    if cantidad_seguimientos > 0:
+
+        motivos.append(
+            f"{cantidad_seguimientos} seguimiento(s)"
+        )
+
+
+    if cantidad_eventos > 0:
+
+        motivos.append(
+            f"{cantidad_eventos} evento(s) de agenda"
+        )
+
+
+    # ========================================================
+    # BLOQUEAR SI EXISTE CUALQUIER INFORMACIÓN RELACIONADA
+    # ========================================================
+
+    if motivos:
+
+        messages.error(
             request,
             (
                 f"No se puede eliminar el apiario "
-                f"«{apiario.nombreapiario}» porque "
-                f"tiene {cantidad_colmenas} "
-                f"colmena(s) asociada(s)."
+                f"«{apiario.nombreapiario}» porque tiene "
+                f"{', '.join(motivos)} asociados. "
+                "Esta información forma parte del historial "
+                "del sistema y debe conservarse."
             )
         )
-
 
         return redirect(
             "apiarios_admin"
@@ -1194,7 +1321,7 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # GUARDAR NOMBRE ANTES DE ELIMINAR
+    # GUARDAR NOMBRE
     # ========================================================
 
     nombre_apiario = (
@@ -1203,15 +1330,14 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # INTENTAR ELIMINAR
-    #
-    # El try también nos protege si en el futuro aparece
-    # otra relación en la base de datos que impida borrar.
+    # ÚLTIMA BARRERA DE SEGURIDAD
     # ========================================================
 
     try:
 
-        apiario.delete()
+        with transaction.atomic():
+
+            apiario.delete()
 
 
     except IntegrityError:
@@ -1220,11 +1346,10 @@ def eliminar_apiario(
             request,
             (
                 f"No se puede eliminar el apiario "
-                f"«{nombre_apiario}» porque tiene "
-                f"información relacionada en el sistema."
+                f"«{nombre_apiario}» porque todavía tiene "
+                "información relacionada en el sistema."
             )
         )
-
 
         return redirect(
             "apiarios_admin"
@@ -1232,14 +1357,14 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # ELIMINADO CORRECTAMENTE
+    # ÉXITO
     # ========================================================
 
     messages.success(
         request,
         (
             f"El apiario «{nombre_apiario}» "
-            f"fue eliminado correctamente."
+            "fue eliminado correctamente."
         )
     )
 
@@ -1406,6 +1531,102 @@ def colmenas_admin(request):
             page_number
         )
     )
+
+    # ========================================================
+    # ESTADO OPERATIVO DE CADA COLMENA
+    #
+    # Se utiliza para saber si una colmena puede pasar
+    # al estado Inactiva.
+    # ========================================================
+
+    for colmena_obj in colmenas:
+
+        colmena_obj.mantenimientos_pendientes = (
+            Mantenimiento.objects
+            .filter(
+                id_colmena=colmena_obj,
+                estado="Pendiente"
+            )
+            .count()
+        )
+
+
+        colmena_obj.incidencias_abiertas = (
+            Incidencia.objects
+            .filter(
+                id_colmena=colmena_obj,
+                estado__in=[
+                    "Pendiente",
+                    "En proceso",
+                ]
+            )
+            .count()
+        )
+
+
+        colmena_obj.puede_inactivar = (
+            colmena_obj.mantenimientos_pendientes == 0
+            and
+            colmena_obj.incidencias_abiertas == 0
+        )
+
+        # ====================================================
+        # HISTORIAL COMPLETO PARA ELIMINACIÓN
+        #
+        # A diferencia de "Inactivar", aquí cualquier registro
+        # histórico bloquea la eliminación, sin importar su
+        # estado actual.
+        # ====================================================
+
+        colmena_obj.total_mantenimientos_historial = (
+            Mantenimiento.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        colmena_obj.total_incidencias_historial = (
+            Incidencia.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        colmena_obj.total_seguimientos_historial = (
+            Seguimientoapicola.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        colmena_obj.total_eventos_agenda = (
+            EventoAgenda.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        # ====================================================
+        # SOLO SE ELIMINA SI NUNCA HA SIDO UTILIZADA
+        # ====================================================
+
+        colmena_obj.puede_eliminar = (
+            colmena_obj.total_mantenimientos_historial == 0
+            and
+            colmena_obj.total_incidencias_historial == 0
+            and
+            colmena_obj.total_seguimientos_historial == 0
+            and
+            colmena_obj.total_eventos_agenda == 0
+        )
 
 
     return render(
@@ -1785,6 +2006,38 @@ def editar_colmena(
         )
     )
 
+    estado_nuevo = (
+        request.POST.get(
+            "estado_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    estados_colmena_validos = {
+        "Activa",
+        "Riesgo",
+        "Inactiva",
+        "Revisión",
+    }
+
+
+    if (
+        estado_nuevo
+        not in
+        estados_colmena_validos
+    ):
+
+        messages.error(
+            request,
+            "El estado seleccionado para la colmena no es válido."
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
 
     if not nuevo_id_apiario:
 
@@ -2052,6 +2305,87 @@ def editar_colmena(
             colmena.estadocolmena
         )
 
+        # ====================================================
+        # VALIDAR CAMBIO A INACTIVA
+        #
+        # Una colmena solamente puede inactivarse cuando
+        # no tiene trabajo operativo pendiente.
+        # ====================================================
+
+        if (
+            estado_nuevo == "Inactiva"
+            and
+            estado_anterior != "Inactiva"
+        ):
+
+            mantenimientos_pendientes = (
+                Mantenimiento.objects
+                .filter(
+                    id_colmena=colmena,
+                    estado="Pendiente"
+                )
+                .count()
+            )
+
+
+            incidencias_abiertas = (
+                Incidencia.objects
+                .filter(
+                    id_colmena=colmena,
+                    estado__in=[
+                        "Pendiente",
+                        "En proceso",
+                    ]
+                )
+                .count()
+            )
+
+
+            if (
+                mantenimientos_pendientes > 0
+                or
+                incidencias_abiertas > 0
+            ):
+
+                motivos = []
+
+
+                if mantenimientos_pendientes > 0:
+
+                    motivos.append(
+                        (
+                            f"{mantenimientos_pendientes} "
+                            "mantenimiento(s) pendiente(s)"
+                        )
+                    )
+
+
+                if incidencias_abiertas > 0:
+
+                    motivos.append(
+                        (
+                            f"{incidencias_abiertas} "
+                            "incidencia(s) sin resolver"
+                        )
+                    )
+
+
+                messages.error(
+                    request,
+                    (
+                        f"No puedes inactivar la colmena "
+                        f"«{colmena.codigocolmena}» porque tiene "
+                        f"{' y '.join(motivos)}. "
+                        "Completa o cancela los mantenimientos "
+                        "y resuelve las incidencias antes de continuar."
+                    )
+                )
+
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
 
         # ====================================================
         # ACTUALIZAR
@@ -2063,9 +2397,7 @@ def editar_colmena(
 
 
         colmena.estadocolmena = (
-            request.POST.get(
-                "estado_colmena"
-            )
+            estado_nuevo
         )
 
 
@@ -2139,14 +2471,207 @@ def editar_colmena(
 
 
 @administrador_requerido
-@permiso_requerido("cg",redireccion="colmenas_admin")
-def eliminar_colmena(request, id):
-    colmena = get_object_or_404(Colmena, id_colmena=id)
+@permiso_requerido(
+    "cg",
+    redireccion="colmenas_admin"
+)
+def eliminar_colmena(
+    request,
+    id
+):
 
-    if request.method == "POST":
-        colmena.delete()
+    # ========================================================
+    # OBTENER COLMENA
+    # ========================================================
 
-    return redirect("colmenas_admin")
+    colmena = get_object_or_404(
+        Colmena,
+        id_colmena=id
+    )
+
+
+    # ========================================================
+    # SOLO POST
+    # ========================================================
+
+    if request.method != "POST":
+
+        messages.warning(
+            request,
+            "La solicitud para eliminar la colmena no es válida."
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # COMPROBAR TODO EL HISTORIAL
+    # ========================================================
+
+    cantidad_mantenimientos = (
+        Mantenimiento.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    cantidad_incidencias = (
+        Incidencia.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    cantidad_seguimientos = (
+        Seguimientoapicola.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    cantidad_eventos = (
+        EventoAgenda.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    # ========================================================
+    # CONSTRUIR RAZONES DEL BLOQUEO
+    # ========================================================
+
+    motivos = []
+
+
+    if cantidad_mantenimientos > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_mantenimientos} "
+                "mantenimiento(s)"
+            )
+        )
+
+
+    if cantidad_incidencias > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_incidencias} "
+                "incidencia(s)"
+            )
+        )
+
+
+    if cantidad_seguimientos > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_seguimientos} "
+                "seguimiento(s)"
+            )
+        )
+
+
+    if cantidad_eventos > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_eventos} "
+                "evento(s) de agenda"
+            )
+        )
+
+
+    # ========================================================
+    # NO ELIMINAR SI EXISTE HISTORIAL
+    # ========================================================
+
+    if motivos:
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar la colmena "
+                f"«{colmena.codigocolmena}» porque tiene "
+                f"{', '.join(motivos)} asociados. "
+                "El historial debe conservarse. "
+                "Si la colmena ya no está en operación, "
+                "puedes mantenerla en estado Inactiva."
+            )
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # GUARDAR CÓDIGO ANTES DE ELIMINAR
+    # ========================================================
+
+    codigo_colmena = (
+        colmena.codigocolmena
+    )
+
+
+    # ========================================================
+    # INTENTAR ELIMINAR
+    #
+    # Esta es la última barrera. Si existe alguna relación de
+    # base de datos que no hayamos previsto, no aparecerá una
+    # pantalla IntegrityError al administrador.
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            colmena.delete()
+
+
+    except IntegrityError:
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar la colmena "
+                f"«{codigo_colmena}» porque todavía tiene "
+                "información relacionada en el sistema."
+            )
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # ELIMINACIÓN CORRECTA
+    # ========================================================
+
+    messages.success(
+        request,
+        (
+            f"La colmena «{codigo_colmena}» "
+            "fue eliminada correctamente."
+        )
+    )
+
+
+    return redirect(
+        "colmenas_admin"
+    )
 
 
 
@@ -2962,6 +3487,23 @@ def crear_mantenimiento(request):
                     "al apiario indicado."
                 )
 
+
+            elif (
+                colmena.estadocolmena
+                ==
+                "Inactiva"
+            ):
+
+                errores.append(
+                    (
+                        f"La colmena «{colmena.codigocolmena}» "
+                        "está Inactiva y no puede recibir "
+                        "nuevos mantenimientos. "
+                        "Debes cambiar primero su estado."
+                    )
+                )
+
+
             else:
 
                 apiario = (
@@ -3631,11 +4173,85 @@ def editar_mantenimiento(
                     "al apiario indicado."
                 )
 
+
             else:
 
-                apiario = (
-                    colmena.id_apiario
+                # =============================================
+                # ¿ES LA COLMENA QUE YA TENÍA EL MANTENIMIENTO?
+                # =============================================
+
+                es_colmena_actual = (
+                    mantenimiento.id_colmena_id
+                    is not None
+
+                    and
+
+                    str(
+                        mantenimiento.id_colmena_id
+                    )
+                    ==
+                    str(
+                        colmena.id_colmena
+                    )
                 )
+
+
+                # =============================================
+                # NO PERMITIR CAMBIAR HACIA OTRA INACTIVA
+                # =============================================
+
+                if (
+                    colmena.estadocolmena
+                    ==
+                    "Inactiva"
+
+                    and
+
+                    not es_colmena_actual
+                ):
+
+                    errores.append(
+                        (
+                            f"La colmena «{colmena.codigocolmena}» "
+                            "está Inactiva y no puede recibir "
+                            "este mantenimiento. "
+                            "Debes cambiar primero su estado."
+                        )
+                    )
+
+
+                # =============================================
+                # NO REABRIR TRABAJO EN COLMENA INACTIVA
+                # =============================================
+
+                elif (
+                    colmena.estadocolmena
+                    ==
+                    "Inactiva"
+
+                    and
+
+                    estado
+                    ==
+                    "Pendiente"
+                ):
+
+                    errores.append(
+                        (
+                            f"No puedes dejar el mantenimiento "
+                            f"como Pendiente porque la colmena "
+                            f"«{colmena.codigocolmena}» "
+                            "está Inactiva. "
+                            "Reactiva primero la colmena."
+                        )
+                    )
+
+
+                else:
+
+                    apiario = (
+                        colmena.id_apiario
+                    )
 
 
     # ========================================================
@@ -4478,6 +5094,31 @@ def crear_incidencia(request):
         )
         return redirect("incidencias_admin")
 
+    # ========================================================
+    # RESPONSABLE
+    # ========================================================
+
+    if (
+        responsable
+        and
+        not validar_nombre_persona(
+            responsable,
+            maximo=150
+        )
+    ):
+
+        messages.error(
+            request,
+            (
+                "El responsable debe contener un nombre válido "
+                "de máximo 150 caracteres."
+            )
+        )
+
+        return redirect(
+            "incidencias_admin"
+        )
+
     incidencia = Incidencia(
         entidadincidencia=entidad,
         titulo=titulo,
@@ -4535,9 +5176,43 @@ def crear_incidencia(request):
             id_apiario_id=id_apiario
         )
 
-        # Guardamos la colmena y también el apiario al que pertenece.
-        incidencia.id_colmena = colmena
-        incidencia.id_apiario = colmena.id_apiario
+
+        # ====================================================
+        # NO PERMITIR INCIDENCIAS NUEVAS EN COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            colmena.estadocolmena
+            ==
+            "Inactiva"
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"La colmena «{colmena.codigocolmena}» "
+                    "está Inactiva y no puede recibir "
+                    "nuevas incidencias. "
+                    "Debes cambiar primero su estado."
+                )
+            )
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        # ====================================================
+        # ASIGNAR COLMENA
+        # ====================================================
+
+        incidencia.id_colmena = (
+            colmena
+        )
+
+        incidencia.id_apiario = (
+            colmena.id_apiario
+        )
 
     incidencia.save()
 
@@ -4757,6 +5432,26 @@ def editar_incidencia(
 
         errores.append(
             "El estado seleccionado no es válido."
+        )
+
+    # ========================================================
+    # RESPONSABLE
+    # ========================================================
+
+    if (
+        responsable
+        and
+        not validar_nombre_persona(
+            responsable,
+            maximo=150
+        )
+    ):
+
+        errores.append(
+            (
+                "El responsable debe contener un nombre válido "
+                "de máximo 150 caracteres."
+            )
         )
 
 
@@ -5036,6 +5731,89 @@ def editar_incidencia(
                 id_apiario_id=id_apiario
             )
         )
+
+
+        # ====================================================
+        # ¿ES LA COLMENA QUE YA TENÍA LA INCIDENCIA?
+        # ====================================================
+
+        es_colmena_actual = (
+            incidencia.id_colmena_id
+            is not None
+
+            and
+
+            str(
+                incidencia.id_colmena_id
+            )
+            ==
+            str(
+                colmena_seleccionada.id_colmena
+            )
+        )
+
+
+        # ====================================================
+        # NO CAMBIAR HACIA OTRA COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            colmena_seleccionada.estadocolmena
+            ==
+            "Inactiva"
+
+            and
+
+            not es_colmena_actual
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"La colmena "
+                    f"«{colmena_seleccionada.codigocolmena}» "
+                    "está Inactiva y no puede recibir "
+                    "esta incidencia. "
+                    "Debes cambiar primero su estado."
+                )
+            )
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        # ====================================================
+        # NO REABRIR INCIDENCIA EN COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            colmena_seleccionada.estadocolmena
+            ==
+            "Inactiva"
+
+            and
+
+            estado in {
+                "Pendiente",
+                "En proceso",
+            }
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"No puedes dejar la incidencia como "
+                    f"«{estado}» porque la colmena "
+                    f"«{colmena_seleccionada.codigocolmena}» "
+                    "está Inactiva. "
+                    "Reactiva primero la colmena."
+                )
+            )
+
+            return redirect(
+                "incidencias_admin"
+            )
 
 
         apiario_seleccionado = (
@@ -9191,6 +9969,30 @@ def usuarios_roles_admin(request):
                 puede_editar_administrador,
 
         })
+
+    # ========================================================
+    # PAGINACIÓN DE USUARIOS
+    # 8 REGISTROS POR PÁGINA
+    # ========================================================
+
+    paginador_usuarios = Paginator(
+        usuarios,
+        8
+    )
+
+
+    numero_pagina_usuarios = (
+        request.GET.get(
+            "pagina_usuarios"
+        )
+    )
+
+
+    usuarios = (
+        paginador_usuarios.get_page(
+            numero_pagina_usuarios
+        )
+    )
 
 
     # ========================================================

@@ -6163,6 +6163,162 @@ MODALES
 
 }
 
+/* =========================================================
+   ANCHO DEL MODAL
+========================================================= */
+
+.modal-dialog-eliminar-apiario {
+
+    max-width: 680px;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DEL BLOQUEO
+========================================================= */
+
+.contenido-bloqueo-eliminar-apiario {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+/* =========================================================
+   LISTA DE MOTIVOS
+========================================================= */
+
+.lista-bloqueos-eliminar-apiario {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+
+    margin:
+        13px
+        0
+        8px;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+.item-bloqueo-eliminar-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 43px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(128, 99, 0, 0.16);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.62);
+
+}
+
+
+.item-bloqueo-eliminar-apiario i {
+
+    flex-shrink: 0;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(128, 99, 0, 0.10);
+
+    font-size: 0.8rem;
+
+}
+
+
+.item-bloqueo-eliminar-apiario span {
+
+    margin: 0;
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   NOTA INFERIOR
+========================================================= */
+
+.nota-bloqueo-eliminar-apiario {
+
+    display: block;
+
+    margin-top: 10px;
+
+    padding-top: 9px;
+
+    border-top:
+        1px solid
+        rgba(128, 99, 0, 0.14);
+
+    font-size: 0.69rem;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-apiario {
+
+        max-width: none;
+
+    }
+
+
+    .lista-bloqueos-eliminar-apiario {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
 
 /* =========================================================
    RESPONSIVE
@@ -6209,6 +6365,666 @@ MODALES
         height: 68px;
 
         font-size: 1.7rem;
+
+    }
+
+}
+
+/* =========================================================
+   MODAL ELIMINAR COLMENA
+========================================================= */
+
+.modal-dialog-eliminar-colmena {
+
+    max-width: 680px;
+
+}
+
+
+.modal-eliminar-colmena {
+
+    overflow: hidden;
+
+    border: 0;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.modal-header-eliminar-colmena {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-colmena .modal-title,
+.modal-header-eliminar-colmena p,
+.modal-header-eliminar-colmena i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-colmena p {
+
+    margin-bottom: 0;
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO DEL HEADER
+========================================================= */
+
+.icono-header-eliminar-colmena {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   CUERPO
+========================================================= */
+
+.modal-body-eliminar-colmena {
+
+    padding:
+        25px
+        28px;
+
+}
+
+
+.contenido-eliminar-colmena {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO PRINCIPAL
+========================================================= */
+
+.icono-advertencia-eliminar-colmena {
+
+    width: 78px;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        3px
+        auto
+        18px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 2rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO Y TEXTO
+========================================================= */
+
+.contenido-eliminar-colmena h5 {
+
+    margin-bottom: 7px;
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-colmena > p {
+
+    max-width: 520px;
+
+    margin:
+        0
+        auto
+        16px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   IDENTIFICADOR DE COLMENA
+========================================================= */
+
+.nombre-colmena-eliminar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        17px;
+
+    border-radius: 12px;
+
+    background: #f4f7f5;
+
+    color:
+        var(--verde-oscuro);
+
+    font-weight: 700;
+
+}
+
+
+.nombre-colmena-eliminar i {
+
+    color:
+        var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida,
+.alerta-eliminacion-colmena-bloqueada {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 22px;
+
+    padding:
+        16px
+        17px;
+
+    border-radius: 14px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   ELIMINACIÓN PERMITIDA
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+/* =========================================================
+   ELIMINACIÓN BLOQUEADA
+========================================================= */
+
+.alerta-eliminacion-colmena-bloqueada {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+/* =========================================================
+   ICONOS DE ALERTA
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida > i,
+.alerta-eliminacion-colmena-bloqueada > i {
+
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    font-size: 1.05rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DE ALERTA
+========================================================= */
+
+.contenido-alerta-eliminar-colmena {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.contenido-alerta-eliminar-colmena strong {
+
+    display: block;
+
+    font-size: 0.82rem;
+
+}
+
+
+.contenido-alerta-eliminar-colmena > span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 0.74rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   LISTA DE MOTIVOS
+========================================================= */
+
+.lista-bloqueos-eliminar-colmena {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 9px;
+
+    margin:
+        14px
+        0
+        8px;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+.item-bloqueo-eliminar-colmena {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-height: 46px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(128, 99, 0, 0.16);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.58);
+
+}
+
+
+.item-bloqueo-eliminar-colmena i {
+
+    flex-shrink: 0;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(128, 99, 0, 0.10);
+
+    font-size: 0.82rem;
+
+}
+
+
+.item-bloqueo-eliminar-colmena div {
+
+    min-width: 0;
+
+}
+
+
+.item-bloqueo-eliminar-colmena strong {
+
+    display: block;
+
+    color: #685200;
+
+    font-size: 0.77rem;
+
+}
+
+
+.item-bloqueo-eliminar-colmena small {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color: #8a750d;
+
+    font-size: 0.68rem;
+
+}
+
+
+/* =========================================================
+   NOTA DE CONSERVACIÓN
+========================================================= */
+
+.nota-historial-eliminar-colmena {
+
+    display: block;
+
+    margin-top: 11px;
+
+    padding-top: 10px;
+
+    border-top:
+        1px solid
+        rgba(128, 99, 0, 0.14);
+
+    font-size: 0.71rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-colmena {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-colmena,
+.btn-confirmar-eliminacion-colmena {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CANCELAR
+========================================================= */
+
+.btn-cancelar-eliminacion-colmena {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-colmena:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR
+========================================================= */
+
+.btn-confirmar-eliminacion-colmena {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-colmena:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   ELIMINAR BLOQUEADO
+========================================================= */
+
+.btn-confirmar-eliminacion-colmena:disabled,
+.btn-confirmar-eliminacion-colmena.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-colmena {
+
+        max-width: none;
+
+    }
+
+
+    .modal-header-eliminar-colmena {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-body-eliminar-colmena {
+
+        padding:
+            21px
+            18px;
+
+    }
+
+
+    .modal-footer-eliminar-colmena {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-colmena,
+    .btn-confirmar-eliminacion-colmena {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-colmena {
+
+        width: 68px;
+
+        height: 68px;
+
+        font-size: 1.7rem;
+
+    }
+
+
+    .lista-bloqueos-eliminar-colmena {
+
+        grid-template-columns: 1fr;
 
     }
 

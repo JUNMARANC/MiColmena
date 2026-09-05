@@ -317,7 +317,7 @@
 
                             {{ colmena.codigocolmena }}
                             -
-                            {{ colmena.id_apiario.nombreapiario }}
+                            {{ colmena.estadocolmena }}
 
                         </option>
 
@@ -1414,11 +1414,20 @@
                                         <option
                                             value="{{ colmena.id_colmena }}"
                                             data-apiario="{{ colmena.id_apiario.id_apiario }}"
+                                            data-inactiva="{% if colmena.estadocolmena == 'Inactiva' %}1{% else %}0{% endif %}"
+
+                                            {% if colmena.estadocolmena == "Inactiva" %}
+                                                disabled
+                                            {% endif %}
                                         >
 
                                             {{ colmena.codigocolmena }}
                                             -
                                             {{ colmena.estadocolmena }}
+
+                                            {% if colmena.estadocolmena == "Inactiva" %}
+                                                (No disponible)
+                                            {% endif %}
 
                                         </option>
 
@@ -2663,15 +2672,53 @@
 
                                         <option
                                             value="{{ colmena.id_colmena }}"
+
                                             data-apiario="{{ colmena.id_apiario.id_apiario }}"
+
+                                            data-inactiva="{% if colmena.estadocolmena == 'Inactiva' %}1{% else %}0{% endif %}"
+
+                                            data-es-actual="{% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}1{% else %}0{% endif %}"
+
                                             {% if mantenimiento.id_colmena and colmena.id_colmena == mantenimiento.id_colmena.id_colmena %}
                                                 selected
+                                            {% endif %}
+
+                                            {% if colmena.estadocolmena == "Inactiva" %}
+
+                                                {% if mantenimiento.id_colmena %}
+
+                                                    {% if colmena.id_colmena != mantenimiento.id_colmena.id_colmena %}
+                                                        disabled
+                                                    {% endif %}
+
+                                                {% else %}
+
+                                                    disabled
+
+                                                {% endif %}
+
                                             {% endif %}
                                         >
 
                                             {{ colmena.codigocolmena }}
                                             -
-                                            {{ colmena.id_apiario.nombreapiario }}
+                                            {{ colmena.estadocolmena }}
+
+                                            {% if colmena.estadocolmena == "Inactiva" %}
+
+                                                {% if mantenimiento.id_colmena %}
+
+                                                    {% if colmena.id_colmena != mantenimiento.id_colmena.id_colmena %}
+                                                        (No disponible)
+                                                    {% endif %}
+
+                                                {% else %}
+
+                                                    (No disponible)
+
+                                                {% endif %}
+
+                                            {% endif %}
 
                                         </option>
 
