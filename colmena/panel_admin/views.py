@@ -3110,9 +3110,74 @@ def mantenimientos_admin(request):
         )
     )
 
+    # ========================================================
+    # 10. CONTROL DE ELIMINACIÓN
+    #
+    # Pendiente:
+    # puede eliminarse si fue creado por error.
+    #
+    # Cancelado:
+    # puede eliminarse porque el trabajo no se realizó.
+    #
+    # Completado:
+    # se conserva como registro de una actividad realizada.
+    # ========================================================
+
+    for mantenimiento in mantenimientos:
+
+        # ====================================================
+        # TOTAL DE EVIDENCIAS YA PRECARGADAS
+        # ====================================================
+
+        mantenimiento.total_evidencias_eliminacion = (
+
+            len(
+                getattr(
+                    mantenimiento,
+                    "evidencias_antes_admin",
+                    []
+                )
+            )
+
+            +
+
+            len(
+                getattr(
+                    mantenimiento,
+                    "evidencias_durante_admin",
+                    []
+                )
+            )
+
+            +
+
+            len(
+                getattr(
+                    mantenimiento,
+                    "evidencias_despues_admin",
+                    []
+                )
+            )
+
+        )
+
+
+        # ====================================================
+        # ESTADOS QUE PERMITEN ELIMINACIÓN
+        # ====================================================
+
+        mantenimiento.puede_eliminar = (
+            mantenimiento.estado
+            in
+            [
+                "Pendiente",
+                "Cancelado",
+            ]
+        )
+
 
     # ========================================================
-    # 10. CONTEXTO
+    # 11. CONTEXTO
     # ========================================================
 
     contexto = {
@@ -4539,6 +4604,9 @@ def eliminar_mantenimiento(
     id
 ):
 
+    # ========================================================
+    # OBTENER MANTENIMIENTO
+    # ========================================================
 
     mantenimiento = get_object_or_404(
         Mantenimiento,
@@ -4546,14 +4614,113 @@ def eliminar_mantenimiento(
     )
 
 
+    # ========================================================
+    # ESTADOS QUE PUEDEN ELIMINARSE
+    # ========================================================
+
+    estados_eliminables = [
+        "Pendiente",
+        "Cancelado",
+    ]
+
+
+    # ========================================================
+    # PROTEGER MANTENIMIENTOS COMPLETADOS
+    #
+    # El HTML puede ser manipulado desde DevTools.
+    # Por eso la regla se vuelve a comprobar aquí.
+    # ========================================================
+
+    if (
+        mantenimiento.estado
+        not in
+        estados_eliminables
+    ):
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar el mantenimiento "
+                f"«{mantenimiento.tipo or 'Sin nombre'}» "
+                f"porque se encuentra en estado "
+                f"«{mantenimiento.estado or 'Sin definir'}». "
+                "Los mantenimientos completados se conservan "
+                "como registro de la actividad realizada."
+            )
+        )
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
+
+    # ========================================================
+    # EVIDENCIAS ASOCIADAS
+    # ========================================================
+
+    cantidad_evidencias = (
+        EvidenciaMantenimiento.objects
+        .filter(
+            id_mantenimiento=mantenimiento
+        )
+        .count()
+    )
+
+
+    # ========================================================
+    # DATOS ANTES DE ELIMINAR
+    # ========================================================
+
+    nombre_mantenimiento = (
+        mantenimiento.tipo
+        or
+        "Sin nombre"
+    )
+
+
+    estado_mantenimiento = (
+        mantenimiento.estado
+        or
+        "Sin definir"
+    )
+
+
+    # ========================================================
+    # ELIMINAR
+    #
+    # Las filas de EvidenciaMantenimiento están relacionadas
+    # por CASCADE y se eliminan con el mantenimiento.
+    # ========================================================
+
     try:
 
         with transaction.atomic():
 
-            # Las EvidenciaMantenimiento relacionadas
-            # se eliminan por CASCADE.
-
             mantenimiento.delete()
+
+
+    except IntegrityError as error:
+
+        print(
+            "ERROR DE INTEGRIDAD ELIMINANDO MANTENIMIENTO:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            (
+                f"No se pudo eliminar el mantenimiento "
+                f"«{nombre_mantenimiento}» porque todavía "
+                "tiene información relacionada que impide "
+                "su eliminación."
+            )
+        )
+
+
+        return redirect(
+            "mantenimientos_admin"
+        )
 
 
     except Exception as error:
@@ -4575,10 +4742,32 @@ def eliminar_mantenimiento(
         )
 
 
-    messages.success(
-        request,
-        "Mantenimiento eliminado correctamente."
-    )
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    if cantidad_evidencias > 0:
+
+        messages.success(
+            request,
+            (
+                f"El mantenimiento «{nombre_mantenimiento}» "
+                f"en estado «{estado_mantenimiento}» "
+                "fue eliminado correctamente junto con "
+                f"{cantidad_evidencias} registro(s) de evidencia "
+                "asociado(s)."
+            )
+        )
+
+    else:
+
+        messages.success(
+            request,
+            (
+                f"El mantenimiento «{nombre_mantenimiento}» "
+                "fue eliminado correctamente."
+            )
+        )
 
 
     return redirect(
@@ -4989,6 +5178,67 @@ def incidencias_admin(request):
     incidencias = paginator.get_page(
         numero_pagina
     )
+
+    # ========================================================
+    # CONTROL DE ELIMINACIÓN
+    #
+    # Pendiente:
+    # puede eliminarse si fue registrada por error.
+    #
+    # En proceso:
+    # ya comenzó a gestionarse y debe conservarse.
+    #
+    # Resuelta:
+    # representa un caso cerrado y debe conservarse.
+    # ========================================================
+
+    for incidencia in incidencias:
+
+        # ====================================================
+        # TOTAL DE EVIDENCIAS
+        # ====================================================
+
+        incidencia.total_evidencias_eliminacion = (
+
+            len(
+                getattr(
+                    incidencia,
+                    "evidencias_problema_admin",
+                    []
+                )
+            )
+
+            +
+
+            len(
+                getattr(
+                    incidencia,
+                    "evidencias_solucion_admin",
+                    []
+                )
+            )
+
+        )
+
+
+        # ====================================================
+        # IMAGEN DEL MODELO ANTIGUO
+        # ====================================================
+
+        if incidencia.imagen:
+
+            incidencia.total_evidencias_eliminacion += 1
+
+
+        # ====================================================
+        # SOLO PENDIENTE PUEDE ELIMINARSE
+        # ====================================================
+
+        incidencia.puede_eliminar = (
+            incidencia.estado
+            ==
+            "Pendiente"
+        )
 
 
     # ========================================================
@@ -6040,28 +6290,218 @@ def editar_incidencia(
         "incidencias_admin"
     )
 
-#Eliminar incidencia
+# ============================================================
+# ELIMINAR INCIDENCIA
+# PANEL ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
-@permiso_requerido("ig",redireccion="incidencias_admin")
-def eliminar_incidencia(request, id_incidencia):
+@require_POST
+@permiso_requerido(
+    "ig",
+    redireccion="incidencias_admin"
+)
+def eliminar_incidencia(
+    request,
+    id_incidencia
+):
+
+    # ========================================================
+    # OBTENER INCIDENCIA
+    # ========================================================
+
     incidencia = get_object_or_404(
         Incidencia,
         pk=id_incidencia
     )
 
-    if request.method == "POST":
-        if incidencia.imagen:
-            incidencia.imagen.delete(save=False)
 
-        incidencia.delete()
+    # ========================================================
+    # SOLO LAS PENDIENTES PUEDEN ELIMINARSE
+    #
+    # Esta comprobación es obligatoria en backend porque
+    # el botón HTML puede manipularse desde DevTools.
+    # ========================================================
+
+    if incidencia.estado != "Pendiente":
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar la incidencia "
+                f"«{incidencia.titulo}» porque se encuentra "
+                f"en estado «{incidencia.estado}». "
+                "Las incidencias que ya comenzaron a gestionarse "
+                "o fueron resueltas deben conservarse."
+            )
+        )
+
+        return redirect(
+            "incidencias_admin"
+        )
+
+
+    # ========================================================
+    # EVIDENCIAS ASOCIADAS
+    # ========================================================
+
+    cantidad_evidencias = (
+        EvidenciaIncidencia.objects
+        .filter(
+            id_incidencia=incidencia
+        )
+        .count()
+    )
+
+
+    # ========================================================
+    # IMAGEN ANTIGUA
+    # ========================================================
+
+    imagen_legacy = (
+        incidencia.imagen
+        if incidencia.imagen
+        else None
+    )
+
+
+    tiene_imagen_legacy = bool(
+        imagen_legacy
+    )
+
+
+    # ========================================================
+    # DATOS ANTES DE ELIMINAR
+    # ========================================================
+
+    titulo_incidencia = (
+        incidencia.titulo
+        or
+        "Sin título"
+    )
+
+
+    # ========================================================
+    # ELIMINAR REGISTRO
+    #
+    # EvidenciaIncidencia está relacionada por CASCADE.
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            incidencia.delete()
+
+
+    except IntegrityError as error:
+
+        print(
+            "ERROR DE INTEGRIDAD ELIMINANDO INCIDENCIA:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            (
+                f"No se pudo eliminar la incidencia "
+                f"«{titulo_incidencia}» porque todavía "
+                "tiene información relacionada que impide "
+                "su eliminación."
+            )
+        )
+
+
+        return redirect(
+            "incidencias_admin"
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR ELIMINANDO INCIDENCIA:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            "No fue posible eliminar la incidencia."
+        )
+
+
+        return redirect(
+            "incidencias_admin"
+        )
+
+
+    # ========================================================
+    # ELIMINAR IMAGEN ANTIGUA DEL ALMACENAMIENTO
+    #
+    # Se hace después de confirmar que el registro de la
+    # incidencia fue eliminado correctamente.
+    # ========================================================
+
+    if imagen_legacy:
+
+        try:
+
+            imagen_legacy.delete(
+                save=False
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR ELIMINANDO IMAGEN ANTIGUA "
+                "DE INCIDENCIA:",
+                error
+            )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    total_elementos_evidencia = (
+        cantidad_evidencias
+        +
+        (
+            1
+            if tiene_imagen_legacy
+            else 0
+        )
+    )
+
+
+    if total_elementos_evidencia > 0:
 
         messages.success(
             request,
-            "La incidencia fue eliminada correctamente."
+            (
+                f"La incidencia «{titulo_incidencia}» "
+                "fue eliminada correctamente junto con "
+                f"{total_elementos_evidencia} elemento(s) "
+                "de evidencia asociado(s)."
+            )
         )
 
-    return redirect("incidencias_admin")
+    else:
+
+        messages.success(
+            request,
+            (
+                f"La incidencia «{titulo_incidencia}» "
+                "fue eliminada correctamente."
+            )
+        )
+
+
+    return redirect(
+        "incidencias_admin"
+    )
 
 
 
@@ -8663,6 +9103,44 @@ def crear_evento_agenda(request):
             commit=False
         )
 
+        # =====================================================
+        # VALIDAR COLMENA OPERATIVA
+        #
+        # Una colmena Inactiva puede conservar eventos
+        # históricos, pero no puede recibir eventos nuevos.
+        # =====================================================
+
+        if (
+            evento.id_colmena
+            and
+            evento.id_colmena.estadocolmena
+            ==
+            "Inactiva"
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"No se puede crear el evento porque la "
+                    f"colmena "
+                    f"«{evento.id_colmena.codigocolmena}» "
+                    "se encuentra Inactiva."
+                )
+            )
+
+
+            mes = (
+                request.POST.get(
+                    "mes_retorno",
+                    ""
+                )
+            )
+
+
+            return redirect(
+                f"{reverse('agenda_admin')}?mes={mes}"
+            )
+
 
         # =====================================================
         # REFUERZO DE SEGURIDAD
@@ -8749,6 +9227,20 @@ def editar_evento_agenda(
         pk=id_evento
     )
 
+
+    # ========================================================
+    # GUARDAR COLMENA ORIGINAL
+    #
+    # Se guarda antes de validar el ModelForm porque durante
+    # la validación Django puede actualizar los valores de la
+    # instancia en memoria.
+    # ========================================================
+
+    colmena_original_id = (
+        evento.id_colmena_id
+    )
+
+
     formulario = EventoAgendaForm(
         request.POST,
         instance=evento
@@ -8756,7 +9248,71 @@ def editar_evento_agenda(
 
     if formulario.is_valid():
 
+        # ====================================================
+        # COLMENA SELECCIONADA
+        # ====================================================
+
+        colmena_nueva = (
+            formulario.cleaned_data.get(
+                "id_colmena"
+            )
+        )
+
+
+        # ====================================================
+        # VALIDAR COLMENA INACTIVA
+        #
+        # Se permite conservar una colmena Inactiva solamente
+        # si es exactamente la que ya tenía este evento.
+        #
+        # No se permite cambiar el evento hacia otra
+        # colmena Inactiva.
+        # ====================================================
+
+        if (
+            colmena_nueva
+            and
+            colmena_nueva.estadocolmena
+            ==
+            "Inactiva"
+            and
+            colmena_nueva.id_colmena
+            !=
+            colmena_original_id
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"No puedes asignar el evento a la "
+                    f"colmena "
+                    f"«{colmena_nueva.codigocolmena}» "
+                    "porque se encuentra Inactiva."
+                )
+            )
+
+
+            mes = (
+                request.POST.get(
+                    "mes_retorno",
+                    evento.fecha.strftime(
+                        "%Y-%m"
+                    )
+                )
+            )
+
+
+            return redirect(
+                f"{reverse('agenda_admin')}?mes={mes}"
+            )
+
+
+        # ====================================================
+        # GUARDAR CAMBIOS
+        # ====================================================
+
         evento = formulario.save()
+
 
         messages.success(
             request,
