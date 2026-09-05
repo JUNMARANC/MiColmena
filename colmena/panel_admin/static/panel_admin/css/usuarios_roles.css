@@ -31,6 +31,26 @@
     color: #718078;
 }
 
+/* Encabezado con polen flotante (mismo recurso de Apiarios/Colmenas/
+   Apicultores/Reportes: .dashboard-fondo-panal + .particulas-flotantes,
+   ambos definidos en estilos_admin.css, que esta página ya carga a
+   través de base_admin.html). Reutiliza también el recorrido corto
+   @keyframes chispaFogataEncabezado, pensado para encabezados bajitos. */
+
+.encabezado-usuarios-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+}
+
+.encabezado-usuarios-panal .encabezado-usuarios {
+    margin-bottom: 0;
+}
+
+.encabezado-usuarios-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
 .btn-nuevo-usuario,
 .btn-guardar-permisos {
     border: none;
@@ -220,6 +240,18 @@ ESTADO DEL USUARIO
 
 .estado-usuario.estado-activo .punto-estado {
     background: #4caf73;
+    animation: pulsoUsuarioActivo 2.2s ease-in-out infinite;
+}
+
+@keyframes pulsoUsuarioActivo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 115, .45); }
+    50%      { box-shadow: 0 0 0 5px rgba(76, 175, 115, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .estado-usuario.estado-activo .punto-estado {
+        animation: none !important;
+    }
 }
 
 .estado-usuario.estado-inactivo {
@@ -244,19 +276,10 @@ ESTADO DEL USUARIO
 ACCIONES
 ========================================================= */
 
-.btn-accion-usuario {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 8px;
-    background: #eef7f1;
-    color: #214f3b;
-    transition: 0.2s ease;
-}
-
-.btn-accion-usuario:hover {
-    background: #c0f1ca;
-}
+/* Nota: la definición completa de .btn-accion-usuario (con borde,
+   fondo blanco y transición) vive más abajo, en la sección
+   "ACCIONES - USUARIOS" — se quitó esta primera versión porque
+   quedaba pisada por esa y nunca se llegaba a ver. */
 
 
 /* =========================================================
@@ -292,11 +315,41 @@ ACCIONES
 }
 
 .tarjeta-rol {
+    position: relative;
     padding: 25px;
     border: 1px solid #cbdacf;
     border-radius: 13px;
     background: #ffffff;
     box-shadow: 0 4px 16px rgba(33, 79, 59, 0.05);
+    overflow: hidden;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.tarjeta-rol:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+/* Mismo borde degradado animado que las demás tarjetas del sistema */
+.tarjeta-rol::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel, #f0a000), var(--verde-medio, #5f9781), var(--amarillo, #f6de87), var(--miel, #f0a000));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+}
+
+.tarjeta-rol:hover::before {
+    opacity: 1;
 }
 
 .icono-rol {
@@ -310,6 +363,12 @@ ACCIONES
     background: #f6de87;
     color: #214f3b;
     font-size: 27px;
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease;
+}
+
+.tarjeta-rol:hover .icono-rol {
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 0 0 8px rgba(246, 222, 135, .35);
 }
 
 .tarjeta-rol h4 {
@@ -403,58 +462,26 @@ ACCIONES
     }
 }
 
-/* =========================================================
-   SCROLL MODAL ADMINISTRADOR
-========================================================= */
+@media (prefers-reduced-motion: reduce) {
 
-#modalAgregarAdministrador .modal-dialog {
-    height: calc(100vh - 30px);
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
+    .tarjeta-rol,
+    .tarjeta-rol:hover,
+    .icono-rol {
+        transform: none !important;
+        transition: none !important;
+    }
 
-#modalAgregarAdministrador .modal-content {
-    max-height: 100%;
-    overflow: hidden;
-}
-
-#formAgregarAdministrador {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-}
-
-#modalAgregarAdministrador .modal-body {
-    overflow-y: auto;
-    overflow-x: hidden;
-    min-height: 0;
-}
-
-
-/* Barra de desplazamiento */
-
-#modalAgregarAdministrador .modal-body::-webkit-scrollbar {
-    width: 8px;
-}
-
-#modalAgregarAdministrador .modal-body::-webkit-scrollbar-track {
-    background: #eef4ef;
-    border-radius: 10px;
-}
-
-#modalAgregarAdministrador .modal-body::-webkit-scrollbar-thumb {
-    background: #5f9781;
-    border-radius: 10px;
-}
-
-#modalAgregarAdministrador .modal-body::-webkit-scrollbar-thumb:hover {
-    background: #214f3b;
+    .tarjeta-rol::before {
+        animation: none !important;
+        opacity: 0 !important;
+    }
 }
 
 /* =========================================================
    MODALES ADMINISTRADOR
+   (agrupa lo que antes eran dos bloques repetidos:
+   "SCROLL MODAL ADMINISTRADOR" solo cubría Agregar;
+   se fusionó aquí y se extendió también a Editar)
 ========================================================= */
 
 #modalAgregarAdministrador .modal-dialog,
@@ -493,6 +520,31 @@ ACCIONES
 
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+
+/* Barra de desplazamiento (antes solo la tenía Agregar) */
+
+#modalAgregarAdministrador .modal-body::-webkit-scrollbar,
+#modalEditarAdministrador .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+#modalAgregarAdministrador .modal-body::-webkit-scrollbar-track,
+#modalEditarAdministrador .modal-body::-webkit-scrollbar-track {
+    background: #eef4ef;
+    border-radius: 10px;
+}
+
+#modalAgregarAdministrador .modal-body::-webkit-scrollbar-thumb,
+#modalEditarAdministrador .modal-body::-webkit-scrollbar-thumb {
+    background: #5f9781;
+    border-radius: 10px;
+}
+
+#modalAgregarAdministrador .modal-body::-webkit-scrollbar-thumb:hover,
+#modalEditarAdministrador .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #214f3b;
 }
 
 
@@ -652,6 +704,7 @@ ACCIONES
 }
  
 .tarjeta-usuario-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     border: 1px solid #d8e6dd;
@@ -665,6 +718,41 @@ ACCIONES
 .tarjeta-usuario-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+/* Borde degradado animado al pasar el mouse (mismo lenguaje que
+   Apicultores/Colmenas/Reportes; reutiliza @keyframes girarBordeMiel
+   de estilos_admin.css) */
+.tarjeta-usuario-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel, #f0a000), var(--verde-medio, #5f9781), var(--amarillo, #f6de87), var(--miel, #f0a000));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.tarjeta-usuario-card:hover::before {
+    opacity: 1;
+}
+
+/* Entrada "con más personalidad" (pop + leve giro), reutiliza
+   @keyframes entradaTarjetaApiario de estilos_admin.css */
+.tarjeta-usuario-card.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-usuario-card:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
 }
  
 .tarjeta-usuario-header {
@@ -708,6 +796,13 @@ ACCIONES
 .tarjeta-usuario-dato i {
     color: #5f9781;
     min-width: 16px;
+    transition: transform .25s ease;
+}
+
+/* Pequeño rebote en los íconos al pasar el mouse por la tarjeta,
+   reutiliza @keyframes rebotitoIconoTarjeta de estilos_admin.css */
+.tarjeta-usuario-card:hover .tarjeta-usuario-dato i {
+    animation: rebotitoIconoTarjeta .5s ease;
 }
  
 .tarjeta-usuario-footer {
@@ -719,9 +814,133 @@ ACCIONES
     border-top: 1px solid #edf1ef;
     background: #fbfdfc;
 }
+
+/* Avatar: leve "respiro" al pasar el mouse por la tarjeta */
+.tarjeta-usuario-card:hover .avatar-usuario {
+    transform: scale(1.08);
+    box-shadow: 0 6px 14px rgba(33, 79, 59, .18);
+}
+
+.avatar-usuario {
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+
+/* Botones de acción: aparecen solo al hover, en escritorio */
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-usuario-footer .btn-accion-usuario {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+    }
+
+    .tarjeta-usuario-card:hover .tarjeta-usuario-footer .btn-accion-usuario,
+    .tarjeta-usuario-card:focus-within .tarjeta-usuario-footer .btn-accion-usuario {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tarjeta-usuario-footer .btn-accion-usuario:nth-of-type(1) { transition-delay: 0s; }
+    .tarjeta-usuario-footer .btn-accion-usuario:nth-of-type(2) { transition-delay: .04s; }
+    .tarjeta-usuario-footer .btn-accion-usuario:nth-of-type(3) { transition-delay: .08s; }
+
+}
+
+@media (hover: none) {
+    .tarjeta-usuario-card:active {
+        transform: scale(.97);
+        transition: transform .15s ease;
+    }
+}
  
 @media (max-width: 576px) {
     .grid-tarjetas-usuarios {
         grid-template-columns: 1fr;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-usuario-card,
+    .tarjeta-usuario-card:hover,
+    .avatar-usuario {
+        transform: none !important;
+    }
+
+    .tarjeta-usuario-card::before {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-usuario-card.anim-entrada-tarjeta {
+        animation: none !important;
+    }
+
+    .tarjeta-usuario-card:hover .tarjeta-usuario-dato i {
+        animation: none !important;
+    }
+
+    .tarjeta-usuario-footer .btn-accion-usuario {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* =========================================================
+   ENCABEZADO DE LOS MODALES DE ADMINISTRADOR
+   (mismo lenguaje de degradado verde con buen contraste que
+   usan los modales de Apicultores — no se usa var(--verde-medio)
+   directo porque ese verde es muy claro para texto blanco encima) 
+========================================================= */
+
+.modal-header-administrador,
+.modal-header-administrador * {
+    color: #ffffff !important;
+}
+
+.modal-header-administrador {
+    background: linear-gradient(135deg, #214f3b, #3a6152);
+    border-bottom: 0;
+}
+
+.modal-header-administrador p,
+.modal-header-administrador .text-muted {
+    color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.modal-header-administrador .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Encabezado en rojo para las acciones destructivas/de riesgo */
+.modal-header-peligro-administrador,
+.modal-header-peligro-administrador * {
+    color: #ffffff !important;
+}
+
+.modal-header-peligro-administrador {
+    background: linear-gradient(135deg, #a83242, #b8404e);
+    border-bottom: 0;
+}
+
+.modal-header-peligro-administrador .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Encabezado en ámbar para el cambio de estado (activar/desactivar):
+   no es tan grave como eliminar, así que se usa un tono de
+   advertencia en vez de rojo */
+.modal-header-advertencia-administrador,
+.modal-header-advertencia-administrador * {
+    color: #ffffff !important;
+}
+
+.modal-header-advertencia-administrador {
+    background: linear-gradient(135deg, #6e4a08, #8a5c08);
+    border-bottom: 0;
+}
+
+.modal-header-advertencia-administrador .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }

@@ -715,20 +715,100 @@ document.addEventListener(
 // así que funciona aunque cambie el resto de la lógica de arriba.
  
 document.addEventListener("DOMContentLoaded", function () {
- 
-    function aplicarEntradaEscalonadaReportes(selector, retraso) {
- 
+
+    function aplicarEntradaEscalonadaReportes(selector, retraso, claseAnimacion) {
+
+        const clase = claseAnimacion || "anim-entrada-lista";
+
         document.querySelectorAll(selector).forEach(function (elemento, indice) {
- 
-            elemento.classList.remove("anim-entrada-lista");
+
+            elemento.classList.remove(clase);
             void elemento.offsetWidth;
- 
+
             elemento.style.animationDelay = (indice * retraso) + "ms";
-            elemento.classList.add("anim-entrada-lista");
+            elemento.classList.add(clase);
         });
     }
- 
-    aplicarEntradaEscalonadaReportes(".tarjeta-tipo-reporte", 80);
+
+    aplicarEntradaEscalonadaReportes(".tarjeta-tipo-reporte", 80, "anim-entrada-tarjeta");
     aplicarEntradaEscalonadaReportes(".tabla-reportes tbody tr", 45);
- 
+
+    // =========================================================
+    // ENTRADA ESCALONADA DENTRO DEL MODAL DE REPORTE
+    // =========================================================
+    //
+    // Igual que en Colmenas/Apicultores: al abrir el modal de
+    // configuracion, sus bloques (.row > div) entran uno tras
+    // otro en vez de aparecer todos de golpe. Reutiliza la clase
+    // .anim-entrada-modal ya definida en estilos_admin.css.
+
+    const modalReporte = document.getElementById("modalConfigurarReporte");
+
+    if (modalReporte) {
+
+        modalReporte.addEventListener("shown.bs.modal", function () {
+
+            const cuerpoModal = modalReporte.querySelector(".modal-body");
+
+            if (cuerpoModal) {
+                cuerpoModal
+                    .querySelectorAll(".row > div")
+                    .forEach(function (hijo, indice) {
+                        hijo.classList.remove("anim-entrada-modal");
+                        void hijo.offsetWidth;
+                        hijo.style.animationDelay = (indice * 35) + "ms";
+                        hijo.classList.add("anim-entrada-modal");
+                    });
+            }
+
+        });
+
+    }
+
+    // =========================================================
+    // RAFAGA DE POLEN AL GENERAR EL REPORTE
+    // =========================================================
+    //
+    // Mismo recurso visual de Colmenas/Apicultores: al hacer clic
+    // en "Generar reporte", salen particulas doradas del boton.
+    // Reutiliza la clase .particula-rafaga-polen ya definida en
+    // estilos_admin.css.
+
+    const botonGenerarPolen = document.getElementById("btnGenerarReporte");
+
+    if (botonGenerarPolen) {
+
+        botonGenerarPolen.addEventListener("click", function () {
+
+            const rect = botonGenerarPolen.getBoundingClientRect();
+            const centroX = rect.left + rect.width / 2;
+            const centroY = rect.top + rect.height / 2;
+            const CANTIDAD_PARTICULAS = 12;
+
+            for (let i = 0; i < CANTIDAD_PARTICULAS; i++) {
+
+                const angulo = (Math.PI * 2 * i) / CANTIDAD_PARTICULAS;
+                const distancia = 40 + Math.random() * 30;
+                const dx = Math.cos(angulo) * distancia;
+                const dy = Math.sin(angulo) * distancia;
+
+                const particula = document.createElement("span");
+                particula.className = "particula-rafaga-polen";
+                particula.style.left = centroX + "px";
+                particula.style.top = centroY + "px";
+                particula.style.setProperty("--dx", dx.toFixed(1) + "px");
+                particula.style.setProperty("--dy", dy.toFixed(1) + "px");
+
+                document.body.appendChild(particula);
+
+                window.setTimeout(function () {
+                    particula.remove();
+                }, 700);
+
+            }
+
+        });
+
+    }
+
 });

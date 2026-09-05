@@ -2783,17 +2783,16 @@ MÓDULO APICULTORES
 .modal-header-apicultor {
     padding: 22px 28px;
     border-bottom: 0;
-    background:
-        linear-gradient(
-            135deg,
-            var(--verde-oscuro),
-            var(--verde-medio)
-        );
-    color: #ffffff;
+    background: #E8F7E9;
+    color: var(--verde-oscuro);
+}
+
+.modal-header-apicultor .modal-title {
+    color: var(--verde-oscuro);
 }
 
 .modal-header-apicultor p {
-    color: rgba(255, 255, 255, 0.78);
+    color: #5c7669;
     font-size: 0.85rem;
 }
 
@@ -2804,10 +2803,10 @@ MÓDULO APICULTORES
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(33, 79, 59, 0.14);
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.13);
-    color: #ffffff;
+    background: #ffffff;
+    color: var(--verde-medio);
     font-size: 1.4rem;
 }
 
@@ -3264,31 +3263,27 @@ Esto permite que modal-body tenga un scroll independiente.
 ========================================================= */
 
 #modalAgregarApicultor .modal-header-apicultor {
-    background: linear-gradient(
-        135deg,
-        #214f3b 0%,
-        #5f9781 100%
-    ) !important;
+    background: #E8F7E9 !important;
 }
 
 #modalAgregarApicultor .modal-header-apicultor .modal-title,
-#modalAgregarApicultor .modal-header-apicultor h4,
-#modalAgregarApicultor .modal-header-apicultor p {
-    color: #ffffff !important;
+#modalAgregarApicultor .modal-header-apicultor h4 {
+    color: var(--verde-oscuro) !important;
 }
 
 #modalAgregarApicultor .modal-header-apicultor p {
-    opacity: 0.9;
+    color: #5c7669 !important;
+    opacity: 1;
 }
 
 #modalAgregarApicultor .modal-icono-apicultor,
 #modalAgregarApicultor .modal-icono-apicultor i {
-    color: #ffffff !important;
+    color: var(--verde-medio) !important;
 }
 
 #modalAgregarApicultor .modal-header-apicultor .btn-close {
     opacity: 1;
-    filter: brightness(0) invert(1);
+    filter: none;
 }
 
 
@@ -3397,23 +3392,19 @@ Esto permite que modal-body tenga un scroll independiente.
 .modal-header-detalle-apicultor {
     padding: 22px 26px;
     border-bottom: 0;
-    background:
-        linear-gradient(
-            135deg,
-            #214f3b 0%,
-            #5f9781 100%
-        );
-    color: #ffffff;
+    background: #E8F7E9;
+    color: var(--verde-oscuro);
 }
 
 .modal-header-detalle-apicultor .modal-title,
 .modal-header-detalle-apicultor p {
-    color: #ffffff !important;
+    color: var(--verde-oscuro) !important;
 }
 
 .modal-header-detalle-apicultor p {
+    color: #5c7669 !important;
     font-size: 0.82rem;
-    opacity: 0.86;
+    opacity: 1;
 }
 
 .icono-header-detalle-apicultor {
@@ -3423,10 +3414,10 @@ Esto permite que modal-body tenga un scroll independiente.
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(33, 79, 59, 0.14);
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
+    background: #ffffff;
+    color: var(--verde-medio);
     font-size: 1.35rem;
 }
 
@@ -4123,13 +4114,13 @@ Esto permite que modal-body tenga un scroll independiente.
 }
 
 #modalEditarApicultor .modal-header-apicultor .modal-title,
-#modalEditarApicultor .modal-header-apicultor p,
 #modalEditarApicultor .modal-header-apicultor i {
-    color: #ffffff !important;
+    color: var(--verde-oscuro) !important;
 }
 
 #modalEditarApicultor .modal-header-apicultor p {
-    opacity: 0.9;
+    color: #5c7669 !important;
+    opacity: 1;
 }
 
 
@@ -4265,24 +4256,20 @@ Esto permite que modal-body tenga un scroll independiente.
 .modal-header-eliminar-apicultor {
     padding: 20px 24px;
     border-bottom: 0;
-    background:
-        linear-gradient(
-            135deg,
-            #a83242 0%,
-            #d95b68 100%
-        );
-    color: #ffffff;
+    background: #FDECEC !important;
+    color: var(--rojo);
 }
 
 .modal-header-eliminar-apicultor .modal-title,
 .modal-header-eliminar-apicultor p,
 .modal-header-eliminar-apicultor i {
-    color: #ffffff !important;
+    color: var(--rojo) !important;
 }
 
 .modal-header-eliminar-apicultor p {
+    color: #a34a53 !important;
     font-size: 0.78rem;
-    opacity: 0.88;
+    opacity: 1;
 }
 
 .icono-header-eliminar {
@@ -4292,9 +4279,9 @@ Esto permite que modal-body tenga un scroll independiente.
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(220, 53, 69, 0.25);
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.14);
+    background: #ffffff;
     font-size: 1.25rem;
 }
 
@@ -12222,9 +12209,26 @@ input[type="radio"] {
    ANIMACIONES DEL MÓDULO REPORTES
 ========================================================= */
  
+/* ---------- ENCABEZADO DE REPORTES — FONDO CON POLEN FLOTANTE ----------
+   (mismo recurso de Apiarios/Colmenas/Mantenimientos/Apicultores:
+   .dashboard-fondo-panal + .particulas-flotantes; reutiliza también
+   el recorrido corto @keyframes chispaFogataEncabezado ya definido
+   para el encabezado de Apicultores, pensado para encabezados bajitos) ---------- */
+
+.encabezado-reportes-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+}
+
+.encabezado-reportes-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
 /* ---------- HOVER EN LAS TARJETAS DE TIPO DE REPORTE ---------- */
  
 .tarjeta-tipo-reporte {
+    position: relative;
+    overflow: hidden;
     transition: transform .25s ease, box-shadow .25s ease;
 }
  
@@ -12234,11 +12238,44 @@ input[type="radio"] {
 }
  
 .tarjeta-tipo-reporte .icono-tipo-reporte {
-    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease;
 }
  
 .tarjeta-tipo-reporte:not(.reporte-no-disponible):hover .icono-tipo-reporte {
     transform: scale(1.12) rotate(-4deg);
+    box-shadow: 0 0 0 8px rgba(95, 151, 129, .16);
+}
+
+/* Borde degradado animado, igual que en las tarjetas de Apicultores/Colmenas */
+.tarjeta-tipo-reporte:not(.reporte-no-disponible)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo, var(--miel)), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+}
+
+.tarjeta-tipo-reporte:not(.reporte-no-disponible):hover::before {
+    opacity: 1;
+}
+
+/* Entrada "con más personalidad" (pop + leve giro), reutilizando el mismo
+   keyframe que usan las tarjetas de Apiarios/Apicultores */
+.tarjeta-tipo-reporte.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-tipo-reporte:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
 }
  
 /* ---------- BOTÓN "ABRIR REPORTE" DEL HISTORIAL ---------- */
@@ -12252,6 +12289,19 @@ input[type="radio"] {
 .btn-abrir-reporte:hover {
     transform: translateY(-3px) scale(1.08);
 }
+
+/* ---------- FILAS DEL HISTORIAL: leve resalte al pasar el mouse ---------- */
+
+.tabla-reportes tbody tr {
+    transition: background-color .2s ease;
+}
+
+.tabla-reportes tbody tr:hover {
+    background: #f7fbf8;
+}
+
+/* ---------- ENTRADA ESCALONADA DENTRO DEL MODAL DE REPORTE ---------- */
+/* (reutiliza .anim-entrada-modal, ya definido de forma genérica) */
  
 /* ---------- PULSO MIENTRAS SE GENERA EL PDF ---------- */
  
@@ -12275,6 +12325,16 @@ input[type="radio"] {
     .tarjeta-tipo-reporte .icono-tipo-reporte,
     .btn-abrir-reporte {
         transition: none !important;
+    }
+
+    .tarjeta-tipo-reporte::before {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-tipo-reporte.anim-entrada-tarjeta {
+        animation: none !important;
     }
  
     .btn-generando-reporte {
@@ -13915,6 +13975,133 @@ tr.fila-oculta-busqueda {
     .tarjeta-apiario .acciones .btn-accion {
         opacity: 1 !important;
         transform: none !important;
+    }
+
+}
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   MODALES "PEQUEÑOS" DE AGENDA (Detalle / Eliminar) MÁS GRANDES
+   Pasan a modal-lg (misma anchura que Crear/Editar) y se
+   escalan tipografías, íconos y espaciados en consecuencia.
+========================================================= */
+
+/* ---------- MÁS AIRE EN EL ENCABEZADO Y EL CUERPO ---------- */
+
+.modal-evento-ampliado .modal-header-evento-detalle,
+.modal-evento-ampliado .modal-header-evento-eliminar {
+    padding: 26px 32px;
+}
+
+.modal-evento-ampliado .modal-body {
+    padding: 30px 32px;
+}
+
+.modal-evento-ampliado .modal-footer {
+    padding: 18px 32px 26px;
+}
+
+/* ---------- INSIGNIA DEL ÍCONO MÁS GRANDE ---------- */
+
+.modal-evento-ampliado .modal-icono-evento {
+    width: 56px;
+    min-width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
+    border-radius: 16px;
+}
+
+/* ---------- DETALLE: título, badge y filas más grandes ---------- */
+
+#modalDetalleEvento .encabezado-detalle-evento {
+    gap: 16px;
+}
+
+#modalDetalleEvento .encabezado-detalle-evento h5,
+#modalDetalleEvento .modal-header-evento-detalle .encabezado-detalle-evento h5 {
+    font-size: 1.3rem;
+}
+
+#modalDetalleEvento .badge-tipo-evento {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+}
+
+#modalDetalleEvento .lista-detalle-evento {
+    gap: 22px;
+}
+
+#modalDetalleEvento .lista-detalle-evento > div {
+    grid-template-columns: 160px 1fr;
+    gap: 18px;
+}
+
+#modalDetalleEvento .lista-detalle-evento strong,
+#modalDetalleEvento .lista-detalle-evento span {
+    font-size: 0.95rem;
+}
+
+#modalDetalleEvento .btn-editar-evento,
+#modalDetalleEvento .btn-eliminar-evento,
+#modalDetalleEvento .btn-cerrar-evento {
+    font-size: 0.85rem;
+    padding: 11px 20px;
+}
+
+#modalDetalleEvento .btn-editar-evento i,
+#modalDetalleEvento .btn-eliminar-evento i,
+#modalDetalleEvento .btn-cerrar-evento i {
+    font-size: 1rem;
+}
+
+/* ---------- ELIMINAR: aviso más grande y legible ---------- */
+
+#modalEliminarEvento .modal-title {
+    font-size: 1.3rem;
+}
+
+#modalEliminarEvento .modal-body {
+    padding-top: 36px;
+    padding-bottom: 36px;
+}
+
+#modalEliminarEvento .icono-eliminar-evento {
+    font-size: 3.4rem;
+    margin-bottom: 18px;
+}
+
+#modalEliminarEvento .modal-eliminar-texto h5 {
+    font-size: 1.3rem;
+}
+
+#modalEliminarEvento .modal-eliminar-texto p {
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+#modalEliminarEvento .modal-eliminar-texto small {
+    font-size: 0.85rem;
+}
+
+#modalEliminarEvento .btn-secondary,
+#modalEliminarEvento .btn-danger {
+    font-size: 0.92rem;
+    padding: 11px 24px;
+}
+
+/* ---------- RESPONSIVE: en pantallas chicas, que no se pasen de ancho ---------- */
+
+@media (max-width: 600px) {
+
+    .modal-evento-ampliado .modal-header-evento-detalle,
+    .modal-evento-ampliado .modal-header-evento-eliminar,
+    .modal-evento-ampliado .modal-body {
+        padding: 20px;
+    }
+
+    #modalDetalleEvento .lista-detalle-evento > div {
+        grid-template-columns: 1fr;
+        gap: 4px;
     }
 
 }

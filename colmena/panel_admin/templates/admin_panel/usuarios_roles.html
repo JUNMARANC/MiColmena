@@ -18,29 +18,44 @@
         ENCABEZADO
     ====================================================== -->
 
-    <div class="encabezado-usuarios">
+    <div class="dashboard-fondo-panal encabezado-usuarios-panal">
 
-        <div>
-
-            <h2>
-                Usuarios y Roles
-            </h2>
-
-            <p>
-                Administra cuentas y niveles de acceso del sistema.
-            </p>
-
+        <div class="particulas-flotantes" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
 
-        <button
-            type="button"
-            class="btn btn-success"
-            data-bs-toggle="modal"
-            data-bs-target="#modalSeleccionarTipoUsuario"
-        >
-            <i class="bi bi-person-plus-fill me-2"></i>
-            Nuevo Usuario
-        </button>
+        <div class="dashboard-fondo-panal-contenido">
+
+            <div class="encabezado-usuarios">
+
+                <div>
+
+                    <h2>
+                        <i class="bi bi-people-fill me-2" style="color: var(--miel);"></i>
+                        Usuarios y Roles
+                    </h2>
+
+                    <p>
+                        Administra cuentas y niveles de acceso del sistema.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalSeleccionarTipoUsuario"
+                >
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    Nuevo Usuario
+                </button>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -1096,7 +1111,7 @@
         <div class="modal-content border-0">
 
             <!-- ENCABEZADO -->
-            <div class="modal-header">
+            <div class="modal-header modal-header-administrador">
 
                 <div class="d-flex align-items-center gap-3">
 
@@ -1637,7 +1652,7 @@
                  ENCABEZADO
             ================================================== -->
 
-            <div class="modal-header">
+            <div class="modal-header modal-header-administrador">
 
                 <div class="d-flex align-items-center gap-3">
 
@@ -2271,7 +2286,7 @@
                  ENCABEZADO
             ================================================== -->
 
-            <div class="modal-header">
+            <div class="modal-header modal-header-advertencia-administrador">
 
                 <div class="d-flex align-items-center gap-3">
 
@@ -2468,7 +2483,7 @@
                  ENCABEZADO
             ================================================== -->
 
-            <div class="modal-header">
+            <div class="modal-header modal-header-peligro-administrador">
 
                 <div class="d-flex align-items-center gap-3">
 
