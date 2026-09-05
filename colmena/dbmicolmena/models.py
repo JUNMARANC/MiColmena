@@ -796,3 +796,139 @@ class EvidenciaIncidencia(models.Model):
             f"- Incidencia #{self.id_incidencia_id} "
             f"- {self.get_tipo_display()}"
         )
+
+
+# ============================================================
+# EVIDENCIAS DE MANTENIMIENTOS
+# ============================================================
+
+class EvidenciaMantenimiento(models.Model):
+
+    # ========================================================
+    # TIPOS DE EVIDENCIA
+    # ========================================================
+
+    class TipoEvidencia(models.TextChoices):
+
+        ANTES = (
+            "antes",
+            "Antes del mantenimiento"
+        )
+
+        DURANTE = (
+            "durante",
+            "Durante el mantenimiento"
+        )
+
+        DESPUES = (
+            "despues",
+            "Después del mantenimiento"
+        )
+
+
+    # ========================================================
+    # ID
+    # ========================================================
+
+    id_evidencia = models.AutoField(
+        db_column="Id_Evidencia",
+        primary_key=True
+    )
+
+
+    # ========================================================
+    # MANTENIMIENTO
+    # ========================================================
+
+    id_mantenimiento = models.ForeignKey(
+        "Mantenimiento",
+        on_delete=models.CASCADE,
+        db_column="Id_Mantenimiento",
+        related_name="evidencias"
+    )
+
+
+    # ========================================================
+    # TIPO
+    # ========================================================
+
+    tipo = models.CharField(
+        db_column="Tipo",
+        max_length=20,
+        choices=TipoEvidencia.choices
+    )
+
+
+    # ========================================================
+    # IMAGEN
+    # ========================================================
+
+    imagen = models.ImageField(
+        db_column="Imagen",
+        upload_to="mantenimientos/evidencias/"
+    )
+
+
+    # ========================================================
+    # DESCRIPCIÓN
+    # ========================================================
+
+    descripcion = models.CharField(
+        db_column="Descripcion",
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+
+    # ========================================================
+    # FECHA DE REGISTRO
+    # ========================================================
+
+    fecha_registro = models.DateTimeField(
+        db_column="FechaRegistro",
+        auto_now_add=True
+    )
+
+
+    # ========================================================
+    # USUARIO QUE SUBIÓ LA EVIDENCIA
+    #
+    # Puede ser administrador o apicultor.
+    # ========================================================
+
+    subido_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        db_column="SubidoPor",
+        related_name="evidencias_mantenimiento_subidas",
+        blank=True,
+        null=True
+    )
+
+
+    # ========================================================
+    # META
+    # ========================================================
+
+    class Meta:
+
+        db_table = "evidencia_mantenimiento"
+
+        ordering = [
+            "fecha_registro",
+            "id_evidencia"
+        ]
+
+
+    # ========================================================
+    # REPRESENTACIÓN
+    # ========================================================
+
+    def __str__(self):
+
+        return (
+            f"Evidencia #{self.id_evidencia} "
+            f"- Mantenimiento #{self.id_mantenimiento_id} "
+            f"- {self.get_tipo_display()}"
+        )

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento, Incidencia, Administrador, Rol,  EventoAgenda, HistorialReporte
+from dbmicolmena.models import Apiario, Apicultor, Colmena, Mantenimiento, Incidencia, Administrador, Rol,  EventoAgenda, HistorialReporte,EvidenciaIncidencia,EvidenciaMantenimiento, Seguimientoapicola
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
-from django.db.models import Q, Count, Sum
+from django.db.models import Q, Count, Sum, Prefetch
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -32,6 +32,8 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from panel_admin.models import ConfiguracionSistema,ConfiguracionNotificaciones, Notificacion
+from PIL import Image, UnidentifiedImageError
+from django.db import transaction
 
 from panel_admin.reportes.estado_colmenas import (
     generar_reporte_estado_colmenas_pdf,
@@ -96,6 +98,8 @@ from usuarios.models import (
     HistorialAcceso,
     Configuracion2FA,
 )
+
+
 
 # ============================================================
 # VALIDACIONES GENERALES DE PERSONAS
@@ -697,6 +701,62 @@ def apiarios_admin(request):
             .count()
         )
 
+        # ========================================================
+        # HISTORIAL RELACIONADO PARA ELIMINACIÓN
+        # ========================================================
+
+        apiario.total_mantenimientos_historial = (
+            Mantenimiento.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        apiario.total_incidencias_historial = (
+            Incidencia.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        apiario.total_seguimientos_historial = (
+            Seguimientoapicola.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        apiario.total_eventos_agenda = (
+            EventoAgenda.objects
+            .filter(
+                id_apiario=apiario
+            )
+            .count()
+        )
+
+
+        # ========================================================
+        # SOLO PUEDE ELIMINARSE SI NO TIENE NADA RELACIONADO
+        # ========================================================
+
+        apiario.puede_eliminar = (
+            apiario.total_colmenas_reales == 0
+            and
+            apiario.total_mantenimientos_historial == 0
+            and
+            apiario.total_incidencias_historial == 0
+            and
+            apiario.total_seguimientos_historial == 0
+            and
+            apiario.total_eventos_agenda == 0
+        )
+
         apiario.fecha_colmena_mas_antigua = (
             Colmena.objects
             .filter(
@@ -1132,17 +1192,15 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # SOLO SE PERMITE ELIMINAR MEDIANTE POST
+    # SOLO POST
     # ========================================================
 
     if request.method != "POST":
 
         messages.warning(
             request,
-            "La solicitud para eliminar "
-            "el apiario no es válida."
+            "La solicitud para eliminar el apiario no es válida."
         )
-
 
         return redirect(
             "apiarios_admin"
@@ -1150,39 +1208,112 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # COMPROBAR COLMENAS ASOCIADAS
+    # COMPROBAR TODAS LAS RELACIONES
     # ========================================================
 
-    colmenas_asociadas = (
+    cantidad_colmenas = (
         Colmena.objects
         .filter(
             id_apiario=apiario
         )
+        .count()
     )
 
 
-    cantidad_colmenas = (
-        colmenas_asociadas
+    cantidad_mantenimientos = (
+        Mantenimiento.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .count()
+    )
+
+
+    cantidad_incidencias = (
+        Incidencia.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .count()
+    )
+
+
+    cantidad_seguimientos = (
+        Seguimientoapicola.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .count()
+    )
+
+
+    cantidad_eventos = (
+        EventoAgenda.objects
+        .filter(
+            id_apiario=apiario
+        )
         .count()
     )
 
 
     # ========================================================
-    # NO PERMITIR ELIMINAR SI TIENE COLMENAS
+    # CONSTRUIR MOTIVOS
     # ========================================================
+
+    motivos = []
+
 
     if cantidad_colmenas > 0:
 
-        messages.warning(
+        motivos.append(
+            f"{cantidad_colmenas} colmena(s)"
+        )
+
+
+    if cantidad_mantenimientos > 0:
+
+        motivos.append(
+            f"{cantidad_mantenimientos} mantenimiento(s)"
+        )
+
+
+    if cantidad_incidencias > 0:
+
+        motivos.append(
+            f"{cantidad_incidencias} incidencia(s)"
+        )
+
+
+    if cantidad_seguimientos > 0:
+
+        motivos.append(
+            f"{cantidad_seguimientos} seguimiento(s)"
+        )
+
+
+    if cantidad_eventos > 0:
+
+        motivos.append(
+            f"{cantidad_eventos} evento(s) de agenda"
+        )
+
+
+    # ========================================================
+    # BLOQUEAR SI EXISTE CUALQUIER INFORMACIÓN RELACIONADA
+    # ========================================================
+
+    if motivos:
+
+        messages.error(
             request,
             (
                 f"No se puede eliminar el apiario "
-                f"«{apiario.nombreapiario}» porque "
-                f"tiene {cantidad_colmenas} "
-                f"colmena(s) asociada(s)."
+                f"«{apiario.nombreapiario}» porque tiene "
+                f"{', '.join(motivos)} asociados. "
+                "Esta información forma parte del historial "
+                "del sistema y debe conservarse."
             )
         )
-
 
         return redirect(
             "apiarios_admin"
@@ -1190,7 +1321,7 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # GUARDAR NOMBRE ANTES DE ELIMINAR
+    # GUARDAR NOMBRE
     # ========================================================
 
     nombre_apiario = (
@@ -1199,15 +1330,14 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # INTENTAR ELIMINAR
-    #
-    # El try también nos protege si en el futuro aparece
-    # otra relación en la base de datos que impida borrar.
+    # ÚLTIMA BARRERA DE SEGURIDAD
     # ========================================================
 
     try:
 
-        apiario.delete()
+        with transaction.atomic():
+
+            apiario.delete()
 
 
     except IntegrityError:
@@ -1216,11 +1346,10 @@ def eliminar_apiario(
             request,
             (
                 f"No se puede eliminar el apiario "
-                f"«{nombre_apiario}» porque tiene "
-                f"información relacionada en el sistema."
+                f"«{nombre_apiario}» porque todavía tiene "
+                "información relacionada en el sistema."
             )
         )
-
 
         return redirect(
             "apiarios_admin"
@@ -1228,14 +1357,14 @@ def eliminar_apiario(
 
 
     # ========================================================
-    # ELIMINADO CORRECTAMENTE
+    # ÉXITO
     # ========================================================
 
     messages.success(
         request,
         (
             f"El apiario «{nombre_apiario}» "
-            f"fue eliminado correctamente."
+            "fue eliminado correctamente."
         )
     )
 
@@ -1402,6 +1531,102 @@ def colmenas_admin(request):
             page_number
         )
     )
+
+    # ========================================================
+    # ESTADO OPERATIVO DE CADA COLMENA
+    #
+    # Se utiliza para saber si una colmena puede pasar
+    # al estado Inactiva.
+    # ========================================================
+
+    for colmena_obj in colmenas:
+
+        colmena_obj.mantenimientos_pendientes = (
+            Mantenimiento.objects
+            .filter(
+                id_colmena=colmena_obj,
+                estado="Pendiente"
+            )
+            .count()
+        )
+
+
+        colmena_obj.incidencias_abiertas = (
+            Incidencia.objects
+            .filter(
+                id_colmena=colmena_obj,
+                estado__in=[
+                    "Pendiente",
+                    "En proceso",
+                ]
+            )
+            .count()
+        )
+
+
+        colmena_obj.puede_inactivar = (
+            colmena_obj.mantenimientos_pendientes == 0
+            and
+            colmena_obj.incidencias_abiertas == 0
+        )
+
+        # ====================================================
+        # HISTORIAL COMPLETO PARA ELIMINACIÓN
+        #
+        # A diferencia de "Inactivar", aquí cualquier registro
+        # histórico bloquea la eliminación, sin importar su
+        # estado actual.
+        # ====================================================
+
+        colmena_obj.total_mantenimientos_historial = (
+            Mantenimiento.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        colmena_obj.total_incidencias_historial = (
+            Incidencia.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        colmena_obj.total_seguimientos_historial = (
+            Seguimientoapicola.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        colmena_obj.total_eventos_agenda = (
+            EventoAgenda.objects
+            .filter(
+                id_colmena=colmena_obj
+            )
+            .count()
+        )
+
+
+        # ====================================================
+        # SOLO SE ELIMINA SI NUNCA HA SIDO UTILIZADA
+        # ====================================================
+
+        colmena_obj.puede_eliminar = (
+            colmena_obj.total_mantenimientos_historial == 0
+            and
+            colmena_obj.total_incidencias_historial == 0
+            and
+            colmena_obj.total_seguimientos_historial == 0
+            and
+            colmena_obj.total_eventos_agenda == 0
+        )
 
 
     return render(
@@ -1781,6 +2006,38 @@ def editar_colmena(
         )
     )
 
+    estado_nuevo = (
+        request.POST.get(
+            "estado_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    estados_colmena_validos = {
+        "Activa",
+        "Riesgo",
+        "Inactiva",
+        "Revisión",
+    }
+
+
+    if (
+        estado_nuevo
+        not in
+        estados_colmena_validos
+    ):
+
+        messages.error(
+            request,
+            "El estado seleccionado para la colmena no es válido."
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
 
     if not nuevo_id_apiario:
 
@@ -2048,6 +2305,87 @@ def editar_colmena(
             colmena.estadocolmena
         )
 
+        # ====================================================
+        # VALIDAR CAMBIO A INACTIVA
+        #
+        # Una colmena solamente puede inactivarse cuando
+        # no tiene trabajo operativo pendiente.
+        # ====================================================
+
+        if (
+            estado_nuevo == "Inactiva"
+            and
+            estado_anterior != "Inactiva"
+        ):
+
+            mantenimientos_pendientes = (
+                Mantenimiento.objects
+                .filter(
+                    id_colmena=colmena,
+                    estado="Pendiente"
+                )
+                .count()
+            )
+
+
+            incidencias_abiertas = (
+                Incidencia.objects
+                .filter(
+                    id_colmena=colmena,
+                    estado__in=[
+                        "Pendiente",
+                        "En proceso",
+                    ]
+                )
+                .count()
+            )
+
+
+            if (
+                mantenimientos_pendientes > 0
+                or
+                incidencias_abiertas > 0
+            ):
+
+                motivos = []
+
+
+                if mantenimientos_pendientes > 0:
+
+                    motivos.append(
+                        (
+                            f"{mantenimientos_pendientes} "
+                            "mantenimiento(s) pendiente(s)"
+                        )
+                    )
+
+
+                if incidencias_abiertas > 0:
+
+                    motivos.append(
+                        (
+                            f"{incidencias_abiertas} "
+                            "incidencia(s) sin resolver"
+                        )
+                    )
+
+
+                messages.error(
+                    request,
+                    (
+                        f"No puedes inactivar la colmena "
+                        f"«{colmena.codigocolmena}» porque tiene "
+                        f"{' y '.join(motivos)}. "
+                        "Completa o cancela los mantenimientos "
+                        "y resuelve las incidencias antes de continuar."
+                    )
+                )
+
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
 
         # ====================================================
         # ACTUALIZAR
@@ -2059,9 +2397,7 @@ def editar_colmena(
 
 
         colmena.estadocolmena = (
-            request.POST.get(
-                "estado_colmena"
-            )
+            estado_nuevo
         )
 
 
@@ -2135,94 +2471,701 @@ def editar_colmena(
 
 
 @administrador_requerido
-@permiso_requerido("cg",redireccion="colmenas_admin")
-def eliminar_colmena(request, id):
-    colmena = get_object_or_404(Colmena, id_colmena=id)
+@permiso_requerido(
+    "cg",
+    redireccion="colmenas_admin"
+)
+def eliminar_colmena(
+    request,
+    id
+):
 
-    if request.method == "POST":
-        colmena.delete()
+    # ========================================================
+    # OBTENER COLMENA
+    # ========================================================
 
-    return redirect("colmenas_admin")
+    colmena = get_object_or_404(
+        Colmena,
+        id_colmena=id
+    )
 
-#LOGICA DE MATENIMIENTOS
+
+    # ========================================================
+    # SOLO POST
+    # ========================================================
+
+    if request.method != "POST":
+
+        messages.warning(
+            request,
+            "La solicitud para eliminar la colmena no es válida."
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # COMPROBAR TODO EL HISTORIAL
+    # ========================================================
+
+    cantidad_mantenimientos = (
+        Mantenimiento.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    cantidad_incidencias = (
+        Incidencia.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    cantidad_seguimientos = (
+        Seguimientoapicola.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    cantidad_eventos = (
+        EventoAgenda.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .count()
+    )
+
+
+    # ========================================================
+    # CONSTRUIR RAZONES DEL BLOQUEO
+    # ========================================================
+
+    motivos = []
+
+
+    if cantidad_mantenimientos > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_mantenimientos} "
+                "mantenimiento(s)"
+            )
+        )
+
+
+    if cantidad_incidencias > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_incidencias} "
+                "incidencia(s)"
+            )
+        )
+
+
+    if cantidad_seguimientos > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_seguimientos} "
+                "seguimiento(s)"
+            )
+        )
+
+
+    if cantidad_eventos > 0:
+
+        motivos.append(
+            (
+                f"{cantidad_eventos} "
+                "evento(s) de agenda"
+            )
+        )
+
+
+    # ========================================================
+    # NO ELIMINAR SI EXISTE HISTORIAL
+    # ========================================================
+
+    if motivos:
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar la colmena "
+                f"«{colmena.codigocolmena}» porque tiene "
+                f"{', '.join(motivos)} asociados. "
+                "El historial debe conservarse. "
+                "Si la colmena ya no está en operación, "
+                "puedes mantenerla en estado Inactiva."
+            )
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # GUARDAR CÓDIGO ANTES DE ELIMINAR
+    # ========================================================
+
+    codigo_colmena = (
+        colmena.codigocolmena
+    )
+
+
+    # ========================================================
+    # INTENTAR ELIMINAR
+    #
+    # Esta es la última barrera. Si existe alguna relación de
+    # base de datos que no hayamos previsto, no aparecerá una
+    # pantalla IntegrityError al administrador.
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            colmena.delete()
+
+
+    except IntegrityError:
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar la colmena "
+                f"«{codigo_colmena}» porque todavía tiene "
+                "información relacionada en el sistema."
+            )
+        )
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # ELIMINACIÓN CORRECTA
+    # ========================================================
+
+    messages.success(
+        request,
+        (
+            f"La colmena «{codigo_colmena}» "
+            "fue eliminada correctamente."
+        )
+    )
+
+
+    return redirect(
+        "colmenas_admin"
+    )
+
+
+
+# ============================================================
+# VALIDAR EVIDENCIA FOTOGRÁFICA DE MANTENIMIENTO
+# ============================================================
+
+def validar_imagen_mantenimiento(archivo):
+
+    # ========================================================
+    # CONFIGURACIÓN
+    # ========================================================
+
+    LIMITE_MB = 5
+
+    LIMITE_BYTES = (
+        LIMITE_MB
+        * 1024
+        * 1024
+    )
+
+    FORMATOS_VALIDOS = {
+        "JPEG",
+        "PNG",
+        "WEBP",
+    }
+
+
+    # ========================================================
+    # ARCHIVO
+    # ========================================================
+
+    if not archivo:
+
+        return (
+            "No se pudo leer una de las fotografías "
+            "seleccionadas."
+        )
+
+
+    if archivo.size <= 0:
+
+        return (
+            f'La imagen "{archivo.name}" está vacía.'
+        )
+
+
+    # ========================================================
+    # TAMAÑO
+    # ========================================================
+
+    if archivo.size > LIMITE_BYTES:
+
+        return (
+            f'La imagen "{archivo.name}" supera '
+            f"el límite de {LIMITE_MB} MB."
+        )
+
+
+    # ========================================================
+    # TIPO MIME
+    # ========================================================
+
+    tipo_archivo = getattr(
+        archivo,
+        "content_type",
+        ""
+    )
+
+
+    if (
+        tipo_archivo
+        and
+        not tipo_archivo.startswith("image/")
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no es una imagen válida."
+        )
+
+
+    # ========================================================
+    # VALIDAR CONTENIDO REAL
+    # ========================================================
+
+    try:
+
+        archivo.seek(0)
+
+        imagen = Image.open(
+            archivo
+        )
+
+        formato = (
+            imagen.format or ""
+        ).upper()
+
+        imagen.verify()
+
+
+        if formato not in FORMATOS_VALIDOS:
+
+            return (
+                f'La imagen "{archivo.name}" tiene un formato '
+                "no permitido. Utiliza JPG, PNG o WEBP."
+            )
+
+
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no contiene una imagen válida."
+        )
+
+
+    finally:
+
+        try:
+            archivo.seek(0)
+
+        except Exception:
+            pass
+
+
+    return None
+
+
+
+# ============================================================
+# MANTENIMIENTOS
+# PANEL ADMINISTRADOR
+# ============================================================
+
 @administrador_requerido
 @permiso_requerido("mg")
 def mantenimientos_admin(request):
 
+
+    # ========================================================
+    # 1. APICULTORES
+    # ========================================================
+
     apicultores = (
         Apicultor.objects
-        .select_related("user")
+
+        .select_related(
+            "user"
+        )
+
         .all()
+
+        .order_by(
+            "user__first_name",
+            "user__last_name",
+            "id_apicultor"
+        )
     )
 
-    apiarios = Apiario.objects.all()
+
+    # ========================================================
+    # 2. APIARIOS
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+
+        .select_related(
+            "id_apicultor",
+            "id_apicultor__user"
+        )
+
+        .all()
+
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    # ========================================================
+    # 3. COLMENAS
+    # ========================================================
 
     colmenas = (
         Colmena.objects
-        .select_related("id_apiario")
+
+        .select_related(
+            "id_apiario",
+            "id_apiario__id_apicultor",
+            "id_apiario__id_apicultor__user"
+        )
+
         .all()
+
+        .order_by(
+            "codigocolmena"
+        )
     )
+
+
+    # ========================================================
+    # 4. MANTENIMIENTOS
+    # ========================================================
 
     mantenimientos_lista = (
         Mantenimiento.objects
+
         .select_related(
             "id_apiario",
+            "id_apiario__id_apicultor",
+            "id_apiario__id_apicultor__user",
             "id_colmena",
-            "id_colmena__id_apiario"
+            "id_colmena__id_apiario",
         )
+
+        .prefetch_related(
+
+            # =================================================
+            # EVIDENCIAS ANTES
+            # =================================================
+
+            Prefetch(
+                "evidencias",
+
+                queryset=(
+                    EvidenciaMantenimiento.objects
+
+                    .filter(
+                        tipo=(
+                            EvidenciaMantenimiento
+                            .TipoEvidencia
+                            .ANTES
+                        )
+                    )
+
+                    .select_related(
+                        "subido_por"
+                    )
+
+                    .order_by(
+                        "fecha_registro",
+                        "id_evidencia"
+                    )
+                ),
+
+                to_attr="evidencias_antes_admin"
+            ),
+
+
+            # =================================================
+            # EVIDENCIAS DURANTE
+            # =================================================
+
+            Prefetch(
+                "evidencias",
+
+                queryset=(
+                    EvidenciaMantenimiento.objects
+
+                    .filter(
+                        tipo=(
+                            EvidenciaMantenimiento
+                            .TipoEvidencia
+                            .DURANTE
+                        )
+                    )
+
+                    .select_related(
+                        "subido_por"
+                    )
+
+                    .order_by(
+                        "fecha_registro",
+                        "id_evidencia"
+                    )
+                ),
+
+                to_attr="evidencias_durante_admin"
+            ),
+
+
+            # =================================================
+            # EVIDENCIAS DESPUÉS
+            # =================================================
+
+            Prefetch(
+                "evidencias",
+
+                queryset=(
+                    EvidenciaMantenimiento.objects
+
+                    .filter(
+                        tipo=(
+                            EvidenciaMantenimiento
+                            .TipoEvidencia
+                            .DESPUES
+                        )
+                    )
+
+                    .select_related(
+                        "subido_por"
+                    )
+
+                    .order_by(
+                        "fecha_registro",
+                        "id_evidencia"
+                    )
+                ),
+
+                to_attr="evidencias_despues_admin"
+            ),
+
+        )
+
         .all()
-        .order_by("id_mantenimiento")
+
+        .order_by(
+            "-fechaejecucion",
+            "-id_mantenimiento"
+        )
     )
 
-    apiario_id = request.GET.get("apiario")
-    colmena_id = request.GET.get("colmena")
-    estado = request.GET.get("estado")
 
-    if apiario_id:
+    # ========================================================
+    # 5. FILTROS GET
+    # ========================================================
+
+    apiario_id = (
+        request.GET.get(
+            "apiario",
+            ""
+        )
+        .strip()
+    )
+
+
+    colmena_id = (
+        request.GET.get(
+            "colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    estado = (
+        request.GET.get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # 6. FILTRO APIARIO
+    #
+    # Incluye:
+    #
+    # - Mantenimiento directamente del apiario.
+    # - Mantenimiento de una colmena de ese apiario.
+    # ========================================================
+
+    if apiario_id.isdigit():
+
         mantenimientos_lista = (
             mantenimientos_lista.filter(
-                id_apiario_id=apiario_id
+                id_apiario_id=int(
+                    apiario_id
+                )
             )
         )
 
-    if colmena_id:
+
+    # ========================================================
+    # 7. FILTRO COLMENA
+    # ========================================================
+
+    if colmena_id.isdigit():
+
         mantenimientos_lista = (
             mantenimientos_lista.filter(
-                id_colmena_id=colmena_id
+                id_colmena_id=int(
+                    colmena_id
+                )
             )
         )
 
-    if estado:
+
+    # ========================================================
+    # 8. FILTRO ESTADO
+    # ========================================================
+
+    estados_validos = [
+        "Pendiente",
+        "Completado",
+        "Cancelado",
+    ]
+
+
+    if estado in estados_validos:
+
         mantenimientos_lista = (
             mantenimientos_lista.filter(
                 estado=estado
             )
         )
 
+
+    # ========================================================
+    # 9. PAGINACIÓN
+    # ========================================================
+
     paginator = Paginator(
         mantenimientos_lista,
         5
     )
 
-    page_number = request.GET.get("page")
 
-    mantenimientos = paginator.get_page(
-        page_number
+    page_number = (
+        request.GET.get(
+            "page"
+        )
     )
+
+
+    mantenimientos = (
+        paginator.get_page(
+            page_number
+        )
+    )
+
+
+    # ========================================================
+    # 10. CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "mantenimientos":
+            mantenimientos,
+
+        "apicultores":
+            apicultores,
+
+        "apiarios":
+            apiarios,
+
+        "colmenas":
+            colmenas,
+
+
+        # FILTROS
+
+        "filtro_apiario":
+            apiario_id,
+
+        "filtro_colmena":
+            colmena_id,
+
+        "filtro_estado":
+            estado,
+
+
+        # CONFIGURACIÓN DE EVIDENCIAS
+
+        "max_evidencias_mantenimiento":
+            6,
+
+        "max_tamano_imagen_mb":
+            5,
+
+    }
+
 
     return render(
         request,
         "admin_panel/mantenimientos.html",
-        {
-            "mantenimientos": mantenimientos,
-            "apicultores": apicultores,
-            "apiarios": apiarios,
-            "colmenas": colmenas,
-        }
+        contexto
     )
 
 
 
+
+# ============================================================
+# CREAR MANTENIMIENTO
+# PANEL ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
 @permiso_requerido(
@@ -2231,143 +3174,602 @@ def mantenimientos_admin(request):
 )
 def crear_mantenimiento(request):
 
-    if request.method == "POST":
 
-        entidad = request.POST.get(
-            "entidad_mantenimiento"
+    # ========================================================
+    # 1. SOLO POST
+    # ========================================================
+
+    if request.method != "POST":
+
+        return redirect(
+            "mantenimientos_admin"
         )
 
-        responsable_id = request.POST.get(
-            "responsable_id"
+
+    # ========================================================
+    # 2. CONFIGURACIÓN
+    # ========================================================
+
+    MAX_EVIDENCIAS = 6
+
+
+    entidades_validas = [
+        "Apiario",
+        "Colmena",
+    ]
+
+
+    prioridades_validas = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
+
+
+    # ========================================================
+    # 3. DATOS GENERALES
+    # ========================================================
+
+    entidad = (
+        request.POST.get(
+            "entidad_mantenimiento",
+            ""
+        )
+        .strip()
+    )
+
+
+    tipo = (
+        request.POST.get(
+            "tipo",
+            ""
+        )
+        .strip()
+    )
+
+
+    fecha_ejecucion = (
+        request.POST.get(
+            "fecha_ejecucion",
+            ""
+        )
+        .strip()
+    )
+
+
+    prioridad = (
+        request.POST.get(
+            "prioridad",
+            ""
+        )
+        .strip()
+    )
+
+
+    observaciones = (
+        request.POST.get(
+            "observaciones",
+            ""
+        )
+        .strip()
+    )
+
+
+    responsable_id = (
+        request.POST.get(
+            "responsable_id",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_apiario_form = (
+        request.POST.get(
+            "id_apiario",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_colmena_form = (
+        request.POST.get(
+            "id_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # 4. EVIDENCIAS
+    # ========================================================
+
+    evidencias_antes = (
+        request.FILES.getlist(
+            "evidencias_antes"
+        )
+    )
+
+
+    evidencias_durante = (
+        request.FILES.getlist(
+            "evidencias_durante"
+        )
+    )
+
+
+    evidencias_despues = (
+        request.FILES.getlist(
+            "evidencias_despues"
+        )
+    )
+
+
+    todas_evidencias = (
+        evidencias_antes
+        +
+        evidencias_durante
+        +
+        evidencias_despues
+    )
+
+
+    # ========================================================
+    # 5. VALIDACIONES
+    # ========================================================
+
+    errores = []
+
+
+    if entidad not in entidades_validas:
+
+        errores.append(
+            "Selecciona si el mantenimiento corresponde "
+            "a un Apiario o a una Colmena."
         )
 
-        id_apiario = None
-        id_colmena = None
 
-        responsable = "Sin Responsable"
+    if not tipo:
+
+        errores.append(
+            "Debes indicar el tipo de mantenimiento."
+        )
 
 
-        # ====================================================
-        # RESPONSABLE
-        # ====================================================
+    elif len(tipo) > 100:
 
-        if responsable_id:
+        errores.append(
+            "El tipo de mantenimiento no puede superar "
+            "los 100 caracteres."
+        )
 
-            apicultor_responsable = (
-                Apicultor.objects
-                .select_related("user")
+
+    if not fecha_ejecucion:
+
+        errores.append(
+            "Debes seleccionar la fecha de ejecución."
+        )
+
+
+    if prioridad not in prioridades_validas:
+
+        errores.append(
+            "La prioridad seleccionada no es válida."
+        )
+
+
+    if len(observaciones) > 255:
+
+        errores.append(
+            "Las observaciones no pueden superar "
+            "los 255 caracteres."
+        )
+
+
+    # ========================================================
+    # 6. LÍMITE DE EVIDENCIAS
+    # ========================================================
+
+    if len(todas_evidencias) > MAX_EVIDENCIAS:
+
+        errores.append(
+            "Un mantenimiento puede tener un máximo de "
+            f"{MAX_EVIDENCIAS} fotografías en total."
+        )
+
+
+    # ========================================================
+    # 7. VALIDAR ARCHIVOS
+    # ========================================================
+
+    if len(todas_evidencias) <= MAX_EVIDENCIAS:
+
+        for archivo in todas_evidencias:
+
+            error_imagen = (
+                validar_imagen_mantenimiento(
+                    archivo
+                )
+            )
+
+
+            if error_imagen:
+
+                errores.append(
+                    error_imagen
+                )
+
+
+    # ========================================================
+    # 8. RESOLVER APIARIO / COLMENA
+    # ========================================================
+
+    apiario = None
+
+    colmena = None
+
+
+    if entidad == "Apiario":
+
+        if not id_apiario_form:
+
+            errores.append(
+                "Debes seleccionar un apiario."
+            )
+
+        else:
+
+            apiario = (
+                Apiario.objects
+                .select_related(
+                    "id_apicultor"
+                )
                 .filter(
-                    pk=responsable_id
+                    pk=id_apiario_form
                 )
                 .first()
             )
 
 
-            if (
-                apicultor_responsable
-                and apicultor_responsable.user
-            ):
+            if not apiario:
 
-                responsable = (
-                    apicultor_responsable
-                    .user
-                    .get_full_name()
-                    .strip()
-                    or
-                    apicultor_responsable
-                    .user
-                    .username
+                errores.append(
+                    "El apiario seleccionado no existe."
                 )
 
 
-        # ====================================================
-        # ENTIDAD
-        # ====================================================
+    elif entidad == "Colmena":
 
-        if entidad == "Apiario":
+        if not id_apiario_form:
 
-            id_apiario = request.POST.get(
-                "id_apiario"
+            errores.append(
+                "Debes seleccionar un apiario."
             )
 
 
-        elif entidad == "Colmena":
+        if not id_colmena_form:
 
-            id_colmena = request.POST.get(
-                "id_colmena"
+            errores.append(
+                "Debes seleccionar una colmena."
             )
+
+
+        if (
+            id_apiario_form
+            and
+            id_colmena_form
+        ):
 
             colmena = (
                 Colmena.objects
-                .filter(
-                    id_colmena=id_colmena
+
+                .select_related(
+                    "id_apiario",
+                    "id_apiario__id_apicultor"
                 )
+
+                .filter(
+                    pk=id_colmena_form,
+                    id_apiario_id=id_apiario_form
+                )
+
                 .first()
             )
 
-            if (
-                colmena
-                and colmena.id_apiario
-            ):
 
-                id_apiario = (
-                    colmena.id_apiario_id
+            if not colmena:
+
+                errores.append(
+                    "La colmena seleccionada no pertenece "
+                    "al apiario indicado."
                 )
 
 
-        # ====================================================
-        # CREAR
-        # ====================================================
+            elif (
+                colmena.estadocolmena
+                ==
+                "Inactiva"
+            ):
 
-        mantenimiento = (
-            Mantenimiento.objects.create(
+                errores.append(
+                    (
+                        f"La colmena «{colmena.codigocolmena}» "
+                        "está Inactiva y no puede recibir "
+                        "nuevos mantenimientos. "
+                        "Debes cambiar primero su estado."
+                    )
+                )
 
-                entidadmantenimiento=entidad,
 
-                id_apiario_id=id_apiario,
+            else:
 
-                id_colmena_id=id_colmena,
+                apiario = (
+                    colmena.id_apiario
+                )
 
-                tipo=request.POST.get(
-                    "tipo"
-                ),
 
-                fechaejecucion=request.POST.get(
-                    "fecha_ejecucion"
-                ),
+    # ========================================================
+    # 9. RESPONSABLE
+    # ========================================================
 
-                estado="Pendiente",
+    responsable = (
+        "Sin Responsable"
+    )
 
-                prioridad=request.POST.get(
-                    "prioridad"
-                ),
 
-                observaciones=request.POST.get(
-                    "observaciones"
-                ),
+    if responsable_id:
 
-                responsable=responsable
+        apicultor_responsable = (
+            Apicultor.objects
+
+            .select_related(
+                "user"
             )
+
+            .filter(
+                pk=responsable_id
+            )
+
+            .first()
         )
 
 
-        # ====================================================
-        # NOTIFICACIÓN
-        # ====================================================
+        if not apicultor_responsable:
 
-        try:
-
-            notificar_mantenimiento_creado(
-                mantenimiento
+            errores.append(
+                "El responsable seleccionado no existe."
             )
 
-        except Exception as error:
 
-            print(
-                "ERROR GENERANDO NOTIFICACIÓN DE MANTENIMIENTO:",
+        elif apicultor_responsable.user:
+
+            responsable = (
+                apicultor_responsable
+                .user
+                .get_full_name()
+                .strip()
+
+                or
+
+                apicultor_responsable
+                .user
+                .username
+            )
+
+
+            responsable = (
+                responsable[:100]
+            )
+
+
+    # ========================================================
+    # 10. SI HAY ERRORES
+    # ========================================================
+
+    if errores:
+
+        for error in errores:
+
+            messages.error(
+                request,
                 error
             )
 
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
+
+    # ========================================================
+    # 11. CREAR MANTENIMIENTO + EVIDENCIAS
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+
+            mantenimiento = (
+                Mantenimiento.objects.create(
+
+                    entidadmantenimiento=
+                        entidad,
+
+                    id_apiario=
+                        apiario,
+
+                    id_colmena=
+                        colmena,
+
+                    tipo=
+                        tipo,
+
+                    fechaejecucion=
+                        fecha_ejecucion,
+
+                    estado=
+                        "Pendiente",
+
+                    prioridad=
+                        prioridad,
+
+                    observaciones=
+                        observaciones
+                        or
+                        None,
+
+                    responsable=
+                        responsable,
+
+                )
+            )
+
+
+            # =================================================
+            # 11.1 EVIDENCIAS ANTES
+            # =================================================
+
+            for archivo in evidencias_antes:
+
+                archivo.seek(0)
+
+                EvidenciaMantenimiento.objects.create(
+
+                    id_mantenimiento=
+                        mantenimiento,
+
+                    tipo=(
+                        EvidenciaMantenimiento
+                        .TipoEvidencia
+                        .ANTES
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+            # =================================================
+            # 11.2 EVIDENCIAS DURANTE
+            # =================================================
+
+            for archivo in evidencias_durante:
+
+                archivo.seek(0)
+
+                EvidenciaMantenimiento.objects.create(
+
+                    id_mantenimiento=
+                        mantenimiento,
+
+                    tipo=(
+                        EvidenciaMantenimiento
+                        .TipoEvidencia
+                        .DURANTE
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+            # =================================================
+            # 11.3 EVIDENCIAS DESPUÉS
+            # =================================================
+
+            for archivo in evidencias_despues:
+
+                archivo.seek(0)
+
+                EvidenciaMantenimiento.objects.create(
+
+                    id_mantenimiento=
+                        mantenimiento,
+
+                    tipo=(
+                        EvidenciaMantenimiento
+                        .TipoEvidencia
+                        .DESPUES
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR CREANDO MANTENIMIENTO:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            "Ocurrió un error al crear el mantenimiento "
+            "o guardar las fotografías."
+        )
+
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
+
+    # ========================================================
+    # 12. NOTIFICACIÓN
+    # ========================================================
+
+    try:
+
+        notificar_mantenimiento_creado(
+            mantenimiento
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR GENERANDO NOTIFICACIÓN DE MANTENIMIENTO:",
+            error
+        )
+
+
+    # ========================================================
+    # 13. MENSAJE
+    # ========================================================
+
+    cantidad_fotos = len(
+        todas_evidencias
+    )
+
+
+    if cantidad_fotos:
+
+        messages.success(
+            request,
+            "Mantenimiento creado correctamente. "
+            f"Se guardaron {cantidad_fotos} "
+            "evidencia(s) fotográfica(s)."
+        )
+
+    else:
 
         messages.success(
             request,
@@ -2382,124 +3784,1256 @@ def crear_mantenimiento(request):
 
 
 
-@administrador_requerido
-@permiso_requerido("mg",redireccion="mantenimientos_admin")
-def editar_mantenimiento(request, id):
-    mantenimiento = get_object_or_404(Mantenimiento, id_mantenimiento=id)
-
-    if request.method == "POST":
-        mantenimiento.id_colmena_id = request.POST.get("id_colmena")
-        mantenimiento.tipo = request.POST.get("tipo")
-        mantenimiento.fechaejecucion = request.POST.get("fecha_ejecucion")
-        mantenimiento.estado = request.POST.get("estado")
-        mantenimiento.prioridad = request.POST.get("prioridad")
-        mantenimiento.observaciones = request.POST.get("observaciones")
-        mantenimiento.responsable = request.POST.get("responsable")
-        mantenimiento.save()
-
-    return redirect("mantenimientos_admin")
+# ============================================================
+# EDITAR MANTENIMIENTO
+# PANEL ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
-@require_POST
-@permiso_requerido("mg",redireccion="mantenimientos_admin")
-def eliminar_mantenimiento(request, id):
+@permiso_requerido(
+    "mg",
+    redireccion="mantenimientos_admin"
+)
+def editar_mantenimiento(
+    request,
+    id
+):
+
+
+    # ========================================================
+    # 1. MANTENIMIENTO
+    # ========================================================
 
     mantenimiento = get_object_or_404(
         Mantenimiento,
         id_mantenimiento=id
     )
 
-    mantenimiento.delete()
+
+    if request.method != "POST":
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
+
+    # ========================================================
+    # 2. CONFIGURACIÓN
+    # ========================================================
+
+    MAX_EVIDENCIAS = 6
+
+
+    entidades_validas = [
+        "Apiario",
+        "Colmena",
+    ]
+
+
+    estados_validos = [
+        "Pendiente",
+        "Completado",
+        "Cancelado",
+    ]
+
+
+    prioridades_validas = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
+
+
+    # ========================================================
+    # 3. FORMULARIO
+    # ========================================================
+
+    entidad = (
+        request.POST.get(
+            "entidad_mantenimiento",
+            mantenimiento.entidadmantenimiento or ""
+        )
+        .strip()
+    )
+
+
+    tipo = (
+        request.POST.get(
+            "tipo",
+            ""
+        )
+        .strip()
+    )
+
+
+    fecha_ejecucion = (
+        request.POST.get(
+            "fecha_ejecucion",
+            ""
+        )
+        .strip()
+    )
+
+
+    estado = (
+        request.POST.get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
+
+
+    prioridad = (
+        request.POST.get(
+            "prioridad",
+            ""
+        )
+        .strip()
+    )
+
+
+    observaciones = (
+        request.POST.get(
+            "observaciones",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_apiario_form = (
+        request.POST.get(
+            "id_apiario",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_colmena_form = (
+        request.POST.get(
+            "id_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # 4. RESPONSABLE
+    #
+    # Soporta:
+    #
+    # responsable_id -> formulario nuevo.
+    # responsable    -> formulario antiguo.
+    # ========================================================
+
+    responsable_id = (
+        request.POST.get(
+            "responsable_id",
+            ""
+        )
+        .strip()
+    )
+
+
+    responsable_texto = (
+        request.POST.get(
+            "responsable",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # 5. NUEVAS EVIDENCIAS
+    # ========================================================
+
+    evidencias_antes = (
+        request.FILES.getlist(
+            "evidencias_antes"
+        )
+    )
+
+
+    evidencias_durante = (
+        request.FILES.getlist(
+            "evidencias_durante"
+        )
+    )
+
+
+    evidencias_despues = (
+        request.FILES.getlist(
+            "evidencias_despues"
+        )
+    )
+
+
+    nuevas_evidencias = (
+        evidencias_antes
+        +
+        evidencias_durante
+        +
+        evidencias_despues
+    )
+
+
+    # ========================================================
+    # 6. EVIDENCIAS EXISTENTES
+    # ========================================================
+
+    cantidad_actual = (
+        mantenimiento.evidencias.count()
+    )
+
+
+    total_despues = (
+        cantidad_actual
+        +
+        len(nuevas_evidencias)
+    )
+
+
+    # ========================================================
+    # 7. VALIDACIONES
+    # ========================================================
+
+    errores = []
+
+
+    if entidad not in entidades_validas:
+
+        errores.append(
+            "La entidad del mantenimiento no es válida."
+        )
+
+
+    if not tipo:
+
+        errores.append(
+            "Debes indicar el tipo de mantenimiento."
+        )
+
+
+    elif len(tipo) > 100:
+
+        errores.append(
+            "El tipo no puede superar los 100 caracteres."
+        )
+
+
+    if not fecha_ejecucion:
+
+        errores.append(
+            "La fecha de ejecución es obligatoria."
+        )
+
+
+    if estado not in estados_validos:
+
+        errores.append(
+            "El estado seleccionado no es válido."
+        )
+
+
+    if prioridad not in prioridades_validas:
+
+        errores.append(
+            "La prioridad seleccionada no es válida."
+        )
+
+
+    if len(observaciones) > 255:
+
+        errores.append(
+            "Las observaciones no pueden superar "
+            "los 255 caracteres."
+        )
+
+
+    # ========================================================
+    # 8. LÍMITE FOTOGRÁFICO
+    # ========================================================
+
+    if total_despues > MAX_EVIDENCIAS:
+
+        disponibles = max(
+            0,
+            MAX_EVIDENCIAS
+            -
+            cantidad_actual
+        )
+
+
+        errores.append(
+            "Un mantenimiento puede tener un máximo "
+            f"de {MAX_EVIDENCIAS} fotografías. "
+            f"Actualmente puedes agregar {disponibles} más."
+        )
+
+
+    # ========================================================
+    # 9. VALIDAR IMÁGENES
+    # ========================================================
+
+    if total_despues <= MAX_EVIDENCIAS:
+
+        for archivo in nuevas_evidencias:
+
+            error_imagen = (
+                validar_imagen_mantenimiento(
+                    archivo
+                )
+            )
+
+
+            if error_imagen:
+
+                errores.append(
+                    error_imagen
+                )
+
+
+    # ========================================================
+    # 10. APIARIO / COLMENA
+    # ========================================================
+
+    apiario = None
+
+    colmena = None
+
+
+    if entidad == "Apiario":
+
+        if not id_apiario_form:
+
+            errores.append(
+                "Debes seleccionar un apiario."
+            )
+
+        else:
+
+            apiario = (
+                Apiario.objects
+
+                .filter(
+                    pk=id_apiario_form
+                )
+
+                .first()
+            )
+
+
+            if not apiario:
+
+                errores.append(
+                    "El apiario seleccionado no existe."
+                )
+
+
+    elif entidad == "Colmena":
+
+        if (
+            not id_apiario_form
+            or
+            not id_colmena_form
+        ):
+
+            errores.append(
+                "Debes seleccionar el apiario y la colmena."
+            )
+
+
+        else:
+
+            colmena = (
+                Colmena.objects
+
+                .select_related(
+                    "id_apiario"
+                )
+
+                .filter(
+                    pk=id_colmena_form,
+                    id_apiario_id=id_apiario_form
+                )
+
+                .first()
+            )
+
+
+            if not colmena:
+
+                errores.append(
+                    "La colmena seleccionada no pertenece "
+                    "al apiario indicado."
+                )
+
+
+            else:
+
+                # =============================================
+                # ¿ES LA COLMENA QUE YA TENÍA EL MANTENIMIENTO?
+                # =============================================
+
+                es_colmena_actual = (
+                    mantenimiento.id_colmena_id
+                    is not None
+
+                    and
+
+                    str(
+                        mantenimiento.id_colmena_id
+                    )
+                    ==
+                    str(
+                        colmena.id_colmena
+                    )
+                )
+
+
+                # =============================================
+                # NO PERMITIR CAMBIAR HACIA OTRA INACTIVA
+                # =============================================
+
+                if (
+                    colmena.estadocolmena
+                    ==
+                    "Inactiva"
+
+                    and
+
+                    not es_colmena_actual
+                ):
+
+                    errores.append(
+                        (
+                            f"La colmena «{colmena.codigocolmena}» "
+                            "está Inactiva y no puede recibir "
+                            "este mantenimiento. "
+                            "Debes cambiar primero su estado."
+                        )
+                    )
+
+
+                # =============================================
+                # NO REABRIR TRABAJO EN COLMENA INACTIVA
+                # =============================================
+
+                elif (
+                    colmena.estadocolmena
+                    ==
+                    "Inactiva"
+
+                    and
+
+                    estado
+                    ==
+                    "Pendiente"
+                ):
+
+                    errores.append(
+                        (
+                            f"No puedes dejar el mantenimiento "
+                            f"como Pendiente porque la colmena "
+                            f"«{colmena.codigocolmena}» "
+                            "está Inactiva. "
+                            "Reactiva primero la colmena."
+                        )
+                    )
+
+
+                else:
+
+                    apiario = (
+                        colmena.id_apiario
+                    )
+
+
+    # ========================================================
+    # 11. RESPONSABLE
+    # ========================================================
+
+    responsable = (
+        mantenimiento.responsable
+        or
+        "Sin Responsable"
+    )
+
+
+    if responsable_id:
+
+        apicultor_responsable = (
+            Apicultor.objects
+
+            .select_related(
+                "user"
+            )
+
+            .filter(
+                pk=responsable_id
+            )
+
+            .first()
+        )
+
+
+        if not apicultor_responsable:
+
+            errores.append(
+                "El responsable seleccionado no existe."
+            )
+
+
+        elif apicultor_responsable.user:
+
+            responsable = (
+                apicultor_responsable
+                .user
+                .get_full_name()
+                .strip()
+
+                or
+
+                apicultor_responsable
+                .user
+                .username
+            )
+
+
+    elif responsable_texto:
+
+        responsable = (
+            responsable_texto
+        )
+
+
+    responsable = (
+        responsable[:100]
+    )
+
+
+    # ========================================================
+    # 12. SI HAY ERRORES
+    # ========================================================
+
+    if errores:
+
+        for error in errores:
+
+            messages.error(
+                request,
+                error
+            )
+
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
+
+    # ========================================================
+    # 13. ACTUALIZAR
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+
+            mantenimiento.entidadmantenimiento = (
+                entidad
+            )
+
+
+            mantenimiento.id_apiario = (
+                apiario
+            )
+
+
+            mantenimiento.id_colmena = (
+                colmena
+            )
+
+
+            mantenimiento.tipo = (
+                tipo
+            )
+
+
+            mantenimiento.fechaejecucion = (
+                fecha_ejecucion
+            )
+
+
+            mantenimiento.estado = (
+                estado
+            )
+
+
+            mantenimiento.prioridad = (
+                prioridad
+            )
+
+
+            mantenimiento.observaciones = (
+                observaciones
+                or
+                None
+            )
+
+
+            mantenimiento.responsable = (
+                responsable
+            )
+
+
+            mantenimiento.save()
+
+
+            # =================================================
+            # ANTES
+            # =================================================
+
+            for archivo in evidencias_antes:
+
+                archivo.seek(0)
+
+                EvidenciaMantenimiento.objects.create(
+
+                    id_mantenimiento=
+                        mantenimiento,
+
+                    tipo=(
+                        EvidenciaMantenimiento
+                        .TipoEvidencia
+                        .ANTES
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+            # =================================================
+            # DURANTE
+            # =================================================
+
+            for archivo in evidencias_durante:
+
+                archivo.seek(0)
+
+                EvidenciaMantenimiento.objects.create(
+
+                    id_mantenimiento=
+                        mantenimiento,
+
+                    tipo=(
+                        EvidenciaMantenimiento
+                        .TipoEvidencia
+                        .DURANTE
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+            # =================================================
+            # DESPUÉS
+            # =================================================
+
+            for archivo in evidencias_despues:
+
+                archivo.seek(0)
+
+                EvidenciaMantenimiento.objects.create(
+
+                    id_mantenimiento=
+                        mantenimiento,
+
+                    tipo=(
+                        EvidenciaMantenimiento
+                        .TipoEvidencia
+                        .DESPUES
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR EDITANDO MANTENIMIENTO:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            "Ocurrió un error al actualizar el mantenimiento."
+        )
+
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
+
+    # ========================================================
+    # 14. MENSAJE
+    # ========================================================
+
+    if nuevas_evidencias:
+
+        messages.success(
+            request,
+            "Mantenimiento actualizado correctamente. "
+            f"Se agregaron {len(nuevas_evidencias)} "
+            "evidencia(s) fotográfica(s)."
+        )
+
+    else:
+
+        messages.success(
+            request,
+            "Mantenimiento actualizado correctamente."
+        )
+
+
+    return redirect(
+        "mantenimientos_admin"
+    )
+
+# ============================================================
+# ELIMINAR MANTENIMIENTO
+# PANEL ADMINISTRADOR
+# ============================================================
+
+@administrador_requerido
+@require_POST
+@permiso_requerido(
+    "mg",
+    redireccion="mantenimientos_admin"
+)
+def eliminar_mantenimiento(
+    request,
+    id
+):
+
+
+    mantenimiento = get_object_or_404(
+        Mantenimiento,
+        id_mantenimiento=id
+    )
+
+
+    try:
+
+        with transaction.atomic():
+
+            # Las EvidenciaMantenimiento relacionadas
+            # se eliminan por CASCADE.
+
+            mantenimiento.delete()
+
+
+    except Exception as error:
+
+        print(
+            "ERROR ELIMINANDO MANTENIMIENTO:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            "No fue posible eliminar el mantenimiento."
+        )
+
+
+        return redirect(
+            "mantenimientos_admin"
+        )
+
 
     messages.success(
         request,
         "Mantenimiento eliminado correctamente."
     )
 
-    return redirect("mantenimientos_admin")
+
+    return redirect(
+        "mantenimientos_admin"
+    )
 
 
-# LOGICO DE INCIDENCIAS 
+
+# ============================================================
+# VALIDAR IMAGEN DE EVIDENCIA
+# PANEL ADMINISTRADOR
+# ============================================================
+
+def validar_imagen_evidencia_admin(archivo):
+
+    # ========================================================
+    # CONFIGURACIÓN
+    # ========================================================
+
+    LIMITE_MB = 5
+
+    LIMITE_BYTES = (
+        LIMITE_MB
+        * 1024
+        * 1024
+    )
+
+    FORMATOS_VALIDOS = {
+        "JPEG",
+        "PNG",
+        "WEBP",
+    }
+
+
+    # ========================================================
+    # ARCHIVO
+    # ========================================================
+
+    if not archivo:
+
+        return (
+            "No se pudo leer una de las imágenes seleccionadas."
+        )
+
+
+    if archivo.size <= 0:
+
+        return (
+            f'La imagen "{archivo.name}" está vacía.'
+        )
+
+
+    # ========================================================
+    # TAMAÑO
+    # ========================================================
+
+    if archivo.size > LIMITE_BYTES:
+
+        return (
+            f'La imagen "{archivo.name}" supera '
+            f"el límite de {LIMITE_MB} MB."
+        )
+
+
+    # ========================================================
+    # MIME
+    # ========================================================
+
+    tipo_archivo = getattr(
+        archivo,
+        "content_type",
+        ""
+    )
+
+
+    if (
+        tipo_archivo
+        and
+        not tipo_archivo.startswith("image/")
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no es una imagen válida."
+        )
+
+
+    # ========================================================
+    # CONTENIDO REAL
+    # ========================================================
+
+    try:
+
+        archivo.seek(0)
+
+        imagen = Image.open(
+            archivo
+        )
+
+        formato = (
+            imagen.format or ""
+        ).upper()
+
+        imagen.verify()
+
+
+        if formato not in FORMATOS_VALIDOS:
+
+            return (
+                f'La imagen "{archivo.name}" tiene un formato '
+                "no permitido. Utiliza JPG, PNG o WEBP."
+            )
+
+
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no contiene una imagen válida."
+        )
+
+
+    finally:
+
+        try:
+
+            archivo.seek(0)
+
+        except Exception:
+
+            pass
+
+
+    return None
+
+
+
+
+# ============================================================
+# INCIDENCIAS
+# PANEL ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
 @permiso_requerido("ig")
 def incidencias_admin(request):
-    incidencias_lista = Incidencia.objects.select_related(
-        "id_apicultor",
-        "id_apiario",
-        "id_colmena",
-        "id_colmena__id_apiario",
-    ).all().order_by("-fechadeteccion", "-id_incidencia")
 
-    apicultores = Apicultor.objects.all().order_by("id_apicultor")
-    apiarios = Apiario.objects.all().order_by("nombreapiario")
-    colmenas = Colmena.objects.select_related(
-        "id_apiario"
-    ).all().order_by("codigocolmena")
 
-    # Valores enviados por los filtros
-    entidad = request.GET.get("entidad", "").strip()
-    id_apicultor = request.GET.get("apicultor", "").strip()
-    id_apiario = request.GET.get("apiario", "").strip()
-    id_colmena = request.GET.get("colmena", "").strip()
-    prioridad = request.GET.get("prioridad", "").strip()
-    estado = request.GET.get("estado", "").strip()
+    # ========================================================
+    # INCIDENCIAS
+    # ========================================================
 
-    # Primer filtro desplegable:
-    # Apicultor, Apiario o Colmena
-    if entidad:
-        incidencias_lista = incidencias_lista.filter(
-            entidadincidencia=entidad
+    incidencias_lista = (
+        Incidencia.objects
+        .select_related(
+            "id_apicultor",
+            "id_apicultor__user",
+            "id_apiario",
+            "id_colmena",
+            "id_colmena__id_apiario",
         )
+        .prefetch_related(
+
+            # =================================================
+            # EVIDENCIAS DEL PROBLEMA
+            # =================================================
+
+            Prefetch(
+                "evidencias",
+                queryset=(
+                    EvidenciaIncidencia.objects
+                    .filter(
+                        tipo=EvidenciaIncidencia
+                        .TipoEvidencia
+                        .PROBLEMA
+                    )
+                    .select_related(
+                        "subido_por"
+                    )
+                    .order_by(
+                        "fecha_registro",
+                        "id_evidencia"
+                    )
+                ),
+                to_attr="evidencias_problema_admin"
+            ),
+
+
+            # =================================================
+            # EVIDENCIAS DE LA SOLUCIÓN
+            # =================================================
+
+            Prefetch(
+                "evidencias",
+                queryset=(
+                    EvidenciaIncidencia.objects
+                    .filter(
+                        tipo=EvidenciaIncidencia
+                        .TipoEvidencia
+                        .SOLUCION
+                    )
+                    .select_related(
+                        "subido_por"
+                    )
+                    .order_by(
+                        "fecha_registro",
+                        "id_evidencia"
+                    )
+                ),
+                to_attr="evidencias_solucion_admin"
+            ),
+
+        )
+        .all()
+        .order_by(
+            "-fechadeteccion",
+            "-id_incidencia"
+        )
+    )
+
+
+    # ========================================================
+    # DATOS PARA FILTROS Y FORMULARIOS
+    # ========================================================
+
+    apicultores = (
+        Apicultor.objects
+        .select_related("user")
+        .all()
+        .order_by(
+            "id_apicultor"
+        )
+    )
+
+
+    apiarios = (
+        Apiario.objects
+        .select_related(
+            "id_apicultor"
+        )
+        .all()
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    colmenas = (
+        Colmena.objects
+        .select_related(
+            "id_apiario",
+            "id_apiario__id_apicultor"
+        )
+        .all()
+        .order_by(
+            "codigocolmena"
+        )
+    )
+
+
+    # ========================================================
+    # FILTROS GET
+    # ========================================================
+
+    entidad = request.GET.get(
+        "entidad",
+        ""
+    ).strip()
+
+
+    id_apicultor = request.GET.get(
+        "apicultor",
+        ""
+    ).strip()
+
+
+    id_apiario = request.GET.get(
+        "apiario",
+        ""
+    ).strip()
+
+
+    id_colmena = request.GET.get(
+        "colmena",
+        ""
+    ).strip()
+
+
+    prioridad = request.GET.get(
+        "prioridad",
+        ""
+    ).strip()
+
+
+    estado = request.GET.get(
+        "estado",
+        ""
+    ).strip()
+
+
+    # ========================================================
+    # FILTRO ENTIDAD
+    # ========================================================
+
+    if entidad:
+
+        incidencias_lista = (
+            incidencias_lista.filter(
+                entidadincidencia=entidad
+            )
+        )
+
+
+    # ========================================================
+    # FILTRO APICULTOR
+    # ========================================================
 
     if id_apicultor:
-        incidencias_lista = incidencias_lista.filter(
-            id_apicultor_id=id_apicultor
+
+        incidencias_lista = (
+            incidencias_lista.filter(
+                id_apicultor_id=id_apicultor
+            )
         )
+
+
+    # ========================================================
+    # FILTRO APIARIO
+    # ========================================================
 
     if id_apiario:
+
         if entidad == "Colmena":
-            incidencias_lista = incidencias_lista.filter(
-                id_colmena__id_apiario_id=id_apiario
+
+            incidencias_lista = (
+                incidencias_lista.filter(
+                    id_colmena__id_apiario_id=id_apiario
+                )
             )
+
         else:
-            incidencias_lista = incidencias_lista.filter(
-                id_apiario_id=id_apiario
+
+            incidencias_lista = (
+                incidencias_lista.filter(
+                    id_apiario_id=id_apiario
+                )
             )
+
+
+    # ========================================================
+    # FILTRO COLMENA
+    # ========================================================
 
     if id_colmena:
-        incidencias_lista = incidencias_lista.filter(
-            id_colmena_id=id_colmena
+
+        incidencias_lista = (
+            incidencias_lista.filter(
+                id_colmena_id=id_colmena
+            )
         )
+
+
+    # ========================================================
+    # FILTRO PRIORIDAD
+    # ========================================================
 
     if prioridad:
-        incidencias_lista = incidencias_lista.filter(
-            prioridad=prioridad
+
+        incidencias_lista = (
+            incidencias_lista.filter(
+                prioridad=prioridad
+            )
         )
+
+
+    # ========================================================
+    # FILTRO ESTADO
+    # ========================================================
 
     if estado:
-        incidencias_lista = incidencias_lista.filter(
-            estado=estado
+
+        incidencias_lista = (
+            incidencias_lista.filter(
+                estado=estado
+            )
         )
 
-    paginator = Paginator(incidencias_lista, 5)
-    numero_pagina = request.GET.get("page")
-    incidencias = paginator.get_page(numero_pagina)
+
+    # ========================================================
+    # PAGINACIÓN
+    # ========================================================
+
+    paginator = Paginator(
+        incidencias_lista,
+        5
+    )
+
+
+    numero_pagina = request.GET.get(
+        "page"
+    )
+
+
+    incidencias = paginator.get_page(
+        numero_pagina
+    )
+
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
 
     contexto = {
-        "incidencias": incidencias,
-        "apicultores": apicultores,
-        "apiarios": apiarios,
-        "colmenas": colmenas,
 
-        # Mantener los filtros seleccionados
-        "filtro_entidad": entidad,
-        "filtro_apicultor": id_apicultor,
-        "filtro_apiario": id_apiario,
-        "filtro_colmena": id_colmena,
-        "filtro_prioridad": prioridad,
-        "filtro_estado": estado,
+        "incidencias":
+            incidencias,
+
+        "apicultores":
+            apicultores,
+
+        "apiarios":
+            apiarios,
+
+        "colmenas":
+            colmenas,
+
+
+        # ====================================================
+        # FILTROS
+        # ====================================================
+
+        "filtro_entidad":
+            entidad,
+
+        "filtro_apicultor":
+            id_apicultor,
+
+        "filtro_apiario":
+            id_apiario,
+
+        "filtro_colmena":
+            id_colmena,
+
+        "filtro_prioridad":
+            prioridad,
+
+        "filtro_estado":
+            estado,
+
     }
+
 
     return render(
         request,
@@ -2560,6 +5094,31 @@ def crear_incidencia(request):
         )
         return redirect("incidencias_admin")
 
+    # ========================================================
+    # RESPONSABLE
+    # ========================================================
+
+    if (
+        responsable
+        and
+        not validar_nombre_persona(
+            responsable,
+            maximo=150
+        )
+    ):
+
+        messages.error(
+            request,
+            (
+                "El responsable debe contener un nombre válido "
+                "de máximo 150 caracteres."
+            )
+        )
+
+        return redirect(
+            "incidencias_admin"
+        )
+
     incidencia = Incidencia(
         entidadincidencia=entidad,
         titulo=titulo,
@@ -2617,9 +5176,43 @@ def crear_incidencia(request):
             id_apiario_id=id_apiario
         )
 
-        # Guardamos la colmena y también el apiario al que pertenece.
-        incidencia.id_colmena = colmena
-        incidencia.id_apiario = colmena.id_apiario
+
+        # ====================================================
+        # NO PERMITIR INCIDENCIAS NUEVAS EN COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            colmena.estadocolmena
+            ==
+            "Inactiva"
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"La colmena «{colmena.codigocolmena}» "
+                    "está Inactiva y no puede recibir "
+                    "nuevas incidencias. "
+                    "Debes cambiar primero su estado."
+                )
+            )
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        # ====================================================
+        # ASIGNAR COLMENA
+        # ====================================================
+
+        incidencia.id_colmena = (
+            colmena
+        )
+
+        incidencia.id_apiario = (
+            colmena.id_apiario
+        )
 
     incidencia.save()
 
@@ -2653,144 +5246,799 @@ def crear_incidencia(request):
 
     return redirect("incidencias_admin")
 
-#editar incidencias 
+# ============================================================
+# EDITAR INCIDENCIA
+# PANEL ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
-@permiso_requerido("ig",redireccion="incidencias_admin")
-def editar_incidencia(request, id_incidencia):
+@permiso_requerido(
+    "ig",
+    redireccion="incidencias_admin"
+)
+def editar_incidencia(
+    request,
+    id_incidencia
+):
+
+
+    # ========================================================
+    # INCIDENCIA
+    # ========================================================
+
     incidencia = get_object_or_404(
         Incidencia,
         pk=id_incidencia
     )
 
+
+    # ========================================================
+    # SOLO POST
+    # ========================================================
+
     if request.method != "POST":
-        return redirect("incidencias_admin")
 
-    entidad = request.POST.get("entidadincidencia", "").strip()
-    titulo = request.POST.get("titulo", "").strip()
-    prioridad = request.POST.get("prioridad", "").strip()
-    fecha_deteccion = request.POST.get("fechadeteccion", "").strip()
-    estado = request.POST.get("estado", "").strip()
-    observaciones = request.POST.get("observaciones", "").strip()
-    responsable = request.POST.get("responsable", "").strip()
+        return redirect(
+            "incidencias_admin"
+        )
 
-    id_apicultor = request.POST.get("id_apicultor")
-    id_apiario = request.POST.get("id_apiario")
-    id_colmena = request.POST.get("id_colmena")
 
-    nueva_imagen = request.FILES.get("imagen")
-    eliminar_imagen = request.POST.get("eliminar_imagen")
+    # ========================================================
+    # CONFIGURACIÓN
+    # ========================================================
 
-    entidades_validas = ["Apicultor", "Apiario", "Colmena"]
-    prioridades_validas = ["Baja", "Media", "Alta", "Crítica"]
-    estados_validos = ["Pendiente", "En proceso", "Resuelta"]
+    MAX_EVIDENCIAS_PROBLEMA = 6
+
+    MAX_EVIDENCIAS_SOLUCION = 6
+
+
+    entidades_validas = [
+        "Apicultor",
+        "Apiario",
+        "Colmena",
+    ]
+
+
+    prioridades_validas = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
+
+
+    estados_validos = [
+        "Pendiente",
+        "En proceso",
+        "Resuelta",
+    ]
+
+
+    # ========================================================
+    # DATOS DEL FORMULARIO
+    # ========================================================
+
+    entidad = request.POST.get(
+        "entidadincidencia",
+        ""
+    ).strip()
+
+
+    titulo = request.POST.get(
+        "titulo",
+        ""
+    ).strip()
+
+
+    prioridad = request.POST.get(
+        "prioridad",
+        ""
+    ).strip()
+
+
+    fecha_deteccion = request.POST.get(
+        "fechadeteccion",
+        ""
+    ).strip()
+
+
+    estado = request.POST.get(
+        "estado",
+        ""
+    ).strip()
+
+
+    observaciones = request.POST.get(
+        "observaciones",
+        ""
+    ).strip()
+
+
+    responsable = request.POST.get(
+        "responsable",
+        ""
+    ).strip()
+
+
+    id_apicultor = request.POST.get(
+        "id_apicultor"
+    )
+
+
+    id_apiario = request.POST.get(
+        "id_apiario"
+    )
+
+
+    id_colmena = request.POST.get(
+        "id_colmena"
+    )
+
+
+    # ========================================================
+    # NUEVAS EVIDENCIAS
+    # ========================================================
+
+    nuevas_evidencias_problema = (
+        request.FILES.getlist(
+            "evidencias_problema"
+        )
+    )
+
+
+    nuevas_evidencias_solucion = (
+        request.FILES.getlist(
+            "evidencias_solucion"
+        )
+    )
+
+
+    # ========================================================
+    # VALIDACIONES BÁSICAS
+    # ========================================================
+
+    errores = []
+
 
     if entidad not in entidades_validas:
-        messages.error(
-            request,
+
+        errores.append(
             "La entidad seleccionada no es válida."
         )
-        return redirect("incidencias_admin")
 
-    if not titulo or not fecha_deteccion:
-        messages.error(
-            request,
-            "El título y la fecha son obligatorios."
+
+    if not titulo:
+
+        errores.append(
+            "El título es obligatorio."
         )
-        return redirect("incidencias_admin")
+
+
+    if not fecha_deteccion:
+
+        errores.append(
+            "La fecha es obligatoria."
+        )
+
 
     if prioridad not in prioridades_validas:
-        messages.error(
-            request,
+
+        errores.append(
             "La prioridad seleccionada no es válida."
         )
-        return redirect("incidencias_admin")
+
 
     if estado not in estados_validos:
-        messages.error(
-            request,
+
+        errores.append(
             "El estado seleccionado no es válido."
         )
-        return redirect("incidencias_admin")
 
-    incidencia.entidadincidencia = entidad
-    incidencia.titulo = titulo
-    incidencia.prioridad = prioridad
-    incidencia.fechadeteccion = fecha_deteccion
-    incidencia.estado = estado
-    incidencia.observaciones = observaciones or None
-    incidencia.responsable = responsable or None
+    # ========================================================
+    # RESPONSABLE
+    # ========================================================
 
-    # Limpiar relaciones anteriores
-    incidencia.id_apicultor = None
-    incidencia.id_apiario = None
-    incidencia.id_colmena = None
+    if (
+        responsable
+        and
+        not validar_nombre_persona(
+            responsable,
+            maximo=150
+        )
+    ):
+
+        errores.append(
+            (
+                "El responsable debe contener un nombre válido "
+                "de máximo 150 caracteres."
+            )
+        )
+
+
+    # ========================================================
+    # EVIDENCIAS EXISTENTES
+    # ========================================================
+
+    cantidad_problema_actual = (
+        incidencia.evidencias.filter(
+            tipo=EvidenciaIncidencia
+            .TipoEvidencia
+            .PROBLEMA
+        ).count()
+    )
+
+
+    cantidad_solucion_actual = (
+        incidencia.evidencias.filter(
+            tipo=EvidenciaIncidencia
+            .TipoEvidencia
+            .SOLUCION
+        ).count()
+    )
+
+
+    # ========================================================
+    # COMPATIBILIDAD CON INCIDENCIA.IMAGEN ANTIGUA
+    #
+    # Si todavía no tiene EvidenciaIncidencia de problema,
+    # pero sí tiene la antigua imagen, contamos esa foto como
+    # una evidencia del problema.
+    # ========================================================
+
+    tiene_imagen_legacy = (
+        bool(incidencia.imagen)
+        and
+        cantidad_problema_actual == 0
+    )
+
+
+    cantidad_problema_para_limite = (
+        cantidad_problema_actual
+        +
+        (
+            1
+            if tiene_imagen_legacy
+            else 0
+        )
+    )
+
+
+    # ========================================================
+    # LÍMITE PROBLEMA
+    # ========================================================
+
+    if (
+        cantidad_problema_para_limite
+        +
+        len(nuevas_evidencias_problema)
+        >
+        MAX_EVIDENCIAS_PROBLEMA
+    ):
+
+        errores.append(
+            "Solo se permiten hasta "
+            f"{MAX_EVIDENCIAS_PROBLEMA} fotografías "
+            "del problema."
+        )
+
+
+    # ========================================================
+    # LÍMITE SOLUCIÓN
+    # ========================================================
+
+    if (
+        cantidad_solucion_actual
+        +
+        len(nuevas_evidencias_solucion)
+        >
+        MAX_EVIDENCIAS_SOLUCION
+    ):
+
+        errores.append(
+            "Solo se permiten hasta "
+            f"{MAX_EVIDENCIAS_SOLUCION} fotografías "
+            "de la solución."
+        )
+
+
+    # ========================================================
+    # VALIDAR FOTOS DEL PROBLEMA
+    # ========================================================
+
+    for archivo in nuevas_evidencias_problema:
+
+        error_imagen = (
+            validar_imagen_evidencia_admin(
+                archivo
+            )
+        )
+
+
+        if error_imagen:
+
+            errores.append(
+                error_imagen
+            )
+
+
+    # ========================================================
+    # VALIDAR FOTOS DE SOLUCIÓN
+    # ========================================================
+
+    for archivo in nuevas_evidencias_solucion:
+
+        error_imagen = (
+            validar_imagen_evidencia_admin(
+                archivo
+            )
+        )
+
+
+        if error_imagen:
+
+            errores.append(
+                error_imagen
+            )
+
+
+    # ========================================================
+    # RESUELTA REQUIERE SOLUCIÓN
+    # ========================================================
+
+    total_soluciones_despues = (
+        cantidad_solucion_actual
+        +
+        len(nuevas_evidencias_solucion)
+    )
+
+
+    if (
+        estado == "Resuelta"
+        and
+        total_soluciones_despues <= 0
+    ):
+
+        errores.append(
+            "Para marcar la incidencia como Resuelta "
+            "debes agregar al menos una fotografía "
+            "que evidencie la solución."
+        )
+
+
+    # ========================================================
+    # MOSTRAR ERRORES
+    # ========================================================
+
+    if errores:
+
+        for error in errores:
+
+            messages.error(
+                request,
+                error
+            )
+
+
+        return redirect(
+            "incidencias_admin"
+        )
+
+
+    # ========================================================
+    # VALIDAR RELACIONES
+    #
+    # Las resolvemos antes de guardar para evitar dejar una
+    # incidencia parcialmente modificada.
+    # ========================================================
+
+    apicultor_seleccionado = None
+
+    apiario_seleccionado = None
+
+    colmena_seleccionada = None
+
+
+    # ========================================================
+    # APICULTOR
+    # ========================================================
 
     if entidad == "Apicultor":
+
+
         if not id_apicultor:
+
             messages.error(
                 request,
                 "Debes seleccionar un apicultor."
             )
-            return redirect("incidencias_admin")
 
-        incidencia.id_apicultor = get_object_or_404(
-            Apicultor,
-            pk=id_apicultor
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        apicultor_seleccionado = (
+            get_object_or_404(
+                Apicultor,
+                pk=id_apicultor
+            )
         )
 
+
+    # ========================================================
+    # APIARIO
+    # ========================================================
+
     elif entidad == "Apiario":
+
+
         if not id_apiario:
+
             messages.error(
                 request,
                 "Debes seleccionar un apiario."
             )
-            return redirect("incidencias_admin")
 
-        incidencia.id_apiario = get_object_or_404(
-            Apiario,
-            pk=id_apiario
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        apiario_seleccionado = (
+            get_object_or_404(
+                Apiario,
+                pk=id_apiario
+            )
         )
 
+
+        # ====================================================
+        # EL APICULTOR PROPIETARIO SIGUE ASIGNADO
+        # ====================================================
+
+        apicultor_seleccionado = (
+            apiario_seleccionado.id_apicultor
+        )
+
+
+    # ========================================================
+    # COLMENA
+    # ========================================================
+
     elif entidad == "Colmena":
-        if not id_apiario or not id_colmena:
+
+
+        if (
+            not id_apiario
+            or
+            not id_colmena
+        ):
+
             messages.error(
                 request,
                 "Debes seleccionar el apiario y la colmena."
             )
-            return redirect("incidencias_admin")
 
-        colmena = get_object_or_404(
-            Colmena,
-            pk=id_colmena,
-            id_apiario_id=id_apiario
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        colmena_seleccionada = (
+            get_object_or_404(
+                Colmena,
+                pk=id_colmena,
+                id_apiario_id=id_apiario
+            )
         )
 
-        incidencia.id_colmena = colmena
-        incidencia.id_apiario = colmena.id_apiario
 
-    # Reemplazar imagen
-    if nueva_imagen:
-        if incidencia.imagen:
-            incidencia.imagen.delete(save=False)
+        # ====================================================
+        # ¿ES LA COLMENA QUE YA TENÍA LA INCIDENCIA?
+        # ====================================================
 
-        incidencia.imagen = nueva_imagen
+        es_colmena_actual = (
+            incidencia.id_colmena_id
+            is not None
 
-    # Eliminar imagen actual
-    elif eliminar_imagen == "1":
-        if incidencia.imagen:
-            incidencia.imagen.delete(save=False)
+            and
 
-        incidencia.imagen = None
+            str(
+                incidencia.id_colmena_id
+            )
+            ==
+            str(
+                colmena_seleccionada.id_colmena
+            )
+        )
 
-    incidencia.save()
 
-    messages.success(
-        request,
-        "La incidencia fue actualizada correctamente."
+        # ====================================================
+        # NO CAMBIAR HACIA OTRA COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            colmena_seleccionada.estadocolmena
+            ==
+            "Inactiva"
+
+            and
+
+            not es_colmena_actual
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"La colmena "
+                    f"«{colmena_seleccionada.codigocolmena}» "
+                    "está Inactiva y no puede recibir "
+                    "esta incidencia. "
+                    "Debes cambiar primero su estado."
+                )
+            )
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        # ====================================================
+        # NO REABRIR INCIDENCIA EN COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            colmena_seleccionada.estadocolmena
+            ==
+            "Inactiva"
+
+            and
+
+            estado in {
+                "Pendiente",
+                "En proceso",
+            }
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"No puedes dejar la incidencia como "
+                    f"«{estado}» porque la colmena "
+                    f"«{colmena_seleccionada.codigocolmena}» "
+                    "está Inactiva. "
+                    "Reactiva primero la colmena."
+                )
+            )
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
+        apiario_seleccionado = (
+            colmena_seleccionada.id_apiario
+        )
+
+
+        # ====================================================
+        # CONSERVAR ASIGNACIÓN AL APICULTOR
+        # ====================================================
+
+        apicultor_seleccionado = (
+            apiario_seleccionado.id_apicultor
+        )
+
+
+    # ========================================================
+    # GUARDAR TODO
+    # ========================================================
+
+    with transaction.atomic():
+
+
+        # ====================================================
+        # DATOS GENERALES
+        # ====================================================
+
+        incidencia.entidadincidencia = (
+            entidad
+        )
+
+        incidencia.titulo = (
+            titulo
+        )
+
+        incidencia.prioridad = (
+            prioridad
+        )
+
+        incidencia.fechadeteccion = (
+            fecha_deteccion
+        )
+
+        incidencia.estado = (
+            estado
+        )
+
+        incidencia.observaciones = (
+            observaciones
+            or
+            None
+        )
+
+        incidencia.responsable = (
+            responsable
+            or
+            None
+        )
+
+
+        # ====================================================
+        # RELACIONES
+        # ====================================================
+
+        incidencia.id_apicultor = (
+            apicultor_seleccionado
+        )
+
+        incidencia.id_apiario = (
+            apiario_seleccionado
+        )
+
+        incidencia.id_colmena = (
+            colmena_seleccionada
+        )
+
+
+        incidencia.save()
+
+
+        # ====================================================
+        # MIGRAR FOTO ANTIGUA A EVIDENCIAINCIDENCIA
+        #
+        # Solo si estamos agregando nuevas fotos del problema.
+        #
+        # No duplicamos físicamente el archivo: usamos el
+        # mismo nombre almacenado.
+        # ====================================================
+
+        if (
+            tiene_imagen_legacy
+            and
+            nuevas_evidencias_problema
+        ):
+
+
+            evidencia_legacy = (
+                EvidenciaIncidencia(
+                    id_incidencia=incidencia,
+                    tipo=(
+                        EvidenciaIncidencia
+                        .TipoEvidencia
+                        .PROBLEMA
+                    ),
+                    subido_por=None,
+                )
+            )
+
+
+            evidencia_legacy.imagen.name = (
+                incidencia.imagen.name
+            )
+
+
+            evidencia_legacy.save()
+
+
+        # ====================================================
+        # NUEVAS FOTOS DEL PROBLEMA
+        # ====================================================
+
+        primera_nueva_problema = None
+
+
+        for archivo in nuevas_evidencias_problema:
+
+
+            evidencia = (
+                EvidenciaIncidencia.objects.create(
+                    id_incidencia=incidencia,
+                    tipo=(
+                        EvidenciaIncidencia
+                        .TipoEvidencia
+                        .PROBLEMA
+                    ),
+                    imagen=archivo,
+                    subido_por=request.user,
+                )
+            )
+
+
+            if primera_nueva_problema is None:
+
+                primera_nueva_problema = (
+                    evidencia
+                )
+
+
+        # ====================================================
+        # COMPATIBILIDAD CON INCIDENCIA.IMAGEN
+        #
+        # Si era una incidencia sin imagen antigua, hacemos
+        # que el campo legacy apunte a la primera foto.
+        # ====================================================
+
+        if (
+            not incidencia.imagen
+            and
+            primera_nueva_problema
+        ):
+
+            incidencia.imagen.name = (
+                primera_nueva_problema
+                .imagen
+                .name
+            )
+
+
+            incidencia.save(
+                update_fields=[
+                    "imagen"
+                ]
+            )
+
+
+        # ====================================================
+        # NUEVAS FOTOS DE SOLUCIÓN
+        # ====================================================
+
+        for archivo in nuevas_evidencias_solucion:
+
+
+            EvidenciaIncidencia.objects.create(
+                id_incidencia=incidencia,
+                tipo=(
+                    EvidenciaIncidencia
+                    .TipoEvidencia
+                    .SOLUCION
+                ),
+                imagen=archivo,
+                subido_por=request.user,
+            )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    total_nuevas = (
+        len(nuevas_evidencias_problema)
+        +
+        len(nuevas_evidencias_solucion)
     )
 
-    return redirect("incidencias_admin")
+
+    if total_nuevas > 0:
+
+        messages.success(
+            request,
+            "La incidencia fue actualizada correctamente. "
+            f"Se agregaron {total_nuevas} "
+            "evidencia(s) fotográfica(s)."
+        )
+
+    else:
+
+        messages.success(
+            request,
+            "La incidencia fue actualizada correctamente."
+        )
+
+
+    return redirect(
+        "incidencias_admin"
+    )
 
 #Eliminar incidencia
 
@@ -6721,6 +9969,30 @@ def usuarios_roles_admin(request):
                 puede_editar_administrador,
 
         })
+
+    # ========================================================
+    # PAGINACIÓN DE USUARIOS
+    # 8 REGISTROS POR PÁGINA
+    # ========================================================
+
+    paginador_usuarios = Paginator(
+        usuarios,
+        8
+    )
+
+
+    numero_pagina_usuarios = (
+        request.GET.get(
+            "pagina_usuarios"
+        )
+    )
+
+
+    usuarios = (
+        paginador_usuarios.get_page(
+            numero_pagina_usuarios
+        )
+    )
 
 
     # ========================================================

@@ -711,6 +711,109 @@
 
         </div>
 
+        <!-- =================================================
+        PAGINACIÓN DE USUARIOS
+        ================================================== -->
+
+        {% if usuarios.has_other_pages %}
+
+            <nav
+                class="mt-4"
+                aria-label="Paginación de usuarios"
+            >
+
+                <ul class="pagination justify-content-center">
+
+                    <!-- ANTERIOR -->
+                    {% if usuarios.has_previous %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="?tab=usuarios&pagina_usuarios={{ usuarios.previous_page_number }}"
+                            >
+                                Anterior
+                            </a>
+
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item disabled">
+
+                            <span class="page-link">
+                                Anterior
+                            </span>
+
+                        </li>
+
+                    {% endif %}
+
+
+                    <!-- NÚMEROS DE PÁGINA -->
+                    {% for numero in usuarios.paginator.page_range %}
+
+                        {% if usuarios.number == numero %}
+
+                            <li class="page-item active">
+
+                                <span class="page-link">
+                                    {{ numero }}
+                                </span>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?tab=usuarios&pagina_usuarios={{ numero }}"
+                                >
+                                    {{ numero }}
+                                </a>
+
+                            </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    <!-- SIGUIENTE -->
+                    {% if usuarios.has_next %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="?tab=usuarios&pagina_usuarios={{ usuarios.next_page_number }}"
+                            >
+                                Siguiente
+                            </a>
+
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item disabled">
+
+                            <span class="page-link">
+                                Siguiente
+                            </span>
+
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+        {% endif %}
+
     </div>
 
 

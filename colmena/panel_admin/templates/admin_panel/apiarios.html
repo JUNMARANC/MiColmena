@@ -528,7 +528,17 @@
                                         data-bs-target="#modalEliminarApiario"
 
                                         data-nombre="{{ apiario.nombreapiario }}"
+
                                         data-colmenas="{{ apiario.total_colmenas_reales }}"
+
+                                        data-mantenimientos="{{ apiario.total_mantenimientos_historial }}"
+
+                                        data-incidencias="{{ apiario.total_incidencias_historial }}"
+
+                                        data-seguimientos="{{ apiario.total_seguimientos_historial }}"
+
+                                        data-eventos="{{ apiario.total_eventos_agenda }}"
+
                                         data-url="{% url 'eliminar_apiario' apiario.id_apiario %}"
 
                                         title="Eliminar apiario"
@@ -1706,7 +1716,17 @@
                             data-bs-target="#modalEliminarApiario"
 
                             data-nombre="{{ apiario.nombreapiario }}"
+
                             data-colmenas="{{ apiario.total_colmenas_reales }}"
+
+                            data-mantenimientos="{{ apiario.total_mantenimientos_historial }}"
+
+                            data-incidencias="{{ apiario.total_incidencias_historial }}"
+
+                            data-seguimientos="{{ apiario.total_seguimientos_historial }}"
+
+                            data-eventos="{{ apiario.total_eventos_agenda }}"
+
                             data-url="{% url 'eliminar_apiario' apiario.id_apiario %}"
 
                             title="Eliminar apiario"
@@ -1923,7 +1943,13 @@
     aria-hidden="true"
 >
 
-    <div class="modal-dialog modal-dialog-centered">
+    <div
+        class="
+            modal-dialog
+            modal-dialog-centered
+            modal-dialog-eliminar-apiario
+        "
+    >
 
 
         <div
@@ -2106,8 +2132,8 @@
 
                                 <span>
 
-                                    No tiene colmenas asociadas
-                                    actualmente.
+                                    No tiene colmenas ni información
+                                    histórica asociada y puede eliminarse.
 
                                 </span>
 
@@ -2140,7 +2166,11 @@
                             ></i>
 
 
-                            <div>
+                            <div
+                                class="
+                                    contenido-bloqueo-eliminar-apiario
+                                "
+                            >
 
 
                                 <strong>
@@ -2151,11 +2181,31 @@
 
 
                                 <span
-                                    id="mensajeColmenasApiarioEliminar"
+                                    id="mensajeBloqueoApiarioEliminar"
                                 >
 
-                                    Este apiario tiene
-                                    colmenas asociadas.
+                                    Este apiario tiene información
+                                    relacionada que debe conservarse.
+
+                                </span>
+
+
+                                <ul
+                                    id="listaBloqueosApiarioEliminar"
+                                    class="
+                                        lista-bloqueos-eliminar-apiario
+                                    "
+                                ></ul>
+
+
+                                <span
+                                    class="
+                                        nota-bloqueo-eliminar-apiario
+                                    "
+                                >
+
+                                    El historial asociado al apiario
+                                    debe conservarse en el sistema.
 
                                 </span>
 

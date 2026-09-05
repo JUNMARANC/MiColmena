@@ -687,135 +687,316 @@ MÓDULO APIARIOS
     background: #dc3545;
 }
 
-/*==================================================
-MÓDULO INCIDENCIAS
-==================================================*/
+/* ==========================================================
+   ==========================================================
+   INCIDENCIAS - PANEL ADMINISTRADOR
+   MI COLMENA
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   1. CONTENEDOR GENERAL
+========================================================== */
 
 .incidencias-container {
-    background: #ffffff;
-    border-radius: 22px;
-    padding: 28px;
-    box-shadow: 0 10px 30px rgba(33, 79, 59, 0.08);
     position: relative;
+
     overflow: hidden;
+
+    padding: 28px;
+
+    border-radius: 22px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 10px 30px
+        rgba(33, 79, 59, 0.08);
 }
+
+
+/* ==========================================================
+   2. DECORACIÓN DEL CONTENEDOR
+========================================================== */
 
 .incidencias-container::after {
     content: "";
+
     position: absolute;
+
     top: -18px;
     right: -18px;
+
     width: 60px;
     height: 60px;
-    background: linear-gradient(155deg, var(--amarillo, #F6DE87), var(--verde-medio, #5f9781));
-    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-    opacity: .12;
+
+    background:
+        linear-gradient(
+            155deg,
+            var(--amarillo, #f6de87),
+            var(--verde-medio, #5f9781)
+        );
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    opacity: 0.12;
+
     pointer-events: none;
 }
 
+
+/* ==========================================================
+   3. ENCABEZADO
+========================================================== */
+
 .incidencias-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
     position: relative;
     z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+.incidencias-header > div:first-child {
+    min-width: 0;
 }
 
 .incidencias-header h2 {
-    color: var(--verde-oscuro, #214f3b);
+    margin: 0 0 5px;
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
     font-weight: 700;
-    margin-bottom: 5px;
 }
 
 .incidencias-header h2 i {
-    color: var(--miel, #f0a000);
+    color:
+        var(
+            --miel,
+            #f0a000
+        );
 }
 
 .incidencias-header p {
-    color: #6c757d;
     margin: 0;
+
+    color: #6c757d;
+
+    line-height: 1.6;
 }
 
+
+/* ==========================================================
+   4. ACCIONES DEL ENCABEZADO
+========================================================== */
+
+.incidencias-header .d-flex {
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================
+   5. BOTÓN AGREGAR INCIDENCIA
+========================================================== */
+
 .btn-agregar-incidencia {
-    background: linear-gradient(135deg, var(--verde-medio, #5f9781), var(--verde-oscuro, #214f3b));
-    color: white;
+    padding: 11px 20px;
+
     border: none;
     border-radius: 12px;
-    padding: 11px 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--verde-medio, #5f9781),
+            var(--verde-oscuro, #214f3b)
+        );
+
+    color: #ffffff;
+
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+
+    box-shadow:
+        0 4px 10px
+        rgba(33, 79, 59, 0.18);
+
     transition:
-        transform .3s cubic-bezier(.34, 1.56, .64, 1),
-        box-shadow .25s ease,
-        background .3s ease;
+        transform 0.3s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow 0.25s ease,
+        background 0.3s ease;
 }
 
 .btn-agregar-incidencia:hover {
-    background: linear-gradient(135deg, var(--verde-oscuro, #214f3b), var(--verde-medio, #5f9781));
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+    background:
+        linear-gradient(
+            135deg,
+            var(--verde-oscuro, #214f3b),
+            var(--verde-medio, #5f9781)
+        );
+
+    color: #ffffff;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 9px 18px
+        rgba(33, 79, 59, 0.26);
 }
 
 .btn-agregar-incidencia:active {
-    transform: translateY(0) scale(.97);
+    transform:
+        translateY(0)
+        scale(0.97);
 }
 
+
+/* ==========================================================
+   6. FILTROS
+========================================================== */
+
 .filtros-incidencias {
-    background: #f7fbf8;
+    margin-bottom: 25px;
+
+    padding: 20px;
+
     border: 1px solid #dcebe1;
     border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 25px;
+
+    background: #f7fbf8;
 }
 
 .filtros-incidencias label {
+    margin-bottom: 6px;
+
     color: #214f3b;
+
     font-size: 0.88rem;
     font-weight: 600;
-    margin-bottom: 6px;
 }
 
 .filtros-incidencias .form-select,
 .filtros-incidencias .form-control {
-    border-radius: 10px;
-    border: 1px solid #ceddd3;
     min-height: 42px;
+
+    border: 1px solid #ceddd3;
+    border-radius: 10px;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+.filtros-incidencias .form-select:focus,
+.filtros-incidencias .form-control:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(95, 151, 129, 0.12);
+}
+
+
+/* ==========================================================
+   7. TABLA
+========================================================== */
+
 .tabla-incidencias {
+    width: 100%;
+
     overflow-x: auto;
+
+    border-radius: 14px;
 }
 
 .tabla-incidencias table {
     min-width: 1000px;
+
+    margin: 0;
 }
+
+
+/* ==========================================================
+   8. CABECERA DE TABLA
+========================================================== */
 
 .tabla-incidencias thead th {
-    background: #f1f8f3;
-    color: #214f3b;
-    border-bottom: none;
-    font-size: 0.88rem;
-    white-space: nowrap;
     padding: 15px;
+
+    border-bottom: none;
+
+    background: #f1f8f3;
+
+    color: #214f3b;
+
+    font-size: 0.88rem;
+    font-weight: 700;
+
+    white-space: nowrap;
 }
 
+
+/* ==========================================================
+   9. FILAS DE TABLA
+========================================================== */
+
 .tabla-incidencias tbody td {
-    vertical-align: middle;
     padding: 15px;
+
     color: #34473e;
+
+    vertical-align: middle;
 }
+
+.tabla-incidencias tbody tr {
+    transition:
+        background 0.2s ease;
+}
+
+.tabla-incidencias tbody tr:hover {
+    background:
+        rgba(247, 251, 248, 0.72);
+}
+
+
+/* ==========================================================
+   10. BADGE DE ENTIDAD
+========================================================== */
 
 .entidad-badge {
     display: inline-flex;
     align-items: center;
+
     gap: 6px;
+
     padding: 7px 11px;
+
     border-radius: 20px;
+
     font-size: 0.82rem;
     font-weight: 600;
+
+    white-space: nowrap;
 }
 
 .entidad-apicultor {
@@ -833,25 +1014,47 @@ MÓDULO INCIDENCIAS
     color: #8c6812;
 }
 
-/* Badges de prioridad (propios de incidencias) */
+
+/* ==========================================================
+   11. BADGES DE PRIORIDAD
+========================================================== */
 
 .badge-prioridad {
     display: inline-flex;
     align-items: center;
+
     gap: 6px;
+
     padding: 7px 11px;
+
     border-radius: 20px;
+
     font-size: 0.80rem;
     font-weight: 600;
+
+    white-space: nowrap;
 }
 
 .badge-prioridad::before {
     content: "";
+
     width: 7px;
     height: 7px;
+
     flex-shrink: 0;
-    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-    background: currentColor;
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    background:
+        currentColor;
 }
 
 .prioridad-baja {
@@ -872,21 +1075,53 @@ MÓDULO INCIDENCIAS
 .prioridad-critica {
     background: #ffd9dc;
     color: #a72330;
-    animation: pulsoPrioridadCritica 1.8s ease-in-out infinite;
+
+    animation:
+        pulsoPrioridadCritica
+        1.8s ease-in-out infinite;
 }
+
+
+/* ==========================================================
+   12. ANIMACIÓN PRIORIDAD CRÍTICA
+========================================================== */
 
 @keyframes pulsoPrioridadCritica {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(167, 35, 48, .35); }
-    50%      { box-shadow: 0 0 0 5px rgba(167, 35, 48, 0); }
-}
 
-@media (prefers-reduced-motion: reduce) {
-    .prioridad-critica {
-        animation: none;
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 0
+            rgba(167, 35, 48, 0.35);
     }
+
+    50% {
+        box-shadow:
+            0 0 0 5px
+            rgba(167, 35, 48, 0);
+    }
+
 }
 
-/* Estados (reutiliza la base .badge-estado de la sección BADGES) */
+
+/* ==========================================================
+   13. BADGES DE ESTADO
+========================================================== */
+
+.badge-estado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 0.80rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
 
 .estado-pendiente {
     background: #fff4ca;
@@ -903,20 +1138,48 @@ MÓDULO INCIDENCIAS
     color: #287547;
 }
 
+
+/* ==========================================================
+   14. ACCIONES DE INCIDENCIA
+========================================================== */
+
 .acciones-incidencia {
     display: flex;
+    align-items: center;
     justify-content: center;
+
     gap: 6px;
 }
+
+
+/* ==========================================================
+   15. BOTONES DE ACCIÓN
+========================================================== */
 
 .btn-accion {
     width: 36px;
     height: 36px;
-    border-radius: 9px;
-    border: none;
+
     display: inline-flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 9px;
+
+    font-size: 0.95rem;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-accion:hover {
+    transform:
+        translateY(-2px);
 }
 
 .btn-ver {
@@ -924,92 +1187,1086 @@ MÓDULO INCIDENCIAS
     color: #2f65a7;
 }
 
+.btn-ver:hover {
+    background: #d8e8fb;
+    color: #24588f;
+}
+
 .btn-editar {
     background: #fff4ca;
     color: #8c6812;
 }
 
+.btn-editar:hover {
+    background: #f8e8a8;
+    color: #75560d;
+}
+
+
+/* ==========================================================
+   16. BOTÓN BORRAR
+   Soporta ambos nombres de clase
+========================================================== */
+
+.btn-borrar,
 .btn-eliminar {
     background: #ffdfe2;
     color: #a72330;
 }
 
-.modal-header-incidencia {
-    background: linear-gradient(135deg, #214f3b, #5f9781);
-    color: white;
-    border-bottom: none;
-    padding: 20px 24px;
+.btn-borrar:hover,
+.btn-eliminar:hover {
+    background: #f8c8cd;
+    color: #8e1722;
 }
 
+
+/* ==========================================================
+   17. MODALES
+========================================================== */
+
+.modal-header-incidencia {
+    padding: 20px 24px;
+
+    border-bottom: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #214f3b,
+            #5f9781
+        );
+
+    color: #ffffff;
+}
+
+.modal-header-incidencia .modal-title {
+    font-weight: 700;
+}
+
+.modal-header-incidencia small {
+    color:
+        rgba(255, 255, 255, 0.78);
+}
+
+
+/* ==========================================================
+   18. BODY DEL MODAL
+========================================================== */
+
 .modal-body label {
-    color: #214f3b;
-    font-weight: 600;
     margin-bottom: 6px;
+
+    color: #214f3b;
+
+    font-weight: 600;
 }
 
 .modal-body .form-control,
 .modal-body .form-select {
-    border-radius: 10px;
     border: 1px solid #ceddd3;
+    border-radius: 10px;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(95, 151, 129, 0.12);
+}
+
+
+/* ==========================================================
+   19. IMAGEN ANTIGUA
+   Se conserva por compatibilidad
+========================================================== */
 
 .imagen-incidencia {
     width: 100%;
     max-height: 280px;
+
     object-fit: cover;
+
     border-radius: 14px;
 }
 
 .sin-imagen {
-    background: #f1f8f3;
-    border-radius: 14px;
     padding: 35px;
-    text-align: center;
+
+    border-radius: 14px;
+
+    background: #f1f8f3;
+
     color: #789085;
+
+    text-align: center;
 }
 
+
+/* ==========================================================
+   20. DATOS DEL DETALLE
+========================================================== */
+
 .detalle-item {
-    background: #f7fbf8;
-    border-radius: 12px;
-    padding: 12px 15px;
     height: 100%;
+
+    padding: 12px 15px;
+
+    border: 1px solid rgba(33, 79, 59, 0.05);
+    border-radius: 12px;
+
+    background: #f7fbf8;
 }
 
 .detalle-item small {
-    color: #708178;
     display: block;
+
     margin-bottom: 3px;
+
+    color: #708178;
 }
 
 .detalle-item strong {
     color: #214f3b;
+
+    overflow-wrap: anywhere;
 }
+
+
+/* ==========================================================
+   ==========================================================
+   EVIDENCIAS MÚLTIPLES
+   MODAL VER INCIDENCIA
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   21. CONTENEDOR GENERAL
+========================================================== */
+
+.admin-incidencia-evidencias-detalle {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    margin-top: 8px;
+}
+
+
+/* ==========================================================
+   22. BLOQUE PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.admin-evidencias-bloque {
+    width: 100%;
+
+    padding: 16px;
+
+    border: 1px solid #dfe8e2;
+    border-radius: 15px;
+
+    background: #ffffff;
+}
+
+.admin-evidencias-bloque.problema {
+    border-color: #ead5d2;
+
+    background: #fffafa;
+}
+
+.admin-evidencias-bloque.solucion {
+    border-color: #d7e7d5;
+
+    background: #f9fcf8;
+}
+
+
+/* ==========================================================
+   23. HEADER DE EVIDENCIAS
+========================================================== */
+
+.admin-evidencias-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+
+/* ==========================================================
+   24. INFORMACIÓN DEL HEADER
+========================================================== */
+
+.admin-evidencias-header-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+.admin-evidencias-header-info > div:last-child {
+    min-width: 0;
+}
+
+.admin-evidencias-header-info h6 {
+    margin: 0;
+
+    color: #214f3b;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.admin-evidencias-header-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #77877e;
+
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   25. ICONOS PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.admin-evidencias-icono {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    font-size: 1rem;
+}
+
+.admin-evidencias-icono.problema {
+    background: #fce2de;
+    color: #a84d44;
+}
+
+.admin-evidencias-icono.solucion {
+    background: #e7f2e3;
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   26. CONTADORES
+========================================================== */
+
+.admin-evidencias-contador {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.admin-evidencias-contador.problema {
+    background: #fce2de;
+    color: #a84d44;
+}
+
+.admin-evidencias-contador.solucion {
+    background: #e7f2e3;
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   27. GRID DE FOTOGRAFÍAS
+========================================================== */
+
+.admin-evidencias-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   28. TARJETA DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-item {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #dfe6e1;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 10px
+        rgba(33, 79, 59, 0.05);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-evidencia-item:hover {
+    border-color: #c7d5cc;
+
+    box-shadow:
+        0 7px 16px
+        rgba(33, 79, 59, 0.09);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* ==========================================================
+   29. IMAGEN DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-imagen {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+
+    background: #eef3ef;
+}
+
+.admin-evidencia-imagen img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.25s ease;
+}
+
+.admin-evidencia-item:hover
+.admin-evidencia-imagen img {
+    transform:
+        scale(1.025);
+}
+
+
+/* ==========================================================
+   30. NÚMERO DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-numero {
+    position: absolute;
+
+    top: 8px;
+    left: 8px;
+
+    z-index: 2;
+
+    min-width: 25px;
+    height: 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 7px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(33, 79, 59, 0.90);
+
+    color: #ffffff;
+
+    font-size: 0.70rem;
+    font-weight: 700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+/* ==========================================================
+   31. BADGE PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.admin-evidencia-badge {
+    position: absolute;
+
+    bottom: 8px;
+    left: 8px;
+
+    z-index: 2;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 0.67rem;
+    font-weight: 700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+.admin-evidencia-badge.problema {
+    background:
+        rgba(252, 226, 222, 0.95);
+
+    color: #a84d44;
+}
+
+.admin-evidencia-badge.solucion {
+    background:
+        rgba(231, 242, 227, 0.95);
+
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   32. INFORMACIÓN DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 10px 11px;
+}
+
+.admin-evidencia-info > div {
+    min-width: 0;
+}
+
+.admin-evidencia-info strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #214f3b;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-evidencia-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #849087;
+
+    font-size: 0.69rem;
+}
+
+.admin-evidencia-info > i {
+    flex-shrink: 0;
+
+    color: #9b7772;
+
+    font-size: 1rem;
+}
+
+.admin-evidencia-item.solucion
+.admin-evidencia-info > i {
+    color: #5f9781;
+}
+
+
+/* ==========================================================
+   33. SIN EVIDENCIAS
+========================================================== */
+
+.admin-evidencias-vacio {
+    min-height: 82px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 14px;
+
+    border: 1px dashed #dfd2cf;
+    border-radius: 11px;
+
+    background: #fffafa;
+
+    color: #78867e;
+}
+
+.admin-evidencias-vacio > i {
+    flex-shrink: 0;
+
+    font-size: 1.3rem;
+
+    color: #a84d44;
+}
+
+.admin-evidencias-vacio strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 0.82rem;
+}
+
+.admin-evidencias-vacio span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #849087;
+
+    font-size: 0.73rem;
+}
+
+.admin-evidencias-vacio.solucion {
+    border-color: #d7e4d5;
+
+    background: #f9fcf8;
+}
+
+.admin-evidencias-vacio.solucion > i {
+    color: #5f9781;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   EDITAR INCIDENCIA
+   EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   34. BLOQUE DE EDICIÓN
+========================================================== */
+
+.admin-editar-evidencias {
+    width: 100%;
+
+    padding: 16px;
+
+    border: 1px solid #dfe7e1;
+    border-radius: 14px;
+
+    background: #fafcfb;
+}
+
+.admin-editar-evidencias.problema {
+    border-color: #ead7d4;
+
+    background: #fffafa;
+}
+
+.admin-editar-evidencias.solucion {
+    border-color: #d8e6d6;
+
+    background: #f9fcf8;
+}
+
+
+/* ==========================================================
+   35. HEADER DE EDICIÓN
+========================================================== */
+
+.admin-editar-evidencias-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+.admin-editar-evidencias-header > div:first-child {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.admin-editar-evidencias-header > div:first-child > i {
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+}
+
+.admin-editar-evidencias.problema
+.admin-editar-evidencias-header
+> div:first-child
+> i {
+    background: #fce2de;
+    color: #a84d44;
+}
+
+.admin-editar-evidencias.solucion
+.admin-editar-evidencias-header
+> div:first-child
+> i {
+    background: #e7f2e3;
+    color: #4f744b;
+}
+
+.admin-editar-evidencias-header h6 {
+    margin: 0;
+
+    color: #214f3b;
+
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.admin-editar-evidencias-header span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7a8980;
+
+    font-size: 0.73rem;
+}
+
+
+/* ==========================================================
+   36. GRID DENTRO DE EDITAR
+========================================================== */
+
+.admin-evidencias-grid.editar {
+    margin-bottom: 15px;
+}
+
+
+/* ==========================================================
+   37. AGREGAR NUEVAS EVIDENCIAS
+========================================================== */
+
+.admin-agregar-evidencias {
+    margin-top: 14px;
+
+    padding-top: 14px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+}
+
+.admin-agregar-evidencias .form-label {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    margin-bottom: 7px;
+
+    color: #214f3b;
+
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.admin-agregar-evidencias .form-control {
+    min-height: 44px;
+
+    border: 1px solid #ceddd3;
+    border-radius: 10px;
+
+    background: #ffffff;
+}
+
+.admin-agregar-evidencias .form-control:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(95, 151, 129, 0.12);
+}
+
+.admin-agregar-evidencias .form-text {
+    margin-top: 6px;
+
+    color: #829087;
+
+    font-size: 0.72rem;
+}
+
+
+/* ==========================================================
+   38. MODAL EDITAR
+========================================================== */
+
+.modal-editar-incidencia
+.modal-dialog {
+    max-width: 900px;
+}
+
+
+/* ==========================================================
+   39. FOOTER DEL MODAL
+========================================================== */
+
+.modal-footer {
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+}
+
+
+/* ==========================================================
+   40. PAGINACIÓN
+========================================================== */
 
 .paginacion-incidencias .page-link {
-    color: #214f3b;
-    border-radius: 9px;
     margin: 0 3px;
+
+    border-radius: 9px;
+
+    color: #214f3b;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
 }
 
-.paginacion-incidencias .page-item.active .page-link {
-    background: #214f3b;
-    border-color: #214f3b;
-    color: white;
+.paginacion-incidencias .page-link:hover {
+    background: #f1f8f3;
+
+    color: #214f3b;
 }
+
+.paginacion-incidencias
+.page-item.active
+.page-link {
+    border-color: #214f3b;
+
+    background: #214f3b;
+
+    color: #ffffff;
+}
+
+
+/* ==========================================================
+   41. SCROLLBAR TABLA
+========================================================== */
+
+.tabla-incidencias {
+    scrollbar-width: thin;
+    scrollbar-color: #aac4b4 transparent;
+}
+
+.tabla-incidencias::-webkit-scrollbar {
+    height: 7px;
+}
+
+.tabla-incidencias::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabla-incidencias::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+
+    background: #aac4b4;
+}
+
+
+/* ==========================================================
+   42. ACCESIBILIDAD - MENOS ANIMACIONES
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .prioridad-critica {
+        animation: none;
+    }
+
+    .btn-agregar-incidencia,
+    .btn-accion,
+    .admin-evidencia-item,
+    .admin-evidencia-imagen img {
+        transition: none;
+    }
+
+}
+
+
+/* ==========================================================
+   43. RESPONSIVE - 992px
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .incidencias-header {
+        align-items: flex-start;
+    }
+
+
+    .admin-evidencias-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+/* ==========================================================
+   44. RESPONSIVE - 768px
+========================================================== */
 
 @media (max-width: 768px) {
+
     .incidencias-container {
         padding: 18px;
     }
 
+
+    /* ======================================================
+       ENCABEZADO
+    ====================================================== */
+
     .incidencias-header {
-        align-items: flex-start;
+        align-items: stretch;
+
         flex-direction: column;
     }
+
+
+    .incidencias-header > .d-flex {
+        width: 100%;
+
+        flex-wrap: wrap;
+    }
+
 
     .btn-agregar-incidencia {
         width: 100%;
     }
+
+
+    /* ======================================================
+       EVIDENCIAS
+    ====================================================== */
+
+    .admin-evidencias-header,
+    .admin-editar-evidencias-header {
+        align-items: flex-start;
+    }
+
+
+    .admin-evidencias-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .admin-evidencia-imagen {
+        aspect-ratio: 16 / 10;
+    }
+
+}
+
+
+/* ==========================================================
+   45. RESPONSIVE - 576px
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .incidencias-container {
+        padding: 14px;
+
+        border-radius: 16px;
+    }
+
+
+    /* ======================================================
+       FILTROS
+    ====================================================== */
+
+    .filtros-incidencias {
+        padding: 14px;
+
+        border-radius: 14px;
+    }
+
+
+    /* ======================================================
+       MODAL
+    ====================================================== */
+
+    .modal-header-incidencia {
+        padding: 16px;
+    }
+
+
+    .modal-body {
+        padding: 16px;
+    }
+
+
+    /* ======================================================
+       HEADER EVIDENCIAS
+    ====================================================== */
+
+    .admin-evidencias-header,
+    .admin-editar-evidencias-header {
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+
+    .admin-evidencias-contador {
+        align-self: flex-start;
+    }
+
+
+    /* ======================================================
+       BLOQUES
+    ====================================================== */
+
+    .admin-evidencias-bloque,
+    .admin-editar-evidencias {
+        padding: 12px;
+
+        border-radius: 12px;
+    }
+
+
+    /* ======================================================
+       EVIDENCIA
+    ====================================================== */
+
+    .admin-evidencia-imagen {
+        aspect-ratio: 4 / 3;
+    }
+
+
+    .admin-evidencia-info {
+        padding: 9px;
+    }
+
+
+    /* ======================================================
+       FOOTER MODAL
+    ====================================================== */
+
+    .modal-footer {
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+    }
+
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+}
+
+
+/* ==========================================================
+   46. RESPONSIVE - 400px
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .admin-evidencias-header-info {
+        align-items: flex-start;
+    }
+
+
+    .admin-evidencias-icono {
+        width: 36px;
+        height: 36px;
+    }
+
+
+    .admin-editar-evidencias-header
+    > div:first-child {
+        align-items: flex-start;
+    }
+
+
+    .admin-evidencia-numero {
+        min-width: 23px;
+        height: 23px;
+    }
+
 }
 
 /*==================================================
@@ -4906,6 +6163,162 @@ MODALES
 
 }
 
+/* =========================================================
+   ANCHO DEL MODAL
+========================================================= */
+
+.modal-dialog-eliminar-apiario {
+
+    max-width: 680px;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DEL BLOQUEO
+========================================================= */
+
+.contenido-bloqueo-eliminar-apiario {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+/* =========================================================
+   LISTA DE MOTIVOS
+========================================================= */
+
+.lista-bloqueos-eliminar-apiario {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+
+    margin:
+        13px
+        0
+        8px;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+.item-bloqueo-eliminar-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 43px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(128, 99, 0, 0.16);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.62);
+
+}
+
+
+.item-bloqueo-eliminar-apiario i {
+
+    flex-shrink: 0;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(128, 99, 0, 0.10);
+
+    font-size: 0.8rem;
+
+}
+
+
+.item-bloqueo-eliminar-apiario span {
+
+    margin: 0;
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   NOTA INFERIOR
+========================================================= */
+
+.nota-bloqueo-eliminar-apiario {
+
+    display: block;
+
+    margin-top: 10px;
+
+    padding-top: 9px;
+
+    border-top:
+        1px solid
+        rgba(128, 99, 0, 0.14);
+
+    font-size: 0.69rem;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-apiario {
+
+        max-width: none;
+
+    }
+
+
+    .lista-bloqueos-eliminar-apiario {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
 
 /* =========================================================
    RESPONSIVE
@@ -4952,6 +6365,666 @@ MODALES
         height: 68px;
 
         font-size: 1.7rem;
+
+    }
+
+}
+
+/* =========================================================
+   MODAL ELIMINAR COLMENA
+========================================================= */
+
+.modal-dialog-eliminar-colmena {
+
+    max-width: 680px;
+
+}
+
+
+.modal-eliminar-colmena {
+
+    overflow: hidden;
+
+    border: 0;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.modal-header-eliminar-colmena {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-colmena .modal-title,
+.modal-header-eliminar-colmena p,
+.modal-header-eliminar-colmena i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-colmena p {
+
+    margin-bottom: 0;
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO DEL HEADER
+========================================================= */
+
+.icono-header-eliminar-colmena {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   CUERPO
+========================================================= */
+
+.modal-body-eliminar-colmena {
+
+    padding:
+        25px
+        28px;
+
+}
+
+
+.contenido-eliminar-colmena {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO PRINCIPAL
+========================================================= */
+
+.icono-advertencia-eliminar-colmena {
+
+    width: 78px;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        3px
+        auto
+        18px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 2rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO Y TEXTO
+========================================================= */
+
+.contenido-eliminar-colmena h5 {
+
+    margin-bottom: 7px;
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-colmena > p {
+
+    max-width: 520px;
+
+    margin:
+        0
+        auto
+        16px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   IDENTIFICADOR DE COLMENA
+========================================================= */
+
+.nombre-colmena-eliminar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        17px;
+
+    border-radius: 12px;
+
+    background: #f4f7f5;
+
+    color:
+        var(--verde-oscuro);
+
+    font-weight: 700;
+
+}
+
+
+.nombre-colmena-eliminar i {
+
+    color:
+        var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida,
+.alerta-eliminacion-colmena-bloqueada {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 22px;
+
+    padding:
+        16px
+        17px;
+
+    border-radius: 14px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   ELIMINACIÓN PERMITIDA
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+/* =========================================================
+   ELIMINACIÓN BLOQUEADA
+========================================================= */
+
+.alerta-eliminacion-colmena-bloqueada {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+/* =========================================================
+   ICONOS DE ALERTA
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida > i,
+.alerta-eliminacion-colmena-bloqueada > i {
+
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    font-size: 1.05rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DE ALERTA
+========================================================= */
+
+.contenido-alerta-eliminar-colmena {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.contenido-alerta-eliminar-colmena strong {
+
+    display: block;
+
+    font-size: 0.82rem;
+
+}
+
+
+.contenido-alerta-eliminar-colmena > span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 0.74rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   LISTA DE MOTIVOS
+========================================================= */
+
+.lista-bloqueos-eliminar-colmena {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 9px;
+
+    margin:
+        14px
+        0
+        8px;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+.item-bloqueo-eliminar-colmena {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-height: 46px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(128, 99, 0, 0.16);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.58);
+
+}
+
+
+.item-bloqueo-eliminar-colmena i {
+
+    flex-shrink: 0;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(128, 99, 0, 0.10);
+
+    font-size: 0.82rem;
+
+}
+
+
+.item-bloqueo-eliminar-colmena div {
+
+    min-width: 0;
+
+}
+
+
+.item-bloqueo-eliminar-colmena strong {
+
+    display: block;
+
+    color: #685200;
+
+    font-size: 0.77rem;
+
+}
+
+
+.item-bloqueo-eliminar-colmena small {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color: #8a750d;
+
+    font-size: 0.68rem;
+
+}
+
+
+/* =========================================================
+   NOTA DE CONSERVACIÓN
+========================================================= */
+
+.nota-historial-eliminar-colmena {
+
+    display: block;
+
+    margin-top: 11px;
+
+    padding-top: 10px;
+
+    border-top:
+        1px solid
+        rgba(128, 99, 0, 0.14);
+
+    font-size: 0.71rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-colmena {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-colmena,
+.btn-confirmar-eliminacion-colmena {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CANCELAR
+========================================================= */
+
+.btn-cancelar-eliminacion-colmena {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-colmena:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR
+========================================================= */
+
+.btn-confirmar-eliminacion-colmena {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-colmena:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   ELIMINAR BLOQUEADO
+========================================================= */
+
+.btn-confirmar-eliminacion-colmena:disabled,
+.btn-confirmar-eliminacion-colmena.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-colmena {
+
+        max-width: none;
+
+    }
+
+
+    .modal-header-eliminar-colmena {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-body-eliminar-colmena {
+
+        padding:
+            21px
+            18px;
+
+    }
+
+
+    .modal-footer-eliminar-colmena {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-colmena,
+    .btn-confirmar-eliminacion-colmena {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-colmena {
+
+        width: 68px;
+
+        height: 68px;
+
+        font-size: 1.7rem;
+
+    }
+
+
+    .lista-bloqueos-eliminar-colmena {
+
+        grid-template-columns: 1fr;
 
     }
 
@@ -6844,176 +8917,2143 @@ PAGINADOR
 
 }
 
-/* ---------- GRID DE TARJETAS DE MANTENIMIENTOS ---------- */
+/* ==========================================================
+   ==========================================================
+   MÓDULO MANTENIMIENTOS - PANEL ADMINISTRADOR
+   MI COLMENA
+   ==========================================================
+   ========================================================== */
 
-.grid-tarjetas-mantenimientos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-}
 
-.tarjeta-mantenimiento {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #e6eee9;
-    border-left: 5px solid #c8d4ce;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow: var(--sombra);
-    padding: 18px;
-    transition: transform .22s ease, box-shadow .22s ease, border-left-color .22s ease;
-}
-
-.tarjeta-mantenimiento:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
-}
-
-.tarjeta-mantenimiento.prioridad-alta {
-    border-left-color: #e05656;
-    animation: pulsoAlertaRoja 2.2s ease-in-out infinite;
-}
-
-.tarjeta-mantenimiento.prioridad-media {
-    border-left-color: #e0a856;
-}
-
-.tarjeta-mantenimiento.prioridad-baja {
-    border-left-color: #56b17a;
-}
-
-.tarjeta-mantenimiento-encabezado {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.tarjeta-mantenimiento-encabezado h5 {
-    margin: 0;
-    color: var(--verde-oscuro);
-    font-weight: 700;
-    font-size: 1.02rem;
-}
-
-/* Pulso en los badges de estados que requieren atención */
-.tarjeta-mantenimiento-encabezado .badge-estado.badge-precaucion,
-.tarjeta-mantenimiento-encabezado .badge-estado.badge-deficiente {
-    animation: pulsoAlertaMiel 1.8s ease-in-out infinite;
-}
-
-.tarjeta-mantenimiento-encabezado .badge-estado.badge-deficiente {
-    animation-name: pulsoAlertaRoja;
-}
-
-.tarjeta-mantenimiento-dato {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    color: var(--gris-texto);
-    font-size: .85rem;
-}
-
-.tarjeta-mantenimiento-dato i {
-    color: var(--verde-medio);
-    min-width: 16px;
-}
-
-/* Pequeño rebote en los íconos de datos al pasar el mouse por la tarjeta */
-.tarjeta-mantenimiento:hover .tarjeta-mantenimiento-dato i {
-    animation: rebotitoIconoTarjeta .5s ease;
-}
-
-.tarjeta-mantenimiento-prioridad {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: .78rem;
-    font-weight: 600;
-    color: #8a7350;
-    background: #fbf3e6;
-    padding: 4px 10px;
-    border-radius: 999px;
-}
-
-/* Entrada escalonada "potente" específica de las tarjetas (pop + leve giro) */
-.tarjeta-mantenimiento.anim-entrada-tarjeta {
-    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
-}
-
-/* Foco visible para navegación por teclado */
-.tarjeta-mantenimiento:focus-within {
-    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
-}
-
-/* Botones de acción: aparecen al hover solo en escritorio */
-@media (hover: hover) and (pointer: fine) {
-
-    .tarjeta-mantenimiento .acciones .btn-accion {
-        opacity: 0;
-        transform: translateY(6px);
-        transition: opacity .25s ease, transform .25s ease;
-    }
-
-    .tarjeta-mantenimiento:hover .acciones .btn-accion,
-    .tarjeta-mantenimiento:focus-within .acciones .btn-accion {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .tarjeta-mantenimiento .acciones .btn-accion:nth-child(1) { transition-delay: 0s; }
-    .tarjeta-mantenimiento .acciones .btn-accion:nth-child(2) { transition-delay: .04s; }
-    .tarjeta-mantenimiento .acciones .btn-accion:nth-child(3) { transition-delay: .08s; }
-
-}
-
-/* Presión táctil en móvil (sin hover disponible) */
-@media (hover: none) {
-
-    .tarjeta-mantenimiento:active {
-        transform: scale(.97);
-        transition: transform .15s ease;
-    }
-
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .tarjeta-mantenimiento,
-    .tarjeta-mantenimiento:hover {
-        transform: none !important;
-    }
-
-    .tarjeta-mantenimiento.prioridad-alta,
-    .tarjeta-mantenimiento-encabezado .badge-estado.badge-precaucion,
-    .tarjeta-mantenimiento-encabezado .badge-estado.badge-deficiente,
-    .tarjeta-mantenimiento:hover .tarjeta-mantenimiento-dato i {
-        animation: none !important;
-    }
-
-    .tarjeta-mantenimiento.anim-entrada-tarjeta {
-        animation: none !important;
-    }
-
-    .tarjeta-mantenimiento .acciones .btn-accion {
-        opacity: 1 !important;
-        transform: none !important;
-    }
-
-}
-
-@media (max-width: 576px) {
-    .grid-tarjetas-mantenimientos {
-        grid-template-columns: 1fr;
-    }
-}
+/* ==========================================================
+   1. ENCABEZADO DEL MÓDULO
+========================================================== */
 
 .encabezado-mantenimientos-panal {
     padding: 14px 18px;
     border-radius: 18px;
 }
+
+
+/* ==========================================================
+   2. GRID DE TARJETAS
+========================================================== */
+
+.grid-tarjetas-mantenimientos {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(280px, 1fr)
+        );
+
+    gap: 20px;
+}
+
+
+/* ==========================================================
+   3. TARJETA DE MANTENIMIENTO
+========================================================== */
+
+.tarjeta-mantenimiento {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 18px;
+
+    border:
+        1px solid
+        #e6eee9;
+
+    border-left:
+        5px solid
+        #c8d4ce;
+
+    border-radius: 16px;
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        var(
+            --sombra,
+            0 12px 30px rgba(0,0,0,.08)
+        );
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-left-color .22s ease;
+}
+
+
+/* ==========================================================
+   4. HOVER DE LA TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento:hover {
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 14px 28px
+        rgba(33, 79, 59, .12);
+}
+
+
+/* ==========================================================
+   5. PRIORIDADES
+========================================================== */
+
+.tarjeta-mantenimiento.prioridad-baja {
+    border-left-color:
+        #56b17a;
+}
+
+
+.tarjeta-mantenimiento.prioridad-media {
+    border-left-color:
+        #e0a856;
+}
+
+
+.tarjeta-mantenimiento.prioridad-alta {
+    border-left-color:
+        #e05656;
+
+    animation:
+        pulsoAlertaRoja
+        2.2s
+        ease-in-out
+        infinite;
+}
+
+
+.tarjeta-mantenimiento.prioridad-crítica,
+.tarjeta-mantenimiento.prioridad-critica {
+    border-left-color:
+        #a72330;
+
+    animation:
+        pulsoAlertaRoja
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   6. ENCABEZADO DE TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento-encabezado {
+    display: flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap: 10px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.tarjeta-mantenimiento-encabezado h5 {
+    margin: 0;
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-size:
+        1.02rem;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.4;
+}
+
+
+/* ==========================================================
+   7. ESTADOS QUE REQUIEREN ATENCIÓN
+========================================================== */
+
+.tarjeta-mantenimiento-encabezado
+.badge-estado.badge-precaucion,
+
+.tarjeta-mantenimiento-encabezado
+.badge-estado.badge-deficiente {
+
+    animation:
+        pulsoAlertaMiel
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+
+.tarjeta-mantenimiento-encabezado
+.badge-estado.badge-deficiente {
+
+    animation-name:
+        pulsoAlertaRoja;
+}
+
+
+/* ==========================================================
+   8. DATOS DE LA TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento-dato {
+    display: flex;
+
+    align-items:
+        center;
+
+    gap: 8px;
+
+    margin-bottom:
+        8px;
+
+    color:
+        var(
+            --gris-texto,
+            #5f6f66
+        );
+
+    font-size:
+        .85rem;
+}
+
+
+.tarjeta-mantenimiento-dato i {
+    min-width:
+        16px;
+
+    color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+}
+
+
+.tarjeta-mantenimiento-dato small {
+    color:
+        #89958e;
+
+    font-size:
+        .72rem;
+}
+
+
+/* ==========================================================
+   9. ANIMACIÓN DE ICONOS
+========================================================== */
+
+.tarjeta-mantenimiento:hover
+.tarjeta-mantenimiento-dato i {
+
+    animation:
+        rebotitoIconoTarjeta
+        .5s
+        ease;
+}
+
+
+/* ==========================================================
+   10. PRIORIDAD EN TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento-prioridad {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        5px 10px;
+
+    border-radius:
+        999px;
+
+    background:
+        #fbf3e6;
+
+    color:
+        #8a7350;
+
+    font-size:
+        .78rem;
+
+    font-weight:
+        600;
+}
+
+
+/* ==========================================================
+   11. ANIMACIÓN DE ENTRADA
+========================================================== */
+
+.tarjeta-mantenimiento.anim-entrada-tarjeta {
+    animation:
+        entradaTarjetaApiario
+        .55s
+        cubic-bezier(.2, .8, .2, 1)
+        both;
+}
+
+
+/* ==========================================================
+   12. FOCO ACCESIBLE
+========================================================== */
+
+.tarjeta-mantenimiento:focus-within {
+    box-shadow:
+        0 0 0 3px
+        rgba(240, 160, 0, .4),
+
+        0 20px 40px
+        rgba(33, 79, 59, .18);
+}
+
+
+/* ==========================================================
+   ==========================================================
+   FORMULARIOS DE MANTENIMIENTO
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   13. SECCIÓN INTERNA DEL FORMULARIO
+========================================================== */
+
+.mantenimiento-form-seccion {
+    padding:
+        18px;
+
+    border:
+        1px solid
+        #e2ebe5;
+
+    border-radius:
+        16px;
+
+    background:
+        #fbfdfc;
+}
+
+
+/* ==========================================================
+   14. HEADER DE SECCIÓN
+========================================================== */
+
+.mantenimiento-form-seccion-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    margin-bottom:
+        18px;
+}
+
+
+.mantenimiento-form-seccion-header > i {
+    width:
+        42px;
+
+    height:
+        42px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        12px;
+
+    background:
+        #e7f4ea;
+
+    color:
+        #287547;
+
+    font-size:
+        1rem;
+}
+
+
+.mantenimiento-form-seccion-header h5 {
+    margin:
+        0 0 3px;
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-size:
+        .96rem;
+
+    font-weight:
+        700;
+}
+
+
+.mantenimiento-form-seccion-header p {
+    margin:
+        0;
+
+    color:
+        #79877f;
+
+    font-size:
+        .75rem;
+
+    line-height:
+        1.5;
+}
+
+
+/* ==========================================================
+   15. OPCIONES DE ALCANCE
+========================================================== */
+
+.mantenimiento-alcance-opciones {
+    width:
+        100%;
+}
+
+
+.mantenimiento-alcance-opcion {
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        border-color .2s ease;
+}
+
+
+.mantenimiento-alcance-opcion:hover {
+    transform:
+        translateY(-2px);
+}
+
+
+.mantenimiento-alcance-opcion
+input[type="radio"] {
+
+    margin-right:
+        4px;
+
+    accent-color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+}
+
+
+/* ==========================================================
+   ==========================================================
+   INPUTS DE EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   16. CAJA DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-input {
+    height:
+        100%;
+
+    padding:
+        14px;
+
+    border:
+        1px solid
+        #e1e9e4;
+
+    border-radius:
+        14px;
+
+    background:
+        #ffffff;
+}
+
+
+/* ==========================================================
+   17. COLORES DE CADA ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-input.antes {
+    border-color:
+        #ead8c8;
+
+    background:
+        #fffaf5;
+}
+
+
+.mantenimiento-evidencia-input.durante {
+    border-color:
+        #d7e2ef;
+
+    background:
+        #f8fbff;
+}
+
+
+.mantenimiento-evidencia-input.despues {
+    border-color:
+        #d5e6d6;
+
+    background:
+        #f8fcf8;
+}
+
+
+/* ==========================================================
+   18. HEADER DEL INPUT
+========================================================== */
+
+.mantenimiento-evidencia-input-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.mantenimiento-evidencia-input-header h6 {
+    margin:
+        0;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .86rem;
+
+    font-weight:
+        700;
+}
+
+
+.mantenimiento-evidencia-input-header span {
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        #839087;
+
+    font-size:
+        .68rem;
+}
+
+
+/* ==========================================================
+   19. ICONOS DE ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-icono {
+    width:
+        38px;
+
+    height:
+        38px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        11px;
+
+    font-size:
+        .95rem;
+}
+
+
+.mantenimiento-evidencia-icono.antes {
+    background:
+        #f9e7d6;
+
+    color:
+        #a86628;
+}
+
+
+.mantenimiento-evidencia-icono.durante {
+    background:
+        #dceafb;
+
+    color:
+        #396eaa;
+}
+
+
+.mantenimiento-evidencia-icono.despues {
+    background:
+        #e2f1df;
+
+    color:
+        #4f744b;
+}
+
+
+/* ==========================================================
+   20. INPUT FILE
+========================================================== */
+
+.mantenimiento-input-evidencias {
+    min-height:
+        45px;
+
+    border:
+        1px solid
+        #ceddd3;
+
+    border-radius:
+        10px;
+
+    background:
+        #ffffff;
+
+    font-size:
+        .78rem;
+}
+
+
+.mantenimiento-input-evidencias:focus {
+    border-color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+
+    box-shadow:
+        0 0 0 .2rem
+        rgba(95, 151, 129, .12);
+}
+
+
+/* ==========================================================
+   ==========================================================
+   DETALLE DE EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   21. CONTENEDOR GENERAL
+========================================================== */
+
+.mantenimiento-evidencias-detalle {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        18px;
+}
+
+
+/* ==========================================================
+   22. BLOQUE DE ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-bloque {
+    padding:
+        16px;
+
+    border:
+        1px solid
+        #e0e8e3;
+
+    border-radius:
+        15px;
+
+    background:
+        #ffffff;
+}
+
+
+.mantenimiento-evidencia-bloque.antes {
+    border-color:
+        #ead8c8;
+
+    background:
+        #fffaf6;
+}
+
+
+.mantenimiento-evidencia-bloque.durante {
+    border-color:
+        #d5e1ed;
+
+    background:
+        #f8fbff;
+}
+
+
+.mantenimiento-evidencia-bloque.despues {
+    border-color:
+        #d4e5d5;
+
+    background:
+        #f8fcf8;
+}
+
+
+/* ==========================================================
+   23. HEADER DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        14px;
+
+    margin-bottom:
+        14px;
+}
+
+
+/* ==========================================================
+   24. TÍTULO DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-titulo {
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+
+.mantenimiento-evidencia-titulo > div {
+    min-width:
+        0;
+}
+
+
+.mantenimiento-evidencia-titulo h5 {
+    margin:
+        0;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .91rem;
+
+    font-weight:
+        700;
+}
+
+
+.mantenimiento-evidencia-titulo
+> div
+> span {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        #7d8982;
+
+    font-size:
+        .71rem;
+}
+
+
+/* ==========================================================
+   25. CONTADOR
+========================================================== */
+
+.mantenimiento-evidencia-contador {
+    flex-shrink:
+        0;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        29px;
+
+    padding:
+        6px 10px;
+
+    border-radius:
+        30px;
+
+    font-size:
+        .70rem;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+}
+
+
+.mantenimiento-evidencia-contador.antes {
+    background:
+        #f8e7d8;
+
+    color:
+        #9b612b;
+}
+
+
+.mantenimiento-evidencia-contador.durante {
+    background:
+        #dceafb;
+
+    color:
+        #396eaa;
+}
+
+
+.mantenimiento-evidencia-contador.despues {
+    background:
+        #e2f1df;
+
+    color:
+        #4f744b;
+}
+
+
+/* ==========================================================
+   26. GRID DE FOTOGRAFÍAS
+========================================================== */
+
+.mantenimiento-evidencias-grid {
+    width:
+        100%;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap:
+        12px;
+}
+
+
+/* ==========================================================
+   27. GRID EN EDICIÓN
+========================================================== */
+
+.mantenimiento-evidencias-grid.editar {
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    margin-bottom:
+        16px;
+}
+
+
+/* ==========================================================
+   28. TARJETA DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-item {
+    min-width:
+        0;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        #dee7e1;
+
+    border-radius:
+        12px;
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 3px 10px
+        rgba(33, 79, 59, .05);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+
+.mantenimiento-evidencia-item:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        #c6d6cc;
+
+    box-shadow:
+        0 7px 16px
+        rgba(33, 79, 59, .09);
+}
+
+
+/* ==========================================================
+   29. CONTENEDOR DE IMAGEN
+========================================================== */
+
+.mantenimiento-evidencia-imagen {
+    position:
+        relative;
+
+    width:
+        100%;
+
+    aspect-ratio:
+        4 / 3;
+
+    overflow:
+        hidden;
+
+    background:
+        #eef3ef;
+}
+
+
+/* ==========================================================
+   30. IMAGEN
+========================================================== */
+
+.mantenimiento-evidencia-imagen img {
+    display:
+        block;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .25s ease,
+        filter .25s ease;
+}
+
+
+.mantenimiento-evidencia-item:hover
+.mantenimiento-evidencia-imagen img {
+
+    transform:
+        scale(1.03);
+
+    filter:
+        brightness(.96);
+}
+
+
+/* ==========================================================
+   31. NÚMERO
+========================================================== */
+
+.mantenimiento-evidencia-numero {
+    position:
+        absolute;
+
+    top:
+        8px;
+
+    left:
+        8px;
+
+    z-index:
+        2;
+
+    min-width:
+        25px;
+
+    height:
+        25px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        0 7px;
+
+    border-radius:
+        30px;
+
+    background:
+        rgba(33, 79, 59, .90);
+
+    color:
+        #ffffff;
+
+    font-size:
+        .68rem;
+
+    font-weight:
+        700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+/* ==========================================================
+   32. BADGE DE ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-badge {
+    position:
+        absolute;
+
+    left:
+        8px;
+
+    bottom:
+        8px;
+
+    z-index:
+        2;
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        30px;
+
+    font-size:
+        .65rem;
+
+    font-weight:
+        700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+.mantenimiento-evidencia-badge.antes {
+    background:
+        rgba(249, 231, 214, .95);
+
+    color:
+        #95591f;
+}
+
+
+.mantenimiento-evidencia-badge.durante {
+    background:
+        rgba(220, 234, 251, .95);
+
+    color:
+        #356da9;
+}
+
+
+.mantenimiento-evidencia-badge.despues {
+    background:
+        rgba(226, 241, 223, .95);
+
+    color:
+        #4f744b;
+}
+
+
+/* ==========================================================
+   33. INFORMACIÓN DE LA FOTO
+========================================================== */
+
+.mantenimiento-evidencia-info {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    padding:
+        10px 11px;
+}
+
+
+.mantenimiento-evidencia-info > div {
+    min-width:
+        0;
+}
+
+
+.mantenimiento-evidencia-info strong {
+    display:
+        block;
+
+    overflow:
+        hidden;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .75rem;
+
+    font-weight:
+        700;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+
+.mantenimiento-evidencia-info span {
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        #849087;
+
+    font-size:
+        .65rem;
+}
+
+
+.mantenimiento-evidencia-info > i {
+    flex-shrink:
+        0;
+
+    color:
+        #5f9781;
+
+    font-size:
+        .95rem;
+}
+
+
+/* ==========================================================
+   34. SIN EVIDENCIAS
+========================================================== */
+
+.mantenimiento-evidencias-vacio {
+    min-height:
+        80px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        10px;
+
+    padding:
+        14px;
+
+    border:
+        1px dashed
+        #cfdcd4;
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 255, 255, .70);
+
+    color:
+        #7c8981;
+
+    font-size:
+        .73rem;
+
+    text-align:
+        center;
+}
+
+
+.mantenimiento-evidencias-vacio i {
+    color:
+        #6e9680;
+
+    font-size:
+        1.25rem;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   EDITAR MANTENIMIENTO
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   35. CONTENEDOR EVIDENCIAS EXISTENTES
+========================================================== */
+
+.mantenimiento-editar-evidencias {
+    padding:
+        18px;
+
+    border:
+        1px solid
+        #e1e9e4;
+
+    border-radius:
+        16px;
+
+    background:
+        #fbfdfc;
+}
+
+
+/* ==========================================================
+   36. SUBTÍTULOS
+========================================================== */
+
+.mantenimiento-subtitulo-evidencia {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+    margin:
+        16px 0 10px;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .82rem;
+
+    font-weight:
+        700;
+}
+
+
+/* ==========================================================
+   37. INPUTS DEL MODAL
+========================================================== */
+
+.form-mantenimiento .form-control,
+.form-mantenimiento .form-select {
+    min-height:
+        43px;
+
+    border:
+        1px solid
+        #ceddd3;
+
+    border-radius:
+        10px;
+
+    box-shadow:
+        none;
+}
+
+
+.form-mantenimiento textarea.form-control {
+    min-height:
+        100px;
+
+    resize:
+        vertical;
+}
+
+
+.form-mantenimiento .form-control:focus,
+.form-mantenimiento .form-select:focus {
+
+    border-color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+
+    box-shadow:
+        0 0 0 .2rem
+        rgba(95, 151, 129, .12);
+}
+
+
+/* ==========================================================
+   38. LABELS
+========================================================== */
+
+.form-mantenimiento .form-label {
+    margin-bottom:
+        6px;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .80rem;
+
+    font-weight:
+        700;
+}
+
+
+/* ==========================================================
+   39. MODALES DE MANTENIMIENTO
+========================================================== */
+
+.modal-editar-mantenimiento
+.modal-dialog {
+
+    max-width:
+        1100px;
+}
+
+
+.modal-editar-mantenimiento
+.modal-body {
+
+    background:
+        #ffffff;
+}
+
+
+/* ==========================================================
+   40. FOTO EN MODAL
+========================================================== */
+
+.mantenimiento-evidencia-imagen img {
+    user-select:
+        none;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   INTERACCIONES
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   41. BOTONES DE ACCIÓN AL HOVER
+========================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(6px);
+
+        transition:
+            opacity .25s ease,
+            transform .25s ease;
+    }
+
+
+    .tarjeta-mantenimiento:hover
+    .acciones
+    .btn-accion,
+
+    .tarjeta-mantenimiento:focus-within
+    .acciones
+    .btn-accion {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion:nth-child(1) {
+
+        transition-delay:
+            0s;
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion:nth-child(2) {
+
+        transition-delay:
+            .04s;
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion:nth-child(3) {
+
+        transition-delay:
+            .08s;
+    }
+
+}
+
+
+/* ==========================================================
+   42. DISPOSITIVOS TÁCTILES
+========================================================== */
+
+@media (hover: none) {
+
+    .tarjeta-mantenimiento:active {
+        transform:
+            scale(.97);
+
+        transition:
+            transform .15s ease;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   RESPONSIVE
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   43. TABLET GRANDE
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .mantenimiento-evidencias-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .mantenimiento-evidencias-grid.editar {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+/* ==========================================================
+   44. TABLET / MÓVIL
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .mantenimiento-evidencia-header {
+        align-items:
+            flex-start;
+    }
+
+
+    .mantenimiento-form-seccion {
+        padding:
+            14px;
+    }
+
+
+    .mantenimiento-editar-evidencias {
+        padding:
+            14px;
+    }
+
+}
+
+
+/* ==========================================================
+   45. MÓVIL
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .grid-tarjetas-mantenimientos {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencias-grid,
+    .mantenimiento-evidencias-grid.editar {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencia-header {
+        flex-direction:
+            column;
+
+        gap:
+            9px;
+    }
+
+
+    .mantenimiento-evidencia-contador {
+        align-self:
+            flex-start;
+    }
+
+
+    .mantenimiento-form-seccion-header {
+        align-items:
+            flex-start;
+    }
+
+
+    .mantenimiento-alcance-opcion {
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+    }
+
+
+    .mantenimiento-evidencia-imagen {
+        aspect-ratio:
+            16 / 10;
+    }
+
+
+    .mantenimiento-form-seccion,
+    .mantenimiento-editar-evidencias,
+    .mantenimiento-evidencia-bloque {
+
+        padding:
+            12px;
+
+        border-radius:
+            12px;
+    }
+
+}
+
+
+/* ==========================================================
+   46. MÓVILES PEQUEÑOS
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .mantenimiento-form-seccion-header > i,
+    .mantenimiento-evidencia-icono {
+
+        width:
+            35px;
+
+        height:
+            35px;
+    }
+
+
+    .mantenimiento-evidencia-titulo {
+        align-items:
+            flex-start;
+    }
+
+
+    .mantenimiento-evidencia-info {
+        padding:
+            9px;
+    }
+
+}
+
+
+/* ==========================================================
+   47. REDUCIR MOVIMIENTO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-mantenimiento,
+    .tarjeta-mantenimiento:hover {
+
+        transform:
+            none !important;
+    }
+
+
+    .tarjeta-mantenimiento.prioridad-alta,
+
+    .tarjeta-mantenimiento.prioridad-crítica,
+
+    .tarjeta-mantenimiento.prioridad-critica,
+
+    .tarjeta-mantenimiento-encabezado
+    .badge-estado.badge-precaucion,
+
+    .tarjeta-mantenimiento-encabezado
+    .badge-estado.badge-deficiente,
+
+    .tarjeta-mantenimiento:hover
+    .tarjeta-mantenimiento-dato i {
+
+        animation:
+            none !important;
+    }
+
+
+    .tarjeta-mantenimiento.anim-entrada-tarjeta {
+        animation:
+            none !important;
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion {
+
+        opacity:
+            1 !important;
+
+        transform:
+            none !important;
+    }
+
+
+    .mantenimiento-evidencia-item,
+    .mantenimiento-evidencia-imagen img,
+    .mantenimiento-alcance-opcion {
+
+        transition:
+            none !important;
+    }
+
+}
+
+/* ==========================================================
+   48. SCROLL INTERNO DE LOS MODALES DE MANTENIMIENTO
+========================================================== */
+
+
+/* ==========================================================
+   TAMAÑO MÁXIMO DEL MODAL
+========================================================== */
+
+#modalAgregarMantenimiento .modal-dialog,
+.modal-editar-mantenimiento .modal-dialog {
+
+    width:
+        calc(100% - 2rem);
+
+    height:
+        calc(100vh - 2rem);
+
+    height:
+        calc(100dvh - 2rem);
+
+    max-height:
+        calc(100vh - 2rem);
+
+    max-height:
+        calc(100dvh - 2rem);
+
+    margin:
+        1rem auto;
+}
+
+
+/* ==========================================================
+   CONTENEDOR DEL MODAL
+========================================================== */
+
+#modalAgregarMantenimiento .modal-content,
+.modal-editar-mantenimiento .modal-content {
+
+    height:
+        100%;
+
+    max-height:
+        100%;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    overflow:
+        hidden;
+}
+
+
+/* ==========================================================
+   FORMULARIO
+   IMPORTANTE:
+   El formulario ocupa toda la altura disponible.
+========================================================== */
+
+#modalAgregarMantenimiento .form-mantenimiento,
+.modal-editar-mantenimiento .form-mantenimiento {
+
+    display:
+        flex;
+
+    flex:
+        1 1 auto;
+
+    flex-direction:
+        column;
+
+    min-height:
+        0;
+
+    height:
+        100%;
+
+    overflow:
+        hidden;
+}
+
+
+/* ==========================================================
+   HEADER FIJO
+========================================================== */
+
+#modalAgregarMantenimiento .modal-header,
+.modal-editar-mantenimiento .modal-header {
+
+    flex:
+        0 0 auto;
+}
+
+
+/* ==========================================================
+   BODY CON SCROLL
+========================================================== */
+
+#modalAgregarMantenimiento .modal-body,
+.modal-editar-mantenimiento .modal-body {
+
+    flex:
+        1 1 auto;
+
+    min-height:
+        0;
+
+    overflow-x:
+        hidden;
+
+    overflow-y:
+        auto !important;
+
+    overscroll-behavior:
+        contain;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #8eb6a5
+        #edf3ef;
+}
+
+
+/* ==========================================================
+   FOOTER FIJO
+========================================================== */
+
+#modalAgregarMantenimiento .modal-footer,
+.modal-editar-mantenimiento .modal-footer {
+
+    flex:
+        0 0 auto;
+
+    background:
+        #F4F5ED;
+}
+
+
+/* ==========================================================
+   SCROLLBAR - CHROME / EDGE
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar {
+
+    width:
+        9px;
+}
+
+
+/* ==========================================================
+   FONDO DE LA BARRA
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar-track,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar-track {
+
+    background:
+        #edf3ef;
+
+    border-radius:
+        20px;
+}
+
+
+/* ==========================================================
+   BARRA
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar-thumb,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #edf3ef;
+
+    border-radius:
+        20px;
+
+    background:
+        #8eb6a5;
+}
+
+
+/* ==========================================================
+   HOVER DE LA BARRA
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar-thumb:hover,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar-thumb:hover {
+
+    background:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 575.98px) {
+
+    #modalAgregarMantenimiento .modal-dialog,
+    .modal-editar-mantenimiento .modal-dialog {
+
+        width:
+            auto;
+
+        height:
+            calc(100vh - 1rem);
+
+        height:
+            calc(100dvh - 1rem);
+
+        max-height:
+            calc(100vh - 1rem);
+
+        max-height:
+            calc(100dvh - 1rem);
+
+        margin:
+            .5rem;
+    }
+
+}
+
+/* ==========================================================
+   49. MODAL DE VALIDACIONES
+========================================================== */
+
+.modal-validacion-mantenimiento-header {
+    padding: 20px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff8dc,
+            #fffdf3
+        );
+}
+
+
+/* ==========================================================
+   ICONO
+========================================================== */
+
+.modal-validacion-mantenimiento-icono {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #fff1bd;
+
+    color: #b77a00;
+
+    font-size: 1.25rem;
+}
+
+
+/* ==========================================================
+   TÍTULO
+========================================================== */
+
+.modal-validacion-mantenimiento-header
+.modal-title {
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-size: 1rem;
+}
+
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+.modal-validacion-mantenimiento-body {
+    padding: 22px;
+}
+
+
+/* ==========================================================
+   CAJA DEL MENSAJE
+========================================================== */
+
+.modal-validacion-mantenimiento-aviso {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        #f0dfae;
+
+    border-radius: 14px;
+
+    background:
+        #fffdf5;
+
+    color:
+        #5e563d;
+}
+
+
+/* ==========================================================
+   ICONO DEL MENSAJE
+========================================================== */
+
+.modal-validacion-mantenimiento-aviso > i {
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    color: #d79a17;
+
+    font-size: 1.1rem;
+}
+
+
+/* ==========================================================
+   TEXTO
+========================================================== */
+
+.modal-validacion-mantenimiento-aviso p {
+    color: #526058;
+
+    font-size: .84rem;
+
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+
+/* ==========================================================
+   ANIMACIÓN
+========================================================== */
+
+#modalValidacionMantenimiento
+.modal-dialog {
+
+    transition:
+        transform .3s
+        cubic-bezier(.34, 1.56, .64, 1);
+}
+
+
+/* ==========================================================
+   FIN MÓDULO MANTENIMIENTOS
+========================================================== */
+
+
 
 /* ---------- GRID DE TARJETAS DE INCIDENCIAS ---------- */
 
