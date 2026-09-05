@@ -9430,3 +9430,403 @@ tr.fila-oculta-busqueda {
     }
 
 }
+/* =========================================================
+   RONDA 3 DE MEJORAS — AGENDA
+   (botón agregar, filtros, celdas, transición de mes,
+    micro-interacciones en los modales de evento)
+========================================================= */
+
+/* ---------- BOTÓN "AGREGAR EVENTO": mismo tratamiento que
+   los botones de agregar de otros módulos (gradiente + relieve) ---------- */
+
+.btn-agregar-evento {
+    background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro));
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+    transition:
+        transform .3s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .25s ease,
+        background .3s ease;
+}
+
+.btn-agregar-evento:hover {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    transform: translateY(-2px);
+    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+}
+
+.btn-agregar-evento:active {
+    transform: translateY(0) scale(.97);
+}
+
+.btn-agregar-evento i {
+    display: inline-block;
+    transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-agregar-evento:hover i {
+    transform: rotate(90deg);
+}
+
+/* ---------- FILTROS: foco más visible al usarlos con teclado/mouse ---------- */
+
+.filtros-agenda .form-select,
+.buscador-agenda {
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+.filtros-agenda .form-select:hover,
+.buscador-agenda:hover {
+    border-color: var(--verde-medio);
+}
+
+.filtros-agenda .form-select:focus,
+.buscador-agenda:focus-within {
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 3px rgba(95, 151, 129, .18);
+}
+
+.buscador-agenda i {
+    color: var(--gris-texto);
+    transition: color .2s ease;
+}
+
+.buscador-agenda:focus-within i {
+    color: var(--verde-oscuro);
+}
+
+.btn-buscar-agenda {
+    transition:
+        transform .25s cubic-bezier(.34, 1.56, .64, 1),
+        background-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.btn-buscar-agenda:hover {
+    background: var(--verde-medio);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(33, 79, 59, .2);
+}
+
+.btn-buscar-agenda:active {
+    transform: translateY(0) scale(.96);
+}
+
+/* ---------- CELDAS DEL CALENDARIO: resalte más presente,
+   sin usar transform (son celdas de una grilla con bordes
+   compartidos; un scale ahí se ve "roto") ---------- */
+
+.celda-calendario {
+    transition: background-color .25s ease, box-shadow .2s ease;
+}
+
+.celda-calendario:hover {
+    background: #fbfdfc;
+    box-shadow: inset 0 0 0 1px rgba(95, 151, 129, .35);
+    position: relative;
+    z-index: 1;
+}
+
+.dia-otro-mes:hover {
+    box-shadow: none;
+}
+
+/* ---------- TÍTULO DEL MES: pequeña entrada al cargar ---------- */
+
+.navegacion-calendario h3 {
+    animation: entradaTituloMes .35s ease both;
+}
+
+@keyframes entradaTituloMes {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- TRANSICIÓN DIRECCIONAL AL CAMBIAR DE MES ----------
+   agenda.js guarda en sessionStorage hacia qué lado se navegó
+   y, apenas carga la página siguiente, le agrega a la tarjeta
+   una de estas dos clases para que el calendario "entre" desde
+   ese lado en vez de aparecer siempre igual. */
+
+.tarjeta-calendario.entra-mes-siguiente {
+    animation: entraDesdeDerecha .38s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-calendario.entra-mes-anterior {
+    animation: entraDesdeIzquierda .38s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes entraDesdeDerecha {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes entraDesdeIzquierda {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ---------- MODAL DETALLE: filas con entrada escalonada
+   (se reutiliza .anim-entrada-lista, aplicada por agenda.js
+   cuando el modal termina de mostrarse) ---------- */
+
+.lista-detalle-evento > div {
+    opacity: 0;
+}
+
+.lista-detalle-evento > div.anim-entrada-lista {
+    opacity: 1;
+}
+
+.badge-tipo-evento {
+    display: inline-block;
+    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+#modalDetalleEvento.show .badge-tipo-evento {
+    animation: entradaTituloMes .3s ease both;
+}
+
+/* ---------- MODAL DETALLE: iconos de los botones con
+   el mismo micro-rebote que ya usan los íconos de contacto
+   de Apicultores ---------- */
+
+.btn-editar-evento i,
+.btn-eliminar-evento i,
+.btn-cerrar-evento i {
+    display: inline-block;
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-editar-evento:hover i {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+.btn-eliminar-evento:hover i {
+    transform: scale(1.15) rotate(8deg);
+}
+
+.btn-cerrar-evento:hover i {
+    transform: rotate(90deg);
+}
+
+.btn-editar-evento,
+.btn-eliminar-evento,
+.btn-cerrar-evento,
+.btn-guardar-evento {
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .2s ease,
+        background-color .2s ease;
+}
+
+.btn-editar-evento:hover,
+.btn-eliminar-evento:hover,
+.btn-cerrar-evento:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(33, 79, 59, .14);
+}
+
+.btn-guardar-evento:hover {
+    background: var(--verde-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(33, 79, 59, .22);
+}
+
+.btn-guardar-evento:active,
+.btn-editar-evento:active,
+.btn-eliminar-evento:active,
+.btn-cerrar-evento:active {
+    transform: translateY(0) scale(.97);
+}
+
+/* ---------- MODAL ELIMINAR: mismo aviso con énfasis que
+   usa el módulo de Apicultores (ícono con pulso + texto que
+   entra) ---------- */
+
+.icono-eliminar-evento {
+    animation: pulsoAdvertenciaEliminar 1.8s ease-in-out infinite;
+}
+
+.modal-eliminar-texto {
+    animation: entraAlertaEliminacion .3s ease both;
+}
+
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-agregar-evento,
+    .btn-agregar-evento i,
+    .filtros-agenda .form-select,
+    .buscador-agenda,
+    .buscador-agenda i,
+    .btn-buscar-agenda,
+    .celda-calendario,
+    .btn-editar-evento i,
+    .btn-eliminar-evento i,
+    .btn-cerrar-evento i,
+    .btn-editar-evento,
+    .btn-eliminar-evento,
+    .btn-cerrar-evento,
+    .btn-guardar-evento,
+    .badge-tipo-evento {
+        transition: none !important;
+    }
+
+    .navegacion-calendario h3,
+    .tarjeta-calendario.entra-mes-siguiente,
+    .tarjeta-calendario.entra-mes-anterior,
+    #modalDetalleEvento.show .badge-tipo-evento,
+    .icono-eliminar-evento,
+    .modal-eliminar-texto {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .lista-detalle-evento > div {
+        opacity: 1 !important;
+    }
+
+}
+
+/* =========================================================
+   RONDA 4 DE MEJORAS — AGENDA
+   Encabezados de los modales con el mismo lenguaje visual
+   que usa el resto del panel (degradado de color + insignia
+   circular con ícono), en vez del encabezado blanco plano.
+========================================================= */
+
+/* ---------- BASE COMÚN: crear / editar / detalle / eliminar ---------- */
+
+.modal-header-evento,
+.modal-header-evento-detalle,
+.modal-header-evento-eliminar {
+    padding: 20px 26px;
+    border-bottom: 0;
+    color: #ffffff;
+    transition: background .3s ease;
+}
+
+.modal-header-evento h5,
+.modal-header-evento-detalle h5,
+.modal-header-evento-eliminar h5 {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.modal-header-evento p {
+    margin: 0;
+    color: rgba(255, 255, 255, .82);
+    font-size: .8rem;
+}
+
+.modal-header-evento .btn-close,
+.modal-header-evento-detalle .btn-close,
+.modal-header-evento-eliminar .btn-close {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease;
+}
+
+.modal-header-evento .btn-close:hover,
+.modal-header-evento-detalle .btn-close:hover,
+.modal-header-evento-eliminar .btn-close:hover {
+    opacity: .75;
+    transform: rotate(90deg);
+}
+
+/* ---------- INSIGNIA CIRCULAR DEL ÍCONO ---------- */
+
+.modal-icono-evento {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .16);
+    color: #ffffff;
+    font-size: 1.15rem;
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), background .3s ease;
+}
+
+.modal.show .modal-icono-evento {
+    animation: entradaTituloMes .35s .05s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+/* ---------- CREAR / EDITAR: mismo verde que usa el resto del panel ---------- */
+
+.modal-header-evento-crear,
+.modal-header-evento-editar {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+}
+
+/* ---------- ELIMINAR: mismo rojo que usan Apiarios/Apicultores ---------- */
+
+.modal-header-evento-eliminar {
+    background: linear-gradient(135deg, #a83242 0%, #d95b68 100%);
+}
+
+/* ---------- DETALLE: color dinámico según el tipo de evento
+   (el mismo código de color que ya usan la celda del calendario
+   y el badge, así el modal "hace juego" con lo que se hizo clic) ---------- */
+
+.modal-header-evento-detalle {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+}
+
+.modal-header-evento-detalle.tipo-mantenimiento {
+    background: linear-gradient(135deg, #1f7a44, #28a65a);
+}
+
+.modal-header-evento-detalle.tipo-revision {
+    background: linear-gradient(135deg, #a9740b, #eea33a);
+}
+
+.modal-header-evento-detalle.tipo-incidencia {
+    background: linear-gradient(135deg, #a83e34, #e85e4f);
+}
+
+.modal-header-evento-detalle.tipo-evento {
+    background: linear-gradient(135deg, #2c6585, #4d9ac7);
+}
+
+/* Dentro del encabezado coloreado, el badge de tipo pasa a un
+   estilo translúcido en vez de su fondo pastel habitual, para
+   que no se pierda el contraste sobre el degradado. */
+
+.modal-header-evento-detalle .badge-tipo-evento {
+    background: rgba(255, 255, 255, .22) !important;
+    color: #ffffff !important;
+}
+
+.modal-header-evento-detalle .encabezado-detalle-evento h5 {
+    margin: 4px 0 0;
+    font-size: 1.05rem;
+}
+
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .modal-header-evento,
+    .modal-header-evento-detalle,
+    .modal-header-evento-eliminar,
+    .modal-icono-evento,
+    .modal-header-evento .btn-close,
+    .modal-header-evento-detalle .btn-close,
+    .modal-header-evento-eliminar .btn-close {
+        transition: none !important;
+    }
+
+    .modal.show .modal-icono-evento {
+        animation: none !important;
+    }
+
+}

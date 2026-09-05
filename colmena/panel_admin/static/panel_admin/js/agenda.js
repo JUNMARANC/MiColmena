@@ -111,6 +111,73 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+
+            /* ---------- Encabezado y su ícono, coloreados
+               según el tipo del evento (igual que en el
+               calendario y el badge) ---------- */
+
+            const encabezadoDetalle = document.getElementById(
+                "detalleHeaderEvento"
+            );
+
+            if (encabezadoDetalle) {
+
+                encabezadoDetalle.className =
+                    "modal-header modal-header-evento-detalle " +
+                    `tipo-${eventoSeleccionado.dataset.tipo}`;
+
+            }
+
+            const iconoDetalle = document.getElementById(
+                "detalleIconoEvento"
+            );
+
+            if (iconoDetalle) {
+
+                const iconosPorTipo = {
+                    mantenimiento: "bi-tools",
+                    revision: "bi-clipboard2-check",
+                    incidencia: "bi-exclamation-triangle-fill",
+                    evento: "bi-calendar-event"
+                };
+
+                const nombreIcono =
+                    iconosPorTipo[eventoSeleccionado.dataset.tipo] ||
+                    "bi-calendar-event";
+
+                iconoDetalle.className = `bi ${nombreIcono}`;
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       ENTRADA ESCALONADA DE LAS FILAS DEL DETALLE
+       (título, apiario, colmena, etc.), una vez que el
+       modal ya terminó de mostrarse y los textos de arriba
+       ya quedaron asignados.
+    ====================================================== */
+
+    modalDetalleElemento.addEventListener(
+        "shown.bs.modal",
+        function () {
+
+            const filas = document.querySelectorAll(
+                "#modalDetalleEvento .lista-detalle-evento > div"
+            );
+
+            filas.forEach(function (fila, indice) {
+
+                fila.classList.remove("anim-entrada-lista");
+                void fila.offsetWidth;
+
+                fila.style.animationDelay = (indice * 50) + "ms";
+                fila.classList.add("anim-entrada-lista");
+
+            });
+
         }
     );
 
@@ -334,6 +401,69 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+/* =========================================================
+   TRANSICIÓN DIRECCIONAL AL CAMBIAR DE MES
+========================================================= */
+//
+// Los botones de "mes anterior / mes siguiente" son enlaces
+// normales (recargan la página), así que no podemos animar
+// la salida. Lo que sí podemos hacer es recordar hacia qué
+// lado se navegó (con sessionStorage) y, apenas carga la
+// página nueva, hacer que el calendario "entre" desde ese
+// mismo lado en vez de aparecer siempre igual.
+
+(function () {
+
+    const CLAVE_DIRECCION = "agendaDireccionMes";
+
+    document.querySelectorAll(".btn-navegar-mes").forEach(
+        function (boton) {
+
+            boton.addEventListener("click", function () {
+
+                const esAnterior = boton.querySelector(
+                    ".bi-chevron-left"
+                ) !== null;
+
+                try {
+                    sessionStorage.setItem(
+                        CLAVE_DIRECCION,
+                        esAnterior ? "anterior" : "siguiente"
+                    );
+                } catch (error) {
+                    // sessionStorage no disponible: sin animación
+                    // direccional, pero la navegación sigue igual.
+                }
+
+            });
+
+        }
+    );
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const tarjeta = document.querySelector(".tarjeta-calendario");
+        if (!tarjeta) return;
+
+        let direccion = null;
+
+        try {
+            direccion = sessionStorage.getItem(CLAVE_DIRECCION);
+            sessionStorage.removeItem(CLAVE_DIRECCION);
+        } catch (error) {
+            return;
+        }
+
+        if (direccion === "siguiente") {
+            tarjeta.classList.add("entra-mes-siguiente");
+        } else if (direccion === "anterior") {
+            tarjeta.classList.add("entra-mes-anterior");
+        }
+
+    });
+
+})();
 
 /* =========================================================
    ANIMACIONES DE ENTRADA DEL CALENDARIO
