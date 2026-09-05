@@ -2137,63 +2137,588 @@
         </div>
     </div>
 
-    <!-- ELIMINAR -->
+    <!-- =====================================================
+        ELIMINAR INCIDENCIA
+    ====================================================== -->
+
     <div
         class="modal fade"
         id="modalEliminar{{ incidencia.pk }}"
-        tabindex="-1">
+        tabindex="-1"
+        aria-hidden="true"
+    >
 
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+        <div
+            class="
+                modal-dialog
+                modal-dialog-centered
+                modal-dialog-eliminar-incidencia
+            "
+        >
+
+            <div
+                class="
+                    modal-content
+                    modal-eliminar-incidencia
+                "
+            >
 
                 <form
                     method="POST"
-                    action="{% url 'eliminar_incidencia' incidencia.pk %}">
+                    action="{% url 'eliminar_incidencia' incidencia.pk %}"
+                >
 
                     {% csrf_token %}
 
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="bi bi-trash me-2"></i>
-                            Eliminar incidencia
-                        </h5>
+
+                    <!-- =================================================
+                        HEADER
+                    ================================================== -->
+
+                    <div
+                        class="
+                            modal-header
+                            modal-header-eliminar-incidencia
+                        "
+                    >
+
+                        <div
+                            class="
+                                d-flex
+                                align-items-center
+                                gap-3
+                            "
+                        >
+
+                            <div
+                                class="
+                                    icono-header-eliminar-incidencia
+                                "
+                            >
+
+                                {% if incidencia.puede_eliminar %}
+
+                                    <i class="bi bi-trash3-fill"></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-shield-lock-fill"></i>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <h5
+                                    class="
+                                        modal-title
+                                        fw-bold
+                                        mb-1
+                                    "
+                                >
+
+                                    {% if incidencia.puede_eliminar %}
+
+                                        Eliminar Incidencia
+
+                                    {% else %}
+
+                                        Eliminación bloqueada
+
+                                    {% endif %}
+
+                                </h5>
+
+
+                                <p>
+
+                                    {% if incidencia.puede_eliminar %}
+
+                                        Confirma la eliminación del registro.
+
+                                    {% else %}
+
+                                        Esta incidencia debe conservarse.
+
+                                    {% endif %}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
 
                         <button
                             type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="modal">
-                        </button>
+                            class="
+                                btn-close
+                                btn-close-white
+                            "
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar"
+                        ></button>
+
                     </div>
 
-                    <div class="modal-body text-center py-4">
-                        <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
 
-                        <h5 class="mt-3">
-                            ¿Eliminar esta incidencia?
-                        </h5>
+                    <!-- =================================================
+                        BODY
+                    ================================================== -->
 
-                        <p class="text-muted mb-0">
-                            Vas a eliminar
-                            <strong>{{ incidencia.titulo }}</strong>.
-                            Esta acción no se puede deshacer.
-                        </p>
+                    <div
+                        class="
+                            modal-body
+                            modal-body-eliminar-incidencia
+                        "
+                    >
+
+                        <div
+                            class="
+                                contenido-eliminar-incidencia
+                            "
+                        >
+
+
+                            <!-- =========================================
+                                ICONO
+                            ========================================== -->
+
+                            <div
+                                class="
+                                    icono-advertencia-eliminar-incidencia
+                                "
+                            >
+
+                                {% if incidencia.puede_eliminar %}
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-exclamation-triangle-fill
+                                        "
+                                    ></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- =========================================
+                                TÍTULO
+                            ========================================== -->
+
+                            {% if incidencia.puede_eliminar %}
+
+                                <h5>
+                                    ¿Eliminar esta incidencia?
+                                </h5>
+
+                                <p>
+
+                                    La incidencia todavía se encuentra
+                                    Pendiente y puede eliminarse si fue
+                                    registrada por error.
+
+                                </p>
+
+                            {% else %}
+
+                                <h5>
+                                    Esta incidencia no puede eliminarse
+                                </h5>
+
+                                <p>
+
+                                    Ya comenzó a gestionarse o fue
+                                    resuelta, por lo que debe mantenerse
+                                    como registro dentro del sistema.
+
+                                </p>
+
+                            {% endif %}
+
+
+                            <!-- =========================================
+                                RESUMEN
+                            ========================================== -->
+
+                            <div
+                                class="
+                                    resumen-eliminar-incidencia
+                                "
+                            >
+
+
+                                <!-- TÍTULO -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-incidencia
+                                    "
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-exclamation-triangle-fill
+                                        "
+                                    ></i>
+
+                                    <div>
+
+                                        <small>
+                                            Incidencia
+                                        </small>
+
+                                        <strong>
+                                            {{ incidencia.titulo|default:"Sin título" }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ESTADO -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-incidencia
+                                    "
+                                >
+
+                                    <i class="bi bi-activity"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Estado
+                                        </small>
+
+                                        <strong>
+                                            {{ incidencia.estado|default:"Sin definir" }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ENTIDAD -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-incidencia
+                                    "
+                                >
+
+                                    <i class="bi bi-bullseye"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Entidad
+                                        </small>
+
+                                        <strong>
+                                            {{ incidencia.entidadincidencia|default:"Sin definir" }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- EVIDENCIAS -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-incidencia
+                                    "
+                                >
+
+                                    <i class="bi bi-images"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Evidencias
+                                        </small>
+
+                                        <strong>
+
+                                            {{ incidencia.total_evidencias_eliminacion }}
+
+                                            foto{{ incidencia.total_evidencias_eliminacion|pluralize:"s" }}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================================
+                                PERMITIDO
+                            ========================================== -->
+
+                            {% if incidencia.puede_eliminar %}
+
+                                <div
+                                    class="
+                                        alerta-eliminar-incidencia-permitida
+                                    "
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-exclamation-triangle-fill
+                                        "
+                                    ></i>
+
+
+                                    <div>
+
+                                        <strong>
+                                            Esta acción es permanente
+                                        </strong>
+
+                                        <span>
+
+                                            La incidencia continúa
+                                            Pendiente. Elimínala únicamente
+                                            si fue registrada por error.
+
+                                        </span>
+
+
+                                        {% if incidencia.total_evidencias_eliminacion > 0 %}
+
+                                            <div
+                                                class="
+                                                    aviso-evidencias-eliminar-incidencia
+                                                "
+                                            >
+
+                                                <i class="bi bi-images"></i>
+
+                                                <span>
+
+                                                    También se eliminarán
+                                                    {{ incidencia.total_evidencias_eliminacion }}
+                                                    elemento(s) de evidencia
+                                                    asociado(s).
+
+                                                </span>
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+
+                            <!-- =========================================
+                                BLOQUEADO
+                            ========================================== -->
+
+                            {% else %}
+
+                                <div
+                                    class="
+                                        alerta-eliminar-incidencia-bloqueada
+                                    "
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-shield-lock-fill
+                                        "
+                                    ></i>
+
+
+                                    <div>
+
+                                        {% if incidencia.estado == "En proceso" %}
+
+                                            <strong>
+                                                Incidencia en proceso
+                                            </strong>
+
+                                            <span>
+
+                                                Esta incidencia ya comenzó
+                                                a gestionarse y no puede
+                                                eliminarse.
+
+                                            </span>
+
+                                        {% elif incidencia.estado == "Resuelta" %}
+
+                                            <strong>
+                                                Incidencia resuelta
+                                            </strong>
+
+                                            <span>
+
+                                                Esta incidencia corresponde
+                                                a un caso que ya fue resuelto
+                                                y debe conservarse.
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <strong>
+                                                Eliminación no permitida
+                                            </strong>
+
+                                            <span>
+
+                                                El estado actual no permite
+                                                eliminar esta incidencia.
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                        {% if incidencia.total_evidencias_eliminacion > 0 %}
+
+                                            <div
+                                                class="
+                                                    aviso-evidencias-eliminar-incidencia
+                                                "
+                                            >
+
+                                                <i class="bi bi-images"></i>
+
+                                                <span>
+
+                                                    Conserva además
+                                                    {{ incidencia.total_evidencias_eliminacion }}
+                                                    evidencia(s)
+                                                    asociada(s).
+
+                                                </span>
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
                     </div>
 
-                    <div class="modal-footer justify-content-center">
+
+                    <!-- =================================================
+                        FOOTER
+                    ================================================== -->
+
+                    <div
+                        class="
+                            modal-footer
+                            modal-footer-eliminar-incidencia
+                        "
+                    >
+
                         <button
                             type="button"
-                            class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal">
-                            Cancelar
+                            class="
+                                btn
+                                btn-cancelar-eliminacion-incidencia
+                            "
+                            data-bs-dismiss="modal"
+                        >
+
+                            {% if incidencia.puede_eliminar %}
+
+                                Cancelar
+
+                            {% else %}
+
+                                Cerrar
+
+                            {% endif %}
+
                         </button>
 
-                        <button type="submit" class="btn btn-danger">
-                            Sí, eliminar
-                        </button>
+
+                        {% if incidencia.puede_eliminar %}
+
+                            <button
+                                type="submit"
+                                class="
+                                    btn
+                                    btn-confirmar-eliminacion-incidencia
+                                "
+                            >
+
+                                <i
+                                    class="
+                                        bi
+                                        bi-trash3-fill
+                                        me-2
+                                    "
+                                ></i>
+
+                                Sí, eliminar
+
+                            </button>
+
+                        {% else %}
+
+                            <button
+                                type="button"
+                                class="
+                                    btn
+                                    btn-confirmar-eliminacion-incidencia
+                                "
+                                disabled
+                                aria-disabled="true"
+                            >
+
+                                <i
+                                    class="
+                                        bi
+                                        bi-lock-fill
+                                        me-2
+                                    "
+                                ></i>
+
+                                Eliminar bloqueado
+
+                            </button>
+
+                        {% endif %}
+
                     </div>
+
                 </form>
+
             </div>
+
         </div>
+
     </div>
 
 {% endfor %}

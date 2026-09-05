@@ -3252,19 +3252,30 @@
 
 
     <!-- =====================================================
-         ELIMINAR MANTENIMIENTO
+        ELIMINAR MANTENIMIENTO
     ====================================================== -->
 
     <div
         class="modal fade"
         id="modalEliminarMantenimiento{{ mantenimiento.id_mantenimiento }}"
         tabindex="-1"
+        aria-hidden="true"
     >
 
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div
+            class="
+                modal-dialog
+                modal-dialog-centered
+                modal-dialog-eliminar-mantenimiento
+            "
+        >
 
-            <div class="modal-content border-0 shadow rounded-4">
-
+            <div
+                class="
+                    modal-content
+                    modal-eliminar-mantenimiento
+                "
+            >
 
                 <form
                     method="POST"
@@ -3274,126 +3285,530 @@
                     {% csrf_token %}
 
 
-                    <div class="modal-header border-0 modal-delete-header">
+                    <!-- =================================================
+                        HEADER
+                    ================================================== -->
 
-                        <div>
+                    <div
+                        class="
+                            modal-header
+                            modal-header-eliminar-mantenimiento
+                        "
+                    >
 
-                            <h4 class="fw-bold text-danger mb-1">
+                        <div
+                            class="
+                                d-flex
+                                align-items-center
+                                gap-3
+                            "
+                        >
 
-                                <i class="bi bi-trash-fill me-2"></i>
+                            <div
+                                class="
+                                    icono-header-eliminar-mantenimiento
+                                "
+                            >
 
-                                Eliminar Mantenimiento
+                                {% if mantenimiento.puede_eliminar %}
 
-                            </h4>
+                                    <i class="bi bi-trash3-fill"></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-shield-lock-fill"></i>
+
+                                {% endif %}
+
+                            </div>
 
 
-                            <p class="text-muted mb-0">
+                            <div>
 
-                                Esta acción no se puede deshacer.
+                                <h5
+                                    class="
+                                        modal-title
+                                        fw-bold
+                                        mb-1
+                                    "
+                                >
 
-                            </p>
+                                    {% if mantenimiento.puede_eliminar %}
+
+                                        Eliminar Mantenimiento
+
+                                    {% else %}
+
+                                        Eliminación bloqueada
+
+                                    {% endif %}
+
+                                </h5>
+
+
+                                <p>
+
+                                    {% if mantenimiento.puede_eliminar %}
+
+                                        Confirma la eliminación del registro.
+
+                                    {% else %}
+
+                                        Este mantenimiento debe conservarse.
+
+                                    {% endif %}
+
+                                </p>
+
+                            </div>
 
                         </div>
 
 
                         <button
                             type="button"
-                            class="btn-close"
+                            class="
+                                btn-close
+                                btn-close-white
+                            "
                             data-bs-dismiss="modal"
+                            aria-label="Cerrar"
                         ></button>
 
                     </div>
 
 
-                    <div class="modal-body">
+                    <!-- =================================================
+                        BODY
+                    ================================================== -->
+
+                    <div
+                        class="
+                            modal-body
+                            modal-body-eliminar-mantenimiento
+                        "
+                    >
+
+                        <div
+                            class="
+                                contenido-eliminar-mantenimiento
+                            "
+                        >
 
 
-                        <div class="alerta-eliminar mb-3">
+                            <!-- =========================================
+                                ICONO PRINCIPAL
+                            ========================================== -->
 
-                            <strong>
-                                Advertencia:
-                            </strong>
+                            <div
+                                class="
+                                    icono-advertencia-eliminar-mantenimiento
+                                "
+                            >
 
-                            se eliminará este mantenimiento
-                            y sus evidencias fotográficas asociadas.
+                                {% if mantenimiento.puede_eliminar %}
 
-                        </div>
+                                    <i class="bi bi-trash3-fill"></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                {% endif %}
+
+                            </div>
 
 
-                        <div class="row g-3">
+                            <!-- =========================================
+                                TÍTULO
+                            ========================================== -->
+
+                            {% if mantenimiento.puede_eliminar %}
+
+                                <h5>
+                                    ¿Eliminar este mantenimiento?
+                                </h5>
+
+                                <p>
+                                    El registro se encuentra en un estado
+                                    que permite eliminarlo si fue creado
+                                    o conservado por error.
+                                </p>
+
+                            {% else %}
+
+                                <h5>
+                                    Este mantenimiento no puede eliminarse
+                                </h5>
+
+                                <p>
+                                    El mantenimiento ya fue completado
+                                    y representa una actividad realizada
+                                    dentro del sistema.
+                                </p>
+
+                            {% endif %}
 
 
-                            <div class="col-md-6">
+                            <!-- =========================================
+                                RESUMEN
+                            ========================================== -->
 
-                                <div class="modal-info-box verde">
+                            <div
+                                class="
+                                    resumen-eliminar-mantenimiento
+                                "
+                            >
 
-                                    <small>
-                                        Tarea
-                                    </small>
 
-                                    <h5>
-                                        {{ mantenimiento.tipo }}
-                                    </h5>
+                                <!-- TAREA -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-mantenimiento
+                                    "
+                                >
+
+                                    <i class="bi bi-tools"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Tarea
+                                        </small>
+
+                                        <strong>
+                                            {{ mantenimiento.tipo|default:"Sin nombre" }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ESTADO -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-mantenimiento
+                                    "
+                                >
+
+                                    <i class="bi bi-activity"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Estado
+                                        </small>
+
+                                        <strong>
+                                            {{ mantenimiento.estado|default:"Sin definir" }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ALCANCE -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-mantenimiento
+                                    "
+                                >
+
+                                    <i class="bi bi-diagram-3-fill"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Alcance
+                                        </small>
+
+                                        <strong>
+
+                                            {% if mantenimiento.entidadmantenimiento == "Apiario" %}
+
+                                                Apiario completo
+
+                                            {% elif mantenimiento.entidadmantenimiento == "Colmena" %}
+
+                                                Colmena específica
+
+                                            {% else %}
+
+                                                Sin definir
+
+                                            {% endif %}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- EVIDENCIAS -->
+
+                                <div
+                                    class="
+                                        item-resumen-eliminar-mantenimiento
+                                    "
+                                >
+
+                                    <i class="bi bi-images"></i>
+
+                                    <div>
+
+                                        <small>
+                                            Evidencias
+                                        </small>
+
+                                        <strong>
+
+                                            {{ mantenimiento.total_evidencias_eliminacion }}
+
+                                            foto{{ mantenimiento.total_evidencias_eliminacion|pluralize:"s" }}
+
+                                        </strong>
+
+                                    </div>
 
                                 </div>
 
                             </div>
 
 
-                            <div class="col-md-6">
+                            <!-- =========================================
+                                ELIMINACIÓN PERMITIDA
+                            ========================================== -->
 
-                                <div class="modal-info-box">
+                            {% if mantenimiento.puede_eliminar %}
 
-                                    <small>
-                                        Alcance
-                                    </small>
+                                <div
+                                    class="
+                                        alerta-eliminar-mantenimiento-permitido
+                                    "
+                                >
 
-                                    <h5>
+                                    <i
+                                        class="
+                                            bi
+                                            bi-exclamation-triangle-fill
+                                        "
+                                    ></i>
 
-                                        {% if mantenimiento.entidadmantenimiento == "Apiario" %}
 
-                                            Todo el apiario
+                                    <div>
 
-                                        {% else %}
+                                        <strong>
+                                            Esta acción es permanente
+                                        </strong>
 
-                                            Colmena específica
+
+                                        {% if mantenimiento.estado == "Pendiente" %}
+
+                                            <span>
+
+                                                El mantenimiento sigue
+                                                Pendiente y puede eliminarse
+                                                si fue registrado por error.
+
+                                            </span>
+
+                                        {% elif mantenimiento.estado == "Cancelado" %}
+
+                                            <span>
+
+                                                El mantenimiento está
+                                                Cancelado y puede eliminarse
+                                                del sistema.
+
+                                            </span>
 
                                         {% endif %}
 
-                                    </h5>
+
+                                        {% if mantenimiento.total_evidencias_eliminacion > 0 %}
+
+                                            <div
+                                                class="
+                                                    aviso-evidencias-eliminar-mantenimiento
+                                                "
+                                            >
+
+                                                <i class="bi bi-images"></i>
+
+                                                <span>
+
+                                                    También se eliminarán
+                                                    {{ mantenimiento.total_evidencias_eliminacion }}
+                                                    registro(s) de evidencia
+                                                    asociado(s).
+
+                                                </span>
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
 
                                 </div>
 
-                            </div>
+
+                            <!-- =========================================
+                                ELIMINACIÓN BLOQUEADA
+                            ========================================== -->
+
+                            {% else %}
+
+                                <div
+                                    class="
+                                        alerta-eliminar-mantenimiento-bloqueado
+                                    "
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-shield-lock-fill
+                                        "
+                                    ></i>
+
+
+                                    <div>
+
+                                        <strong>
+                                            Mantenimiento completado
+                                        </strong>
+
+                                        <span>
+
+                                            No puede eliminarse porque
+                                            corresponde a una actividad
+                                            que ya fue realizada y debe
+                                            mantenerse como registro.
+
+                                        </span>
+
+
+                                        {% if mantenimiento.total_evidencias_eliminacion > 0 %}
+
+                                            <div
+                                                class="
+                                                    aviso-evidencias-eliminar-mantenimiento
+                                                "
+                                            >
+
+                                                <i class="bi bi-images"></i>
+
+                                                <span>
+
+                                                    Conserva además
+                                                    {{ mantenimiento.total_evidencias_eliminacion }}
+                                                    evidencia(s)
+                                                    asociada(s).
+
+                                                </span>
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
 
                         </div>
 
                     </div>
 
 
-                    <div class="modal-footer border-0">
+                    <!-- =================================================
+                        FOOTER
+                    ================================================== -->
+
+                    <div
+                        class="
+                            modal-footer
+                            modal-footer-eliminar-mantenimiento
+                        "
+                    >
 
                         <button
                             type="button"
-                            class="btn btn-cancelar"
+                            class="
+                                btn
+                                btn-cancelar-eliminacion-mantenimiento
+                            "
                             data-bs-dismiss="modal"
                         >
 
-                            Cancelar
+                            {% if mantenimiento.puede_eliminar %}
+
+                                Cancelar
+
+                            {% else %}
+
+                                Cerrar
+
+                            {% endif %}
 
                         </button>
 
 
-                        <button
-                            type="submit"
-                            class="btn btn-danger"
-                        >
+                        {% if mantenimiento.puede_eliminar %}
 
-                            <i class="bi bi-trash me-2"></i>
+                            <button
+                                type="submit"
+                                class="
+                                    btn
+                                    btn-confirmar-eliminacion-mantenimiento
+                                "
+                            >
 
-                            Sí, eliminar
+                                <i
+                                    class="
+                                        bi
+                                        bi-trash3-fill
+                                        me-2
+                                    "
+                                ></i>
 
-                        </button>
+                                Sí, eliminar
+
+                            </button>
+
+                        {% else %}
+
+                            <button
+                                type="button"
+                                class="
+                                    btn
+                                    btn-confirmar-eliminacion-mantenimiento
+                                "
+                                disabled
+                                aria-disabled="true"
+                            >
+
+                                <i
+                                    class="
+                                        bi
+                                        bi-lock-fill
+                                        me-2
+                                    "
+                                ></i>
+
+                                Eliminar bloqueado
+
+                            </button>
+
+                        {% endif %}
 
                     </div>
 

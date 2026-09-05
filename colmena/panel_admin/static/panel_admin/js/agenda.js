@@ -217,10 +217,38 @@ document.addEventListener("DOMContentLoaded", function () {
             eventoSeleccionado.dataset.apiarioId
         );
 
+
+        // =====================================================
+        // COLMENA ORIGINAL DEL EVENTO
+        //
+        // Si el evento ya estaba asociado a una colmena que
+        // posteriormente quedó Inactiva, permitimos conservar
+        // ESA MISMA asociación al editar.
+        // =====================================================
+
+        const selectorColmenaEditar =
+            document.getElementById(
+                "editarColmenaEvento"
+            );
+
+
+        if (selectorColmenaEditar) {
+
+            selectorColmenaEditar.dataset.colmenaOriginal =
+                eventoSeleccionado.dataset.colmenaId
+                ||
+                "";
+
+        }
+
+
         filtrarColmenas(
-            document.getElementById("editarApiarioEvento"),
-            document.getElementById("editarColmenaEvento")
+            document.getElementById(
+                "editarApiarioEvento"
+            ),
+            selectorColmenaEditar
         );
+
 
         asignarValor(
             "editarColmenaEvento",
@@ -322,37 +350,143 @@ document.addEventListener("DOMContentLoaded", function () {
         selectorColmena
     ) {
 
-        if (!selectorApiario || !selectorColmena) {
+        if (
+            !selectorApiario
+            ||
+            !selectorColmena
+        ) {
+
             return;
+
         }
+
 
         const apiarioSeleccionado =
             selectorApiario.value;
 
+
+        // =====================================================
+        // COLMENA ORIGINAL
+        //
+        // Solo existe en el selector de Editar.
+        // Permite conservar una asociación histórica con una
+        // colmena Inactiva.
+        // =====================================================
+
+        const colmenaOriginal =
+            selectorColmena.dataset.colmenaOriginal
+            ||
+            "";
+
+
         Array.from(
             selectorColmena.options
-        ).forEach(function (opcion) {
+        ).forEach(
+            function (opcion) {
 
-            if (!opcion.value) {
-                opcion.hidden = false;
-                return;
+
+                // =============================================
+                // OPCIÓN "SIN COLMENA ESPECÍFICA"
+                // =============================================
+
+                if (!opcion.value) {
+
+                    opcion.hidden =
+                        false;
+
+                    opcion.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                // =============================================
+                // ¿PERTENECE AL APIARIO?
+                // =============================================
+
+                const correspondeApiario =
+                    opcion.dataset.apiario
+                    ===
+                    apiarioSeleccionado;
+
+
+                // =============================================
+                // ¿ESTÁ INACTIVA?
+                // =============================================
+
+                const estaInactiva =
+                    opcion.dataset.inactiva
+                    ===
+                    "1";
+
+
+                // =============================================
+                // ¿ES LA COLMENA HISTÓRICA DEL EVENTO?
+                // =============================================
+
+                const esColmenaOriginal =
+                    colmenaOriginal
+                    &&
+                    opcion.value
+                    ===
+                    colmenaOriginal;
+
+
+                // =============================================
+                // MOSTRAR SOLO LAS DEL APIARIO
+                // =============================================
+
+                opcion.hidden =
+                    !correspondeApiario;
+
+
+                // =============================================
+                // BLOQUEAR INACTIVAS
+                //
+                // Excepción:
+                // si estamos editando y es exactamente la
+                // colmena que ya tenía ese evento.
+                // =============================================
+
+                opcion.disabled = (
+                    !correspondeApiario
+                    ||
+                    (
+                        estaInactiva
+                        &&
+                        !esColmenaOriginal
+                    )
+                );
+
             }
+        );
 
-            opcion.hidden = (
-                opcion.dataset.apiario !==
-                apiarioSeleccionado
-            );
 
-        });
+        // =====================================================
+        // VALIDAR LA SELECCIÓN ACTUAL
+        // =====================================================
 
         const opcionActual =
             selectorColmena.selectedOptions[0];
 
+
         if (
-            opcionActual &&
-            opcionActual.hidden
+            opcionActual
+            &&
+            opcionActual.value
+            &&
+            (
+                opcionActual.hidden
+                ||
+                opcionActual.disabled
+            )
         ) {
-            selectorColmena.value = "";
+
+            selectorColmena.value =
+                "";
+
         }
 
     }
@@ -656,20 +790,84 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // 4) Refuerzo silencioso: la colmena elegida debe
-            //    pertenecer al apiario elegido (por si el filtrado no
-            //    llegó a aplicarse a tiempo). No bloquea el envío,
-            //    solo limpia el valor si no corresponde.
-            if (apiario && colmena && colmena.value) {
+            // =================================================
+            // 4) VALIDAR COLMENA
+            // =================================================
 
-                const opcionColmena = colmena.selectedOptions[0];
+            if (
+                apiario
+                &&
+                colmena
+            ) {
 
-                if (
-                    opcionColmena &&
-                    opcionColmena.dataset.apiario !== apiario.value
-                ) {
-                    colmena.value = "";
+                colmena.setCustomValidity("");
+
+
+                if (colmena.value) {
+
+                    const opcionColmena =
+                        colmena.selectedOptions[0];
+
+
+                    if (opcionColmena) {
+
+
+                        // =====================================
+                        // DEBE PERTENECER AL APIARIO
+                        // =====================================
+
+                        if (
+                            opcionColmena.dataset.apiario
+                            !==
+                            apiario.value
+                        ) {
+
+                            colmena.setCustomValidity(
+                                "La colmena seleccionada no pertenece al apiario indicado."
+                            );
+
+                        }
+
+
+                        // =====================================
+                        // COLMENA INACTIVA
+                        // =====================================
+
+                        else if (
+                            opcionColmena.dataset.inactiva
+                            ===
+                            "1"
+                        ) {
+
+                            const colmenaOriginal =
+                                colmena.dataset.colmenaOriginal
+                                ||
+                                "";
+
+
+                            const esOriginalEdicion = (
+                                !esCreacion
+                                &&
+                                colmenaOriginal
+                                ===
+                                opcionColmena.value
+                            );
+
+
+                            if (!esOriginalEdicion) {
+
+                                colmena.setCustomValidity(
+                                    "No puedes asignar un evento a una colmena Inactiva."
+                                );
+
+                            }
+
+                        }
+
+                    }
+
                 }
+
             }
 
             // El navegador ya revisa por nosotros: required, pattern,

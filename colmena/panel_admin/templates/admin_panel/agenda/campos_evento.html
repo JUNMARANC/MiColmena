@@ -167,9 +167,20 @@
 
                 <option
                     value="{{ colmena.id_colmena }}"
+
                     data-apiario="{{ colmena.id_apiario_id }}"
+
+                    data-inactiva="{% if colmena.estadocolmena == 'Inactiva' %}1{% else %}0{% endif %}"
+
+                    {% if prefijo == "crear" and colmena.estadocolmena == "Inactiva" %}
+                        disabled
+                    {% endif %}
                 >
+
                     {{ colmena.codigocolmena }}
+                    ·
+                    {{ colmena.estadocolmena }}
+
                 </option>
 
             {% endfor %}
