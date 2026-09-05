@@ -15181,3 +15181,778 @@ tr.fila-oculta-busqueda {
     }
 
 }
+
+/* =========================================================
+   DETALLE APIARIO
+   COLMENAS PERTENECIENTES
+========================================================= */
+
+
+/* =========================================================
+   CAPACIDAD EN CAJA DE INFORMACIÓN
+========================================================= */
+
+.capacidad-apiario-detalle {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--gris-texto);
+
+    font-size: 0.68rem;
+
+}
+
+
+.capacidad-apiario-detalle strong {
+
+    color: var(--verde-oscuro);
+
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+========================================================= */
+
+.seccion-colmenas-detalle-apiario {
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(95, 151, 129, 0.18);
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 6px 16px
+        rgba(0, 0, 0, 0.06);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.encabezado-colmenas-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        15px
+        17px;
+
+    border-bottom:
+        1px solid
+        rgba(95, 151, 129, 0.15);
+
+    background:
+        linear-gradient(
+            135deg,
+            #f1faf3,
+            #e8f7e9
+        );
+
+}
+
+
+.titulo-colmenas-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    min-width: 0;
+
+}
+
+
+.icono-colmenas-detalle-apiario {
+
+    flex-shrink: 0;
+
+    width: 39px;
+
+    height: 39px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        rgba(95, 151, 129, 0.14);
+
+    color: var(--verde-oscuro);
+
+    font-size: 1rem;
+
+}
+
+
+.titulo-colmenas-detalle-apiario h6 {
+
+    margin: 0 0 2px;
+
+    color: var(--verde-oscuro);
+
+    font-size: 0.86rem;
+
+    font-weight: 750;
+
+}
+
+
+.titulo-colmenas-detalle-apiario p {
+
+    margin: 0;
+
+    color: var(--gris-texto);
+
+    font-size: 0.68rem;
+
+}
+
+
+/* =========================================================
+   CONTADOR
+========================================================= */
+
+.contador-colmenas-detalle-apiario {
+
+    flex-shrink: 0;
+
+    min-width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0 9px;
+
+    border-radius: 999px;
+
+    background: var(--verde-oscuro);
+
+    color: #ffffff;
+
+    font-size: 0.76rem;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   LISTADO
+   SOLO ESTA ZONA HACE SCROLL
+========================================================= */
+
+.lista-colmenas-detalle-apiario {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    max-height: 215px;
+
+    padding: 14px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(95, 151, 129, 0.75)
+        #edf4ef;
+
+}
+
+
+/* =========================================================
+   SCROLLBAR DEL LISTADO
+========================================================= */
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar {
+
+    width: 6px;
+
+}
+
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar-track {
+
+    background: #edf4ef;
+
+    border-radius: 999px;
+
+}
+
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar-thumb {
+
+    background:
+        rgba(95, 151, 129, 0.75);
+
+    border-radius: 999px;
+
+}
+
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar-thumb:hover {
+
+    background:
+        var(--verde-oscuro);
+
+}
+
+
+/* =========================================================
+   COLMENA
+========================================================= */
+
+.item-colmena-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    min-width: 0;
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px solid
+        #e5ece8;
+
+    border-radius: 12px;
+
+    background: #fafcfb;
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease;
+
+}
+
+
+.item-colmena-detalle-apiario:hover {
+
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(95, 151, 129, 0.38);
+
+    box-shadow:
+        0 8px 18px
+        rgba(33, 79, 59, 0.09);
+
+}
+
+
+/* =========================================================
+   ICONO COLMENA
+========================================================= */
+
+.icono-colmena-detalle-apiario {
+
+    flex-shrink: 0;
+
+    width: 37px;
+
+    height: 37px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #e8f7e9;
+
+    color: var(--verde-medio);
+
+    font-size: 1rem;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.contenido-colmena-detalle-apiario {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.encabezado-item-colmena-detalle {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+}
+
+
+.encabezado-item-colmena-detalle > strong {
+
+    overflow: hidden;
+
+    color: var(--verde-oscuro);
+
+    font-size: 0.77rem;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   FECHA
+========================================================= */
+
+.datos-colmena-detalle-apiario {
+
+    margin-top: 5px;
+
+}
+
+
+.datos-colmena-detalle-apiario span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: var(--gris-texto);
+
+    font-size: 0.64rem;
+
+}
+
+
+.datos-colmena-detalle-apiario i {
+
+    color: var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.estado-colmena-detalle {
+
+    flex-shrink: 0;
+
+    padding:
+        4px
+        8px;
+
+    border-radius: 999px;
+
+    font-size: 0.59rem;
+
+    font-weight: 750;
+
+}
+
+
+/* ACTIVA */
+
+.estado-colmena-activa {
+
+    background: #e3f6e8;
+
+    color: #287341;
+
+}
+
+
+/* RIESGO */
+
+.estado-colmena-riesgo {
+
+    background: #fde8e8;
+
+    color: #b53642;
+
+}
+
+
+/* REVISIÓN */
+
+.estado-colmena-revision {
+
+    background: #fff4d1;
+
+    color: #806300;
+
+}
+
+
+/* INACTIVA */
+
+.estado-colmena-inactiva {
+
+    background: #ecefed;
+
+    color: #68716c;
+
+}
+
+
+/* =========================================================
+   APIARIO SIN COLMENAS
+========================================================= */
+
+.sin-colmenas-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    min-height: 105px;
+
+    padding: 20px;
+
+    color: var(--gris-texto);
+
+}
+
+
+.icono-sin-colmenas-detalle {
+
+    flex-shrink: 0;
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #eef5f0;
+
+    color: var(--verde-medio);
+
+    font-size: 1.05rem;
+
+}
+
+
+.sin-colmenas-detalle-apiario strong {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: var(--verde-oscuro);
+
+    font-size: 0.78rem;
+
+}
+
+
+.sin-colmenas-detalle-apiario span {
+
+    display: block;
+
+    font-size: 0.67rem;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .lista-colmenas-detalle-apiario {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media (max-width: 575px) {
+
+    .encabezado-colmenas-detalle-apiario {
+
+        align-items: flex-start;
+
+    }
+
+
+    .titulo-colmenas-detalle-apiario p {
+
+        max-width: 210px;
+
+    }
+
+
+    .lista-colmenas-detalle-apiario {
+
+        grid-template-columns: 1fr;
+
+        max-height: 230px;
+
+        padding: 10px;
+
+    }
+
+
+    .encabezado-item-colmena-detalle {
+
+        align-items: flex-start;
+
+    }
+
+}
+
+/* =========================================================
+   PAGINACIÓN
+   HISTORIAL DE REPORTES
+========================================================= */
+
+.paginacion-reportes-wrap {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        15px
+        20px;
+
+    border-top:
+        1px solid
+        #e7eeea;
+
+    background:
+        #fafcfb;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.informacion-paginacion-reportes {
+
+    color: #7d8c85;
+
+    font-size: 0.72rem;
+
+}
+
+
+.informacion-paginacion-reportes strong {
+
+    color:
+        var(--verde-oscuro);
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   PAGINADOR
+========================================================= */
+
+.paginacion-reportes {
+
+    gap: 5px;
+
+    margin: 0;
+
+}
+
+
+.paginacion-reportes
+.page-item
+.page-link {
+
+    min-width: 35px;
+
+    height: 35px;
+
+    padding:
+        0
+        10px;
+
+    border-radius: 10px;
+
+    font-size: 0.75rem;
+
+    box-shadow:
+        0 5px 13px
+        rgba(33, 79, 59, 0.08);
+
+}
+
+
+.paginacion-reportes
+.page-item.active
+.page-link {
+
+    background:
+        var(--verde-oscuro);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 7px 17px
+        rgba(33, 79, 59, 0.20);
+
+}
+
+
+.paginacion-reportes
+.page-item
+.page-link:hover {
+
+    background: #e5f3e9;
+
+    color:
+        var(--verde-oscuro);
+
+}
+
+
+.paginacion-reportes
+.page-item.disabled
+.page-link {
+
+    background: #f0f4f2;
+
+    color: #b4bdb8;
+
+    box-shadow: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .paginacion-reportes-wrap {
+
+        flex-direction: column;
+
+        align-items: center;
+
+        padding:
+            14px
+            12px;
+
+    }
+
+
+    .informacion-paginacion-reportes {
+
+        text-align: center;
+
+    }
+
+}
+
+
+@media (max-width: 575px) {
+
+    .paginacion-reportes {
+
+        gap: 4px;
+
+    }
+
+
+    .paginacion-reportes
+    .page-item
+    .page-link {
+
+        min-width: 31px;
+
+        height: 31px;
+
+        padding:
+            0
+            8px;
+
+        border-radius: 9px;
+
+        font-size: 0.69rem;
+
+    }
+
+}

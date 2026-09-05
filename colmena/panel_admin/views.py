@@ -693,12 +693,28 @@ def apiarios_admin(request):
 
     for apiario in apiarios:
 
-        apiario.total_colmenas_reales = (
+        # ========================================================
+        # COLMENAS REALES DEL APIARIO
+        #
+        # Guardamos también la lista porque se mostrará dentro
+        # del modal "Detalles del Apiario".
+        # ========================================================
+
+        apiario.colmenas_detalle = list(
             Colmena.objects
             .filter(
                 id_apiario=apiario
             )
-            .count()
+            .order_by(
+                "codigocolmena"
+            )
+        )
+
+
+        apiario.total_colmenas_reales = (
+            len(
+                apiario.colmenas_detalle
+            )
         )
 
         # ========================================================
@@ -9376,10 +9392,42 @@ def reportes_admin(request):
         .order_by("nombreapiario")
     )
 
-    historial = (
+    # ========================================================
+    # HISTORIAL DE REPORTES
+    # ========================================================
+
+    historial_lista = (
         HistorialReporte.objects
         .select_related("usuario")
-        .order_by("-fecha_generacion")[:6]
+        .order_by(
+            "-fecha_generacion",
+            "-id_reporte"
+        )
+    )
+
+
+    # ========================================================
+    # PAGINACIÓN
+    # 3 REPORTES POR PÁGINA
+    # ========================================================
+
+    paginador_historial = Paginator(
+        historial_lista,
+        3
+    )
+
+
+    pagina_historial = (
+        request.GET.get(
+            "page_reportes"
+        )
+    )
+
+
+    historial = (
+        paginador_historial.get_page(
+            pagina_historial
+        )
     )
 
     tipos_reportes = [
@@ -13055,9 +13103,12 @@ def mi_perfil(request):
 
     # ============================================================
     # HISTORIAL DE ACCESOS
+    #
+    # Se conservan los últimos 10 registros del comportamiento
+    # actual, pero ahora se muestran 3 por página.
     # ============================================================
 
-    historial_accesos = (
+    historial_accesos_lista = (
         HistorialAcceso.objects
         .filter(
             usuario=request.user
@@ -13065,6 +13116,30 @@ def mi_perfil(request):
         .order_by(
             "-fecha"
         )[:10]
+    )
+
+
+    # ============================================================
+    # PAGINACIÓN
+    # ============================================================
+
+    paginador_accesos = Paginator(
+        historial_accesos_lista,
+        3
+    )
+
+
+    pagina_accesos = (
+        request.GET.get(
+            "page_accesos"
+        )
+    )
+
+
+    historial_accesos = (
+        paginador_accesos.get_page(
+            pagina_accesos
+        )
     )
 
     # ============================================================

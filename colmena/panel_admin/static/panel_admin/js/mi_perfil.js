@@ -3063,6 +3063,88 @@ function inicializarPestanasPerfil() {
 
         });
 
+    /* ========================================================
+       MANTENER ABIERTO EL HISTORIAL AL PAGINAR
+    ======================================================== */
+
+    const parametrosUrl =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    if (
+        parametrosUrl.has(
+            "page_accesos"
+        )
+    ) {
+
+
+        /* ====================================================
+           ABRIR PESTAÑA PRINCIPAL: SEGURIDAD
+        ==================================================== */
+
+        const botonSeguridad =
+            document.querySelector(
+                '.perfil-tab-btn[data-tab-target="perfil-tab-seguridad"]'
+            );
+
+
+        if (botonSeguridad) {
+
+            botonSeguridad.click();
+
+        }
+
+
+
+        /* ====================================================
+           ABRIR SUBPESTAÑA: HISTORIAL DE ACCESOS
+        ==================================================== */
+
+        const botonHistorial =
+            document.querySelector(
+                '.perfil-subtab-btn[data-tab-target="sub-historial"]'
+            );
+
+
+        if (botonHistorial) {
+
+            botonHistorial.click();
+
+        }
+
+
+
+        /* ====================================================
+           LLEVAR AL USUARIO AL HISTORIAL
+        ==================================================== */
+
+        const historial =
+            document.getElementById(
+                "historialAccesos"
+            );
+
+
+        if (historial) {
+
+            window.requestAnimationFrame(
+                function () {
+
+                    historial.scrollIntoView(
+                        {
+                            behavior: "auto",
+                            block: "start"
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+    }
+
 }
 
 document.addEventListener("DOMContentLoaded", inicializarPestanasPerfil);

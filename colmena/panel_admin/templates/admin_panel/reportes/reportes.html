@@ -97,7 +97,11 @@
 
     </div>
 
-    <section class="historial-reportes mt-4">
+    <section
+        class="historial-reportes mt-4"
+        id="historialReportes"
+        data-total-reportes="{{ historial.paginator.count }}"
+    >
 
         <div class="encabezado-historial-reportes">
 
@@ -113,8 +117,11 @@
             </div>
 
             <span>
-                {{ historial|length }}
-                reporte{{ historial|length|pluralize:"s" }}
+
+                {{ historial.paginator.count }}
+
+                reporte{{ historial.paginator.count|pluralize:"s" }}
+
             </span>
 
         </div>
@@ -239,12 +246,233 @@
 
         </div>
 
+        <!-- =====================================================
+            PAGINACIÓN DEL HISTORIAL
+        ====================================================== -->
+
+        {% if historial.has_other_pages %}
+
+            <div
+                class="
+                    paginacion-reportes-wrap
+                "
+            >
+
+
+                <!-- =============================================
+                     INFORMACIÓN
+                ============================================== -->
+
+                <div
+                    class="
+                        informacion-paginacion-reportes
+                    "
+                >
+
+                    Mostrando
+
+                    <strong>
+                        {{ historial.start_index }}
+                    </strong>
+
+                    –
+
+                    <strong>
+                        {{ historial.end_index }}
+                    </strong>
+
+                    de
+
+                    <strong>
+                        {{ historial.paginator.count }}
+                    </strong>
+
+                    reportes
+
+                </div>
+
+
+                <!-- =============================================
+                     PAGINADOR
+                ============================================== -->
+
+                <nav
+                    aria-label="Paginación de reportes recientes"
+                >
+
+                    <ul
+                        class="
+                            pagination
+                            paginacion-reportes
+                            justify-content-center
+                            align-items-center
+                            mb-0
+                        "
+                    >
+
+
+                        <!-- =====================================
+                             ANTERIOR
+                        ====================================== -->
+
+                        {% if historial.has_previous %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page_reportes={{ historial.previous_page_number }}#historialReportes"
+                                    aria-label="Página anterior"
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-chevron-left
+                                        "
+                                    ></i>
+
+                                </a>
+
+                            </li>
+
+                        {% else %}
+
+                            <li
+                                class="
+                                    page-item
+                                    disabled
+                                "
+                            >
+
+                                <span class="page-link">
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-chevron-left
+                                        "
+                                    ></i>
+
+                                </span>
+
+                            </li>
+
+                        {% endif %}
+
+
+
+                        <!-- =====================================
+                             NÚMEROS
+                        ====================================== -->
+
+                        {% for numero in historial.paginator.page_range %}
+
+
+                            {% if historial.number == numero %}
+
+                                <li
+                                    class="
+                                        page-item
+                                        active
+                                    "
+                                    aria-current="page"
+                                >
+
+                                    <span class="page-link">
+
+                                        {{ numero }}
+
+                                    </span>
+
+                                </li>
+
+
+                            {% else %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page_reportes={{ numero }}#historialReportes"
+                                    >
+
+                                        {{ numero }}
+
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+
+                        {% endfor %}
+
+
+
+                        <!-- =====================================
+                             SIGUIENTE
+                        ====================================== -->
+
+                        {% if historial.has_next %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page_reportes={{ historial.next_page_number }}#historialReportes"
+                                    aria-label="Página siguiente"
+                                >
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-chevron-right
+                                        "
+                                    ></i>
+
+                                </a>
+
+                            </li>
+
+                        {% else %}
+
+                            <li
+                                class="
+                                    page-item
+                                    disabled
+                                "
+                            >
+
+                                <span class="page-link">
+
+                                    <i
+                                        class="
+                                            bi
+                                            bi-chevron-right
+                                        "
+                                    ></i>
+
+                                </span>
+
+                            </li>
+
+                        {% endif %}
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+        {% endif %}
+
     </section>
 
 </div>
 
 {% include "admin_panel/reportes/modal_configurar.html" %}
 
-<script src="{% static 'panel_admin/js/reportes.js' %}?v=21"></script>
+<script src="{% static 'panel_admin/js/reportes.js' %}?v=22"></script>
 
 {% endblock %}

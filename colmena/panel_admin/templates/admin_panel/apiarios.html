@@ -780,7 +780,7 @@
 
 
 
-                                        <!-- COLMENAS -->
+                                        <!-- COLMENAS REGISTRADAS -->
 
                                         <div class="col-md-6">
 
@@ -796,16 +796,31 @@
                                                         "
                                                     ></i>
 
-                                                    Cantidad de Colmenas
+                                                    Colmenas Registradas
 
                                                 </small>
 
 
                                                 <h5>
 
-                                                    {{ apiario.cantidadcolmenas }}
+                                                    {{ apiario.total_colmenas_reales }}
 
                                                 </h5>
+
+
+                                                <span
+                                                    class="
+                                                        capacidad-apiario-detalle
+                                                    "
+                                                >
+
+                                                    Capacidad configurada:
+
+                                                    <strong>
+                                                        {{ apiario.cantidadcolmenas }}
+                                                    </strong>
+
+                                                </span>
 
                                             </div>
 
@@ -954,6 +969,325 @@
                                                     {% endif %}
 
                                                 </p>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- =================================
+                                             COLMENAS DEL APIARIO
+                                        ================================== -->
+
+                                        <div class="col-12">
+
+                                            <div
+                                                class="
+                                                    seccion-colmenas-detalle-apiario
+                                                "
+                                            >
+
+
+                                                <!-- =========================
+                                                     ENCABEZADO
+                                                ========================== -->
+
+                                                <div
+                                                    class="
+                                                        encabezado-colmenas-detalle-apiario
+                                                    "
+                                                >
+
+                                                    <div
+                                                        class="
+                                                            titulo-colmenas-detalle-apiario
+                                                        "
+                                                    >
+
+                                                        <div
+                                                            class="
+                                                                icono-colmenas-detalle-apiario
+                                                            "
+                                                        >
+
+                                                            <i
+                                                                class="
+                                                                    bi
+                                                                    bi-hexagon-fill
+                                                                "
+                                                            ></i>
+
+                                                        </div>
+
+
+                                                        <div>
+
+                                                            <h6>
+
+                                                                Colmenas del Apiario
+
+                                                            </h6>
+
+                                                            <p>
+
+                                                                Colmenas registradas
+                                                                actualmente en este
+                                                                apiario.
+
+                                                            </p>
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <span
+                                                        class="
+                                                            contador-colmenas-detalle-apiario
+                                                        "
+                                                    >
+
+                                                        {{ apiario.total_colmenas_reales }}
+
+                                                    </span>
+
+                                                </div>
+
+
+
+                                                <!-- =========================
+                                                     LISTADO
+                                                ========================== -->
+
+                                                {% if apiario.colmenas_detalle %}
+
+                                                    <div
+                                                        class="
+                                                            lista-colmenas-detalle-apiario
+                                                        "
+                                                    >
+
+                                                        {% for colmena in apiario.colmenas_detalle %}
+
+
+                                                            <div
+                                                                class="
+                                                                    item-colmena-detalle-apiario
+                                                                "
+                                                            >
+
+
+                                                                <!-- ICONO -->
+
+                                                                <div
+                                                                    class="
+                                                                        icono-colmena-detalle-apiario
+                                                                    "
+                                                                >
+
+                                                                    <i
+                                                                        class="
+                                                                            bi
+                                                                            bi-hexagon-fill
+                                                                        "
+                                                                    ></i>
+
+                                                                </div>
+
+
+
+                                                                <!-- INFORMACIÓN -->
+
+                                                                <div
+                                                                    class="
+                                                                        contenido-colmena-detalle-apiario
+                                                                    "
+                                                                >
+
+
+                                                                    <div
+                                                                        class="
+                                                                            encabezado-item-colmena-detalle
+                                                                        "
+                                                                    >
+
+                                                                        <strong>
+
+                                                                            {{ colmena.codigocolmena }}
+
+                                                                        </strong>
+
+
+
+                                                                        <!-- ESTADO -->
+
+                                                                        {% if colmena.estadocolmena == "Activa" %}
+
+                                                                            <span
+                                                                                class="
+                                                                                    estado-colmena-detalle
+                                                                                    estado-colmena-activa
+                                                                                "
+                                                                            >
+
+                                                                                Activa
+
+                                                                            </span>
+
+
+                                                                        {% elif colmena.estadocolmena == "Riesgo" %}
+
+                                                                            <span
+                                                                                class="
+                                                                                    estado-colmena-detalle
+                                                                                    estado-colmena-riesgo
+                                                                                "
+                                                                            >
+
+                                                                                Riesgo
+
+                                                                            </span>
+
+
+                                                                        {% elif colmena.estadocolmena == "Revisión" %}
+
+                                                                            <span
+                                                                                class="
+                                                                                    estado-colmena-detalle
+                                                                                    estado-colmena-revision
+                                                                                "
+                                                                            >
+
+                                                                                Revisión
+
+                                                                            </span>
+
+
+                                                                        {% elif colmena.estadocolmena == "Inactiva" %}
+
+                                                                            <span
+                                                                                class="
+                                                                                    estado-colmena-detalle
+                                                                                    estado-colmena-inactiva
+                                                                                "
+                                                                            >
+
+                                                                                Inactiva
+
+                                                                            </span>
+
+
+                                                                        {% else %}
+
+                                                                            <span
+                                                                                class="
+                                                                                    estado-colmena-detalle
+                                                                                "
+                                                                            >
+
+                                                                                {{ colmena.estadocolmena }}
+
+                                                                            </span>
+
+                                                                        {% endif %}
+
+                                                                    </div>
+
+
+
+                                                                    <div
+                                                                        class="
+                                                                            datos-colmena-detalle-apiario
+                                                                        "
+                                                                    >
+
+                                                                        <span>
+
+                                                                            <i
+                                                                                class="
+                                                                                    bi
+                                                                                    bi-calendar3
+                                                                                "
+                                                                            ></i>
+
+                                                                            Registro:
+
+                                                                            {% if colmena.fecharegistro %}
+
+                                                                                {{ colmena.fecharegistro|date:"d/m/Y" }}
+
+                                                                            {% else %}
+
+                                                                                Sin fecha
+
+                                                                            {% endif %}
+
+                                                                        </span>
+
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+
+
+                                                        {% endfor %}
+
+                                                    </div>
+
+
+                                                {% else %}
+
+
+                                                    <!-- =====================
+                                                         SIN COLMENAS
+                                                    ====================== -->
+
+                                                    <div
+                                                        class="
+                                                            sin-colmenas-detalle-apiario
+                                                        "
+                                                    >
+
+                                                        <div
+                                                            class="
+                                                                icono-sin-colmenas-detalle
+                                                            "
+                                                        >
+
+                                                            <i
+                                                                class="
+                                                                    bi
+                                                                    bi-hexagon
+                                                                "
+                                                            ></i>
+
+                                                        </div>
+
+
+                                                        <div>
+
+                                                            <strong>
+
+                                                                Sin colmenas registradas
+
+                                                            </strong>
+
+                                                            <span>
+
+                                                                Este apiario todavía
+                                                                no tiene colmenas
+                                                                asociadas.
+
+                                                            </span>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                {% endif %}
 
                                             </div>
 

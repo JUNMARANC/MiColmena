@@ -460,6 +460,257 @@ document.addEventListener(
                 configurarReporte(tipo);
             }
         );
+
+        /* =====================================================
+           ACTUALIZACIÓN AUTOMÁTICA
+           DEL HISTORIAL DE REPORTES
+        ====================================================== */
+
+        function iniciarActualizacionHistorialReportes() {
+
+
+            const historialActual =
+                document.getElementById(
+                    "historialReportes"
+                );
+
+
+            if (!historialActual) {
+
+                return;
+
+            }
+
+
+            const totalInicial = Number(
+                historialActual.dataset.totalReportes
+                ||
+                0
+            );
+
+
+            let intentos = 0;
+
+            const MAXIMO_INTENTOS = 60;
+
+            let actualizacionTerminada = false;
+
+
+            /* =================================================
+               CONSULTAR SI YA SE GUARDÓ EL NUEVO REPORTE
+            ================================================== */
+
+            async function comprobarHistorial() {
+
+
+                if (actualizacionTerminada) {
+
+                    return;
+
+                }
+
+
+                intentos++;
+
+
+                try {
+
+
+                    /* =========================================
+                       SIEMPRE CONSULTAR LA PÁGINA 1
+                       PORQUE AHÍ APARECE EL NUEVO REPORTE
+                    ========================================== */
+
+                    const url = new URL(
+                        window.location.href
+                    );
+
+
+                    url.searchParams.set(
+                        "page_reportes",
+                        "1"
+                    );
+
+
+                    url.hash = "";
+
+
+                    /* =========================================
+                       OBTENER HTML ACTUALIZADO DESDE DJANGO
+                    ========================================== */
+
+                    const respuesta = await fetch(
+                        url.toString(),
+                        {
+                            method: "GET",
+
+                            cache: "no-store",
+
+                            credentials: "same-origin",
+
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No fue posible consultar el historial."
+                        );
+
+                    }
+
+
+                    const html =
+                        await respuesta.text();
+
+
+                    const documento =
+                        new DOMParser()
+                        .parseFromString(
+                            html,
+                            "text/html"
+                        );
+
+
+                    const historialNuevo =
+                        documento.getElementById(
+                            "historialReportes"
+                        );
+
+
+                    if (!historialNuevo) {
+
+                        throw new Error(
+                            "No se encontró el historial actualizado."
+                        );
+
+                    }
+
+
+                    const totalNuevo = Number(
+                        historialNuevo.dataset.totalReportes
+                        ||
+                        0
+                    );
+
+
+                    /* =========================================
+                       ¿YA APARECIÓ EL NUEVO REPORTE?
+                    ========================================== */
+
+                    if (
+                        totalNuevo
+                        >
+                        totalInicial
+                    ) {
+
+
+                        actualizacionTerminada =
+                            true;
+
+
+                        /* =====================================
+                           REEMPLAZAR SOLAMENTE EL HISTORIAL
+                        ====================================== */
+
+                        const historialEnPantalla =
+                            document.getElementById(
+                                "historialReportes"
+                            );
+
+
+                        if (historialEnPantalla) {
+
+                            historialEnPantalla.replaceWith(
+                                historialNuevo
+                            );
+
+                        }
+
+
+                        /* =====================================
+                           ACTUALIZAR URL A PÁGINA 1
+                           SIN RECARGAR
+                        ====================================== */
+
+                        const urlActual = new URL(
+                            window.location.href
+                        );
+
+
+                        urlActual.searchParams.set(
+                            "page_reportes",
+                            "1"
+                        );
+
+
+                        urlActual.hash =
+                            "historialReportes";
+
+
+                        window.history.replaceState(
+                            {},
+                            "",
+                            urlActual.toString()
+                        );
+
+
+                        return;
+
+                    }
+
+
+                }
+                catch (error) {
+
+
+                    console.error(
+                        "Error actualizando historial de reportes:",
+                        error
+                    );
+
+
+                }
+
+
+                /* =============================================
+                   SEGUIR COMPROBANDO
+                   DURANTE MÁXIMO 60 SEGUNDOS
+                ============================================== */
+
+                if (
+                    intentos
+                    <
+                    MAXIMO_INTENTOS
+                ) {
+
+                    window.setTimeout(
+                        comprobarHistorial,
+                        1000
+                    );
+
+                }
+
+
+            }
+
+
+            /* =================================================
+               PRIMERA CONSULTA
+            ================================================== */
+
+            window.setTimeout(
+                comprobarHistorial,
+                1000
+            );
+
+
+        }
  
  
         /* =====================================================
@@ -608,8 +859,14 @@ document.addEventListener(
  
                     return;
                 }
- 
+
                 mostrarEstadoGenerando();
+
+                /* =============================================
+                   ESPERAR EL NUEVO REGISTRO DEL HISTORIAL
+                ============================================== */
+
+                iniciarActualizacionHistorialReportes();
             }
         );
  
@@ -812,3 +1069,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
