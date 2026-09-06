@@ -55,6 +55,26 @@
     line-height: 1.6;
 }
 
+/* Encabezado con polen flotante (mismo recurso de los demás módulos:
+   .dashboard-fondo-panal + .particulas-flotantes, definidos en
+   estilos_admin.css, que esta página ya carga vía base_admin.html).
+   Reutiliza el recorrido corto @keyframes chispaFogataEncabezado,
+   pensado para encabezados bajitos como este. */
+
+.configuracion-encabezado-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+    margin-bottom: 28px;
+}
+
+.configuracion-encabezado-panal .configuracion-encabezado {
+    margin-bottom: 0;
+}
+
+.configuracion-encabezado-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
 
 /* =========================================================
    TARJETAS DE NAVEGACIÓN
@@ -77,6 +97,7 @@
 ========================================================= */
 
 .configuracion-opcion {
+    position: relative;
     width: 100%;
 
     display: grid;
@@ -104,6 +125,8 @@
 
     cursor: pointer;
 
+    overflow: hidden;
+
     box-shadow:
         0 6px 20px rgba(33, 79, 59, 0.05);
 
@@ -123,6 +146,46 @@
     box-shadow:
         0 10px 24px rgba(33, 79, 59, 0.09);
 }
+
+/* Borde degradado animado, mismo lenguaje visual de las tarjetas
+   del resto del sistema (reutiliza @keyframes girarBordeMiel de
+   estilos_admin.css) */
+.configuracion-opcion::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel, #f0a000), var(--verde-medio, #5f9781), var(--amarillo, #f6de87), var(--miel, #f0a000));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+}
+
+.configuracion-opcion:hover::before,
+.configuracion-opcion.active::before {
+    opacity: 1;
+}
+
+.configuracion-opcion:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 10px 24px rgba(33, 79, 59, 0.09);
+}
+
+/* Entrada "con más personalidad" al cargar la página, reutiliza
+   @keyframes entradaTarjetaApiario de estilos_admin.css */
+.configuracion-opcion.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .5s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.configuracion-opcion.anim-entrada-tarjeta:nth-child(1) { animation-delay: 0ms; }
+.configuracion-opcion.anim-entrada-tarjeta:nth-child(2) { animation-delay: 80ms; }
+.configuracion-opcion.anim-entrada-tarjeta:nth-child(3) { animation-delay: 160ms; }
 
 
 /* =========================================================
@@ -162,6 +225,11 @@
     transition:
         background-color 0.2s ease,
         color 0.2s ease;
+}
+
+
+.configuracion-opcion:hover .configuracion-opcion-icono i {
+    animation: rebotitoIconoTarjeta .5s ease;
 }
 
 
@@ -515,6 +583,24 @@
     background-color: #5f9781;
 
     border-color: #5f9781;
+
+    animation: rebotoSwitchConfig .35s ease;
+}
+
+
+@keyframes rebotoSwitchConfig {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    .pagina-configuracion
+    .form-switch
+    .form-check-input:checked {
+        animation: none !important;
+    }
 }
 
 
@@ -963,6 +1049,21 @@
 .notificaciones-lista {
     display: flex;
     flex-direction: column;
+    transition: opacity .3s ease;
+}
+
+
+/* DESHABILITADAS */
+
+.notificaciones-lista.notificaciones-deshabilitadas {
+    opacity: 0.48;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    .notificaciones-lista {
+        transition: none !important;
+    }
 }
 
 
@@ -976,6 +1077,15 @@
     padding: 17px 4px;
 
     border-bottom: 1px solid #e7eee9;
+
+    border-radius: 10px;
+
+    transition: background-color .2s ease;
+}
+
+
+.notificacion-opcion:hover {
+    background: #f7fbf8;
 }
 
 
@@ -1018,6 +1128,13 @@
     color: #5f9781;
 
     font-size: 17px;
+
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+
+.notificacion-opcion:hover .notificacion-icono {
+    transform: scale(1.08) rotate(-4deg);
 }
 
 
@@ -1042,13 +1159,6 @@
 
     font-size: 11px;
     line-height: 1.5;
-}
-
-
-/* DESHABILITADAS */
-
-.notificaciones-lista.notificaciones-deshabilitadas {
-    opacity: 0.48;
 }
 
 
@@ -1225,6 +1335,13 @@
     color: #2d6b52;
 
     font-size: 20px;
+
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+
+.seguridad-opcion:hover .seguridad-opcion-icono {
+    transform: scale(1.08) rotate(-4deg);
 }
 
 
@@ -1340,6 +1457,21 @@
 
 .seguridad-opcion .switch input:checked + .slider::before {
     transform: translateX(22px);
+    animation: rebotoThumbSeguridad .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+
+@keyframes rebotoThumbSeguridad {
+    0%   { transform: translateX(0) scale(1); }
+    60%  { transform: translateX(26px) scale(1.18); }
+    100% { transform: translateX(22px) scale(1); }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    .seguridad-opcion .switch input:checked + .slider::before {
+        animation: none !important;
+    }
 }
 
 
@@ -1683,4 +1815,33 @@
         grid-template-columns: 1fr;
     }
 
+}
+
+/* ==========================================================
+   REDUCIR MOVIMIENTO (accesibilidad)
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .configuracion-opcion,
+    .configuracion-opcion:hover,
+    .configuracion-opcion-icono,
+    .seguridad-opcion-icono,
+    .notificacion-icono {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .configuracion-opcion::before {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+
+    .configuracion-opcion.anim-entrada-tarjeta {
+        animation: none !important;
+    }
+
+    .configuracion-opcion:hover .configuracion-opcion-icono i {
+        animation: none !important;
+    }
 }

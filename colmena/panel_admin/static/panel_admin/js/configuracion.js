@@ -1212,3 +1212,72 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+
+// =========================================================
+// RÁFAGA DE POLEN AL GUARDAR
+// =========================================================
+//
+// Bloque independiente para no arriesgar la lógica de validación
+// existente. Reutiliza la clase .particula-rafaga-polen ya
+// definida en estilos_admin.css, igual que en Apicultores,
+// Colmenas, Reportes y Usuarios y Roles.
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    function lanzarRafagaPolen(boton) {
+
+        const rect = boton.getBoundingClientRect();
+        const centroX = rect.left + rect.width / 2;
+        const centroY = rect.top + rect.height / 2;
+        const CANTIDAD_PARTICULAS = 10;
+
+        for (let i = 0; i < CANTIDAD_PARTICULAS; i++) {
+
+            const angulo = (Math.PI * 2 * i) / CANTIDAD_PARTICULAS;
+            const distancia = 40 + Math.random() * 30;
+            const dx = Math.cos(angulo) * distancia;
+            const dy = Math.sin(angulo) * distancia;
+
+            const particula = document.createElement("span");
+            particula.className = "particula-rafaga-polen";
+            particula.style.left = centroX + "px";
+            particula.style.top = centroY + "px";
+            particula.style.setProperty("--dx", dx.toFixed(1) + "px");
+            particula.style.setProperty("--dy", dy.toFixed(1) + "px");
+
+            document.body.appendChild(particula);
+
+            window.setTimeout(function () {
+                particula.remove();
+            }, 700);
+
+        }
+    }
+
+    const botonesGuardarConfig = [
+        document.getElementById("btnGuardarConfiguracionGeneral"),
+        document.getElementById("btnGuardarNotificaciones")
+    ].filter(Boolean);
+
+    document
+        .querySelectorAll(".btn-guardar-seguridad")
+        .forEach(function (boton) {
+            botonesGuardarConfig.push(boton);
+        });
+
+    botonesGuardarConfig.forEach(function (boton) {
+
+        boton.addEventListener("click", function () {
+
+            if (boton.disabled) {
+                return;
+            }
+
+            lanzarRafagaPolen(boton);
+
+        });
+
+    });
+
+});

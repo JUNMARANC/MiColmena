@@ -803,6 +803,26 @@ MÓDULO APIARIOS
     line-height: 1.6;
 }
 
+/* Encabezado con polen flotante (mismo recurso de los demás
+   módulos: .dashboard-fondo-panal + .particulas-flotantes,
+   ya definidos más abajo en este archivo). Reutiliza el
+   recorrido corto @keyframes chispaFogataEncabezado, pensado
+   para encabezados bajitos como este. */
+
+.incidencias-header-panal {
+    padding: 10px 14px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+}
+
+.incidencias-header-panal .incidencias-header {
+    margin-bottom: 0;
+}
+
+.incidencias-header-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
 
 /* ==========================================================
    4. ACCIONES DEL ENCABEZADO
@@ -1153,72 +1173,19 @@ MÓDULO APIARIOS
 
 
 /* ==========================================================
-   15. BOTONES DE ACCIÓN
+   15-16. BOTONES DE ACCIÓN (.btn-accion, .btn-ver, .btn-editar,
+   .btn-borrar / .btn-eliminar)
+
+   Se quitaron las definiciones que había aquí: son las mismas
+   clases que ya usan Apiarios, Colmenas, Mantenimientos, etc.,
+   con un estilo genérico definido una sola vez en la sección
+   TABLAS. Tenerlas repetidas aquí no rompía nada (esa versión
+   genérica llega después en el archivo y siempre gana), pero
+   quedaban como código muerto que nunca se veía. Las tarjetas y
+   la tabla de incidencias siguen usando exactamente las mismas
+   clases en el HTML, así que el estilo no cambia.
 ========================================================== */
 
-.btn-accion {
-    width: 36px;
-    height: 36px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    border-radius: 9px;
-
-    font-size: 0.95rem;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.btn-accion:hover {
-    transform:
-        translateY(-2px);
-}
-
-.btn-ver {
-    background: #e9f2ff;
-    color: #2f65a7;
-}
-
-.btn-ver:hover {
-    background: #d8e8fb;
-    color: #24588f;
-}
-
-.btn-editar {
-    background: #fff4ca;
-    color: #8c6812;
-}
-
-.btn-editar:hover {
-    background: #f8e8a8;
-    color: #75560d;
-}
-
-
-/* ==========================================================
-   16. BOTÓN BORRAR
-   Soporta ambos nombres de clase
-========================================================== */
-
-.btn-borrar,
-.btn-eliminar {
-    background: #ffdfe2;
-    color: #a72330;
-}
-
-.btn-borrar:hover,
-.btn-eliminar:hover {
-    background: #f8c8cd;
-    color: #8e1722;
-}
 
 
 /* ==========================================================
@@ -1234,7 +1201,7 @@ MÓDULO APIARIOS
         linear-gradient(
             135deg,
             #214f3b,
-            #5f9781
+            #3a6152
         );
 
     color: #ffffff;
@@ -1975,13 +1942,15 @@ MÓDULO APIARIOS
 
 /* ==========================================================
    39. FOOTER DEL MODAL
-========================================================== */
 
-.modal-footer {
-    border-top:
-        1px solid
-        rgba(33, 79, 59, 0.08);
-}
+   Se quitó la regla que había aquí (agregaba un border-top):
+   la sección MODALES, más abajo en el archivo, define
+   ".modal-footer { border: none; ... }" con la misma
+   especificidad y aparece después, así que siempre ganaba y el
+   border-top nunca llegó a verse. Los modales de incidencias ya
+   se ven así (sin esa línea) desde siempre; se documenta para
+   que no se vuelva a agregar pensando que falta.
+========================================================== */
 
 
 /* ==========================================================
@@ -7653,7 +7622,7 @@ MODALES
         linear-gradient(
             135deg,
             #a83242 0%,
-            #d95b68 100%
+            #b8404e 100%
         );
 
     color: #ffffff;
@@ -12657,6 +12626,7 @@ input[type="radio"] {
 }
 
 .tarjeta-incidencia {
+    position: relative;
     overflow: hidden;
     border: 1px solid #e6eee9;
     border-radius: 16px;
@@ -12669,6 +12639,41 @@ input[type="radio"] {
 .tarjeta-incidencia:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+/* Borde degradado animado al pasar el mouse, mismo lenguaje visual
+   de las tarjetas de Apicultores/Colmenas/Reportes/Usuarios
+   (reutiliza @keyframes girarBordeMiel, definido más abajo) */
+.tarjeta-incidencia::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.tarjeta-incidencia:hover::before {
+    opacity: 1;
+}
+
+/* Entrada "con más personalidad" (pop + leve giro), reutiliza
+   @keyframes entradaTarjetaApiario ya definido */
+.tarjeta-incidencia.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-incidencia:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
 }
 
 .tarjeta-incidencia-encabezado {
@@ -12699,6 +12704,13 @@ input[type="radio"] {
 .tarjeta-incidencia-dato i {
     color: var(--verde-medio);
     min-width: 16px;
+    transition: transform .25s ease;
+}
+
+/* Pequeño rebote en los íconos al pasar el mouse por la tarjeta,
+   reutiliza @keyframes rebotitoIconoTarjeta ya definido */
+.tarjeta-incidencia:hover .tarjeta-incidencia-dato i {
+    animation: rebotitoIconoTarjeta .5s ease;
 }
 
 
@@ -12716,6 +12728,11 @@ input[type="radio"] {
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform .3s ease;
+}
+
+.tarjeta-incidencia:hover .tarjeta-incidencia-imagen img {
+    transform: scale(1.06);
 }
 
 .tarjeta-incidencia-sin-imagen {
@@ -12729,9 +12746,66 @@ input[type="radio"] {
     font-size: 1.8rem;
 }
 
+/* Botones de acción: aparecen solo al hover, en escritorio */
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-incidencia .acciones-incidencia .btn-accion {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease, background-color .2s ease, color .2s ease;
+    }
+
+    .tarjeta-incidencia:hover .acciones-incidencia .btn-accion,
+    .tarjeta-incidencia:focus-within .acciones-incidencia .btn-accion {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tarjeta-incidencia .acciones-incidencia .btn-accion:nth-child(1) { transition-delay: 0s; }
+    .tarjeta-incidencia .acciones-incidencia .btn-accion:nth-child(2) { transition-delay: .04s; }
+    .tarjeta-incidencia .acciones-incidencia .btn-accion:nth-child(3) { transition-delay: .08s; }
+
+}
+
+@media (hover: none) {
+    .tarjeta-incidencia:active {
+        transform: scale(.97);
+        transition: transform .15s ease;
+    }
+}
+
 @media (max-width: 576px) {
     .grid-tarjetas-incidencias {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-incidencia,
+    .tarjeta-incidencia:hover,
+    .tarjeta-incidencia-imagen img,
+    .tarjeta-incidencia-dato i {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .tarjeta-incidencia::before {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-incidencia.anim-entrada-tarjeta {
+        animation: none !important;
+    }
+
+    .tarjeta-incidencia:hover .tarjeta-incidencia-dato i {
+        animation: none !important;
+    }
+
+    .tarjeta-incidencia .acciones-incidencia .btn-accion {
+        opacity: 1 !important;
+        transform: none !important;
     }
 }
 

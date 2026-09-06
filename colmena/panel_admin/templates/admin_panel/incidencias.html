@@ -9,33 +9,29 @@
 
 <div class="container-fluid py-4">
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                {{ message }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
-            </div>
-        {% endfor %}
-    {% endif %}
-
     <div class="incidencias-container">
 
-        <div class="incidencias-header">
-            <div>
-                <h2>
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Gestión de Incidencias
-                </h2>
+        <div class="dashboard-fondo-panal incidencias-header-panal">
 
-                <p>
-                    Registra, consulta y realiza seguimiento a las incidencias.
-                </p>
+            <div class="particulas-flotantes" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
+
+            <div class="dashboard-fondo-panal-contenido">
+
+                <div class="incidencias-header">
+                    <div>
+                        <h2>
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Gestión de Incidencias
+                        </h2>
+
+                        <p>
+                            Registra, consulta y realiza seguimiento a las incidencias.
+                        </p>
+                    </div>
 
             <div class="d-flex align-items-center gap-3">
 
@@ -67,6 +63,10 @@
                     </button>
                 {% endif %}
             </div>
+                </div>
+
+            </div>
+
         </div>
 
         <!-- FILTROS -->
