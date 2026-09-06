@@ -109,7 +109,30 @@
 
             <img src="{% static 'home/img/kemi.png' %}" alt="Logo Kemi" class="logo-footer">
             <a href="https://senalasalada.blogspot.com/"><img src="{% static 'home/img/Sena.png' %}" alt="Logo Sena" class="logo-sena"></a>
-            <p>Términos y condiciones | Políticas de privacidad</p>
+            
+            <p class="footer-legales">
+
+                <a
+                    href="{% static 'home/documentos/terminos_y_condiciones_mi_colmena.pdf' %}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Términos y condiciones
+                </a>
+
+                <span class="footer-legales-separador">
+                    |
+                </span>
+
+                <a
+                    href="{% static 'home/documentos/Politica_Privacidad_Mi_Colmena.pdf' %}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Políticas de privacidad
+                </a>
+
+            </p>
         </div>
     </footer>
 
