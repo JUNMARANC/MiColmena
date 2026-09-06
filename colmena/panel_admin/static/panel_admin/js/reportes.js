@@ -460,6 +460,257 @@ document.addEventListener(
                 configurarReporte(tipo);
             }
         );
+
+        /* =====================================================
+           ACTUALIZACIÓN AUTOMÁTICA
+           DEL HISTORIAL DE REPORTES
+        ====================================================== */
+
+        function iniciarActualizacionHistorialReportes() {
+
+
+            const historialActual =
+                document.getElementById(
+                    "historialReportes"
+                );
+
+
+            if (!historialActual) {
+
+                return;
+
+            }
+
+
+            const totalInicial = Number(
+                historialActual.dataset.totalReportes
+                ||
+                0
+            );
+
+
+            let intentos = 0;
+
+            const MAXIMO_INTENTOS = 60;
+
+            let actualizacionTerminada = false;
+
+
+            /* =================================================
+               CONSULTAR SI YA SE GUARDÓ EL NUEVO REPORTE
+            ================================================== */
+
+            async function comprobarHistorial() {
+
+
+                if (actualizacionTerminada) {
+
+                    return;
+
+                }
+
+
+                intentos++;
+
+
+                try {
+
+
+                    /* =========================================
+                       SIEMPRE CONSULTAR LA PÁGINA 1
+                       PORQUE AHÍ APARECE EL NUEVO REPORTE
+                    ========================================== */
+
+                    const url = new URL(
+                        window.location.href
+                    );
+
+
+                    url.searchParams.set(
+                        "page_reportes",
+                        "1"
+                    );
+
+
+                    url.hash = "";
+
+
+                    /* =========================================
+                       OBTENER HTML ACTUALIZADO DESDE DJANGO
+                    ========================================== */
+
+                    const respuesta = await fetch(
+                        url.toString(),
+                        {
+                            method: "GET",
+
+                            cache: "no-store",
+
+                            credentials: "same-origin",
+
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No fue posible consultar el historial."
+                        );
+
+                    }
+
+
+                    const html =
+                        await respuesta.text();
+
+
+                    const documento =
+                        new DOMParser()
+                        .parseFromString(
+                            html,
+                            "text/html"
+                        );
+
+
+                    const historialNuevo =
+                        documento.getElementById(
+                            "historialReportes"
+                        );
+
+
+                    if (!historialNuevo) {
+
+                        throw new Error(
+                            "No se encontró el historial actualizado."
+                        );
+
+                    }
+
+
+                    const totalNuevo = Number(
+                        historialNuevo.dataset.totalReportes
+                        ||
+                        0
+                    );
+
+
+                    /* =========================================
+                       ¿YA APARECIÓ EL NUEVO REPORTE?
+                    ========================================== */
+
+                    if (
+                        totalNuevo
+                        >
+                        totalInicial
+                    ) {
+
+
+                        actualizacionTerminada =
+                            true;
+
+
+                        /* =====================================
+                           REEMPLAZAR SOLAMENTE EL HISTORIAL
+                        ====================================== */
+
+                        const historialEnPantalla =
+                            document.getElementById(
+                                "historialReportes"
+                            );
+
+
+                        if (historialEnPantalla) {
+
+                            historialEnPantalla.replaceWith(
+                                historialNuevo
+                            );
+
+                        }
+
+
+                        /* =====================================
+                           ACTUALIZAR URL A PÁGINA 1
+                           SIN RECARGAR
+                        ====================================== */
+
+                        const urlActual = new URL(
+                            window.location.href
+                        );
+
+
+                        urlActual.searchParams.set(
+                            "page_reportes",
+                            "1"
+                        );
+
+
+                        urlActual.hash =
+                            "historialReportes";
+
+
+                        window.history.replaceState(
+                            {},
+                            "",
+                            urlActual.toString()
+                        );
+
+
+                        return;
+
+                    }
+
+
+                }
+                catch (error) {
+
+
+                    console.error(
+                        "Error actualizando historial de reportes:",
+                        error
+                    );
+
+
+                }
+
+
+                /* =============================================
+                   SEGUIR COMPROBANDO
+                   DURANTE MÁXIMO 60 SEGUNDOS
+                ============================================== */
+
+                if (
+                    intentos
+                    <
+                    MAXIMO_INTENTOS
+                ) {
+
+                    window.setTimeout(
+                        comprobarHistorial,
+                        1000
+                    );
+
+                }
+
+
+            }
+
+
+            /* =================================================
+               PRIMERA CONSULTA
+            ================================================== */
+
+            window.setTimeout(
+                comprobarHistorial,
+                1000
+            );
+
+
+        }
  
  
         /* =====================================================
@@ -608,8 +859,14 @@ document.addEventListener(
  
                     return;
                 }
- 
+
                 mostrarEstadoGenerando();
+
+                /* =============================================
+                   ESPERAR EL NUEVO REGISTRO DEL HISTORIAL
+                ============================================== */
+
+                iniciarActualizacionHistorialReportes();
             }
         );
  
@@ -715,20 +972,101 @@ document.addEventListener(
 // así que funciona aunque cambie el resto de la lógica de arriba.
  
 document.addEventListener("DOMContentLoaded", function () {
- 
-    function aplicarEntradaEscalonadaReportes(selector, retraso) {
- 
+
+    function aplicarEntradaEscalonadaReportes(selector, retraso, claseAnimacion) {
+
+        const clase = claseAnimacion || "anim-entrada-lista";
+
         document.querySelectorAll(selector).forEach(function (elemento, indice) {
- 
-            elemento.classList.remove("anim-entrada-lista");
+
+            elemento.classList.remove(clase);
             void elemento.offsetWidth;
- 
+
             elemento.style.animationDelay = (indice * retraso) + "ms";
-            elemento.classList.add("anim-entrada-lista");
+            elemento.classList.add(clase);
         });
     }
- 
-    aplicarEntradaEscalonadaReportes(".tarjeta-tipo-reporte", 80);
+
+    aplicarEntradaEscalonadaReportes(".tarjeta-tipo-reporte", 80, "anim-entrada-tarjeta");
     aplicarEntradaEscalonadaReportes(".tabla-reportes tbody tr", 45);
- 
+
+    // =========================================================
+    // ENTRADA ESCALONADA DENTRO DEL MODAL DE REPORTE
+    // =========================================================
+    //
+    // Igual que en Colmenas/Apicultores: al abrir el modal de
+    // configuracion, sus bloques (.row > div) entran uno tras
+    // otro en vez de aparecer todos de golpe. Reutiliza la clase
+    // .anim-entrada-modal ya definida en estilos_admin.css.
+
+    const modalReporte = document.getElementById("modalConfigurarReporte");
+
+    if (modalReporte) {
+
+        modalReporte.addEventListener("shown.bs.modal", function () {
+
+            const cuerpoModal = modalReporte.querySelector(".modal-body");
+
+            if (cuerpoModal) {
+                cuerpoModal
+                    .querySelectorAll(".row > div")
+                    .forEach(function (hijo, indice) {
+                        hijo.classList.remove("anim-entrada-modal");
+                        void hijo.offsetWidth;
+                        hijo.style.animationDelay = (indice * 35) + "ms";
+                        hijo.classList.add("anim-entrada-modal");
+                    });
+            }
+
+        });
+
+    }
+
+    // =========================================================
+    // RAFAGA DE POLEN AL GENERAR EL REPORTE
+    // =========================================================
+    //
+    // Mismo recurso visual de Colmenas/Apicultores: al hacer clic
+    // en "Generar reporte", salen particulas doradas del boton.
+    // Reutiliza la clase .particula-rafaga-polen ya definida en
+    // estilos_admin.css.
+
+    const botonGenerarPolen = document.getElementById("btnGenerarReporte");
+
+    if (botonGenerarPolen) {
+
+        botonGenerarPolen.addEventListener("click", function () {
+
+            const rect = botonGenerarPolen.getBoundingClientRect();
+            const centroX = rect.left + rect.width / 2;
+            const centroY = rect.top + rect.height / 2;
+            const CANTIDAD_PARTICULAS = 12;
+
+            for (let i = 0; i < CANTIDAD_PARTICULAS; i++) {
+
+                const angulo = (Math.PI * 2 * i) / CANTIDAD_PARTICULAS;
+                const distancia = 40 + Math.random() * 30;
+                const dx = Math.cos(angulo) * distancia;
+                const dy = Math.sin(angulo) * distancia;
+
+                const particula = document.createElement("span");
+                particula.className = "particula-rafaga-polen";
+                particula.style.left = centroX + "px";
+                particula.style.top = centroY + "px";
+                particula.style.setProperty("--dx", dx.toFixed(1) + "px");
+                particula.style.setProperty("--dy", dy.toFixed(1) + "px");
+
+                document.body.appendChild(particula);
+
+                window.setTimeout(function () {
+                    particula.remove();
+                }, 700);
+
+            }
+
+        });
+
+    }
+
 });
+

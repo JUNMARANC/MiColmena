@@ -9,7 +9,6 @@
 ========================================================== */
 
 .editar-incidencia-page {
-
     width: 100%;
     max-width: 1180px;
 
@@ -17,9 +16,7 @@
 
     display: flex;
     flex-direction: column;
-
     gap: 22px;
-
 }
 
 
@@ -28,28 +25,19 @@
 ========================================================== */
 
 .editar-incidencia-encabezado {
-
     display: flex;
-
     align-items: center;
     justify-content: space-between;
 
     gap: 25px;
-
 }
-
 
 .editar-incidencia-encabezado-info {
-
     min-width: 0;
-
 }
 
-
 .editar-incidencia-etiqueta {
-
     display: inline-flex;
-
     align-items: center;
 
     margin-top: 15px;
@@ -59,52 +47,44 @@
 
     border-radius: 30px;
 
-    background: #FCE2DE;
-
-    color: #A84D44;
+    background: #fce2de;
+    color: #a84d44;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-transform: uppercase;
-
     letter-spacing: 0.4px;
-
 }
 
-
 .editar-incidencia-encabezado h1 {
-
     margin: 0;
 
-    color: var(--apicultor-verde-oscuro, #214F3B);
+    color: var(
+        --apicultor-verde-oscuro,
+        #214f3b
+    );
 
     font-size: 28px;
-
     font-weight: 800;
-
     line-height: 1.25;
 
     overflow-wrap: anywhere;
-
 }
 
-
 .editar-incidencia-encabezado p {
-
-    max-width: 680px;
+    max-width: 720px;
 
     margin: 7px 0 0;
 
-    color: var(--apicultor-texto-secundario, #66746C);
+    color: var(
+        --apicultor-texto-secundario,
+        #66746c
+    );
 
     font-size: 10px;
-
     font-weight: 500;
-
     line-height: 1.7;
-
 }
 
 
@@ -113,26 +93,22 @@
 ========================================================== */
 
 .btn-volver-incidencias {
-
     width: fit-content;
 
     display: inline-flex;
-
     align-items: center;
     gap: 7px;
 
     padding: 8px 11px;
 
     border: 1px solid rgba(33, 79, 59, 0.12);
-
     border-radius: 10px;
 
     background: rgba(255, 255, 255, 0.82);
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 8px;
-
     font-weight: 700;
 
     text-decoration: none;
@@ -141,18 +117,14 @@
         background 0.2s ease,
         transform 0.2s ease,
         border-color 0.2s ease;
-
 }
 
-
 .btn-volver-incidencias:hover {
-
-    background: #FFFFFF;
+    background: #ffffff;
 
     border-color: rgba(33, 79, 59, 0.22);
 
     transform: translateX(-2px);
-
 }
 
 
@@ -161,26 +133,20 @@
 ========================================================== */
 
 .editar-incidencia-estado-superior {
-
     flex-shrink: 0;
-
 }
 
 
 /* ==========================================================
-   5. BADGE PRINCIPAL DE ESTADO
+   5. BADGE PRINCIPAL
 ========================================================== */
 
 .incidencia-estado-principal {
-
     min-height: 38px;
 
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 8px;
 
     padding: 8px 14px;
@@ -188,170 +154,126 @@
     border-radius: 30px;
 
     font-size: 9px;
-
     font-weight: 800;
 
     white-space: nowrap;
-
 }
 
-
 .incidencia-estado-principal > span {
-
     width: 8px;
     height: 8px;
 
     border-radius: 50%;
-
 }
 
 
 /* ==========================================================
-   6. PENDIENTE
+   6. BADGE PENDIENTE
 ========================================================== */
 
 .incidencia-estado-principal.pendiente {
-
-    background: #FFF0BE;
-
+    background: #fff0be;
     color: #896817;
-
 }
 
-
 .incidencia-estado-principal.pendiente > span {
-
-    background: #D4A62A;
-
+    background: #d4a62a;
 }
 
 
 /* ==========================================================
-   7. EN PROCESO
+   7. BADGE EN PROCESO
 ========================================================== */
 
 .incidencia-estado-principal.proceso {
-
-    background: #E5EFFA;
-
+    background: #e5effa;
     color: #456889;
-
 }
 
-
 .incidencia-estado-principal.proceso > span {
-
-    background: #6591BC;
-
+    background: #6591bc;
 }
 
 
 /* ==========================================================
-   8. RESUELTA
+   8. BADGE RESUELTA
 ========================================================== */
 
 .incidencia-estado-principal.resuelta {
-
-    background: #E7F2E3;
-
-    color: #4F744B;
-
+    background: #e7f2e3;
+    color: #4f744b;
 }
 
-
 .incidencia-estado-principal.resuelta > span {
-
-    background: #74A66D;
-
+    background: #74a66d;
 }
 
 
 /* ==========================================================
-   9. AVISO
+   9. AVISO GENERAL
 ========================================================== */
 
 .editar-incidencia-aviso {
-
     display: flex;
-
     align-items: flex-start;
-
     gap: 13px;
 
     padding: 15px 17px;
 
-    border: 1px solid #E8DBA4;
-
+    border: 1px solid #e8dba4;
     border-radius: 15px;
 
     background: rgba(255, 237, 180, 0.30);
-
 }
 
-
 .editar-incidencia-aviso-icono {
-
     width: 40px;
     height: 40px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 11px;
 
-    background: #FFEDB4;
+    background: #ffedb4;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 16px;
-
 }
-
 
 .editar-incidencia-aviso strong {
-
     display: block;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 10px;
-
     font-weight: 800;
-
 }
 
-
 .editar-incidencia-aviso p {
-
     margin: 4px 0 0;
 
-    color: #66746C;
+    color: #66746c;
 
     font-size: 8px;
-
     line-height: 1.6;
-
 }
 
 
 /* ==========================================================
-   10. FORMULARIO GENERAL
+   10. FORMULARIO
 ========================================================== */
 
 .editar-incidencia-form {
-
     width: 100%;
 
     display: flex;
-
     flex-direction: column;
-
     gap: 18px;
-
 }
 
 
@@ -360,11 +282,9 @@
 ========================================================== */
 
 .editar-incidencia-card {
-
     padding: 20px;
 
     border: 1px solid rgba(33, 79, 59, 0.09);
-
     border-radius: 18px;
 
     background: rgba(255, 255, 255, 0.92);
@@ -375,236 +295,210 @@
     animation:
         entradaEditarIncidencia
         0.30s ease both;
-
 }
 
 
 /* ==========================================================
-   12. HEADER DE TARJETAS
+   12. HEADER TARJETA
 ========================================================== */
 
 .editar-incidencia-card-header {
-
     display: flex;
-
     align-items: flex-start;
-
     gap: 13px;
 
     margin-bottom: 20px;
-
 }
 
-
 .editar-incidencia-card-icono {
-
     width: 43px;
     height: 43px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 12px;
 
-    background: #FFEDB4;
+    background: #ffedb4;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 17px;
-
 }
-
 
 .editar-incidencia-card-header > div:last-child {
-
     min-width: 0;
-
 }
 
-
 .editar-incidencia-card-header span {
-
     display: block;
 
     margin-bottom: 2px;
 
-    color: #A38116;
+    color: #a38116;
 
     font-size: 7px;
-
     font-weight: 800;
 
     text-transform: uppercase;
-
     letter-spacing: 0.35px;
-
 }
-
 
 .editar-incidencia-card-header h2 {
-
     margin: 0;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 14px;
-
     font-weight: 800;
-
 }
 
-
 .editar-incidencia-card-header p {
-
-    max-width: 650px;
+    max-width: 680px;
 
     margin: 4px 0 0;
 
-    color: #66746C;
+    color: #66746c;
 
     font-size: 8px;
-
     line-height: 1.6;
-
 }
 
 
 /* ==========================================================
-   13. GRID DATOS ORIGINALES
+   13. ICONO PROBLEMA
+========================================================== */
+
+.editar-incidencia-card-icono.evidencia-problema-icono {
+    background: #fce2de;
+
+    color: #a84d44;
+}
+
+
+/* ==========================================================
+   14. ICONO SOLUCIÓN
+========================================================== */
+
+.editar-incidencia-card-icono.evidencia-solucion-icono {
+    background: #e7f2e3;
+
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   15. GRID INFORMACIÓN
 ========================================================== */
 
 .editar-incidencia-grid {
-
     display: grid;
 
     grid-template-columns:
         repeat(2, minmax(0, 1fr));
 
     gap: 15px;
-
 }
 
 
 /* ==========================================================
-   14. CAMPO GENERAL
+   16. CAMPO
 ========================================================== */
 
 .campo-incidencia {
-
     min-width: 0;
 
     display: flex;
-
     flex-direction: column;
-
     gap: 7px;
-
 }
 
-
 .campo-incidencia > label {
-
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 8px;
-
     font-weight: 800;
-
 }
 
 
 /* ==========================================================
-   15. CAMPO BLOQUEADO
+   17. CAMPO BLOQUEADO
 ========================================================== */
 
 .campo-bloqueado {
-
     position: relative;
 
     min-height: 70px;
 
     display: flex;
-
     align-items: center;
-
     gap: 11px;
 
-    padding: 12px 42px 12px 12px;
+    padding:
+        12px
+        42px
+        12px
+        12px;
 
-    border: 1px solid #E1E7E3;
-
+    border: 1px solid #e1e7e3;
     border-radius: 12px;
 
-    background: #F7F9F7;
-
+    background: #f7f9f7;
 }
 
-
 .campo-bloqueado > div:nth-child(2) {
-
     min-width: 0;
-
 }
 
 
 /* ==========================================================
-   16. ICONO CAMPO BLOQUEADO
+   18. ICONO BLOQUEADO
 ========================================================== */
 
 .campo-bloqueado-icono {
-
     width: 38px;
     height: 38px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 10px;
 
-    background: #FFEDB4;
+    background: #ffedb4;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 14px;
-
 }
 
 
 /* ==========================================================
-   17. TEXTOS CAMPO BLOQUEADO
+   19. TEXTO CAMPO BLOQUEADO
 ========================================================== */
 
 .campo-bloqueado strong {
-
     display: block;
 
     max-width: 360px;
 
     overflow: hidden;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 9px;
-
     font-weight: 800;
 
     text-overflow: ellipsis;
-
     white-space: nowrap;
-
 }
 
-
 .campo-bloqueado span {
-
     display: block;
 
     margin-top: 3px;
@@ -612,18 +506,15 @@
     color: #849087;
 
     font-size: 7px;
-
     line-height: 1.4;
-
 }
 
 
 /* ==========================================================
-   18. CANDADO
+   20. CANDADO
 ========================================================== */
 
 .campo-lock {
-
     position: absolute;
 
     top: 50%;
@@ -631,111 +522,95 @@
 
     transform: translateY(-50%);
 
-    color: #9AA49E;
+    color: #9aa49e;
 
     font-size: 11px;
-
 }
 
 
 /* ==========================================================
-   19. ICONO PRIORIDAD
+   21. PRIORIDAD
 ========================================================== */
 
 .prioridad-incidencia-icono {
-
     width: 38px;
     height: 38px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 10px;
 
     font-size: 14px;
-
 }
-
 
 .prioridad-incidencia-icono.baja {
-
-    background: #E7F2E3;
-
-    color: #4F744B;
-
+    background: #e7f2e3;
+    color: #4f744b;
 }
-
 
 .prioridad-incidencia-icono.media {
-
-    background: #FFF0BE;
-
+    background: #fff0be;
     color: #896817;
-
 }
-
 
 .prioridad-incidencia-icono.alta {
-
-    background: #FBE3CF;
-
-    color: #A46329;
-
+    background: #fbe3cf;
+    color: #a46329;
 }
 
-
 .prioridad-incidencia-icono.critica {
-
-    background: #FCE2DE;
-
-    color: #A84D44;
-
+    background: #fce2de;
+    color: #a84d44;
 }
 
 
 /* ==========================================================
-   20. OPCIONES DE ESTADO
+   22. OPCIONES DE ESTADO
 ========================================================== */
 
 .estado-incidencia-opciones {
-
     display: grid;
 
     grid-template-columns:
         repeat(3, minmax(0, 1fr));
 
     gap: 13px;
-
 }
 
 
 /* ==========================================================
-   21. TARJETA ESTADO
+   23. ESTADO CON ERROR
+========================================================== */
+
+.estado-incidencia-opciones.error
+.estado-incidencia-opcion {
+    border-color: rgba(217, 102, 92, 0.55);
+}
+
+
+/* ==========================================================
+   24. TARJETA ESTADO
 ========================================================== */
 
 .estado-incidencia-opcion {
-
     position: relative;
 
     min-height: 110px;
 
     display: flex;
-
     align-items: center;
-
     gap: 12px;
 
     padding: 15px;
 
-    border: 1px solid #DCE3DE;
-
+    border: 1px solid #dce3de;
     border-radius: 14px;
 
-    background: #FFFFFF;
+    background: #ffffff;
 
     cursor: pointer;
 
@@ -744,23 +619,13 @@
         background 0.2s ease,
         transform 0.2s ease,
         box-shadow 0.2s ease;
-
 }
-
 
 .estado-incidencia-opcion:hover {
-
     transform: translateY(-1px);
-
 }
 
-
-/* ==========================================================
-   22. RADIO REAL
-========================================================== */
-
 .estado-incidencia-opcion input {
-
     position: absolute;
 
     width: 1px;
@@ -769,577 +634,760 @@
     opacity: 0;
 
     pointer-events: none;
-
 }
 
 
 /* ==========================================================
-   23. RADIO VISUAL
+   25. RADIO
 ========================================================== */
 
 .estado-radio {
-
     width: 17px;
     height: 17px;
 
     flex-shrink: 0;
 
-    border: 2px solid #C8D0CB;
-
+    border: 2px solid #c8d0cb;
     border-radius: 50%;
 
-    background: #FFFFFF;
+    background: #ffffff;
 
     box-shadow:
-        inset 0 0 0 4px #FFFFFF;
-
+        inset 0 0 0 4px #ffffff;
 }
 
 
 /* ==========================================================
-   24. ICONO ESTADO
+   26. ICONO ESTADO
 ========================================================== */
 
 .estado-icono {
-
     width: 43px;
     height: 43px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 11px;
 
     font-size: 17px;
-
 }
 
 
 /* ==========================================================
-   25. TEXTO ESTADO
+   27. TEXTO ESTADO
 ========================================================== */
 
 .estado-texto {
-
     min-width: 0;
 
     display: flex;
-
     flex-direction: column;
-
     gap: 4px;
-
 }
-
 
 .estado-texto strong {
-
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 10px;
-
     font-weight: 800;
-
 }
 
-
 .estado-texto small {
-
-    color: #66746C;
+    color: #66746c;
 
     font-size: 7px;
-
     line-height: 1.5;
-
 }
 
 
 /* ==========================================================
-   26. PENDIENTE
+   28. PENDIENTE
 ========================================================== */
 
 .estado-incidencia-opcion.pendiente
 .estado-icono {
-
-    background: #FFF0BE;
+    background: #fff0be;
 
     color: #896817;
-
 }
-
 
 .estado-incidencia-opcion.pendiente:hover {
+    border-color: #dabf59;
 
-    border-color: #DABF59;
-
-    background: #FFFDF5;
-
+    background: #fffdf5;
 }
-
 
 .estado-incidencia-opcion.pendiente:has(input:checked),
 .estado-incidencia-opcion.pendiente.activa {
-
-    border-color: #D4AD34;
+    border-color: #d4ad34;
 
     background: rgba(255, 240, 190, 0.48);
 
     box-shadow:
         0 0 0 3px rgba(212, 166, 42, 0.10);
-
 }
-
 
 .estado-incidencia-opcion.pendiente:has(input:checked)
 .estado-radio,
+
 .estado-incidencia-opcion.pendiente.activa
 .estado-radio {
+    border-color: #d4a62a;
 
-    border-color: #D4A62A;
-
-    background: #D4A62A;
-
+    background: #d4a62a;
 }
 
 
 /* ==========================================================
-   27. EN PROCESO
+   29. EN PROCESO
 ========================================================== */
 
 .estado-incidencia-opcion.proceso
 .estado-icono {
-
-    background: #E5EFFA;
+    background: #e5effa;
 
     color: #456889;
-
 }
-
 
 .estado-incidencia-opcion.proceso:hover {
+    border-color: #afc5da;
 
-    border-color: #AFC5DA;
-
-    background: #F7FAFD;
-
+    background: #f7fafd;
 }
-
 
 .estado-incidencia-opcion.proceso:has(input:checked),
 .estado-incidencia-opcion.proceso.activa {
-
-    border-color: #6591BC;
+    border-color: #6591bc;
 
     background: rgba(229, 239, 250, 0.65);
 
     box-shadow:
         0 0 0 3px rgba(101, 145, 188, 0.10);
-
 }
-
 
 .estado-incidencia-opcion.proceso:has(input:checked)
 .estado-radio,
+
 .estado-incidencia-opcion.proceso.activa
 .estado-radio {
+    border-color: #6591bc;
 
-    border-color: #6591BC;
-
-    background: #6591BC;
-
+    background: #6591bc;
 }
 
 
 /* ==========================================================
-   28. RESUELTA
+   30. RESUELTA
 ========================================================== */
 
 .estado-incidencia-opcion.resuelta
 .estado-icono {
+    background: #e7f2e3;
 
-    background: #E7F2E3;
-
-    color: #4F744B;
-
+    color: #4f744b;
 }
-
 
 .estado-incidencia-opcion.resuelta:hover {
+    border-color: #bad4b4;
 
-    border-color: #BAD4B4;
-
-    background: #F8FCF7;
-
+    background: #f8fcf7;
 }
-
 
 .estado-incidencia-opcion.resuelta:has(input:checked),
 .estado-incidencia-opcion.resuelta.activa {
-
-    border-color: #74A66D;
+    border-color: #74a66d;
 
     background: rgba(231, 242, 227, 0.65);
 
     box-shadow:
         0 0 0 3px rgba(116, 166, 109, 0.10);
-
 }
-
 
 .estado-incidencia-opcion.resuelta:has(input:checked)
 .estado-radio,
+
 .estado-incidencia-opcion.resuelta.activa
 .estado-radio {
+    border-color: #74a66d;
 
-    border-color: #74A66D;
-
-    background: #74A66D;
-
+    background: #74a66d;
 }
 
 
 /* ==========================================================
-   29. TEXTAREA
+   31. AVISO FOTO PARA RESUELTA
 ========================================================== */
 
-.campo-completo {
+.aviso-evidencia-solucion {
+    margin-top: 14px;
 
-    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
 
+    padding: 12px 14px;
+
+    border: 1px solid #dbe6da;
+    border-radius: 11px;
+
+    background: #f8fbf7;
+
+    color: #66746c;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.aviso-evidencia-solucion > i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color: #74a66d;
+
+    font-size: 14px;
+}
+
+.aviso-evidencia-solucion strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.aviso-evidencia-solucion span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #7c8981;
+
+    font-size: 7px;
+    line-height: 1.55;
+}
+
+.aviso-evidencia-solucion.activo {
+    border-color: #e1bf66;
+
+    background: rgba(255, 240, 190, 0.38);
+
+    box-shadow:
+        0 0 0 3px rgba(212, 166, 42, 0.06);
+}
+
+.aviso-evidencia-solucion.activo > i {
+    color: #a87e16;
 }
 
 
-.campo-incidencia textarea {
+/* ==========================================================
+   32. TEXTAREA
+========================================================== */
 
+.campo-completo {
     width: 100%;
+}
 
+.campo-incidencia textarea {
+    width: 100%;
     min-height: 150px;
 
     padding: 13px 14px;
 
     resize: vertical;
 
-    border: 1px solid #DCE3DE;
-
+    border: 1px solid #dce3de;
     border-radius: 12px;
 
     outline: none;
 
-    background: #FFFFFF;
+    background: #ffffff;
 
     color: #163324;
 
     font-family: inherit;
-
     font-size: 9px;
-
     font-weight: 500;
-
     line-height: 1.7;
 
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
-
 }
-
 
 .campo-incidencia textarea::placeholder {
-
-    color: #A3ACA7;
-
+    color: #a3aca7;
 }
 
-
 .campo-incidencia textarea:focus {
-
-    border-color: #D5B849;
+    border-color: #d5b849;
 
     box-shadow:
         0 0 0 3px rgba(255, 221, 113, 0.20);
-
 }
 
 
 /* ==========================================================
-   30. META / CONTADOR
+   33. META
 ========================================================== */
 
 .campo-meta {
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     gap: 15px;
-
 }
-
 
 .campo-meta small {
-
-    color: #89938D;
+    color: #89938d;
 
     font-size: 7px;
-
 }
 
-
 .campo-meta > span {
-
     flex-shrink: 0;
 
     color: #849087;
 
     font-size: 7px;
-
     font-weight: 700;
-
 }
-
 
 .campo-meta > span.cerca-limite {
-
-    color: #B2761E;
-
+    color: #b2761e;
 }
 
-
 .campo-meta > span.limite-alcanzado {
-
-    color: #AE4D43;
-
+    color: #ae4d43;
 }
 
 
 /* ==========================================================
-   31. CAMPO CON ERROR
+   34. CAMPO CON ERROR
 ========================================================== */
 
 .campo-incidencia.error textarea {
+    border-color: #d9665c;
 
-    border-color: #D9665C;
-
-    background: #FFFAFA;
+    background: #fffafa;
 
     box-shadow:
         0 0 0 3px rgba(217, 102, 92, 0.10);
-
 }
 
-
 .campo-error-mensaje {
-
     display: flex;
-
     align-items: center;
-
     gap: 5px;
 
     margin-top: 3px;
 
-    color: #AD5148;
+    color: #ad5148;
 
     font-size: 7px;
-
     font-weight: 700;
-
 }
 
 
 /* ==========================================================
-   32. EVIDENCIA ACTUAL
+   35. BLOQUE GENERAL DE EVIDENCIAS
 ========================================================== */
 
-.evidencia-actual {
-
-    margin-bottom: 17px;
-
-    overflow: hidden;
-
-    border: 1px solid rgba(33, 79, 59, 0.10);
-
-    border-radius: 14px;
-
-    background: #FFFFFF;
-
-}
-
-
-/* ==========================================================
-   33. HEADER EVIDENCIA ACTUAL
-========================================================== */
-
-.evidencia-actual-header {
+.bloque-evidencias-edicion {
+    width: 100%;
 
     display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
+    flex-direction: column;
     gap: 15px;
-
-    padding: 13px 15px;
-
-    border-bottom: 1px solid rgba(33, 79, 59, 0.08);
-
-    background: rgba(231, 242, 227, 0.35);
-
 }
 
 
-.evidencia-actual-header strong {
+/* ==========================================================
+   36. RESUMEN DE EVIDENCIAS
+========================================================== */
 
-    display: block;
+.evidencias-edicion-resumen {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 
-    color: #214F3B;
+    padding: 10px 12px;
 
-    font-size: 9px;
+    border: 1px solid #e0e7e2;
+    border-radius: 10px;
+
+    background: #fafcfa;
+}
+
+.evidencias-edicion-resumen > div {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.evidencias-edicion-resumen i {
+    color: #5f9781;
+
+    font-size: 12px;
+}
+
+.evidencias-edicion-resumen span {
+    color: #75827a;
+
+    font-size: 7.5px;
+    font-weight: 600;
+}
+
+.evidencias-edicion-resumen strong {
+    color: #214f3b;
 
     font-weight: 800;
-
 }
 
 
-.evidencia-actual-header span {
+/* ==========================================================
+   37. AVISO SOLUCIÓN
+========================================================== */
 
-    display: block;
+.evidencia-solucion-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
 
-    margin-top: 3px;
+    padding: 13px 14px;
 
-    color: #77847C;
+    border: 1px solid #d6e6d4;
+    border-radius: 11px;
 
-    font-size: 7px;
-
+    background: rgba(231, 242, 227, 0.45);
 }
 
-
-.evidencia-actual-header > i {
-
-    width: 34px;
-    height: 34px;
+.evidencia-solucion-aviso > i {
+    width: 33px;
+    height: 33px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 9px;
 
-    background: #E7F2E3;
+    background: #dcefd7;
 
-    color: #4F744B;
+    color: #4f744b;
 
+    font-size: 13px;
+}
+
+.evidencia-solucion-aviso strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.evidencia-solucion-aviso span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #748078;
+
+    font-size: 7px;
+    line-height: 1.55;
+}
+
+.evidencia-solucion-aviso b {
+    color: #4f744b;
 }
 
 
 /* ==========================================================
-   34. IMAGEN ACTUAL
+   38. CONTENEDOR EVIDENCIAS EXISTENTES
 ========================================================== */
 
-.evidencia-actual-imagen {
+.evidencias-existentes {
+    padding: 14px;
 
-    width: 100%;
+    border: 1px solid #e1e7e3;
+    border-radius: 13px;
 
-    max-height: 430px;
+    background: #ffffff;
+}
 
-    display: flex;
 
-    align-items: center;
-    justify-content: center;
+/* ==========================================================
+   39. HEADER EVIDENCIAS EXISTENTES
+========================================================== */
+
+.evidencias-existentes-header {
+    margin-bottom: 12px;
+}
+
+.evidencias-existentes-header strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.evidencias-existentes-header span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   40. GRID EXISTENTES
+========================================================== */
+
+.evidencias-existentes-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   41. TARJETA EXISTENTE
+========================================================== */
+
+.evidencia-existente-item {
+    min-width: 0;
 
     overflow: hidden;
 
-    background: #F2F5F3;
+    border: 1px solid #dfe5e1;
+    border-radius: 12px;
 
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 10px rgba(33, 79, 59, 0.04);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+.evidencia-existente-item:hover {
+    border-color: #cbd6ce;
 
-.evidencia-actual-imagen img {
+    box-shadow:
+        0 6px 15px rgba(33, 79, 59, 0.07);
 
-    display: block;
-
-    width: 100%;
-
-    max-height: 430px;
-
-    object-fit: contain;
-
+    transform: translateY(-2px);
 }
 
 
 /* ==========================================================
-   35. SIN EVIDENCIA
+   42. FOTO EXISTENTE
 ========================================================== */
 
-.sin-evidencia-actual {
+.evidencia-existente-imagen {
+    position: relative;
 
-    display: flex;
+    width: 100%;
+    aspect-ratio: 4 / 3;
 
-    align-items: center;
+    overflow: hidden;
 
-    gap: 12px;
+    background: #f1f4f2;
+}
 
-    margin-bottom: 17px;
+.evidencia-existente-imagen img {
+    width: 100%;
+    height: 100%;
 
-    padding: 15px;
+    display: block;
 
-    border: 1px solid #E1E7E3;
+    object-fit: cover;
 
-    border-radius: 12px;
+    transition:
+        transform 0.25s ease;
+}
 
-    background: #F7F9F7;
-
+.evidencia-existente-item:hover
+.evidencia-existente-imagen img {
+    transform: scale(1.025);
 }
 
 
-.sin-evidencia-actual > i {
+/* ==========================================================
+   43. NÚMERO EXISTENTE
+========================================================== */
 
-    width: 40px;
-    height: 40px;
+.evidencia-existente-numero {
+    position: absolute;
+
+    left: 8px;
+    top: 8px;
+
+    z-index: 2;
+
+    min-width: 23px;
+    height: 23px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    border-radius: 20px;
+
+    background: rgba(33, 79, 59, 0.88);
+
+    color: #ffffff;
+
+    font-size: 7px;
+    font-weight: 800;
+
+    backdrop-filter: blur(4px);
+}
+
+
+/* ==========================================================
+   44. BADGE TIPO EXISTENTE
+========================================================== */
+
+.evidencia-tipo-badge {
+    position: absolute;
+
+    right: 8px;
+    bottom: 8px;
+
+    z-index: 2;
+
+    padding: 5px 8px;
+
+    border-radius: 20px;
+
+    font-size: 6px;
+    font-weight: 800;
+
+    backdrop-filter: blur(4px);
+}
+
+.evidencia-tipo-badge.problema {
+    background: rgba(252, 226, 222, 0.94);
+
+    color: #a84d44;
+}
+
+.evidencia-tipo-badge.solucion {
+    background: rgba(231, 242, 227, 0.94);
+
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   45. INFO FOTO EXISTENTE
+========================================================== */
+
+.evidencia-existente-info {
+    min-width: 0;
+
+    padding: 10px 11px;
+}
+
+.evidencia-existente-info strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.evidencia-existente-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   46. SIN EVIDENCIAS
+========================================================== */
+
+.sin-evidencias-registradas {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding: 14px;
+
+    border: 1px solid #ead6d2;
+    border-radius: 11px;
+
+    background: #fffafa;
+}
+
+.sin-evidencias-registradas > i {
+    width: 37px;
+    height: 37px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 10px;
 
-    background: #E9EEEA;
+    background: #fce2de;
 
-    color: #849087;
+    color: #a84d44;
 
-    font-size: 16px;
-
+    font-size: 15px;
 }
 
-
-.sin-evidencia-actual strong {
-
+.sin-evidencias-registradas strong {
     display: block;
 
-    color: #214F3B;
+    color: #214f3b;
 
-    font-size: 9px;
-
+    font-size: 8px;
     font-weight: 800;
-
 }
 
-
-.sin-evidencia-actual span {
-
+.sin-evidencias-registradas span {
     display: block;
 
     margin-top: 3px;
@@ -1347,477 +1395,745 @@
     color: #849087;
 
     font-size: 7px;
-
+    line-height: 1.5;
 }
 
 
 /* ==========================================================
-   36. NUEVA EVIDENCIA
+   47. SIN SOLUCIÓN
 ========================================================== */
 
-.nueva-evidencia {
+.sin-evidencias-registradas.solucion {
+    border-color: #d9e6d7;
 
-    width: 100%;
+    background: #f9fcf8;
+}
 
+.sin-evidencias-registradas.solucion > i {
+    background: #e7f2e3;
+
+    color: #4f744b;
 }
 
 
 /* ==========================================================
-   37. SELECTOR DE EVIDENCIA
+   48. AGREGAR EVIDENCIAS
+========================================================== */
+
+.agregar-evidencias-edicion {
+    padding: 14px;
+
+    border: 1px solid #e1e7e3;
+    border-radius: 13px;
+
+    background: #fbfcfb;
+}
+
+.agregar-evidencias-edicion.solucion {
+    border-color: #dbe7d9;
+
+    background: rgba(248, 252, 247, 0.85);
+}
+
+
+/* ==========================================================
+   49. HEADER AGREGAR
+========================================================== */
+
+.agregar-evidencias-header {
+    margin-bottom: 12px;
+}
+
+.agregar-evidencias-header strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.agregar-evidencias-header span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   50. SELECTOR DE ARCHIVOS
 ========================================================== */
 
 .evidencia-selector {
-
     width: 100%;
-
     min-height: 110px;
 
     display: flex;
-
     align-items: center;
-
     gap: 15px;
 
     padding: 17px;
 
-    border: 1.5px dashed #C8D1CB;
-
+    border: 1.5px dashed #c8d1cb;
     border-radius: 14px;
 
-    background: #FAFCFA;
+    background: #fafcfa;
 
     cursor: pointer;
 
     transition:
         border-color 0.2s ease,
         background 0.2s ease,
-        transform 0.2s ease;
-
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
-
 
 .evidencia-selector:hover {
-
-    border-color: #D0AD35;
+    border-color: #d0ad35;
 
     background: rgba(255, 237, 180, 0.18);
-
 }
 
+.evidencia-selector.solucion:hover {
+    border-color: #83aa7e;
 
-.evidencia-selector.arrastrando {
-
-    border-color: #C49F22;
-
-    background: rgba(255, 237, 180, 0.34);
-
+    background: rgba(231, 242, 227, 0.45);
 }
 
 
 /* ==========================================================
-   38. ICONO SELECTOR EVIDENCIA
+   51. DRAG
+========================================================== */
+
+.evidencia-selector.arrastrando {
+    border-color: #c49f22;
+
+    background: rgba(255, 237, 180, 0.34);
+
+    box-shadow:
+        0 0 0 4px rgba(255, 221, 113, 0.12);
+
+    transform: scale(1.002);
+}
+
+.evidencia-selector.solucion.arrastrando {
+    border-color: #74a66d;
+
+    background: rgba(231, 242, 227, 0.65);
+
+    box-shadow:
+        0 0 0 4px rgba(116, 166, 109, 0.08);
+}
+
+
+/* ==========================================================
+   52. ERROR SELECTOR
+========================================================== */
+
+.evidencia-selector.error {
+    border-color: #d9665c;
+
+    background: #fff8f7;
+
+    box-shadow:
+        0 0 0 3px rgba(217, 102, 92, 0.08);
+}
+
+
+/* ==========================================================
+   53. LÍMITE ALCANZADO
+========================================================== */
+
+.evidencia-selector.limite-alcanzado {
+    border-color: #d8d8cc;
+
+    background: #f7f8f6;
+
+    cursor: not-allowed;
+
+    opacity: 0.72;
+}
+
+.evidencia-selector.limite-alcanzado
+.evidencia-selector-boton {
+    opacity: 0.65;
+}
+
+
+/* ==========================================================
+   54. ICONO SELECTOR
 ========================================================== */
 
 .evidencia-selector-icono {
-
     width: 48px;
     height: 48px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 13px;
 
-    background: #FFEDB4;
+    background: #ffedb4;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 19px;
+}
 
+.evidencia-selector.solucion
+.evidencia-selector-icono {
+    background: #e7f2e3;
+
+    color: #4f744b;
 }
 
 
-.evidencia-selector > div:nth-child(2) {
+/* ==========================================================
+   55. TEXTO SELECTOR
+========================================================== */
 
+.evidencia-selector-contenido {
     min-width: 0;
-
     flex: 1;
-
 }
 
-
-.evidencia-selector strong {
-
+.evidencia-selector-contenido strong {
     display: block;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 10px;
-
     font-weight: 800;
-
 }
 
-
-.evidencia-selector span {
-
+.evidencia-selector-contenido span {
     display: block;
 
     margin-top: 4px;
 
-    color: #7E8A83;
+    color: #7e8a83;
 
     font-size: 7px;
-
+    line-height: 1.5;
 }
 
 
 /* ==========================================================
-   39. BOTÓN EXAMINAR
+   56. BOTÓN EXAMINAR
 ========================================================== */
 
 .evidencia-selector-boton {
-
     flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 
     padding: 9px 14px;
 
-    border: 1px solid #DFC45D;
-
+    border: 1px solid #dfc45d;
     border-radius: 9px;
 
-    background: #FFDD71;
+    background: #ffdd71;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 8px;
-
     font-weight: 800;
+}
 
+.evidencia-selector.solucion
+.evidencia-selector-boton {
+    border-color: #bdd5b9;
+
+    background: #dcefd7;
+
+    color: #3f643b;
 }
 
 
 /* ==========================================================
-   40. PREVIEW
+   57. ESTADO NUEVAS EVIDENCIAS
 ========================================================== */
 
-.evidencia-preview {
-
-    position: relative;
-
-    width: 100%;
-
-    overflow: hidden;
-
-    border: 1px solid rgba(33, 79, 59, 0.11);
-
-    border-radius: 14px;
-
-    background: #FFFFFF;
-
-}
-
-
-.evidencia-preview[hidden] {
-
-    display: none !important;
-
-}
-
-
-/* ==========================================================
-   41. ETIQUETA NUEVA EVIDENCIA
-========================================================== */
-
-.evidencia-preview-etiqueta {
-
-    position: absolute;
-
-    top: 12px;
-    left: 12px;
-
-    z-index: 2;
-
-    padding: 6px 9px;
-
-    border-radius: 20px;
-
-    background: rgba(33, 79, 59, 0.90);
-
-    color: #FFFFFF;
-
-    font-size: 7px;
-
-    font-weight: 800;
-
-}
-
-
-/* ==========================================================
-   42. IMAGEN PREVIEW
-========================================================== */
-
-.evidencia-preview-imagen {
-
-    width: 100%;
-
-    height: 330px;
+.evidencias-nuevas-estado {
+    min-height: 32px;
 
     display: flex;
-
     align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-
-    background: #F1F4F2;
-
-}
-
-
-.evidencia-preview-imagen img {
-
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-
-}
-
-
-/* ==========================================================
-   43. INFO PREVIEW
-========================================================== */
-
-.evidencia-preview-info {
-
-    display: flex;
-
-    align-items: center;
-
     justify-content: space-between;
+    gap: 12px;
 
-    gap: 15px;
-
-    padding: 13px 15px;
-
+    margin-top: 9px;
 }
 
-
-.evidencia-preview-info strong {
-
-    display: block;
-
-    max-width: 600px;
-
-    overflow: hidden;
-
-    color: #214F3B;
-
-    font-size: 9px;
-
-    font-weight: 800;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
-}
-
-
-.evidencia-preview-info span {
-
-    display: block;
-
-    margin-top: 3px;
-
-    color: #87928B;
+.evidencias-nuevas-estado > span {
+    color: #7d8982;
 
     font-size: 7px;
+    font-weight: 600;
+}
 
+.evidencias-nuevas-estado strong {
+    color: #214f3b;
+
+    font-weight: 800;
 }
 
 
 /* ==========================================================
-   44. QUITAR NUEVA IMAGEN
+   58. QUITAR TODAS
 ========================================================== */
 
-.btn-eliminar-imagen {
-
-    flex-shrink: 0;
-
-    min-height: 36px;
-
+.btn-limpiar-evidencias {
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
+    gap: 5px;
 
-    gap: 6px;
+    padding: 7px 10px;
 
-    padding: 7px 11px;
+    border: 1px solid #efcbc7;
+    border-radius: 8px;
 
-    border: 1px solid #EFCBC7;
+    background: #fff8f7;
 
-    border-radius: 9px;
-
-    background: #FFF8F7;
-
-    color: #AB5148;
+    color: #ab5148;
 
     font-family: inherit;
-
     font-size: 7px;
-
     font-weight: 800;
 
     cursor: pointer;
 
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
+.btn-limpiar-evidencias:hover {
+    border-color: #df9c95;
 
-.btn-eliminar-imagen:hover {
+    background: #fce2de;
 
-    background: #FCE2DE;
+    transform: translateY(-1px);
+}
 
+.btn-limpiar-evidencias[hidden] {
+    display: none !important;
 }
 
 
 /* ==========================================================
-   45. ERROR IMAGEN
+   59. ERROR DE EVIDENCIAS
 ========================================================== */
 
-.evidencia-selector.error {
+.evidencias-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
 
-    border-color: #D9665C;
+    margin-top: 9px;
 
-    background: #FFF8F7;
+    padding: 9px 11px;
 
+    border: 1px solid #efcbc7;
+    border-radius: 9px;
+
+    background: #fff8f7;
+
+    color: #ad5148;
+
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.evidencias-error i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+}
+
+.evidencias-error[hidden] {
+    display: none !important;
 }
 
 
 /* ==========================================================
-   46. RESUMEN
+   60. PREVIEW NUEVAS
+========================================================== */
+
+.evidencias-preview {
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 13px;
+
+    border: 1px solid rgba(33, 79, 59, 0.11);
+    border-radius: 13px;
+
+    background: #ffffff;
+}
+
+.evidencias-preview[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   61. HEADER PREVIEW
+========================================================== */
+
+.evidencias-preview-header {
+    margin-bottom: 11px;
+}
+
+.evidencias-preview-header strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.evidencias-preview-header span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   62. GRID PREVIEWS NUEVOS
+========================================================== */
+
+.evidencias-preview-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   63. TARJETA PREVIEW
+========================================================== */
+
+.evidencia-preview-item {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #dfe5e1;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 10px rgba(33, 79, 59, 0.04);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.evidencia-preview-item:hover {
+    border-color: #cbd6ce;
+
+    box-shadow:
+        0 6px 15px rgba(33, 79, 59, 0.07);
+
+    transform: translateY(-2px);
+}
+
+
+/* ==========================================================
+   64. FOTO PREVIEW
+========================================================== */
+
+.evidencia-preview-item-imagen {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+
+    background: #f1f4f2;
+}
+
+.evidencia-preview-item-imagen img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* ==========================================================
+   65. NÚMERO PREVIEW
+========================================================== */
+
+.evidencia-preview-numero {
+    position: absolute;
+
+    top: 8px;
+    left: 8px;
+
+    z-index: 3;
+
+    min-width: 23px;
+    height: 23px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    border-radius: 20px;
+
+    background: rgba(33, 79, 59, 0.88);
+
+    color: #ffffff;
+
+    font-size: 7px;
+    font-weight: 800;
+
+    backdrop-filter: blur(4px);
+}
+
+
+/* ==========================================================
+   66. TIPO PREVIEW
+========================================================== */
+
+.evidencia-preview-tipo {
+    position: absolute;
+
+    left: 8px;
+    bottom: 8px;
+
+    z-index: 3;
+
+    padding: 5px 8px;
+
+    border-radius: 20px;
+
+    font-size: 6px;
+    font-weight: 800;
+}
+
+.evidencia-preview-tipo.problema {
+    background: rgba(252, 226, 222, 0.95);
+
+    color: #a84d44;
+}
+
+.evidencia-preview-tipo.solucion {
+    background: rgba(231, 242, 227, 0.95);
+
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   67. QUITAR PREVIEW
+========================================================== */
+
+.btn-eliminar-evidencia {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    z-index: 4;
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    color: #a84d44;
+
+    font-family: inherit;
+    font-size: 11px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 8px rgba(30, 45, 36, 0.12);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-eliminar-evidencia:hover {
+    background: #d9665c;
+
+    color: #ffffff;
+
+    transform: scale(1.05);
+}
+
+
+/* ==========================================================
+   68. INFO PREVIEW
+========================================================== */
+
+.evidencia-preview-item-info {
+    min-width: 0;
+
+    padding: 10px 11px;
+}
+
+.evidencia-preview-item-info strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #214f3b;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.evidencia-preview-item-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #89938d;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   69. RESUMEN FINAL
 ========================================================== */
 
 .editar-incidencia-resumen {
-
     display: flex;
-
     align-items: flex-start;
-
     gap: 13px;
 
     padding: 16px 18px;
 
-    border: 1px solid #D9E8D6;
-
+    border: 1px solid #d9e8d6;
     border-radius: 14px;
 
     background: rgba(231, 242, 227, 0.48);
-
 }
 
-
 .editar-incidencia-resumen-icono {
-
     width: 39px;
     height: 39px;
 
     flex-shrink: 0;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     border-radius: 10px;
 
-    background: #DCEFD7;
+    background: #dcefd7;
 
-    color: #4F744B;
+    color: #4f744b;
 
     font-size: 15px;
-
 }
-
 
 .editar-incidencia-resumen strong {
-
     display: block;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-size: 10px;
-
     font-weight: 800;
-
 }
 
-
 .editar-incidencia-resumen p {
-
     margin: 4px 0 0;
 
-    color: #66746C;
+    color: #66746c;
 
     font-size: 8px;
-
     line-height: 1.6;
-
 }
 
 
 /* ==========================================================
-   47. ACCIONES
+   70. ACCIONES
 ========================================================== */
 
 .editar-incidencia-acciones {
-
     display: flex;
-
     align-items: center;
-
     justify-content: flex-end;
-
     gap: 10px;
-
 }
 
 
 /* ==========================================================
-   48. CANCELAR
+   71. CANCELAR
 ========================================================== */
 
 .btn-cancelar-edicion {
-
     min-height: 44px;
 
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
-
     gap: 7px;
 
     padding: 9px 16px;
 
-    border: 1px solid #D8DFDA;
-
+    border: 1px solid #d8dfda;
     border-radius: 11px;
 
-    background: #FFFFFF;
+    background: #ffffff;
 
-    color: #66746C;
+    color: #66746c;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-decoration: none;
@@ -1825,48 +2141,38 @@
     transition:
         background 0.2s ease,
         transform 0.2s ease;
-
 }
 
-
 .btn-cancelar-edicion:hover {
-
-    background: #F4F6F4;
+    background: #f4f6f4;
 
     transform: translateY(-1px);
-
 }
 
 
 /* ==========================================================
-   49. GUARDAR CAMBIOS
+   72. GUARDAR
 ========================================================== */
 
 .btn-guardar-edicion {
-
     min-height: 44px;
 
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
-
     gap: 8px;
 
     padding: 9px 18px;
 
-    border: 1px solid #D6B63F;
-
+    border: 1px solid #d6b63f;
     border-radius: 11px;
 
-    background: #FFDD71;
+    background: #ffdd71;
 
-    color: #214F3B;
+    color: #214f3b;
 
     font-family: inherit;
-
     font-size: 8px;
-
     font-weight: 800;
 
     cursor: pointer;
@@ -1878,334 +2184,362 @@
         background 0.2s ease,
         transform 0.2s ease,
         box-shadow 0.2s ease;
-
 }
 
-
 .btn-guardar-edicion:hover {
-
-    background: #F3CA4E;
+    background: #f3ca4e;
 
     transform: translateY(-1px);
 
     box-shadow:
         0 7px 15px rgba(150, 119, 24, 0.14);
-
 }
 
-
 .btn-guardar-edicion:disabled {
-
     opacity: 0.65;
 
     cursor: wait;
 
     transform: none;
-
 }
 
 
 /* ==========================================================
-   50. ANIMACIONES
+   73. ANIMACIONES
 ========================================================== */
 
 .editar-incidencia-card:nth-of-type(1) {
-
     animation-delay: 0.03s;
-
 }
-
 
 .editar-incidencia-card:nth-of-type(2) {
-
     animation-delay: 0.06s;
-
 }
-
 
 .editar-incidencia-card:nth-of-type(3) {
-
     animation-delay: 0.09s;
-
 }
-
 
 .editar-incidencia-card:nth-of-type(4) {
-
     animation-delay: 0.12s;
-
 }
 
+.editar-incidencia-card:nth-of-type(5) {
+    animation-delay: 0.15s;
+}
 
 @keyframes entradaEditarIncidencia {
 
     from {
-
         opacity: 0;
 
         transform: translateY(8px);
-
     }
 
-
     to {
-
         opacity: 1;
 
         transform: translateY(0);
-
     }
 
 }
 
 
 /* ==========================================================
-   51. RESPONSIVE 1000px
+   74. RESPONSIVE 1000px
 ========================================================== */
 
 @media (max-width: 1000px) {
 
     .estado-incidencia-opciones {
-
         grid-template-columns: 1fr;
-
     }
 
 }
 
 
 /* ==========================================================
-   52. RESPONSIVE 800px
+   75. RESPONSIVE 900px
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .evidencias-existentes-grid,
+    .evidencias-preview-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ==========================================================
+   76. RESPONSIVE 800px
 ========================================================== */
 
 @media (max-width: 800px) {
 
     .editar-incidencia-encabezado {
-
         align-items: flex-start;
 
         flex-direction: column;
-
     }
 
 
     .editar-incidencia-encabezado h1 {
-
         font-size: 24px;
-
     }
 
 
     .editar-incidencia-grid {
-
         grid-template-columns: 1fr;
-
     }
 
 
     .editar-incidencia-estado-superior {
-
         width: 100%;
-
     }
 
 
     .incidencia-estado-principal {
-
         width: 100%;
-
     }
 
 }
 
 
 /* ==========================================================
-   53. RESPONSIVE 650px
+   77. RESPONSIVE 650px
 ========================================================== */
 
 @media (max-width: 650px) {
 
     .editar-incidencia-page {
-
         gap: 17px;
-
     }
 
 
     .editar-incidencia-card {
-
         padding: 16px;
 
         border-radius: 15px;
-
     }
 
 
     .editar-incidencia-card-header {
-
         margin-bottom: 16px;
-
     }
 
 
     .estado-incidencia-opcion {
-
         min-height: 95px;
 
         padding: 13px;
-
     }
 
 
+    /* ======================================================
+       EVIDENCIAS
+    ====================================================== */
+
     .evidencia-selector {
+        align-items: flex-start;
 
         flex-wrap: wrap;
+    }
 
+
+    .evidencia-selector-contenido {
+        flex:
+            1
+            1
+            calc(100% - 65px);
     }
 
 
     .evidencia-selector-boton {
-
         width: 100%;
-
-        text-align: center;
-
     }
 
 
-    .evidencia-preview-imagen {
+    .evidencias-nuevas-estado {
+        align-items: flex-start;
 
-        height: 260px;
-
+        flex-direction: column;
     }
 
+
+    .evidencias-existentes-grid,
+    .evidencias-preview-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    /* ======================================================
+       ACCIONES
+    ====================================================== */
 
     .editar-incidencia-acciones {
-
         flex-direction: column-reverse;
 
         align-items: stretch;
-
     }
 
 
     .btn-cancelar-edicion,
     .btn-guardar-edicion {
-
         width: 100%;
-
     }
 
 }
 
 
 /* ==========================================================
-   54. RESPONSIVE 480px
+   78. RESPONSIVE 480px
 ========================================================== */
 
 @media (max-width: 480px) {
 
     .editar-incidencia-encabezado h1 {
-
         font-size: 21px;
-
     }
 
 
     .editar-incidencia-encabezado p {
-
         font-size: 9px;
-
     }
 
 
     .editar-incidencia-aviso,
     .editar-incidencia-resumen {
-
         padding: 13px;
-
     }
 
 
     .editar-incidencia-card-header {
-
         gap: 10px;
-
     }
 
 
     .editar-incidencia-card-icono {
-
         width: 39px;
         height: 39px;
 
         font-size: 15px;
-
     }
 
 
     .editar-incidencia-card-header h2 {
-
         font-size: 12px;
-
     }
 
 
     .campo-bloqueado {
-
         padding-right: 35px;
-
     }
 
 
     .campo-bloqueado-icono,
     .prioridad-incidencia-icono {
-
         width: 35px;
         height: 35px;
-
     }
 
 
     .estado-incidencia-opcion {
-
         gap: 9px;
-
     }
 
 
     .estado-icono {
-
         width: 39px;
         height: 39px;
 
         font-size: 15px;
-
     }
 
 
-    .evidencia-preview-imagen {
+    /* ======================================================
+       EVIDENCIAS MÓVIL
+    ====================================================== */
 
-        height: 220px;
-
+    .evidencias-existentes,
+    .agregar-evidencias-edicion {
+        padding: 11px;
     }
 
 
-    .evidencia-preview-info {
-
-        flex-direction: column;
-
-        align-items: flex-start;
-
+    .evidencias-existentes-grid,
+    .evidencias-preview-grid {
+        grid-template-columns: 1fr;
     }
 
 
-    .btn-eliminar-imagen {
+    .evidencia-existente-imagen,
+    .evidencia-preview-item-imagen {
+        aspect-ratio: 16 / 10;
+    }
 
+
+    .evidencia-selector {
+        min-height: auto;
+
+        padding: 14px;
+    }
+
+
+    .evidencia-selector-icono {
+        width: 43px;
+        height: 43px;
+
+        font-size: 17px;
+    }
+
+
+    .btn-limpiar-evidencias {
         width: 100%;
+    }
 
+
+    .aviso-evidencia-solucion,
+    .evidencia-solucion-aviso {
+        padding: 11px;
     }
 
 }
 
 
+/* ==========================================================
+   79. RESPONSIVE 360px
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .editar-incidencia-card {
+        padding: 14px;
+    }
+
+
+    .estado-incidencia-opcion {
+        padding: 11px;
+    }
+
+
+    .estado-icono {
+        width: 36px;
+        height: 36px;
+    }
+
+
+    .evidencia-selector {
+        gap: 10px;
+    }
+
+
+    .evidencia-selector-icono {
+        width: 39px;
+        height: 39px;
+    }
+
+}

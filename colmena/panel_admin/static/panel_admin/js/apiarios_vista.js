@@ -2161,9 +2161,16 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    const mensajeColmenasEliminar = (
+    const mensajeBloqueoApiarioEliminar = (
         document.getElementById(
-            "mensajeColmenasApiarioEliminar"
+            "mensajeBloqueoApiarioEliminar"
+        )
+    );
+
+
+    const listaBloqueosApiarioEliminar = (
+        document.getElementById(
+            "listaBloqueosApiarioEliminar"
         )
     );
 
@@ -2173,6 +2180,123 @@ document.addEventListener("DOMContentLoaded", function () {
             "btnConfirmarEliminarApiario"
         )
     );
+
+
+    // =========================================================
+    // LEER CANTIDAD DESDE DATASET
+    // =========================================================
+
+    function leerCantidadDataset(
+        boton,
+        campo
+    ) {
+
+        const valor = (
+            Number.parseInt(
+                boton.dataset[campo]
+                ||
+                "0",
+                10
+            )
+        );
+
+
+        if (
+            Number.isNaN(
+                valor
+            )
+        ) {
+
+            return 0;
+
+        }
+
+
+        return valor;
+
+    }
+
+
+    // =========================================================
+    // AGREGAR MOTIVO DE BLOQUEO
+    // =========================================================
+
+    function agregarMotivoBloqueo(
+        icono,
+        cantidad,
+        singular,
+        plural
+    ) {
+
+        if (
+            !listaBloqueosApiarioEliminar
+            ||
+            cantidad <= 0
+        ) {
+
+            return;
+
+        }
+
+
+        const item = (
+            document.createElement(
+                "li"
+            )
+        );
+
+
+        item.className =
+            "item-bloqueo-eliminar-apiario";
+
+
+        const iconoElemento = (
+            document.createElement(
+                "i"
+            )
+        );
+
+
+        iconoElemento.className =
+            `bi ${icono}`;
+
+
+        const texto = (
+            document.createElement(
+                "span"
+            )
+        );
+
+
+        if (cantidad === 1) {
+
+            texto.textContent =
+                `${cantidad} ${singular}`;
+
+        } else {
+
+            texto.textContent =
+                `${cantidad} ${plural}`;
+
+        }
+
+
+        item.appendChild(
+            iconoElemento
+        );
+
+
+        item.appendChild(
+            texto
+        );
+
+
+        listaBloqueosApiarioEliminar
+            .appendChild(
+                item
+            );
+
+    }
 
 
     // =========================================================
@@ -2191,12 +2315,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 if (!boton) {
+
                     return;
+
                 }
 
 
                 // =================================================
-                // RECIBIR DATOS DEL BOTÓN
+                // DATOS DEL APIARIO
                 // =================================================
 
                 const nombre = (
@@ -2213,32 +2339,72 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-                const cantidadColmenas = (
-                    Number.parseInt(
-                        boton.dataset.colmenas
-                        ||
-                        "0",
-                        10
-                    )
-                );
-
-
                 const totalColmenas = (
-                    Number.isNaN(
-                        cantidadColmenas
+                    leerCantidadDataset(
+                        boton,
+                        "colmenas"
                     )
-                    ?
-                    0
-                    :
-                    cantidadColmenas
+                );
+
+
+                const totalMantenimientos = (
+                    leerCantidadDataset(
+                        boton,
+                        "mantenimientos"
+                    )
+                );
+
+
+                const totalIncidencias = (
+                    leerCantidadDataset(
+                        boton,
+                        "incidencias"
+                    )
+                );
+
+
+                const totalSeguimientos = (
+                    leerCantidadDataset(
+                        boton,
+                        "seguimientos"
+                    )
+                );
+
+
+                const totalEventos = (
+                    leerCantidadDataset(
+                        boton,
+                        "eventos"
+                    )
                 );
 
 
                 // =================================================
-                // NOMBRE DEL APIARIO
+                // ¿PUEDE ELIMINARSE?
                 // =================================================
 
-                if (nombreApiarioEliminar) {
+                const puedeEliminar = (
+
+                    totalColmenas === 0
+                    &&
+                    totalMantenimientos === 0
+                    &&
+                    totalIncidencias === 0
+                    &&
+                    totalSeguimientos === 0
+                    &&
+                    totalEventos === 0
+
+                );
+
+
+                // =================================================
+                // NOMBRE
+                // =================================================
+
+                if (
+                    nombreApiarioEliminar
+                ) {
 
                     nombreApiarioEliminar
                         .textContent =
@@ -2251,7 +2417,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 // URL DEL FORMULARIO
                 // =================================================
 
-                if (formEliminarApiario) {
+                if (
+                    formEliminarApiario
+                ) {
 
                     formEliminarApiario.action =
                         url;
@@ -2260,15 +2428,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 // =================================================
-                // APIARIO CON COLMENAS
+                // LIMPIAR MOTIVOS ANTERIORES
                 // =================================================
 
                 if (
-                    totalColmenas > 0
+                    listaBloqueosApiarioEliminar
                 ) {
 
+                    listaBloqueosApiarioEliminar
+                        .innerHTML =
+                        "";
+
+                }
+
+
+                // =================================================
+                // ELIMINACIÓN BLOQUEADA
+                // =================================================
+
+                if (!puedeEliminar) {
+
+
                     // ---------------------------------------------
-                    // Ocultar permitido
+                    // OCULTAR PERMITIDO
                     // ---------------------------------------------
 
                     if (
@@ -2285,7 +2467,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     // ---------------------------------------------
-                    // Mostrar bloqueado
+                    // MOSTRAR BLOQUEO
                     // ---------------------------------------------
 
                     if (
@@ -2302,42 +2484,89 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     // ---------------------------------------------
-                    // Mensaje
+                    // TEXTO PRINCIPAL
                     // ---------------------------------------------
 
                     if (
-                        mensajeColmenasEliminar
+                        mensajeBloqueoApiarioEliminar
                     ) {
 
-                        const palabraColmena = (
-                            totalColmenas === 1
-                            ?
-                            "colmena asociada"
-                            :
-                            "colmenas asociadas"
-                        );
-
-
-                        mensajeColmenasEliminar
+                        mensajeBloqueoApiarioEliminar
                             .textContent =
                             (
-                                `Este apiario tiene `
+                                "Este apiario no puede eliminarse "
                                 +
-                                `${totalColmenas} `
+                                "porque tiene información "
                                 +
-                                `${palabraColmena}. `
-                                +
-                                `Debes gestionarlas antes `
-                                +
-                                `de eliminar el apiario.`
+                                "relacionada:"
                             );
 
                     }
 
 
-                    // ---------------------------------------------
-                    // Deshabilitar botón
-                    // ---------------------------------------------
+                    // =================================================
+                    // COLMENAS
+                    // =================================================
+
+                    agregarMotivoBloqueo(
+                        "bi-hexagon-fill",
+                        totalColmenas,
+                        "colmena asociada",
+                        "colmenas asociadas"
+                    );
+
+
+                    // =================================================
+                    // MANTENIMIENTOS
+                    // =================================================
+
+                    agregarMotivoBloqueo(
+                        "bi-tools",
+                        totalMantenimientos,
+                        "mantenimiento registrado",
+                        "mantenimientos registrados"
+                    );
+
+
+                    // =================================================
+                    // INCIDENCIAS
+                    // =================================================
+
+                    agregarMotivoBloqueo(
+                        "bi-exclamation-triangle-fill",
+                        totalIncidencias,
+                        "incidencia registrada",
+                        "incidencias registradas"
+                    );
+
+
+                    // =================================================
+                    // SEGUIMIENTOS
+                    // =================================================
+
+                    agregarMotivoBloqueo(
+                        "bi-clipboard2-pulse-fill",
+                        totalSeguimientos,
+                        "seguimiento registrado",
+                        "seguimientos registrados"
+                    );
+
+
+                    // =================================================
+                    // EVENTOS
+                    // =================================================
+
+                    agregarMotivoBloqueo(
+                        "bi-calendar-event-fill",
+                        totalEventos,
+                        "evento de agenda",
+                        "eventos de agenda"
+                    );
+
+
+                    // =================================================
+                    // BLOQUEAR BOTÓN
+                    // =================================================
 
                     if (
                         btnConfirmarEliminar
@@ -2360,6 +2589,15 @@ document.addEventListener("DOMContentLoaded", function () {
                                 "true"
                             );
 
+
+                        btnConfirmarEliminar
+                            .innerHTML =
+                            (
+                                '<i class="bi bi-lock-fill me-2"></i>'
+                                +
+                                "Eliminar bloqueado"
+                            );
+
                     }
 
 
@@ -2369,7 +2607,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 // =================================================
-                // APIARIO SIN COLMENAS
+                // ELIMINACIÓN PERMITIDA
                 // =================================================
 
                 if (
@@ -2416,6 +2654,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     btnConfirmarEliminar
                         .removeAttribute(
                             "aria-disabled"
+                        );
+
+
+                    btnConfirmarEliminar
+                        .innerHTML =
+                        (
+                            '<i class="bi bi-trash3-fill me-2"></i>'
+                            +
+                            "Eliminar definitivamente"
                         );
 
                 }
@@ -2432,6 +2679,11 @@ document.addEventListener("DOMContentLoaded", function () {
             "hidden.bs.modal",
             function () {
 
+
+                // ---------------------------------------------
+                // NOMBRE
+                // ---------------------------------------------
+
                 if (
                     nombreApiarioEliminar
                 ) {
@@ -2443,6 +2695,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
+                // ---------------------------------------------
+                // FORMULARIO
+                // ---------------------------------------------
+
                 if (
                     formEliminarApiario
                 ) {
@@ -2452,6 +2708,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
+
+                // ---------------------------------------------
+                // LISTA DE BLOQUEOS
+                // ---------------------------------------------
+
+                if (
+                    listaBloqueosApiarioEliminar
+                ) {
+
+                    listaBloqueosApiarioEliminar
+                        .innerHTML =
+                        "";
+
+                }
+
+
+                // ---------------------------------------------
+                // RESTAURAR ALERTA PERMITIDA
+                // ---------------------------------------------
 
                 if (
                     alertaEliminacionPermitida
@@ -2466,6 +2741,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
+                // ---------------------------------------------
+                // OCULTAR ALERTA BLOQUEADA
+                // ---------------------------------------------
+
                 if (
                     alertaEliminacionBloqueada
                 ) {
@@ -2478,6 +2757,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
+
+                // ---------------------------------------------
+                // RESTAURAR BOTÓN
+                // ---------------------------------------------
 
                 if (
                     btnConfirmarEliminar
@@ -2497,6 +2780,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     btnConfirmarEliminar
                         .removeAttribute(
                             "aria-disabled"
+                        );
+
+
+                    btnConfirmarEliminar
+                        .innerHTML =
+                        (
+                            '<i class="bi bi-trash3-fill me-2"></i>'
+                            +
+                            "Eliminar definitivamente"
                         );
 
                 }

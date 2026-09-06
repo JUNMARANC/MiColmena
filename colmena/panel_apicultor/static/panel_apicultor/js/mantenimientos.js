@@ -1,335 +1,672 @@
 /* ==========================================================
+   ==========================================================
    MANTENIMIENTOS - PANEL APICULTOR
-========================================================== */
+   ==========================================================
+   ========================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       1. ELEMENTOS - MODAL DE DETALLE
-    ====================================================== */
+       ======================================================
+       1. CONFIGURACIÓN
+       ======================================================
+       ====================================================== */
 
-    const botonesAbrirDetalle = document.querySelectorAll(
-        "[data-modal-mantenimiento]"
-    );
+    const MAX_EVIDENCIAS = 6;
 
-    const botonesCerrarDetalle = document.querySelectorAll(
-        "[data-cerrar-modal-mantenimiento]"
-    );
+    const MAX_TAMANO_MB = 5;
 
-    const modalesDetalle = document.querySelectorAll(
-        ".mantenimiento-modal-overlay"
-    );
-
+    const MAX_TAMANO_BYTES =
+        MAX_TAMANO_MB
+        *
+        1024
+        *
+        1024;
 
 
-    /* ======================================================
-       2. ELEMENTOS - COMPLETAR MANTENIMIENTO
-    ====================================================== */
+    const TIPOS_IMAGEN_VALIDOS = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
 
-    const formulariosCompletar = document.querySelectorAll(
-        ".form-completar-mantenimiento, .form-completar-modal"
-    );
 
-    const modalConfirmarCompletado = document.getElementById(
-        "modalConfirmarCompletado"
-    );
-
-    const botonCancelarCompletado = document.getElementById(
-        "btnCancelarCompletado"
-    );
-
-    const botonConfirmarCompletado = document.getElementById(
-        "btnConfirmarCompletado"
-    );
-
-    const textoNombreMantenimiento = document.getElementById(
-        "confirmarNombreMantenimiento"
-    );
-
-    const textoUbicacionMantenimiento = document.getElementById(
-        "confirmarColmenaMantenimiento"
-    );
+    const EXTENSIONES_VALIDAS = [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp"
+    ];
 
 
 
     /* ======================================================
-       3. ELEMENTOS - OBSERVACIONES
-    ====================================================== */
+       ======================================================
+       2. ELEMENTOS - DETALLE
+       ======================================================
+       ====================================================== */
 
-    const botonesEditarObservacion = document.querySelectorAll(
-        "[data-editar-observacion]"
-    );
-
-    const botonesCancelarObservacion = document.querySelectorAll(
-        "[data-cancelar-observacion]"
-    );
-
-    const formulariosObservacion = document.querySelectorAll(
-        ".form-editar-observacion"
-    );
+    const botonesAbrirDetalle =
+        document.querySelectorAll(
+            "[data-modal-mantenimiento]"
+        );
 
 
+    const botonesCerrarDetalle =
+        document.querySelectorAll(
+            "[data-cerrar-modal-mantenimiento]"
+        );
 
-    /* ======================================================
-       4. ELEMENTOS - FILTROS
-    ====================================================== */
 
-    const formularioFiltros = document.querySelector(
-        ".mantenimientos-form-filtros"
-    );
-
-    const buscador = document.querySelector(
-        ".mantenimientos-buscador input"
-    );
-
-    const selectsFiltros = document.querySelectorAll(
-        ".mantenimientos-select"
-    );
+    const modalesDetalle =
+        document.querySelectorAll(
+            ".mantenimiento-modal-overlay"
+        );
 
 
 
     /* ======================================================
-       5. ESTADO INTERNO
-    ====================================================== */
+       ======================================================
+       3. ELEMENTOS - CREAR
+       ======================================================
+       ====================================================== */
+
+    const botonAbrirCrear =
+        document.getElementById(
+            "btnAbrirCrearMantenimiento"
+        );
+
+
+    const modalCrear =
+        document.getElementById(
+            "modalCrearMantenimiento"
+        );
+
+
+    const formularioCrear =
+        document.getElementById(
+            "formCrearMantenimiento"
+        );
+
+
+    const botonesCerrarCrear =
+        document.querySelectorAll(
+            "[data-cerrar-crear-mantenimiento]"
+        );
+
+
+    const apiarioCrear =
+        document.getElementById(
+            "apiarioCrearMantenimiento"
+        );
+
+
+    const colmenaCrear =
+        document.getElementById(
+            "colmenaCrearMantenimiento"
+        );
+
+
+    const campoColmenaCrear =
+        document.getElementById(
+            "campoColmenaCrearMantenimiento"
+        );
+
+
+    const radiosAlcanceCrear =
+        document.querySelectorAll(
+            ".alcance-mantenimiento-radio-apicultor"
+        );
+
+
+    const fechaCrear =
+        document.getElementById(
+            "fechaCrearMantenimiento"
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       4. ELEMENTOS - EDITAR
+       ======================================================
+       ====================================================== */
+
+    const botonesAbrirEditar =
+        document.querySelectorAll(
+            "[data-modal-editar-mantenimiento]"
+        );
+
+
+    const modalesEditar =
+        document.querySelectorAll(
+            ".modal-editar-mantenimiento-apicultor"
+        );
+
+
+    const botonesCerrarEditar =
+        document.querySelectorAll(
+            "[data-cerrar-editar-mantenimiento]"
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       5. ELEMENTOS - COMPLETAR
+       ======================================================
+       ====================================================== */
+
+    const formulariosCompletar =
+        document.querySelectorAll(
+            ".form-completar-mantenimiento, .form-completar-modal"
+        );
+
+
+    const modalConfirmarCompletado =
+        document.getElementById(
+            "modalConfirmarCompletado"
+        );
+
+
+    const botonCancelarCompletado =
+        document.getElementById(
+            "btnCancelarCompletado"
+        );
+
+
+    const botonConfirmarCompletado =
+        document.getElementById(
+            "btnConfirmarCompletado"
+        );
+
+
+    const textoNombreMantenimiento =
+        document.getElementById(
+            "confirmarNombreMantenimiento"
+        );
+
+
+    const textoUbicacionMantenimiento =
+        document.getElementById(
+            "confirmarColmenaMantenimiento"
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       6. ELEMENTOS - OBSERVACIONES
+       ======================================================
+       ====================================================== */
+
+    const botonesEditarObservacion =
+        document.querySelectorAll(
+            "[data-editar-observacion]"
+        );
+
+
+    const botonesCancelarObservacion =
+        document.querySelectorAll(
+            "[data-cancelar-observacion]"
+        );
+
+
+    const formulariosObservacion =
+        document.querySelectorAll(
+            ".form-editar-observacion"
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       7. ELEMENTOS - VISOR
+       ======================================================
+       ====================================================== */
+
+    const visorEvidencia =
+        document.getElementById(
+            "visorEvidenciaMantenimiento"
+        );
+
+
+    const imagenVisor =
+        document.getElementById(
+            "imagenVisorMantenimiento"
+        );
+
+
+    const botonCerrarVisor =
+        document.getElementById(
+            "btnCerrarVisorMantenimiento"
+        );
+
+
+    const botonesImagenEvidencia =
+        document.querySelectorAll(
+            "[data-imagen-evidencia]"
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       8. ELEMENTOS - FILTROS
+       ======================================================
+       ====================================================== */
+
+    const formularioFiltros =
+        document.querySelector(
+            ".mantenimientos-form-filtros"
+        );
+
+
+    const buscador =
+        document.querySelector(
+            ".mantenimientos-buscador input"
+        );
+
+
+    const selectsFiltros =
+        document.querySelectorAll(
+            ".mantenimientos-select"
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       9. ESTADO INTERNO
+       ======================================================
+       ====================================================== */
 
     let modalDetalleActivo = null;
 
     let botonAbrioDetalle = null;
+
+
+    let modalEditarActivo = null;
+
+    let botonAbrioEditar = null;
+
 
     let formularioCompletarActivo = null;
 
     let botonCompletarOrigen = null;
 
 
+    let elementoFocoAntesValidacion = null;
+
+    let elementoFocoAntesVisor = null;
+
+
 
     /* ======================================================
-       6. UTILIDADES GENERALES
-    ====================================================== */
+       ======================================================
+       10. UTILIDADES GENERALES
+       ======================================================
+       ====================================================== */
 
     function bloquearScroll() {
 
-        document.body.style.overflow = "hidden";
+        document.body.classList.add(
+            "modal-mantenimiento-abierto"
+        );
 
     }
+
 
 
     function existeModalAbierto() {
 
-        const detalleAbierto = document.querySelector(
-            ".mantenimiento-modal-overlay.activo"
+        const detalle =
+            document.querySelector(
+                ".mantenimiento-modal-overlay.activo"
+            );
+
+
+        const crear = (
+            modalCrear
+            &&
+            modalCrear.classList.contains(
+                "activo"
+            )
         );
 
-        const confirmacionAbierta = (
-            modalConfirmarCompletado &&
-            modalConfirmarCompletado.classList.contains("activo")
+
+        const editar =
+            document.querySelector(
+                ".modal-editar-mantenimiento-apicultor.activo"
+            );
+
+
+        const completar = (
+            modalConfirmarCompletado
+            &&
+            modalConfirmarCompletado
+                .classList
+                .contains(
+                    "activo"
+                )
         );
+
+
+        const visor = (
+            visorEvidencia
+            &&
+            visorEvidencia
+                .classList
+                .contains(
+                    "activo"
+                )
+        );
+
+
+        const validacion =
+            document.querySelector(
+                "#modalValidacionMantenimientoApicultor.activo"
+            );
 
 
         return Boolean(
-            detalleAbierto ||
-            confirmacionAbierta
+            detalle
+            ||
+            crear
+            ||
+            editar
+            ||
+            completar
+            ||
+            visor
+            ||
+            validacion
         );
 
     }
+
 
 
     function restaurarScroll() {
 
         if (!existeModalAbierto()) {
 
-            document.body.style.overflow = "";
+            document.body.classList.remove(
+                "modal-mantenimiento-abierto"
+            );
 
         }
 
     }
+
+
+
+    function obtenerFechaHoy() {
+
+        const fecha =
+            new Date();
+
+
+        const anio =
+            fecha.getFullYear();
+
+
+        const mes =
+            String(
+                fecha.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        const dia =
+            String(
+                fecha.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        return (
+            `${anio}-${mes}-${dia}`
+        );
+
+    }
+
+
+
+    const fechaHoy =
+        obtenerFechaHoy();
 
 
 
     /* ======================================================
-       7. UTILIDADES - OBSERVACIONES
-    ====================================================== */
+       ======================================================
+       11. VENTANA EMERGENTE DE VALIDACIÓN
+       ======================================================
+       ====================================================== */
 
-    function obtenerObservacionActual(formulario) {
+    function obtenerModalValidacion() {
 
-        if (!formulario) {
+        let modal =
+            document.getElementById(
+                "modalValidacionMantenimientoApicultor"
+            );
 
-            return null;
+
+        if (modal) {
+
+            return modal;
 
         }
 
 
-        return formulario.previousElementSibling;
+        modal =
+            document.createElement(
+                "div"
+            );
+
+
+        modal.id =
+            "modalValidacionMantenimientoApicultor";
+
+
+        modal.className =
+            "confirmar-completado-overlay";
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        modal.innerHTML = `
+
+            <div
+                class="confirmar-completado-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="tituloValidacionMantenimientoApicultor"
+            >
+
+                <div
+                    class="confirmar-completado-icono"
+                    style="
+                        background: #FFF0BE;
+                        color: #896817;
+                    "
+                >
+
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                </div>
+
+
+                <div class="confirmar-completado-contenido">
+
+                    <span class="confirmar-completado-etiqueta">
+                        Revisa la información
+                    </span>
+
+
+                    <h2
+                        id="tituloValidacionMantenimientoApicultor"
+                    >
+                        Hay un detalle por corregir
+                    </h2>
+
+
+                    <p
+                        id="mensajeValidacionMantenimientoApicultor"
+                        style="white-space: pre-line;"
+                    >
+                    </p>
+
+                </div>
+
+
+                <div class="confirmar-completado-acciones">
+
+                    <button
+                        type="button"
+                        class="btn-confirmar-completado"
+                        id="btnCerrarValidacionMantenimientoApicultor"
+                        style="grid-column: 1 / -1;"
+                    >
+
+                        <i class="bi bi-check-lg"></i>
+
+                        <span>
+                            Entendido
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+
+        document.body.appendChild(
+            modal
+        );
+
+
+        const botonCerrar =
+            modal.querySelector(
+                "#btnCerrarValidacionMantenimientoApicultor"
+            );
+
+
+        if (botonCerrar) {
+
+            botonCerrar.addEventListener(
+                "click",
+                cerrarValidacion
+            );
+
+        }
+
+
+        modal.addEventListener(
+            "click",
+            function (evento) {
+
+                if (
+                    evento.target
+                    ===
+                    modal
+                ) {
+
+                    cerrarValidacion();
+
+                }
+
+            }
+        );
+
+
+        return modal;
 
     }
 
 
-    function obtenerTextarea(formulario) {
 
-        if (!formulario) {
+    function mostrarValidacion(
+        mensaje,
+        titulo = "Hay un detalle por corregir"
+    ) {
 
-            return null;
-
-        }
-
-
-        return formulario.querySelector(
-            "textarea[name='observaciones']"
-        );
-
-    }
+        const modal =
+            obtenerModalValidacion();
 
 
-    function actualizarContador(textarea) {
-
-        if (!textarea) {
-
-            return;
-
-        }
+        elementoFocoAntesValidacion =
+            document.activeElement;
 
 
-        const formulario = textarea.closest(
-            ".form-editar-observacion"
-        );
+        const tituloElemento =
+            modal.querySelector(
+                "#tituloValidacionMantenimientoApicultor"
+            );
 
 
-        if (!formulario) {
+        const mensajeElemento =
+            modal.querySelector(
+                "#mensajeValidacionMantenimientoApicultor"
+            );
 
-            return;
+
+        if (tituloElemento) {
+
+            tituloElemento.textContent =
+                titulo;
 
         }
 
 
-        const contador = formulario.querySelector(
-            ".contador-observacion"
-        );
+        if (mensajeElemento) {
 
-
-        if (!contador) {
-
-            return;
+            mensajeElemento.textContent =
+                mensaje;
 
         }
 
 
-        const maximo = Number(
-            textarea.getAttribute("maxlength")
-        ) || 1000;
-
-
-        contador.textContent = (
-            textarea.value.length +
-            " / " +
-            maximo +
-            " caracteres"
-        );
-
-    }
-
-
-    function guardarValorOriginal(textarea) {
-
-        if (!textarea) {
-
-            return;
-
-        }
-
-
-        textarea.dataset.valorOriginal =
-            textarea.value;
-
-    }
-
-
-    function restaurarValorOriginal(textarea) {
-
-        if (!textarea) {
-
-            return;
-
-        }
-
-
-        if (
-            textarea.dataset.valorOriginal !== undefined
-        ) {
-
-            textarea.value =
-                textarea.dataset.valorOriginal;
-
-        }
-
-
-        actualizarContador(
-            textarea
-        );
-
-    }
-
-
-
-    /* ======================================================
-       8. ABRIR EDICIÓN DE OBSERVACIÓN
-    ====================================================== */
-
-    function abrirEdicionObservacion(formulario) {
-
-        if (!formulario) {
-
-            return;
-
-        }
-
-
-        const observacionActual = obtenerObservacionActual(
-            formulario
-        );
-
-        const textarea = obtenerTextarea(
-            formulario
-        );
-
-
-        formulario.classList.add(
+        modal.classList.add(
             "activo"
         );
 
 
-        if (observacionActual) {
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
 
-            observacionActual.classList.add(
-                "oculto"
+
+        bloquearScroll();
+
+
+        const boton =
+            modal.querySelector(
+                "#btnCerrarValidacionMantenimientoApicultor"
             );
 
-        }
 
-
-        if (textarea) {
-
-            actualizarContador(
-                textarea
-            );
-
+        if (boton) {
 
             setTimeout(
                 function () {
 
-                    textarea.focus();
-
-
-                    const posicion =
-                        textarea.value.length;
-
-
-                    textarea.setSelectionRange(
-                        posicion,
-                        posicion
-                    );
+                    boton.focus();
 
                 },
-                50
+                70
             );
 
         }
@@ -338,65 +675,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       9. CERRAR EDICIÓN DE OBSERVACIÓN
-    ====================================================== */
+    function cerrarValidacion() {
 
-    function cerrarEdicionObservacion(
-        formulario,
-        restaurarContenido = true
-    ) {
-
-        if (!formulario) {
-
-            return;
-
-        }
-
-
-        const observacionActual = obtenerObservacionActual(
-            formulario
-        );
-
-        const textarea = obtenerTextarea(
-            formulario
-        );
-
-
-        formulario.classList.remove(
-            "activo"
-        );
-
-
-        if (observacionActual) {
-
-            observacionActual.classList.remove(
-                "oculto"
+        const modal =
+            document.getElementById(
+                "modalValidacionMantenimientoApicultor"
             );
 
-        }
-
-
-        if (
-            restaurarContenido &&
-            textarea
-        ) {
-
-            restaurarValorOriginal(
-                textarea
-            );
-
-        }
-
-    }
-
-
-
-    /* ======================================================
-       10. CERRAR EDICIONES DENTRO DE UN MODAL
-    ====================================================== */
-
-    function cerrarEdicionesDelModal(modal) {
 
         if (!modal) {
 
@@ -405,12 +690,2066 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const formulariosActivos = modal.querySelectorAll(
-            ".form-editar-observacion.activo"
+        modal.classList.remove(
+            "activo"
         );
 
 
-        formulariosActivos.forEach(
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        restaurarScroll();
+
+
+        if (
+            elementoFocoAntesValidacion
+            &&
+            document.body.contains(
+                elementoFocoAntesValidacion
+            )
+        ) {
+
+            elementoFocoAntesValidacion.focus();
+
+        }
+
+
+        elementoFocoAntesValidacion =
+            null;
+
+    }
+
+
+
+    /* ======================================================
+       ======================================================
+       12. UTILIDADES DE EVIDENCIAS
+       ======================================================
+       ====================================================== */
+
+    function obtenerExtensionArchivo(
+        nombre
+    ) {
+
+        if (!nombre) {
+
+            return "";
+
+        }
+
+
+        const partes =
+            nombre
+            .toLowerCase()
+            .split(".");
+
+
+        if (
+            partes.length
+            <
+            2
+        ) {
+
+            return "";
+
+        }
+
+
+        return partes[
+            partes.length - 1
+        ];
+
+    }
+
+
+
+    function obtenerInputsEvidencias(
+        formulario
+    ) {
+
+        if (!formulario) {
+
+            return [];
+
+        }
+
+
+        return Array.from(
+            formulario.querySelectorAll(
+                ".mantenimiento-input-evidencias"
+            )
+        );
+
+    }
+
+
+
+    function obtenerArchivosNuevos(
+        formulario
+    ) {
+
+        const archivos = [];
+
+
+        obtenerInputsEvidencias(
+            formulario
+        ).forEach(
+            function (input) {
+
+                Array.from(
+                    input.files || []
+                ).forEach(
+                    function (archivo) {
+
+                        archivos.push({
+                            archivo: archivo,
+                            input: input
+                        });
+
+                    }
+                );
+
+            }
+        );
+
+
+        return archivos;
+
+    }
+
+
+
+    function contarEvidenciasExistentes(
+        formulario
+    ) {
+
+        if (
+            !formulario
+            ||
+            !formulario.classList.contains(
+                "form-editar-mantenimiento-apicultor"
+            )
+        ) {
+
+            return 0;
+
+        }
+
+
+        return formulario.querySelectorAll(
+            ".mantenimiento-editar-evidencias-existentes .mantenimiento-evidencia-item"
+        ).length;
+
+    }
+
+
+
+    function limpiarErroresEvidencias(
+        formulario
+    ) {
+
+        obtenerInputsEvidencias(
+            formulario
+        ).forEach(
+            function (input) {
+
+                input.classList.remove(
+                    "is-invalid"
+                );
+
+            }
+        );
+
+    }
+
+
+
+    function validarArchivoImagen(
+        archivo
+    ) {
+
+        if (!archivo) {
+
+            return (
+                "No se pudo leer una de las fotografías seleccionadas."
+            );
+
+        }
+
+
+        if (
+            archivo.size
+            <=
+            0
+        ) {
+
+            return (
+                `La fotografía "${archivo.name}" está vacía.`
+            );
+
+        }
+
+
+        if (
+            archivo.size
+            >
+            MAX_TAMANO_BYTES
+        ) {
+
+            return (
+                `La fotografía "${archivo.name}" supera `
+                +
+                `el límite de ${MAX_TAMANO_MB} MB.`
+            );
+
+        }
+
+
+        const extension =
+            obtenerExtensionArchivo(
+                archivo.name
+            );
+
+
+        const tipo =
+            archivo.type
+            ?
+            archivo.type.toLowerCase()
+            :
+            "";
+
+
+        const extensionValida =
+            EXTENSIONES_VALIDAS.includes(
+                extension
+            );
+
+
+        const tipoValido = (
+            !tipo
+            ||
+            TIPOS_IMAGEN_VALIDOS.includes(
+                tipo
+            )
+        );
+
+
+        if (
+            !extensionValida
+            ||
+            !tipoValido
+        ) {
+
+            return (
+                `La fotografía "${archivo.name}" tiene `
+                +
+                "un formato no permitido.\n\n"
+                +
+                "Utiliza JPG, JPEG, PNG o WEBP."
+            );
+
+        }
+
+
+        return null;
+
+    }
+
+
+
+    function validarEvidencias(
+        formulario
+    ) {
+
+        limpiarErroresEvidencias(
+            formulario
+        );
+
+
+        const archivos =
+            obtenerArchivosNuevos(
+                formulario
+            );
+
+
+        const existentes =
+            contarEvidenciasExistentes(
+                formulario
+            );
+
+
+        const nuevas =
+            archivos.length;
+
+
+        const total =
+            existentes
+            +
+            nuevas;
+
+
+        /* ==================================================
+           MÁXIMO 6
+        ================================================== */
+
+        if (
+            total
+            >
+            MAX_EVIDENCIAS
+        ) {
+
+            obtenerInputsEvidencias(
+                formulario
+            ).forEach(
+                function (input) {
+
+                    if (
+                        input.files
+                        &&
+                        input.files.length
+                    ) {
+
+                        input.classList.add(
+                            "is-invalid"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            const disponibles =
+                Math.max(
+                    0,
+                    MAX_EVIDENCIAS
+                    -
+                    existentes
+                );
+
+
+            return {
+
+                valido: false,
+
+                mensaje:
+                    "Cada mantenimiento puede tener máximo "
+                    +
+                    `${MAX_EVIDENCIAS} fotografías en total.\n\n`
+                    +
+                    `Fotografías guardadas: ${existentes}\n`
+                    +
+                    `Fotografías nuevas: ${nuevas}\n`
+                    +
+                    `Puedes agregar máximo ${disponibles} más.`
+
+            };
+
+        }
+
+
+
+        /* ==================================================
+           FORMATO Y TAMAÑO
+        ================================================== */
+
+        for (
+            const elemento
+            of
+            archivos
+        ) {
+
+            const error =
+                validarArchivoImagen(
+                    elemento.archivo
+                );
+
+
+            if (error) {
+
+                elemento.input.classList.add(
+                    "is-invalid"
+                );
+
+
+                return {
+                    valido: false,
+                    mensaje: error
+                };
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           DUPLICADOS
+        ================================================== */
+
+        const vistos =
+            new Set();
+
+
+        for (
+            const elemento
+            of
+            archivos
+        ) {
+
+            const archivo =
+                elemento.archivo;
+
+
+            const clave =
+                archivo.name.toLowerCase()
+                +
+                "|"
+                +
+                archivo.size
+                +
+                "|"
+                +
+                archivo.lastModified;
+
+
+            if (
+                vistos.has(
+                    clave
+                )
+            ) {
+
+                elemento.input.classList.add(
+                    "is-invalid"
+                );
+
+
+                return {
+
+                    valido: false,
+
+                    mensaje:
+                        `La fotografía "${archivo.name}" `
+                        +
+                        "fue seleccionada más de una vez."
+
+                };
+
+            }
+
+
+            vistos.add(
+                clave
+            );
+
+        }
+
+
+        return {
+            valido: true,
+            mensaje: ""
+        };
+
+    }
+
+
+
+    /* ======================================================
+       ======================================================
+       13. MODAL CREAR
+       ======================================================
+       ====================================================== */
+
+    function obtenerAlcanceCrear() {
+
+        if (!formularioCrear) {
+
+            return "";
+
+        }
+
+
+        const radio =
+            formularioCrear.querySelector(
+                ".alcance-mantenimiento-radio-apicultor:checked"
+            );
+
+
+        return radio
+            ?
+            radio.value
+            :
+            "";
+
+    }
+
+
+
+    function filtrarColmenasCrear() {
+
+        if (
+            !apiarioCrear
+            ||
+            !colmenaCrear
+            ||
+            !campoColmenaCrear
+        ) {
+
+            return;
+
+        }
+
+
+        const alcance =
+            obtenerAlcanceCrear();
+
+
+        const idApiario =
+            apiarioCrear.value;
+
+
+        if (
+            alcance
+            !==
+            "Colmena"
+        ) {
+
+            campoColmenaCrear.classList.add(
+                "d-none"
+            );
+
+
+            colmenaCrear.required =
+                false;
+
+
+            colmenaCrear.value =
+                "";
+
+
+            return;
+
+        }
+
+
+        campoColmenaCrear.classList.remove(
+            "d-none"
+        );
+
+
+        colmenaCrear.required =
+            true;
+
+
+        Array.from(
+            colmenaCrear.options
+        ).forEach(
+            function (opcion) {
+
+
+                if (!opcion.value) {
+
+                    opcion.hidden =
+                        false;
+
+                    opcion.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                const corresponde = (
+                    idApiario
+                    &&
+                    opcion.dataset.apiario
+                    ===
+                    idApiario
+                );
+
+
+                opcion.hidden =
+                    !corresponde;
+
+
+                opcion.disabled =
+                    !corresponde;
+
+            }
+        );
+
+
+        const seleccionada =
+            colmenaCrear.options[
+                colmenaCrear.selectedIndex
+            ];
+
+
+        if (
+            seleccionada
+            &&
+            seleccionada.value
+            &&
+            seleccionada.dataset.apiario
+            !==
+            idApiario
+        ) {
+
+            colmenaCrear.value =
+                "";
+
+        }
+
+    }
+
+
+
+    function abrirModalCrear() {
+
+        if (!modalCrear) {
+
+            return;
+
+        }
+
+
+        filtrarColmenasCrear();
+
+
+        modalCrear.classList.add(
+            "activo"
+        );
+
+
+        modalCrear.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        bloquearScroll();
+
+
+        const body =
+            modalCrear.querySelector(
+                ".mantenimiento-form-body"
+            );
+
+
+        if (body) {
+
+            body.scrollTop =
+                0;
+
+        }
+
+
+        setTimeout(
+            function () {
+
+                if (apiarioCrear) {
+
+                    apiarioCrear.focus();
+
+                }
+
+            },
+            80
+        );
+
+    }
+
+
+
+    function cerrarModalCrear() {
+
+        if (!modalCrear) {
+
+            return;
+
+        }
+
+
+        modalCrear.classList.remove(
+            "activo"
+        );
+
+
+        modalCrear.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        restaurarScroll();
+
+
+        if (botonAbrirCrear) {
+
+            botonAbrirCrear.focus();
+
+        }
+
+    }
+
+
+
+    if (
+        botonAbrirCrear
+        &&
+        modalCrear
+    ) {
+
+        botonAbrirCrear.addEventListener(
+            "click",
+            abrirModalCrear
+        );
+
+    }
+
+
+
+    botonesCerrarCrear.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                cerrarModalCrear
+            );
+
+        }
+    );
+
+
+
+    if (modalCrear) {
+
+        modalCrear.addEventListener(
+            "click",
+            function (evento) {
+
+                if (
+                    evento.target
+                    ===
+                    modalCrear
+                ) {
+
+                    cerrarModalCrear();
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    if (apiarioCrear) {
+
+        apiarioCrear.addEventListener(
+            "change",
+            function () {
+
+                if (colmenaCrear) {
+
+                    colmenaCrear.value =
+                        "";
+
+                }
+
+
+                filtrarColmenasCrear();
+
+            }
+        );
+
+    }
+
+
+
+    radiosAlcanceCrear.forEach(
+        function (radio) {
+
+            radio.addEventListener(
+                "change",
+                function () {
+
+                    if (colmenaCrear) {
+
+                        colmenaCrear.value =
+                            "";
+
+                    }
+
+
+                    filtrarColmenasCrear();
+
+                }
+            );
+
+        }
+    );
+
+
+
+    /* ======================================================
+       ======================================================
+       14. VALIDAR FORMULARIO CREAR
+       ======================================================
+       ====================================================== */
+
+    if (fechaCrear) {
+
+        fechaCrear.min =
+            fechaHoy;
+
+    }
+
+
+
+    if (formularioCrear) {
+
+        formularioCrear.addEventListener(
+            "submit",
+            function (evento) {
+
+
+                /* ==========================================
+                   TAREA
+                ========================================== */
+
+                const tipo =
+                    formularioCrear.querySelector(
+                        'input[name="tipo"]'
+                    );
+
+
+                if (tipo) {
+
+                    tipo.value =
+                        tipo.value.trim();
+
+
+                    if (!tipo.value) {
+
+                        evento.preventDefault();
+
+
+                        tipo.classList.add(
+                            "is-invalid"
+                        );
+
+
+                        mostrarValidacion(
+                            "Debes indicar la tarea que se realizará."
+                        );
+
+
+                        tipo.focus();
+
+                        return;
+
+                    }
+
+
+                    tipo.classList.remove(
+                        "is-invalid"
+                    );
+
+                }
+
+
+
+                /* ==========================================
+                   APIARIO
+                ========================================== */
+
+                if (
+                    !apiarioCrear
+                    ||
+                    !apiarioCrear.value
+                ) {
+
+                    evento.preventDefault();
+
+
+                    if (apiarioCrear) {
+
+                        apiarioCrear.classList.add(
+                            "is-invalid"
+                        );
+
+                    }
+
+
+                    mostrarValidacion(
+                        "Debes seleccionar uno de tus apiarios."
+                    );
+
+
+                    return;
+
+                }
+
+
+                apiarioCrear.classList.remove(
+                    "is-invalid"
+                );
+
+
+
+                /* ==========================================
+                   COLMENA
+                ========================================== */
+
+                if (
+                    obtenerAlcanceCrear()
+                    ===
+                    "Colmena"
+                ) {
+
+                    if (
+                        !colmenaCrear
+                        ||
+                        !colmenaCrear.value
+                    ) {
+
+                        evento.preventDefault();
+
+
+                        if (colmenaCrear) {
+
+                            colmenaCrear.classList.add(
+                                "is-invalid"
+                            );
+
+                        }
+
+
+                        mostrarValidacion(
+                            "Seleccionaste mantenimiento de una colmena.\n\nDebes elegir la colmena correspondiente."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    colmenaCrear.classList.remove(
+                        "is-invalid"
+                    );
+
+                }
+
+
+
+                /* ==========================================
+                   FECHA
+                ========================================== */
+
+                if (
+                    !fechaCrear
+                    ||
+                    !fechaCrear.value
+                    ||
+                    fechaCrear.value
+                    <
+                    fechaHoy
+                ) {
+
+                    evento.preventDefault();
+
+
+                    if (fechaCrear) {
+
+                        fechaCrear.classList.add(
+                            "is-invalid"
+                        );
+
+                    }
+
+
+                    mostrarValidacion(
+                        "La fecha programada no puede ser anterior a hoy."
+                    );
+
+
+                    return;
+
+                }
+
+
+                fechaCrear.classList.remove(
+                    "is-invalid"
+                );
+
+
+
+                /* ==========================================
+                   EVIDENCIAS
+                ========================================== */
+
+                const resultado =
+                    validarEvidencias(
+                        formularioCrear
+                    );
+
+
+                if (!resultado.valido) {
+
+                    evento.preventDefault();
+
+
+                    mostrarValidacion(
+                        resultado.mensaje
+                    );
+
+
+                    return;
+
+                }
+
+
+
+                /* ==========================================
+                   ENVIANDO
+                ========================================== */
+
+                const boton =
+                    formularioCrear.querySelector(
+                        ".btn-guardar-form-mantenimiento"
+                    );
+
+
+                if (boton) {
+
+                    boton.disabled =
+                        true;
+
+
+                    boton.innerHTML = `
+
+                        <span>
+                            Registrando...
+                        </span>
+                    `;
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ======================================================
+       ======================================================
+       15. MODALES EDITAR
+       ======================================================
+       ====================================================== */
+
+    function configurarFormularioEditar(
+        modal
+    ) {
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        const formulario =
+            modal.querySelector(
+                ".form-editar-mantenimiento-apicultor"
+            );
+
+
+        const radiosEntidad =
+            modal.querySelectorAll(
+                ".entidad-editar-mantenimiento"
+            );
+
+
+        const apiario =
+            modal.querySelector(
+                ".apiario-editar-mantenimiento"
+            );
+
+
+        const colmena =
+            modal.querySelector(
+                ".colmena-editar-mantenimiento"
+            );
+
+
+        const campoColmena =
+            modal.querySelector(
+                ".campo-colmena-editar-mantenimiento"
+            );
+
+
+        const fecha =
+            modal.querySelector(
+                ".fecha-editar-mantenimiento"
+            );
+
+
+        if (!formulario) {
+
+            return;
+
+        }
+
+
+
+        /* ==================================================
+           FECHA ORIGINAL
+        ================================================== */
+
+        if (fecha) {
+
+            fecha.dataset.fechaOriginal =
+                fecha.value;
+
+
+            if (
+                fecha.value
+                &&
+                fecha.value
+                <
+                fechaHoy
+            ) {
+
+                fecha.readOnly =
+                    true;
+
+
+                fecha.title =
+                    "La fecha ya venció y debe conservarse.";
+
+            } else {
+
+                fecha.min =
+                    fechaHoy;
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           ACTUALIZAR ALCANCE
+        ================================================== */
+
+        function obtenerEntidad() {
+
+            const seleccionado =
+                formulario.querySelector(
+                    ".entidad-editar-mantenimiento:checked"
+                );
+
+
+            return seleccionado
+                ?
+                seleccionado.value
+                :
+                "";
+
+        }
+
+
+
+        function actualizarColmenas() {
+
+            if (
+                !apiario
+                ||
+                !colmena
+                ||
+                !campoColmena
+            ) {
+
+                return;
+
+            }
+
+
+            const entidad =
+                obtenerEntidad();
+
+
+            const idApiario =
+                apiario.value;
+
+
+            const esColmena =
+                entidad
+                ===
+                "Colmena";
+
+
+            campoColmena.classList.toggle(
+                "d-none",
+                !esColmena
+            );
+
+
+            colmena.required =
+                esColmena;
+
+
+            if (!esColmena) {
+
+                colmena.value =
+                    "";
+
+                return;
+
+            }
+
+
+            Array.from(
+                colmena.options
+            ).forEach(
+                function (opcion) {
+
+
+                    if (!opcion.value) {
+
+                        opcion.hidden =
+                            false;
+
+                        opcion.disabled =
+                            false;
+
+                        return;
+
+                    }
+
+
+                    const corresponde = (
+                        idApiario
+                        &&
+                        opcion.dataset.apiario
+                        ===
+                        idApiario
+                    );
+
+
+                    opcion.hidden =
+                        !corresponde;
+
+
+                    opcion.disabled =
+                        !corresponde;
+
+                }
+            );
+
+
+            const seleccionada =
+                colmena.options[
+                    colmena.selectedIndex
+                ];
+
+
+            if (
+                seleccionada
+                &&
+                seleccionada.value
+                &&
+                seleccionada.dataset.apiario
+                !==
+                idApiario
+            ) {
+
+                colmena.value =
+                    "";
+
+            }
+
+        }
+
+
+
+        radiosEntidad.forEach(
+            function (radio) {
+
+                radio.addEventListener(
+                    "change",
+                    function () {
+
+                        if (colmena) {
+
+                            colmena.value =
+                                "";
+
+                        }
+
+
+                        actualizarColmenas();
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        if (apiario) {
+
+            apiario.addEventListener(
+                "change",
+                function () {
+
+                    if (colmena) {
+
+                        colmena.value =
+                            "";
+
+                    }
+
+
+                    actualizarColmenas();
+
+                }
+            );
+
+        }
+
+
+        actualizarColmenas();
+
+
+
+        /* ==================================================
+           VALIDAR SUBMIT
+        ================================================== */
+
+        formulario.addEventListener(
+            "submit",
+            function (evento) {
+
+
+                const tipo =
+                    formulario.querySelector(
+                        'input[name="tipo"]'
+                    );
+
+
+                const observaciones =
+                    formulario.querySelector(
+                        'textarea[name="observaciones"]'
+                    );
+
+
+
+                /* ==========================================
+                   TAREA
+                ========================================== */
+
+                if (tipo) {
+
+                    tipo.value =
+                        tipo.value.trim();
+
+
+                    if (!tipo.value) {
+
+                        evento.preventDefault();
+
+
+                        tipo.classList.add(
+                            "is-invalid"
+                        );
+
+
+                        mostrarValidacion(
+                            "La tarea del mantenimiento es obligatoria."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    tipo.classList.remove(
+                        "is-invalid"
+                    );
+
+                }
+
+
+
+                /* ==========================================
+                   OBSERVACIONES
+                ========================================== */
+
+                if (observaciones) {
+
+                    observaciones.value =
+                        observaciones.value.trim();
+
+
+                    if (
+                        observaciones.value.length
+                        >
+                        255
+                    ) {
+
+                        evento.preventDefault();
+
+
+                        observaciones.classList.add(
+                            "is-invalid"
+                        );
+
+
+                        mostrarValidacion(
+                            "Las observaciones no pueden superar los 255 caracteres."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    observaciones.classList.remove(
+                        "is-invalid"
+                    );
+
+                }
+
+
+
+                /* ==========================================
+                   APIARIO
+                ========================================== */
+
+                if (
+                    !apiario
+                    ||
+                    !apiario.value
+                ) {
+
+                    evento.preventDefault();
+
+
+                    if (apiario) {
+
+                        apiario.classList.add(
+                            "is-invalid"
+                        );
+
+                    }
+
+
+                    mostrarValidacion(
+                        "Debes seleccionar un apiario."
+                    );
+
+
+                    return;
+
+                }
+
+
+                apiario.classList.remove(
+                    "is-invalid"
+                );
+
+
+
+                /* ==========================================
+                   COLMENA
+                ========================================== */
+
+                if (
+                    obtenerEntidad()
+                    ===
+                    "Colmena"
+                ) {
+
+                    if (
+                        !colmena
+                        ||
+                        !colmena.value
+                    ) {
+
+                        evento.preventDefault();
+
+
+                        if (colmena) {
+
+                            colmena.classList.add(
+                                "is-invalid"
+                            );
+
+                        }
+
+
+                        mostrarValidacion(
+                            "Debes seleccionar una colmena."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    const opcion =
+                        colmena.options[
+                            colmena.selectedIndex
+                        ];
+
+
+                    if (
+                        opcion
+                        &&
+                        opcion.dataset.apiario
+                        !==
+                        apiario.value
+                    ) {
+
+                        evento.preventDefault();
+
+
+                        colmena.classList.add(
+                            "is-invalid"
+                        );
+
+
+                        mostrarValidacion(
+                            "La colmena seleccionada no pertenece al apiario indicado."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    colmena.classList.remove(
+                        "is-invalid"
+                    );
+
+                }
+
+
+
+                /* ==========================================
+                   FECHA
+                ========================================== */
+
+                if (fecha) {
+
+                    const original =
+                        fecha.dataset.fechaOriginal
+                        ||
+                        "";
+
+
+                    if (
+                        original
+                        &&
+                        original
+                        <
+                        fechaHoy
+                    ) {
+
+                        if (
+                            fecha.value
+                            !==
+                            original
+                        ) {
+
+                            evento.preventDefault();
+
+
+                            fecha.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            mostrarValidacion(
+                                "La fecha de este mantenimiento ya venció y no puede modificarse."
+                            );
+
+
+                            return;
+
+                        }
+
+                    } else if (
+                        !fecha.value
+                        ||
+                        fecha.value
+                        <
+                        fechaHoy
+                    ) {
+
+                        evento.preventDefault();
+
+
+                        fecha.classList.add(
+                            "is-invalid"
+                        );
+
+
+                        mostrarValidacion(
+                            "La fecha programada no puede ser anterior a hoy."
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    fecha.classList.remove(
+                        "is-invalid"
+                    );
+
+                }
+
+
+
+                /* ==========================================
+                   EVIDENCIAS
+                ========================================== */
+
+                const resultado =
+                    validarEvidencias(
+                        formulario
+                    );
+
+
+                if (!resultado.valido) {
+
+                    evento.preventDefault();
+
+
+                    mostrarValidacion(
+                        resultado.mensaje
+                    );
+
+
+                    return;
+
+                }
+
+
+
+                /* ==========================================
+                   ENVIANDO
+                ========================================== */
+
+                const boton =
+                    formulario.querySelector(
+                        ".btn-guardar-form-mantenimiento"
+                    );
+
+
+                if (boton) {
+
+                    boton.disabled =
+                        true;
+
+
+                    boton.innerHTML = `
+
+                        <span>
+                            Guardando...
+                        </span>
+                    `;
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    modalesEditar.forEach(
+        function (modal) {
+
+            configurarFormularioEditar(
+                modal
+            );
+
+        }
+    );
+
+
+
+    function abrirModalEditar(
+        modal,
+        botonOrigen = null
+    ) {
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        modalEditarActivo =
+            modal;
+
+
+        /* ==================================================
+           ELEGIR BOTÓN DE RETORNO
+        ================================================== */
+
+        if (botonOrigen) {
+
+            const idModal =
+                botonOrigen.dataset
+                    .modalEditarMantenimiento;
+
+
+            const candidatos =
+                document.querySelectorAll(
+                    `[data-modal-editar-mantenimiento="${idModal}"]`
+                );
+
+
+            botonAbrioEditar =
+                Array.from(
+                    candidatos
+                ).find(
+                    function (boton) {
+
+                        return !boton.closest(
+                            ".mantenimiento-modal-overlay"
+                        );
+
+                    }
+                )
+                ||
+                botonOrigen;
+
+        }
+
+
+
+        /* ==================================================
+           SI VENIMOS DEL DETALLE
+        ================================================== */
+
+        if (
+            botonOrigen
+            &&
+            botonOrigen.hasAttribute(
+                "data-cerrar-modal-actual"
+            )
+        ) {
+
+            const detalle =
+                botonOrigen.closest(
+                    ".mantenimiento-modal-overlay"
+                );
+
+
+            if (detalle) {
+
+                cerrarModalDetalle(
+                    detalle,
+                    false
+                );
+
+            }
+
+        }
+
+
+
+        modal.classList.add(
+            "activo"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        bloquearScroll();
+
+
+        const body =
+            modal.querySelector(
+                ".mantenimiento-form-body"
+            );
+
+
+        if (body) {
+
+            body.scrollTop =
+                0;
+
+        }
+
+
+        const primerCampo =
+            modal.querySelector(
+                ".apiario-editar-mantenimiento"
+            );
+
+
+        if (primerCampo) {
+
+            setTimeout(
+                function () {
+
+                    primerCampo.focus();
+
+                },
+                80
+            );
+
+        }
+
+    }
+
+
+
+    function cerrarModalEditar(
+        modal
+    ) {
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        modal.classList.remove(
+            "activo"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        if (
+            modalEditarActivo
+            ===
+            modal
+        ) {
+
+            modalEditarActivo =
+                null;
+
+        }
+
+
+        restaurarScroll();
+
+
+        if (
+            botonAbrioEditar
+            &&
+            document.body.contains(
+                botonAbrioEditar
+            )
+        ) {
+
+            botonAbrioEditar.focus();
+
+        }
+
+
+        botonAbrioEditar =
+            null;
+
+    }
+
+
+
+    botonesAbrirEditar.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    const idModal =
+                        this.dataset
+                            .modalEditarMantenimiento;
+
+
+                    if (!idModal) {
+
+                        return;
+
+                    }
+
+
+                    const modal =
+                        document.getElementById(
+                            idModal
+                        );
+
+
+                    abrirModalEditar(
+                        modal,
+                        this
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+
+    botonesCerrarEditar.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    const modal =
+                        this.closest(
+                            ".modal-editar-mantenimiento-apicultor"
+                        );
+
+
+                    cerrarModalEditar(
+                        modal
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+
+    modalesEditar.forEach(
+        function (modal) {
+
+            modal.addEventListener(
+                "click",
+                function (evento) {
+
+                    if (
+                        evento.target
+                        ===
+                        modal
+                    ) {
+
+                        cerrarModalEditar(
+                            modal
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+
+    /* ======================================================
+       ======================================================
+       16. VALIDAR EVIDENCIAS AL SELECCIONAR
+       ======================================================
+       ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".form-mantenimiento-apicultor"
+        )
+        .forEach(
+            function (formulario) {
+
+
+                obtenerInputsEvidencias(
+                    formulario
+                ).forEach(
+                    function (input) {
+
+
+                        input.addEventListener(
+                            "change",
+                            function () {
+
+
+                                const resultado =
+                                    validarEvidencias(
+                                        formulario
+                                    );
+
+
+                                if (
+                                    !resultado.valido
+                                ) {
+
+                                    mostrarValidacion(
+                                        resultado.mensaje
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+
+    /* ======================================================
+       ======================================================
+       17. MODAL DETALLE
+       ======================================================
+       ====================================================== */
+
+    function cerrarEdicionesDelModal(
+        modal
+    ) {
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        modal.querySelectorAll(
+            ".form-editar-observacion.activo"
+        ).forEach(
             function (formulario) {
 
                 cerrarEdicionObservacion(
@@ -425,10 +2764,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       11. ABRIR MODAL DE DETALLE
-    ====================================================== */
-
     function abrirModalDetalle(
         modal,
         botonOrigen = null
@@ -441,24 +2776,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        /* Cerrar otros detalles */
-
         modalesDetalle.forEach(
             function (otroModal) {
 
-                if (otroModal !== modal) {
+                if (
+                    otroModal
+                    !==
+                    modal
+                ) {
 
                     otroModal.classList.remove(
                         "activo"
                     );
 
+
                     otroModal.setAttribute(
                         "aria-hidden",
                         "true"
-                    );
-
-                    cerrarEdicionesDelModal(
-                        otroModal
                     );
 
                 }
@@ -489,20 +2823,35 @@ document.addEventListener("DOMContentLoaded", function () {
         bloquearScroll();
 
 
-        const botonCerrar = modal.querySelector(
-            ".mantenimiento-modal-cerrar"
-        );
+        const contenido =
+            modal.querySelector(
+                ".mantenimiento-modal-contenido"
+            );
 
 
-        if (botonCerrar) {
+        if (contenido) {
+
+            contenido.scrollTop =
+                0;
+
+        }
+
+
+        const cerrar =
+            modal.querySelector(
+                ".mantenimiento-modal-cerrar"
+            );
+
+
+        if (cerrar) {
 
             setTimeout(
                 function () {
 
-                    botonCerrar.focus();
+                    cerrar.focus();
 
                 },
-                80
+                70
             );
 
         }
@@ -511,11 +2860,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       12. CERRAR MODAL DE DETALLE
-    ====================================================== */
-
-    function cerrarModalDetalle(modal) {
+    function cerrarModalDetalle(
+        modal,
+        devolverFoco = true
+    ) {
 
         if (!modal) {
 
@@ -540,15 +2888,26 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        modalDetalleActivo =
-            null;
+        if (
+            modalDetalleActivo
+            ===
+            modal
+        ) {
+
+            modalDetalleActivo =
+                null;
+
+        }
 
 
         restaurarScroll();
 
 
         if (
-            botonAbrioDetalle &&
+            devolverFoco
+            &&
+            botonAbrioDetalle
+            &&
             document.body.contains(
                 botonAbrioDetalle
             )
@@ -566,10 +2925,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       13. EVENTOS - ABRIR DETALLE
-    ====================================================== */
-
     botonesAbrirDetalle.forEach(
         function (boton) {
 
@@ -577,8 +2932,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 "click",
                 function () {
 
+
                     const idModal =
-                        this.dataset.modalMantenimiento;
+                        this.dataset
+                            .modalMantenimiento;
 
 
                     if (!idModal) {
@@ -588,13 +2945,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
 
-                    const modal = document.getElementById(
-                        idModal
-                    );
-
-
                     abrirModalDetalle(
-                        modal,
+                        document.getElementById(
+                            idModal
+                        ),
                         this
                     );
 
@@ -606,10 +2960,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       14. EVENTOS - CERRAR DETALLE
-    ====================================================== */
-
     botonesCerrarDetalle.forEach(
         function (boton) {
 
@@ -617,13 +2967,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 "click",
                 function () {
 
-                    const modal = this.closest(
-                        ".mantenimiento-modal-overlay"
-                    );
-
 
                     cerrarModalDetalle(
-                        modal
+                        this.closest(
+                            ".mantenimiento-modal-overlay"
+                        )
                     );
 
                 }
@@ -634,10 +2982,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       15. CERRAR DETALLE HACIENDO CLIC EN FONDO
-    ====================================================== */
-
     modalesDetalle.forEach(
         function (modal) {
 
@@ -646,7 +2990,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 function (evento) {
 
                     if (
-                        evento.target === modal
+                        evento.target
+                        ===
+                        modal
                     ) {
 
                         cerrarModalDetalle(
@@ -664,139 +3010,205 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       16. RESTAURAR BOTÓN DE CONFIRMACIÓN
-    ====================================================== */
+       ======================================================
+       18. OBSERVACIONES
+       ======================================================
+       ====================================================== */
 
-    function restaurarBotonConfirmar() {
+    function obtenerObservacionActual(
+        formulario
+    ) {
 
-        if (!botonConfirmarCompletado) {
+        if (!formulario) {
 
-            return;
+            return null;
 
         }
 
 
-        botonConfirmarCompletado.disabled =
-            false;
-
-
-        botonConfirmarCompletado.innerHTML = `
-            <i class="bi bi-check-lg"></i>
-
-            <span>
-                Sí, completar
-            </span>
-        `;
+        return formulario
+            .previousElementSibling;
 
     }
 
 
 
-    /* ======================================================
-       17. ABRIR MODAL DE CONFIRMACIÓN
-    ====================================================== */
-
-    function abrirConfirmacionCompletado(
+    function obtenerTextarea(
         formulario
     ) {
 
-        if (
-            !formulario ||
-            !modalConfirmarCompletado
-        ) {
+        if (!formulario) {
+
+            return null;
+
+        }
+
+
+        return formulario.querySelector(
+            "textarea[name='observaciones']"
+        );
+
+    }
+
+
+
+    function actualizarContador(
+        textarea
+    ) {
+
+        if (!textarea) {
 
             return;
 
         }
 
 
-        formularioCompletarActivo =
-            formulario;
-
-
-        botonCompletarOrigen =
-            formulario.querySelector(
-                'button[type="submit"]'
+        const formulario =
+            textarea.closest(
+                ".form-editar-observacion"
             );
 
 
-        /* ==============================================
-           OBTENER DATOS DEL HTML
-        ============================================== */
+        if (!formulario) {
 
-        const nombreMantenimiento = (
-            formulario.dataset.nombreMantenimiento ||
-            "Mantenimiento"
-        ).trim();
-
-
-        /*
-         * Puede recibir:
-         *
-         * Colmena CM000003
-         *
-         * o:
-         *
-         * Apiario La Esperanza
-         */
-
-        const ubicacionMantenimiento = (
-            formulario.dataset.colmenaMantenimiento ||
-            "Sin ubicación asociada"
-        ).trim();
-
-
-
-        /* ==============================================
-           MOSTRAR INFORMACIÓN
-        ============================================== */
-
-        if (textoNombreMantenimiento) {
-
-            textoNombreMantenimiento.textContent =
-                nombreMantenimiento;
+            return;
 
         }
 
 
-        if (textoUbicacionMantenimiento) {
+        const contador =
+            formulario.querySelector(
+                ".contador-observacion"
+            );
 
-            textoUbicacionMantenimiento.textContent =
-                ubicacionMantenimiento;
+
+        if (!contador) {
+
+            return;
 
         }
 
 
-        restaurarBotonConfirmar();
+        const maximo =
+            Number(
+                textarea.getAttribute(
+                    "maxlength"
+                )
+            )
+            ||
+            255;
 
 
-        /* ==============================================
-           MOSTRAR MODAL
-        ============================================== */
+        contador.textContent =
+            textarea.value.length
+            +
+            " / "
+            +
+            maximo
+            +
+            " caracteres";
 
-        modalConfirmarCompletado.classList.add(
+    }
+
+
+
+    function guardarValorOriginal(
+        textarea
+    ) {
+
+        if (textarea) {
+
+            textarea.dataset.valorOriginal =
+                textarea.value;
+
+        }
+
+    }
+
+
+
+    function restaurarValorOriginal(
+        textarea
+    ) {
+
+        if (!textarea) {
+
+            return;
+
+        }
+
+
+        if (
+            textarea.dataset.valorOriginal
+            !==
+            undefined
+        ) {
+
+            textarea.value =
+                textarea.dataset.valorOriginal;
+
+        }
+
+
+        actualizarContador(
+            textarea
+        );
+
+    }
+
+
+
+    function abrirEdicionObservacion(
+        formulario
+    ) {
+
+        if (!formulario) {
+
+            return;
+
+        }
+
+
+        const actual =
+            obtenerObservacionActual(
+                formulario
+            );
+
+
+        const textarea =
+            obtenerTextarea(
+                formulario
+            );
+
+
+        formulario.classList.add(
             "activo"
         );
 
 
-        modalConfirmarCompletado.setAttribute(
-            "aria-hidden",
-            "false"
-        );
+        if (actual) {
+
+            actual.classList.add(
+                "oculto"
+            );
+
+        }
 
 
-        bloquearScroll();
+        if (textarea) {
 
+            actualizarContador(
+                textarea
+            );
 
-        if (botonConfirmarCompletado) {
 
             setTimeout(
                 function () {
 
-                    botonConfirmarCompletado.focus();
+                    textarea.focus();
 
                 },
-                80
+                50
             );
 
         }
@@ -805,188 +3217,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       18. CERRAR MODAL DE CONFIRMACIÓN
-    ====================================================== */
+    function cerrarEdicionObservacion(
+        formulario,
+        restaurarContenido = true
+    ) {
 
-    function cerrarConfirmacionCompletado() {
-
-        if (!modalConfirmarCompletado) {
+        if (!formulario) {
 
             return;
 
         }
 
 
-        modalConfirmarCompletado.classList.remove(
+        const actual =
+            obtenerObservacionActual(
+                formulario
+            );
+
+
+        const textarea =
+            obtenerTextarea(
+                formulario
+            );
+
+
+        formulario.classList.remove(
             "activo"
         );
 
 
-        modalConfirmarCompletado.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+        if (actual) {
 
-
-        restaurarBotonConfirmar();
-
-
-        restaurarScroll();
-
-
-        if (
-            botonCompletarOrigen &&
-            document.body.contains(
-                botonCompletarOrigen
-            )
-        ) {
-
-            botonCompletarOrigen.focus();
-
-        }
-
-
-        formularioCompletarActivo =
-            null;
-
-
-        botonCompletarOrigen =
-            null;
-
-    }
-
-
-
-    /* ======================================================
-       19. INTERCEPTAR FORMULARIOS "COMPLETAR"
-    ====================================================== */
-
-    formulariosCompletar.forEach(
-        function (formulario) {
-
-            formulario.addEventListener(
-                "submit",
-                function (evento) {
-
-                    evento.preventDefault();
-
-
-                    abrirConfirmacionCompletado(
-                        formulario
-                    );
-
-                }
+            actual.classList.remove(
+                "oculto"
             );
 
         }
-    );
 
 
+        if (
+            restaurarContenido
+            &&
+            textarea
+        ) {
 
-    /* ======================================================
-       20. CANCELAR COMPLETADO
-    ====================================================== */
+            restaurarValorOriginal(
+                textarea
+            );
 
-    if (botonCancelarCompletado) {
-
-        botonCancelarCompletado.addEventListener(
-            "click",
-            function () {
-
-                cerrarConfirmacionCompletado();
-
-            }
-        );
+        }
 
     }
 
 
-
-    /* ======================================================
-       21. CONFIRMAR COMPLETADO
-    ====================================================== */
-
-    if (botonConfirmarCompletado) {
-
-        botonConfirmarCompletado.addEventListener(
-            "click",
-            function () {
-
-                if (!formularioCompletarActivo) {
-
-                    return;
-
-                }
-
-
-                const formulario =
-                    formularioCompletarActivo;
-
-
-                /*
-                 * Evitar doble clic.
-                 */
-
-                botonConfirmarCompletado.disabled =
-                    true;
-
-
-                botonConfirmarCompletado.innerHTML = `
-                    <span>
-                        Completando...
-                    </span>
-                `;
-
-
-                /*
-                 * Enviamos directamente el formulario.
-                 *
-                 * No usamos requestSubmit() aquí porque
-                 * volvería a ejecutar el listener submit
-                 * y abriría nuevamente la confirmación.
-                 */
-
-                HTMLFormElement.prototype.submit.call(
-                    formulario
-                );
-
-            }
-        );
-
-    }
-
-
-
-    /* ======================================================
-       22. CLIC FUERA DEL MODAL DE CONFIRMACIÓN
-    ====================================================== */
-
-    if (modalConfirmarCompletado) {
-
-        modalConfirmarCompletado.addEventListener(
-            "click",
-            function (evento) {
-
-                if (
-                    evento.target ===
-                    modalConfirmarCompletado
-                ) {
-
-                    cerrarConfirmacionCompletado();
-
-                }
-
-            }
-        );
-
-    }
-
-
-
-    /* ======================================================
-       23. EDITAR OBSERVACIÓN
-    ====================================================== */
 
     botonesEditarObservacion.forEach(
         function (boton) {
@@ -995,25 +3278,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 "click",
                 function () {
 
-                    const idFormulario =
-                        this.dataset.editarObservacion;
+
+                    const id =
+                        this.dataset
+                            .editarObservacion;
 
 
-                    if (!idFormulario) {
+                    if (!id) {
 
                         return;
 
                     }
 
 
-                    const formulario =
-                        document.getElementById(
-                            idFormulario
-                        );
-
-
                     abrirEdicionObservacion(
-                        formulario
+                        document.getElementById(
+                            id
+                        )
                     );
 
                 }
@@ -1024,10 +3305,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       24. CANCELAR EDICIÓN DE OBSERVACIÓN
-    ====================================================== */
-
     botonesCancelarObservacion.forEach(
         function (boton) {
 
@@ -1035,13 +3312,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 "click",
                 function () {
 
-                    const formulario = this.closest(
-                        ".form-editar-observacion"
-                    );
-
-
                     cerrarEdicionObservacion(
-                        formulario,
+                        this.closest(
+                            ".form-editar-observacion"
+                        ),
                         true
                     );
 
@@ -1053,16 +3327,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       25. PREPARAR TEXTAREAS
-    ====================================================== */
-
     formulariosObservacion.forEach(
         function (formulario) {
 
-            const textarea = obtenerTextarea(
-                formulario
-            );
+
+            const textarea =
+                obtenerTextarea(
+                    formulario
+                );
 
 
             if (!textarea) {
@@ -1093,72 +3365,59 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             );
 
-        }
-    );
-
-
-
-    /* ======================================================
-       26. GUARDAR OBSERVACIÓN
-    ====================================================== */
-
-    formulariosObservacion.forEach(
-        function (formulario) {
 
             formulario.addEventListener(
                 "submit",
                 function (evento) {
-
-                    const textarea = obtenerTextarea(
-                        formulario
-                    );
-
-
-                    if (!textarea) {
-
-                        return;
-
-                    }
 
 
                     textarea.value =
                         textarea.value.trim();
 
 
-                    const maximo = Number(
-                        textarea.getAttribute(
-                            "maxlength"
+                    const maximo =
+                        Number(
+                            textarea.getAttribute(
+                                "maxlength"
+                            )
                         )
-                    ) || 1000;
+                        ||
+                        255;
 
 
                     if (
-                        textarea.value.length >
+                        textarea.value.length
+                        >
                         maximo
                     ) {
 
                         evento.preventDefault();
 
-                        textarea.focus();
+
+                        mostrarValidacion(
+                            `Las observaciones pueden tener máximo ${maximo} caracteres.`
+                        );
+
 
                         return;
 
                     }
 
 
-                    const botonGuardar =
+                    const boton =
                         formulario.querySelector(
                             ".btn-guardar-observacion"
                         );
 
 
-                    if (botonGuardar) {
+                    if (boton) {
 
-                        botonGuardar.disabled =
+                        boton.disabled =
                             true;
 
 
-                        botonGuardar.innerHTML = `
+                        boton.innerHTML = `
+
                             <span>
                                 Guardando...
                             </span>
@@ -1175,89 +3434,465 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       27. TECLA ESCAPE
-    ====================================================== */
+       ======================================================
+       19. COMPLETAR MANTENIMIENTO
+       ======================================================
+       ====================================================== */
 
-    document.addEventListener(
-        "keydown",
-        function (evento) {
+    function restaurarBotonConfirmar() {
 
-            if (
-                evento.key !== "Escape"
-            ) {
+        if (!botonConfirmarCompletado) {
 
-                return;
+            return;
 
-            }
+        }
 
 
-            /* ==============================================
-               PRIORIDAD 1
-               CONFIRMACIÓN DE COMPLETADO
-            ============================================== */
-
-            if (
-                modalConfirmarCompletado &&
-                modalConfirmarCompletado.classList.contains(
-                    "activo"
-                )
-            ) {
-
-                cerrarConfirmacionCompletado();
-
-                return;
-
-            }
+        botonConfirmarCompletado.disabled =
+            false;
 
 
-            /* ==============================================
-               PRIORIDAD 2
-               EDICIÓN DE OBSERVACIÓN
-            ============================================== */
+        botonConfirmarCompletado.innerHTML = `
 
-            if (modalDetalleActivo) {
+            <i class="bi bi-check-lg"></i>
 
-                const formularioEdicion =
-                    modalDetalleActivo.querySelector(
-                        ".form-editar-observacion.activo"
+            <span>
+                Sí, completar
+            </span>
+        `;
+
+    }
+
+
+
+    function abrirConfirmacionCompletado(
+        formulario
+    ) {
+
+        if (
+            !formulario
+            ||
+            !modalConfirmarCompletado
+        ) {
+
+            return;
+
+        }
+
+
+        formularioCompletarActivo =
+            formulario;
+
+
+        botonCompletarOrigen =
+            formulario.querySelector(
+                'button[type="submit"]'
+            );
+
+
+        const nombre =
+            (
+                formulario.dataset
+                    .nombreMantenimiento
+                ||
+                "Mantenimiento"
+            ).trim();
+
+
+        const ubicacion =
+            (
+                formulario.dataset
+                    .colmenaMantenimiento
+                ||
+                "Sin ubicación asociada"
+            ).trim();
+
+
+        if (textoNombreMantenimiento) {
+
+            textoNombreMantenimiento.textContent =
+                nombre;
+
+        }
+
+
+        if (textoUbicacionMantenimiento) {
+
+            textoUbicacionMantenimiento.textContent =
+                ubicacion;
+
+        }
+
+
+        restaurarBotonConfirmar();
+
+
+        modalConfirmarCompletado
+            .classList
+            .add(
+                "activo"
+            );
+
+
+        modalConfirmarCompletado
+            .setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+
+        bloquearScroll();
+
+
+        if (botonConfirmarCompletado) {
+
+            setTimeout(
+                function () {
+
+                    botonConfirmarCompletado.focus();
+
+                },
+                70
+            );
+
+        }
+
+    }
+
+
+
+    function cerrarConfirmacionCompletado() {
+
+        if (!modalConfirmarCompletado) {
+
+            return;
+
+        }
+
+
+        modalConfirmarCompletado
+            .classList
+            .remove(
+                "activo"
+            );
+
+
+        modalConfirmarCompletado
+            .setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+        restaurarBotonConfirmar();
+
+
+        restaurarScroll();
+
+
+        if (
+            botonCompletarOrigen
+            &&
+            document.body.contains(
+                botonCompletarOrigen
+            )
+        ) {
+
+            botonCompletarOrigen.focus();
+
+        }
+
+
+        formularioCompletarActivo =
+            null;
+
+
+        botonCompletarOrigen =
+            null;
+
+    }
+
+
+
+    formulariosCompletar.forEach(
+        function (formulario) {
+
+            formulario.addEventListener(
+                "submit",
+                function (evento) {
+
+                    evento.preventDefault();
+
+
+                    abrirConfirmacionCompletado(
+                        formulario
                     );
-
-
-                if (formularioEdicion) {
-
-                    cerrarEdicionObservacion(
-                        formularioEdicion,
-                        true
-                    );
-
-                    return;
 
                 }
-
-            }
-
-
-            /* ==============================================
-               PRIORIDAD 3
-               MODAL DE DETALLE
-            ============================================== */
-
-            if (modalDetalleActivo) {
-
-                cerrarModalDetalle(
-                    modalDetalleActivo
-                );
-
-            }
+            );
 
         }
     );
 
 
 
+    if (botonCancelarCompletado) {
+
+        botonCancelarCompletado.addEventListener(
+            "click",
+            cerrarConfirmacionCompletado
+        );
+
+    }
+
+
+
+    if (botonConfirmarCompletado) {
+
+        botonConfirmarCompletado.addEventListener(
+            "click",
+            function () {
+
+
+                if (!formularioCompletarActivo) {
+
+                    return;
+
+                }
+
+
+                const formulario =
+                    formularioCompletarActivo;
+
+
+                botonConfirmarCompletado.disabled =
+                    true;
+
+
+                botonConfirmarCompletado.innerHTML = `
+
+                    <span>
+                        Completando...
+                    </span>
+                `;
+
+
+                HTMLFormElement
+                    .prototype
+                    .submit
+                    .call(
+                        formulario
+                    );
+
+            }
+        );
+
+    }
+
+
+
+    if (modalConfirmarCompletado) {
+
+        modalConfirmarCompletado.addEventListener(
+            "click",
+            function (evento) {
+
+                if (
+                    evento.target
+                    ===
+                    modalConfirmarCompletado
+                ) {
+
+                    cerrarConfirmacionCompletado();
+
+                }
+
+            }
+        );
+
+    }
+
+
+
     /* ======================================================
-       28. FUNCIÓN ENVIAR FILTROS
-    ====================================================== */
+       ======================================================
+       20. VISOR DE EVIDENCIAS
+       ======================================================
+       ====================================================== */
+
+    function abrirVisor(
+        url,
+        botonOrigen = null
+    ) {
+
+        if (
+            !visorEvidencia
+            ||
+            !imagenVisor
+            ||
+            !url
+        ) {
+
+            return;
+
+        }
+
+
+        elementoFocoAntesVisor =
+            botonOrigen;
+
+
+        imagenVisor.src =
+            url;
+
+
+        visorEvidencia.classList.add(
+            "activo"
+        );
+
+
+        visorEvidencia.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        bloquearScroll();
+
+
+        if (botonCerrarVisor) {
+
+            setTimeout(
+                function () {
+
+                    botonCerrarVisor.focus();
+
+                },
+                60
+            );
+
+        }
+
+    }
+
+
+
+    function cerrarVisor() {
+
+        if (!visorEvidencia) {
+
+            return;
+
+        }
+
+
+        visorEvidencia.classList.remove(
+            "activo"
+        );
+
+
+        visorEvidencia.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        if (imagenVisor) {
+
+            imagenVisor.src =
+                "";
+
+        }
+
+
+        restaurarScroll();
+
+
+        if (
+            elementoFocoAntesVisor
+            &&
+            document.body.contains(
+                elementoFocoAntesVisor
+            )
+        ) {
+
+            elementoFocoAntesVisor.focus();
+
+        }
+
+
+        elementoFocoAntesVisor =
+            null;
+
+    }
+
+
+
+    botonesImagenEvidencia.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+
+                    const url =
+                        this.dataset
+                            .imagenEvidencia;
+
+
+                    abrirVisor(
+                        url,
+                        this
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+
+    if (botonCerrarVisor) {
+
+        botonCerrarVisor.addEventListener(
+            "click",
+            cerrarVisor
+        );
+
+    }
+
+
+
+    if (visorEvidencia) {
+
+        visorEvidencia.addEventListener(
+            "click",
+            function (evento) {
+
+                if (
+                    evento.target
+                    ===
+                    visorEvidencia
+                ) {
+
+                    cerrarVisor();
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ======================================================
+       ======================================================
+       21. FILTROS
+       ======================================================
+       ====================================================== */
 
     function enviarFiltros() {
 
@@ -1269,12 +3904,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            typeof formularioFiltros.requestSubmit
+            typeof formularioFiltros
+                .requestSubmit
             ===
             "function"
         ) {
 
-            formularioFiltros.requestSubmit();
+            formularioFiltros
+                .requestSubmit();
 
         } else {
 
@@ -1286,12 +3923,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       29. LIMPIAR BUSCADOR ANTES DE ENVIAR
-    ====================================================== */
-
     if (
-        formularioFiltros &&
+        formularioFiltros
+        &&
         buscador
     ) {
 
@@ -1309,12 +3943,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       30. BUSCAR CON ENTER
-    ====================================================== */
-
     if (
-        buscador &&
+        buscador
+        &&
         formularioFiltros
     ) {
 
@@ -1323,7 +3954,9 @@ document.addEventListener("DOMContentLoaded", function () {
             function (evento) {
 
                 if (
-                    evento.key !== "Enter"
+                    evento.key
+                    !==
+                    "Enter"
                 ) {
 
                     return;
@@ -1347,20 +3980,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* ======================================================
-       31. FILTROS AUTOMÁTICOS
-    ====================================================== */
-
     selectsFiltros.forEach(
         function (select) {
 
             select.addEventListener(
                 "change",
-                function () {
-
-                    enviarFiltros();
-
-                }
+                enviarFiltros
             );
 
         }
@@ -1369,32 +3994,213 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       32. RESTAURAR BOTONES DE OBSERVACIONES
-    ====================================================== */
+       ======================================================
+       22. TECLA ESCAPE
+       ======================================================
+       ====================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function (evento) {
+
+
+            if (
+                evento.key
+                !==
+                "Escape"
+            ) {
+
+                return;
+
+            }
+
+
+
+            /* ==============================================
+               1. VISOR
+            ============================================== */
+
+            if (
+                visorEvidencia
+                &&
+                visorEvidencia
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+            ) {
+
+                cerrarVisor();
+
+                return;
+
+            }
+
+
+
+            /* ==============================================
+               2. VALIDACIÓN
+            ============================================== */
+
+            const validacion =
+                document.getElementById(
+                    "modalValidacionMantenimientoApicultor"
+                );
+
+
+            if (
+                validacion
+                &&
+                validacion
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+            ) {
+
+                cerrarValidacion();
+
+                return;
+
+            }
+
+
+
+            /* ==============================================
+               3. CONFIRMACIÓN
+            ============================================== */
+
+            if (
+                modalConfirmarCompletado
+                &&
+                modalConfirmarCompletado
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+            ) {
+
+                cerrarConfirmacionCompletado();
+
+                return;
+
+            }
+
+
+
+            /* ==============================================
+               4. EDITAR
+            ============================================== */
+
+            if (modalEditarActivo) {
+
+                cerrarModalEditar(
+                    modalEditarActivo
+                );
+
+                return;
+
+            }
+
+
+
+            /* ==============================================
+               5. CREAR
+            ============================================== */
+
+            if (
+                modalCrear
+                &&
+                modalCrear
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+            ) {
+
+                cerrarModalCrear();
+
+                return;
+
+            }
+
+
+
+            /* ==============================================
+               6. OBSERVACIÓN
+            ============================================== */
+
+            if (modalDetalleActivo) {
+
+                const formulario =
+                    modalDetalleActivo.querySelector(
+                        ".form-editar-observacion.activo"
+                    );
+
+
+                if (formulario) {
+
+                    cerrarEdicionObservacion(
+                        formulario,
+                        true
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+
+            /* ==============================================
+               7. DETALLE
+            ============================================== */
+
+            if (modalDetalleActivo) {
+
+                cerrarModalDetalle(
+                    modalDetalleActivo
+                );
+
+            }
+
+        }
+    );
+
+
+
+    /* ======================================================
+       ======================================================
+       23. RESTAURAR BOTONES
+       ======================================================
+       ====================================================== */
 
     function restaurarBotonesObservacion() {
 
         formulariosObservacion.forEach(
             function (formulario) {
 
-                const botonGuardar =
+
+                const boton =
                     formulario.querySelector(
                         ".btn-guardar-observacion"
                     );
 
 
-                if (!botonGuardar) {
+                if (!boton) {
 
                     return;
 
                 }
 
 
-                botonGuardar.disabled =
+                boton.disabled =
                     false;
 
 
-                botonGuardar.innerHTML = `
+                boton.innerHTML = `
+
                     <i class="bi bi-check-lg"></i>
 
                     <span>
@@ -1409,9 +4215,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+    function restaurarBotonesFormularios() {
+
+        document
+            .querySelectorAll(
+                ".form-mantenimiento-apicultor .btn-guardar-form-mantenimiento"
+            )
+            .forEach(
+                function (boton) {
+
+
+                    boton.disabled =
+                        false;
+
+
+                    if (
+                        boton.closest(
+                            "#formCrearMantenimiento"
+                        )
+                    ) {
+
+                        boton.innerHTML = `
+
+                            <i class="bi bi-check-lg"></i>
+
+                            Registrar mantenimiento
+                        `;
+
+                    } else {
+
+                        boton.innerHTML = `
+
+                            <i class="bi bi-check-lg"></i>
+
+                            Guardar cambios
+                        `;
+
+                    }
+
+                }
+            );
+
+    }
+
+
+
     /* ======================================================
-       33. RESTAURAR PÁGINA AL VOLVER CON EL NAVEGADOR
-    ====================================================== */
+       ======================================================
+       24. PAGESHOW
+       ======================================================
+       ====================================================== */
 
     window.addEventListener(
         "pageshow",
@@ -1419,11 +4272,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==============================================
-               CERRAR MODALES DE DETALLE
+               DETALLES
             ============================================== */
 
             modalesDetalle.forEach(
                 function (modal) {
+
 
                     modal.classList.remove(
                         "activo"
@@ -1446,17 +4300,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==============================================
-               CERRAR MODAL DE CONFIRMACIÓN
+               CREAR
             ============================================== */
 
-            if (modalConfirmarCompletado) {
+            if (modalCrear) {
 
-                modalConfirmarCompletado.classList.remove(
+                modalCrear.classList.remove(
                     "activo"
                 );
 
 
-                modalConfirmarCompletado.setAttribute(
+                modalCrear.setAttribute(
                     "aria-hidden",
                     "true"
                 );
@@ -1466,27 +4320,131 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==============================================
-               RESTAURAR BOTONES
+               EDITAR
+            ============================================== */
+
+            modalesEditar.forEach(
+                function (modal) {
+
+                    modal.classList.remove(
+                        "activo"
+                    );
+
+
+                    modal.setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+
+                }
+            );
+
+
+
+            /* ==============================================
+               COMPLETAR
+            ============================================== */
+
+            if (modalConfirmarCompletado) {
+
+                modalConfirmarCompletado
+                    .classList
+                    .remove(
+                        "activo"
+                    );
+
+
+                modalConfirmarCompletado
+                    .setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+
+            }
+
+
+
+            /* ==============================================
+               VISOR
+            ============================================== */
+
+            if (visorEvidencia) {
+
+                visorEvidencia.classList.remove(
+                    "activo"
+                );
+
+
+                visorEvidencia.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+            }
+
+
+
+            /* ==============================================
+               VALIDACIÓN
+            ============================================== */
+
+            const validacion =
+                document.getElementById(
+                    "modalValidacionMantenimientoApicultor"
+                );
+
+
+            if (validacion) {
+
+                validacion.classList.remove(
+                    "activo"
+                );
+
+
+                validacion.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+            }
+
+
+
+            /* ==============================================
+               BOTONES
             ============================================== */
 
             restaurarBotonConfirmar();
 
             restaurarBotonesObservacion();
 
+            restaurarBotonesFormularios();
+
 
 
             /* ==============================================
-               RESTAURAR VARIABLES
+               VARIABLES
             ============================================== */
 
             modalDetalleActivo =
                 null;
 
+
             botonAbrioDetalle =
                 null;
 
+
+            modalEditarActivo =
+                null;
+
+
+            botonAbrioEditar =
+                null;
+
+
             formularioCompletarActivo =
                 null;
+
 
             botonCompletarOrigen =
                 null;
@@ -1494,14 +4452,220 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==============================================
-               RESTAURAR SCROLL
+               SCROLL
             ============================================== */
 
-            document.body.style.overflow =
-                "";
+            document.body.classList.remove(
+                "modal-mantenimiento-abierto"
+            );
 
         }
     );
+
+
+
+    /* ======================================================
+    ======================================================
+    25. ESTADO INICIAL
+    ======================================================
+    ====================================================== */
+
+    filtrarColmenasCrear();
+
+
+
+    /* ======================================================
+    ======================================================
+    26. ABRIR REGISTRO DESDE MIS COLMENAS
+    ======================================================
+    ====================================================== */
+
+    function prepararMantenimientoDesdeColmena() {
+
+
+        /* ==================================================
+        PARÁMETROS DE LA URL
+        ================================================== */
+
+        const parametros =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const abrirNuevo =
+            parametros.get(
+                "nuevo"
+            );
+
+
+        const idApiario =
+            parametros.get(
+                "apiario_nuevo"
+            );
+
+
+        const idColmena =
+            parametros.get(
+                "colmena_nueva"
+            );
+
+
+
+        /* ==================================================
+        SOLO CONTINUAR SI VIENE DE REGISTRAR
+        ================================================== */
+
+        if (
+            abrirNuevo
+            !==
+            "1"
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !modalCrear
+            ||
+            !formularioCrear
+        ) {
+
+            return;
+
+        }
+
+
+
+        /* ==================================================
+        SELECCIONAR APIARIO
+        ================================================== */
+
+        if (
+            apiarioCrear
+            &&
+            idApiario
+        ) {
+
+            const opcionApiario =
+                Array.from(
+                    apiarioCrear.options
+                ).find(
+                    function (opcion) {
+
+                        return (
+                            opcion.value
+                            ===
+                            idApiario
+                        );
+
+                    }
+                );
+
+
+            if (opcionApiario) {
+
+                apiarioCrear.value =
+                    idApiario;
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+        SELECCIONAR ALCANCE COLMENA
+        ================================================== */
+
+        const radioColmena =
+            formularioCrear.querySelector(
+                '.alcance-mantenimiento-radio-apicultor[value="Colmena"]'
+            );
+
+
+        if (radioColmena) {
+
+            radioColmena.checked =
+                true;
+
+        }
+
+
+
+        /* ==================================================
+        MOSTRAR Y FILTRAR COLMENAS
+        ================================================== */
+
+        filtrarColmenasCrear();
+
+
+
+        /* ==================================================
+        SELECCIONAR COLMENA
+        ================================================== */
+
+        if (
+            colmenaCrear
+            &&
+            idColmena
+        ) {
+
+            const opcionColmena =
+                Array.from(
+                    colmenaCrear.options
+                ).find(
+                    function (opcion) {
+
+                        return (
+                            opcion.value
+                            ===
+                            idColmena
+                            &&
+                            !opcion.disabled
+                        );
+
+                    }
+                );
+
+
+            if (opcionColmena) {
+
+                colmenaCrear.value =
+                    idColmena;
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+        ABRIR MODAL
+        ================================================== */
+
+        abrirModalCrear();
+
+
+
+        /* ==================================================
+        LIMPIAR URL
+        Evitamos que al refrescar vuelva a abrirse.
+        ================================================== */
+
+        const urlLimpia =
+            window.location.pathname;
+
+
+        window.history.replaceState(
+            {},
+            document.title,
+            urlLimpia
+        );
+
+    }
 
 
 });

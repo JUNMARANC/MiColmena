@@ -1,0 +1,895 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Agregar evento | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Agregar evento
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Programa actividades para tus apiarios y colmenas asignadas
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/crear_evento.css' %}?v=3"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="crear-evento-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="crear-evento-encabezado">
+
+
+        <div class="crear-evento-encabezado-info">
+
+
+            <a
+                href="{% url 'agenda_apicultor' %}"
+                class="btn-volver-agenda"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                <span>
+                    Volver a la agenda
+                </span>
+
+            </a>
+
+
+            <span class="crear-evento-etiqueta">
+                Nuevo evento
+            </span>
+
+
+            <h1>
+                Agregar evento
+            </h1>
+
+
+            <p>
+                Programa mantenimientos, revisiones, seguimientos
+                de incidencias o actividades generales relacionadas
+                con tus apiarios y colmenas asignadas.
+            </p>
+
+
+        </div>
+
+
+        <div class="crear-evento-encabezado-icono">
+
+            <i class="bi bi-calendar-plus-fill"></i>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         INFORMACIÓN
+    ====================================================== -->
+
+    <section class="crear-evento-aviso">
+
+
+        <div class="crear-evento-aviso-icono">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+        </div>
+
+
+        <div>
+
+            <strong>
+                Programa tus actividades
+            </strong>
+
+            <p>
+                Puedes crear mantenimientos programados, revisiones,
+                seguimientos de incidencias y eventos generales
+                únicamente para los apiarios y colmenas que tienes
+                asignados.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FORMULARIO
+    ====================================================== -->
+
+    <form
+        method="POST"
+        class="crear-evento-form"
+        id="formCrearEvento"
+        novalidate
+    >
+
+        {% csrf_token %}
+
+
+
+        <!-- =================================================
+             PASO 1
+             TIPO DE EVENTO
+        ================================================== -->
+
+        <section class="crear-evento-card">
+
+
+            <div class="crear-evento-card-header">
+
+
+                <div class="crear-evento-card-icono">
+
+                    <i class="bi bi-grid-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 1
+                    </span>
+
+                    <h2>
+                        Tipo de evento
+                    </h2>
+
+                    <p>
+                        Selecciona el tipo de actividad que deseas programar.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 TIPOS DISPONIBLES
+            ============================================== -->
+
+            <div class="tipo-evento-selector">
+
+
+                {% for tipo in tipos_disponibles %}
+
+
+                    <label
+                        class="
+                            tipo-evento-opcion
+
+                            {% if tipo.valor == 'mantenimiento' %}
+                                mantenimiento
+
+                            {% elif tipo.valor == 'revision' %}
+                                revision
+
+                            {% elif tipo.valor == 'incidencia' %}
+                                incidencia
+
+                            {% else %}
+                                evento
+                            {% endif %}
+                        "
+                    >
+
+
+                        <!-- RADIO REAL -->
+
+                        <input
+                            type="radio"
+                            name="tipo_evento"
+                            value="{{ tipo.valor }}"
+                            class="tipo-evento-radio"
+
+                            {% if valores_formulario.tipo_evento == tipo.valor %}
+                                checked
+
+                            {% elif not valores_formulario.tipo_evento and forloop.first %}
+                                checked
+                            {% endif %}
+                        >
+
+
+                        <!-- RADIO VISUAL -->
+
+                        <span class="tipo-evento-radio-visual"></span>
+
+
+
+                        <!-- ICONO -->
+
+                        <span class="tipo-evento-icono">
+
+
+                            {% if tipo.valor == "mantenimiento" %}
+
+                                <i class="bi bi-tools"></i>
+
+
+                            {% elif tipo.valor == "revision" %}
+
+                                <i class="bi bi-search"></i>
+
+
+                            {% elif tipo.valor == "incidencia" %}
+
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+
+                            {% else %}
+
+                                <i class="bi bi-calendar-event-fill"></i>
+
+                            {% endif %}
+
+
+                        </span>
+
+
+
+                        <!-- INFORMACIÓN -->
+
+                        <span class="tipo-evento-texto">
+
+
+                            <strong>
+                                {{ tipo.nombre }}
+                            </strong>
+
+
+                            <small>
+
+
+                                {% if tipo.valor == "mantenimiento" %}
+
+                                    Programa una actividad de mantenimiento
+                                    para un apiario o una colmena.
+
+
+                                {% elif tipo.valor == "revision" %}
+
+                                    Programa una inspección o revisión
+                                    de un apiario o colmena.
+
+
+                                {% elif tipo.valor == "incidencia" %}
+
+                                    Programa un seguimiento relacionado
+                                    con una incidencia detectada.
+
+
+                                {% else %}
+
+                                    Programa una actividad general relacionada
+                                    con tu trabajo apícola.
+
+                                {% endif %}
+
+
+                            </small>
+
+
+                        </span>
+
+
+                    </label>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PASO 2
+             UBICACIÓN
+        ================================================== -->
+
+        <section class="crear-evento-card">
+
+
+            <div class="crear-evento-card-header">
+
+
+                <div class="crear-evento-card-icono">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 2
+                    </span>
+
+                    <h2>
+                        Ubicación
+                    </h2>
+
+                    <p>
+                        Selecciona el apiario relacionado con el evento
+                        y, si corresponde, una colmena específica.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="crear-evento-grid">
+
+
+                <!-- =========================================
+                     APIARIO
+                ========================================== -->
+
+                <div class="campo-evento">
+
+
+                    <label for="apiarioEvento">
+
+                        Apiario
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-evento-control">
+
+
+                        <i class="bi bi-flower1"></i>
+
+
+                        <select
+                            id="apiarioEvento"
+                            name="apiario"
+                            required
+                        >
+
+
+                            <option value="">
+                                Selecciona un apiario
+                            </option>
+
+
+                            {% for apiario in apiarios %}
+
+
+                                <option
+                                    value="{{ apiario.id_apiario }}"
+
+                                    {% if valores_formulario.apiario == apiario.id_apiario|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ apiario.nombreapiario }}
+
+                                </option>
+
+
+                            {% endfor %}
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+
+                        Solo aparecen los apiarios que tienes asignados.
+
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     COLMENA
+                ========================================== -->
+
+                <div class="campo-evento">
+
+
+                    <label for="colmenaEvento">
+
+                        Colmena
+
+                        <span class="campo-opcional">
+                            Opcional
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-evento-control">
+
+
+                        <i class="bi bi-hexagon-fill"></i>
+
+
+                        <select
+                            id="colmenaEvento"
+                            name="colmena"
+                        >
+
+
+                            <option value="">
+                                Evento general del apiario
+                            </option>
+
+
+                            {% for colmena in colmenas %}
+
+
+                                <option
+                                    value="{{ colmena.id_colmena }}"
+
+                                    data-apiario-id="{{ colmena.id_apiario.id_apiario }}"
+
+                                    {% if valores_formulario.colmena == colmena.id_colmena|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ colmena.codigocolmena }}
+                                    -
+                                    {{ colmena.id_apiario.nombreapiario }}
+
+                                </option>
+
+
+                            {% endfor %}
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+
+                        Si no seleccionas una colmena,
+                        el evento se asociará al apiario completo.
+
+                    </small>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PASO 3
+             INFORMACIÓN DEL EVENTO
+        ================================================== -->
+
+        <section class="crear-evento-card">
+
+
+            <div class="crear-evento-card-header">
+
+
+                <div class="crear-evento-card-icono">
+
+                    <i class="bi bi-pencil-square"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 3
+                    </span>
+
+                    <h2>
+                        Información del evento
+                    </h2>
+
+                    <p>
+                        Define el título, la fecha y la hora
+                        en que realizarás la actividad.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="crear-evento-grid">
+
+
+                <!-- =========================================
+                     TÍTULO
+                ========================================== -->
+
+                <div class="campo-evento campo-completo">
+
+
+                    <label for="tituloEvento">
+
+                        Título
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-evento-control">
+
+
+                        <i class="bi bi-card-heading"></i>
+
+
+                        <input
+                            type="text"
+                            id="tituloEvento"
+                            name="titulo"
+                            maxlength="150"
+                            value="{{ valores_formulario.titulo|default:'' }}"
+                            placeholder="Ej: Revisar alimentación de las colmenas"
+                            autocomplete="off"
+                            required
+                        >
+
+
+                    </div>
+
+
+                    <div class="campo-meta">
+
+
+                        <small>
+                            Escribe un título corto y fácil de identificar.
+                        </small>
+
+
+                        <span id="contadorTitulo">
+                            0 / 150
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FECHA
+                ========================================== -->
+
+                <div class="campo-evento">
+
+
+                    <label for="fechaEvento">
+
+                        Fecha
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-evento-control">
+
+
+                        <i class="bi bi-calendar3"></i>
+
+
+                        <input
+                            type="date"
+                            id="fechaEvento"
+                            name="fecha"
+                            value="{{ valores_formulario.fecha|default:'' }}"
+                            min="{{ fecha_hoy|date:'Y-m-d' }}"
+                            required
+                        >
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+
+                        No puedes programar eventos
+                        en fechas anteriores.
+
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     HORA
+                ========================================== -->
+
+                <div class="campo-evento">
+
+
+                    <label for="horaEvento">
+
+                        Hora
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <div class="campo-evento-control">
+
+
+                        <i class="bi bi-clock-fill"></i>
+
+
+                        <input
+                            type="time"
+                            id="horaEvento"
+                            name="hora"
+                            value="{{ valores_formulario.hora|default:'' }}"
+                            required
+                        >
+
+
+                    </div>
+
+
+                    <small class="campo-ayuda">
+
+                        Si el evento es para hoy,
+                        la hora debe ser posterior a la actual.
+
+                    </small>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             PASO 4
+             DESCRIPCIÓN
+        ================================================== -->
+
+        <section class="crear-evento-card">
+
+
+            <div class="crear-evento-card-header">
+
+
+                <div class="crear-evento-card-icono">
+
+                    <i class="bi bi-card-text"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Paso 4
+                    </span>
+
+                    <h2>
+                        Descripción
+                    </h2>
+
+                    <p>
+                        Agrega información adicional para recordar
+                        qué debes realizar durante la actividad.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="campo-evento campo-completo">
+
+
+                <label for="descripcionEvento">
+
+                    Descripción
+
+                    <span class="campo-opcional">
+                        Opcional
+                    </span>
+
+                </label>
+
+
+                <textarea
+                    id="descripcionEvento"
+                    name="descripcion"
+                    maxlength="500"
+                    rows="6"
+                    placeholder="Ej: Revisar reservas de alimento, comportamiento de las abejas y condiciones generales de la colmena..."
+                >{{ valores_formulario.descripcion|default:"" }}</textarea>
+
+
+                <div class="campo-meta">
+
+
+                    <small>
+                        Máximo 500 caracteres.
+                    </small>
+
+
+                    <span id="contadorDescripcion">
+                        0 / 500
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             RESUMEN DEL EVENTO
+        ================================================== -->
+
+        <section class="crear-evento-resumen">
+
+
+            <div class="crear-evento-resumen-icono">
+
+                <i class="bi bi-calendar-check-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    El evento quedará como Programado
+                </strong>
+
+
+                <p>
+                    Una vez guardado aparecerá en tu calendario,
+                    en tus próximos eventos y podrá ser consultado
+                    también desde el panel administrativo.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             ACCIONES
+        ================================================== -->
+
+        <div class="crear-evento-acciones">
+
+
+            <a
+                href="{% url 'agenda_apicultor' %}"
+                class="btn-cancelar-evento"
+            >
+
+                <i class="bi bi-x-lg"></i>
+
+                <span>
+                    Cancelar
+                </span>
+
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn-guardar-evento"
+                id="btnGuardarEvento"
+            >
+
+                <i class="bi bi-calendar-plus-fill"></i>
+
+                <span>
+                    Agregar evento
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/crear_evento.js' %}?v=3"
+></script>
+
+{% endblock %}

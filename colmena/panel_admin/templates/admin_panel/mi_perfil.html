@@ -16,7 +16,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=6"
+    href="{% static 'panel_admin/css/mi_perfil.css' %}?v=7"
 >
 
 {% endblock %}
@@ -759,16 +759,28 @@
 
                                     maxlength="254"
 
-                                    pattern="[A-Za-z0-9._%+-]+@gmail[.]com"
-
-                                    title="Debes ingresar una dirección de Gmail válida"
+                                    data-url-verificar="{% url 'verificar_correo_mi_perfil' %}"
 
                                     autocomplete="email"
+                                    autocapitalize="none"
                                     spellcheck="false"
                                     required
                                 >
 
                             </div>
+
+
+                            <small
+                                class="perfil-ayuda"
+                            >
+                                Se permiten correos de Gmail, Outlook, Hotmail y Yahoo.
+                            </small>
+
+
+                            <small
+                                id="mensajeCorreoPerfil"
+                                class="form-text d-none"
+                            ></small>
 
                         </div>
 
@@ -821,6 +833,12 @@
                                 >
 
                             </div>
+
+                            <small
+                                id="mensajeTelefonoPerfil"
+                                class="form-text d-none"
+                                aria-live="polite"
+                            ></small>
 
                         </div>
 
@@ -1108,6 +1126,9 @@
                                         class="form-control"
                                         id="passwordActualPerfil"
                                         name="password_actual"
+
+                                        data-url-verificar="{% url 'verificar_password_actual_mi_perfil' %}"
+
                                         autocomplete="current-password"
                                         required
                                     >
@@ -1130,6 +1151,12 @@
                                     </button>
 
                                 </div>
+
+                                <small
+                                    id="mensajePasswordActualPerfil"
+                                    class="form-text d-none"
+                                    aria-live="polite"
+                                ></small>
 
                             </div>
 
@@ -1167,7 +1194,11 @@
                                         class="form-control"
                                         id="passwordNuevoPerfil"
                                         name="password_nuevo"
+
                                         minlength="8"
+
+                                        data-url-verificar="{% url 'verificar_password_mi_perfil' %}"
+
                                         autocomplete="new-password"
                                         required
                                     >
@@ -1193,8 +1224,14 @@
 
 
                                 <small class="perfil-ayuda">
-                                    Mínimo 8 caracteres.
+                                    Usa una contraseña segura de mínimo 8 caracteres.
                                 </small>
+
+                                <div
+                                    id="mensajesPasswordDjangoPerfil"
+                                    class="small mt-2 d-none"
+                                    aria-live="polite"
+                                ></div>
 
                             </div>
 
@@ -1881,6 +1918,7 @@
                         perfil-bloque-seguridad
                         historial-accesos-seccion
                     "
+                    id="historialAccesos"
                 >
 
 
@@ -1921,7 +1959,11 @@
 
                         <span class="historial-limite">
 
-                            Últimos 10 registros
+                            Últimos
+
+                            {{ historial_accesos.paginator.count }}
+
+                            registro{{ historial_accesos.paginator.count|pluralize:"s" }}
 
                         </span>
 
@@ -2253,10 +2295,227 @@
 
                     </div>
 
+                    <!-- =====================================================
+                        PAGINACIÓN DEL HISTORIAL DE ACCESOS
+                    ====================================================== -->
+
+                    {% if historial_accesos.has_other_pages %}
+
+                        <div
+                            class="
+                                paginacion-historial-accesos-wrap
+                            "
+                        >
+
+
+                            <!-- =============================================
+                                 INFORMACIÓN
+                            ============================================== -->
+
+                            <div
+                                class="
+                                    informacion-paginacion-accesos
+                                "
+                            >
+
+                                Mostrando
+
+                                <strong>
+                                    {{ historial_accesos.start_index }}
+                                </strong>
+
+                                –
+
+                                <strong>
+                                    {{ historial_accesos.end_index }}
+                                </strong>
+
+                                de
+
+                                <strong>
+                                    {{ historial_accesos.paginator.count }}
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- =============================================
+                                 PAGINADOR
+                            ============================================== -->
+
+                            <nav
+                                aria-label="Paginación del historial de accesos"
+                            >
+
+                                <ul
+                                    class="
+                                        pagination
+                                        paginacion-historial-accesos
+                                        mb-0
+                                    "
+                                >
+
+
+                                    <!-- =====================================
+                                         ANTERIOR
+                                    ====================================== -->
+
+                                    {% if historial_accesos.has_previous %}
+
+                                        <li class="page-item">
+
+                                            <a
+                                                class="page-link"
+                                                href="?page_accesos={{ historial_accesos.previous_page_number }}#historialAccesos"
+                                                aria-label="Página anterior"
+                                            >
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-chevron-left
+                                                    "
+                                                ></i>
+
+                                            </a>
+
+                                        </li>
+
+                                    {% else %}
+
+                                        <li
+                                            class="
+                                                page-item
+                                                disabled
+                                            "
+                                        >
+
+                                            <span class="page-link">
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-chevron-left
+                                                    "
+                                                ></i>
+
+                                            </span>
+
+                                        </li>
+
+                                    {% endif %}
+
+
+
+                                    <!-- =====================================
+                                         NÚMEROS DE PÁGINA
+                                    ====================================== -->
+
+                                    {% for numero in historial_accesos.paginator.page_range %}
+
+                                        {% if historial_accesos.number == numero %}
+
+                                            <li
+                                                class="
+                                                    page-item
+                                                    active
+                                                "
+                                                aria-current="page"
+                                            >
+
+                                                <span class="page-link">
+
+                                                    {{ numero }}
+
+                                                </span>
+
+                                            </li>
+
+                                        {% else %}
+
+                                            <li class="page-item">
+
+                                                <a
+                                                    class="page-link"
+                                                    href="?page_accesos={{ numero }}#historialAccesos"
+                                                >
+
+                                                    {{ numero }}
+
+                                                </a>
+
+                                            </li>
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+
+
+                                    <!-- =====================================
+                                         SIGUIENTE
+                                    ====================================== -->
+
+                                    {% if historial_accesos.has_next %}
+
+                                        <li class="page-item">
+
+                                            <a
+                                                class="page-link"
+                                                href="?page_accesos={{ historial_accesos.next_page_number }}#historialAccesos"
+                                                aria-label="Página siguiente"
+                                            >
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-chevron-right
+                                                    "
+                                                ></i>
+
+                                            </a>
+
+                                        </li>
+
+                                    {% else %}
+
+                                        <li
+                                            class="
+                                                page-item
+                                                disabled
+                                            "
+                                        >
+
+                                            <span class="page-link">
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-chevron-right
+                                                    "
+                                                ></i>
+
+                                            </span>
+
+                                        </li>
+
+                                    {% endif %}
+
+
+                                </ul>
+
+                            </nav>
+
+                        </div>
+
+                    {% endif %}
+
 
                 </section>
-                </div>
 
+                </div>
+                
 
             </article>
                 </div>
@@ -2276,7 +2535,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=6"
+    src="{% static 'panel_admin/js/mi_perfil.js' %}?v=9"
 ></script>
 
 {% endblock %}

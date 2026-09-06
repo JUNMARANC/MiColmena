@@ -2247,6 +2247,207 @@
 
 }
 
+/* ==========================================================
+   PAGINACIÓN
+   HISTORIAL DE ACCESOS
+========================================================== */
+
+.paginacion-historial-accesos-wrap {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-top: 16px;
+
+    padding-top: 14px;
+
+    border-top:
+        1px solid
+        #e3ece6;
+
+}
+
+
+/* ==========================================================
+   INFORMACIÓN DE PÁGINA
+========================================================== */
+
+.informacion-paginacion-accesos {
+
+    color: #819087;
+
+    font-size: 10px;
+
+}
+
+
+.informacion-paginacion-accesos strong {
+
+    color: #214f3b;
+
+    font-weight: 750;
+
+}
+
+
+/* ==========================================================
+   CONTENEDOR PAGINADOR
+========================================================== */
+
+.paginacion-historial-accesos {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+/* ==========================================================
+   BOTONES
+========================================================== */
+
+.paginacion-historial-accesos
+.page-link {
+
+    min-width: 32px;
+
+    height: 32px;
+
+    padding:
+        0
+        9px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #dce8e0;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #456858;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    box-shadow: none;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease;
+
+}
+
+
+/* ==========================================================
+   HOVER
+========================================================== */
+
+.paginacion-historial-accesos
+.page-item:not(.disabled):not(.active)
+.page-link:hover {
+
+    border-color: #bcd8c7;
+
+    background: #eef7f1;
+
+    color: #214f3b;
+
+}
+
+
+/* ==========================================================
+   PÁGINA ACTIVA
+========================================================== */
+
+.paginacion-historial-accesos
+.page-item.active
+.page-link {
+
+    border-color: #214f3b;
+
+    background: #214f3b;
+
+    color: #ffffff;
+
+}
+
+
+/* ==========================================================
+   DESHABILITADO
+========================================================== */
+
+.paginacion-historial-accesos
+.page-item.disabled
+.page-link {
+
+    border-color: #edf1ef;
+
+    background: #f6f8f7;
+
+    color: #adb8b2;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .paginacion-historial-accesos-wrap {
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 10px;
+
+    }
+
+
+    .informacion-paginacion-accesos {
+
+        text-align: center;
+
+    }
+
+
+    .paginacion-historial-accesos
+    .page-link {
+
+        min-width: 30px;
+
+        height: 30px;
+
+        padding:
+            0
+            7px;
+
+    }
+
+}
 
 /* ==========================================================
    2FA

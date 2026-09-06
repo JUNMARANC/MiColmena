@@ -1,6 +1,8 @@
 /* ==========================================================
    AGENDA - PANEL APICULTOR
    MI COLMENA
+
+   Archivo reorganizado
 ========================================================== */
 
 
@@ -11,12 +13,14 @@
 .agenda-page {
 
     width: 100%;
+    max-width: 1500px;
+
+    margin: 0 auto;
 
     display: flex;
-
     flex-direction: column;
 
-    gap: 22px;
+    gap: 20px;
 
 }
 
@@ -27,13 +31,21 @@
 
 .agenda-encabezado {
 
+    width: 100%;
+
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
-    gap: 22px;
+    gap: 24px;
+
+}
+
+
+.agenda-encabezado > div:first-child {
+
+    min-width: 0;
 
 }
 
@@ -44,18 +56,17 @@
 
     align-items: center;
 
-    margin-bottom: 8px;
+    margin-bottom: 7px;
 
     padding: 5px 10px;
 
-    border-radius: 20px;
+    border-radius: 30px;
 
     background: #FFEDB4;
 
     color: #896817;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-transform: uppercase;
@@ -69,10 +80,9 @@
 
     margin: 0;
 
-    color: var(--apicultor-verde-oscuro, #214F3B);
+    color: #214F3B;
 
     font-size: 30px;
-
     font-weight: 800;
 
     line-height: 1.2;
@@ -82,30 +92,25 @@
 
 .agenda-encabezado p {
 
-    max-width: 680px;
+    max-width: 700px;
 
-    margin: 7px 0 0;
+    margin: 6px 0 0;
 
-    color: var(--apicultor-texto-secundario, #66746C);
+    color: #66746C;
 
-    font-size: 10px;
-
+    font-size: 9px;
     font-weight: 500;
 
-    line-height: 1.7;
+    line-height: 1.65;
 
 }
 
 
 /* ==========================================================
-   3. ICONO ENCABEZADO
+   3. ACCIONES DEL ENCABEZADO
 ========================================================== */
 
-.agenda-encabezado-icono {
-
-    width: 60px;
-
-    height: 60px;
+.agenda-encabezado-acciones {
 
     flex-shrink: 0;
 
@@ -113,29 +118,117 @@
 
     align-items: center;
 
-    justify-content: center;
-
-    border-radius: 17px;
-
-    background: #FFEDB4;
-
-    color: #214F3B;
-
-    font-size: 24px;
+    gap: 11px;
 
 }
 
 
 /* ==========================================================
-   4. RESUMEN
+   4. BOTÓN AGREGAR EVENTO
+========================================================== */
+
+.btn-agregar-evento {
+
+    min-height: 43px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 16px;
+
+    border: 1px solid #DDBA3F;
+
+    border-radius: 11px;
+
+    background: #FFDD71;
+
+    color: #214F3B;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 4px 12px
+        rgba(159, 126, 25, 0.10);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-agregar-evento:hover {
+
+    border-color: #CAA72B;
+
+    background: #F5CE55;
+
+    color: #214F3B;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 16px
+        rgba(159, 126, 25, 0.14);
+
+}
+
+
+.btn-agregar-evento i {
+
+    font-size: 11px;
+
+}
+
+
+/* ==========================================================
+   5. ICONO DEL ENCABEZADO
+========================================================== */
+
+.agenda-encabezado-icono {
+
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: #FFEDB4;
+
+    color: #214F3B;
+
+    font-size: 23px;
+
+}
+
+
+/* ==========================================================
+   6. TARJETAS DE RESUMEN
 ========================================================== */
 
 .agenda-resumen {
 
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+        repeat(2, minmax(0, 1fr));
 
     gap: 15px;
 
@@ -143,12 +236,13 @@
 
 
 /* ==========================================================
-   5. CARD RESUMEN
+   7. TARJETA RESUMEN
 ========================================================== */
 
 .agenda-resumen-card {
 
-    min-height: 105px;
+    min-width: 0;
+    min-height: 100px;
 
     display: flex;
 
@@ -158,14 +252,15 @@
 
     padding: 17px;
 
-    border: 1px solid rgba(33, 79, 59, 0.08);
+    border: 1px solid rgba(33, 79, 59, 0.09);
 
     border-radius: 16px;
 
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.93);
 
     box-shadow:
-        0 4px 14px rgba(33, 79, 59, 0.05);
+        0 4px 14px
+        rgba(33, 79, 59, 0.045);
 
     transition:
         transform 0.2s ease,
@@ -179,37 +274,58 @@
     transform: translateY(-2px);
 
     box-shadow:
-        0 7px 18px rgba(33, 79, 59, 0.09);
+        0 7px 18px
+        rgba(33, 79, 59, 0.08);
 
 }
 
 
 /* ==========================================================
-   6. ICONO RESUMEN
+   8. ICONO TARJETA
 ========================================================== */
 
 .agenda-resumen-icono {
 
-    width: 48px;
-
-    height: 48px;
+    width: 47px;
+    height: 47px;
 
     flex-shrink: 0;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 13px;
 
-    font-size: 19px;
+    font-size: 18px;
+
+}
+
+
+.agenda-resumen-card.programados
+.agenda-resumen-icono {
+
+    background: #FFF0BE;
+
+    color: #896817;
+
+}
+
+
+.agenda-resumen-card.hoy
+.agenda-resumen-icono {
+
+    background: #E5EFFA;
+
+    color: #456889;
 
 }
 
 
 .agenda-resumen-card > div:last-child {
+
+    min-width: 0;
 
     display: flex;
 
@@ -223,7 +339,6 @@
     color: #214F3B;
 
     font-size: 22px;
-
     font-weight: 800;
 
     line-height: 1;
@@ -237,80 +352,26 @@
 
     color: #66746C;
 
-    font-size: 9px;
-
+    font-size: 8px;
     font-weight: 700;
 
 }
 
 
 /* ==========================================================
-   7. PROGRAMADOS
-========================================================== */
-
-.agenda-resumen-card.programados
-.agenda-resumen-icono {
-
-    background: #FFF0BE;
-
-    color: #896817;
-
-}
-
-
-/* ==========================================================
-   8. HOY
-========================================================== */
-
-.agenda-resumen-card.hoy
-.agenda-resumen-icono {
-
-    background: #E5EFFA;
-
-    color: #456889;
-
-}
-
-
-/* ==========================================================
-   9. COMPLETADOS
-========================================================== */
-
-.agenda-resumen-card.completados
-.agenda-resumen-icono {
-
-    background: #E7F2E3;
-
-    color: #4F744B;
-
-}
-
-
-/* ==========================================================
-   10. CANCELADOS
-========================================================== */
-
-.agenda-resumen-card.cancelados
-.agenda-resumen-icono {
-
-    background: #FCE2DE;
-
-    color: #A84D44;
-
-}
-
-
-/* ==========================================================
-   11. BLOQUE PRINCIPAL
+   9. BLOQUE PRINCIPAL
+   CALENDARIO + PRÓXIMOS
 ========================================================== */
 
 .agenda-principal {
 
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1.7fr)
-        minmax(300px, 0.8fr);
+        minmax(0, 2fr)
+        minmax(300px, 0.72fr);
 
     gap: 18px;
 
@@ -320,10 +381,12 @@
 
 
 /* ==========================================================
-   12. CALENDARIO CARD
+   10. CARD CALENDARIO
 ========================================================== */
 
 .agenda-calendario-card {
+
+    min-width: 0;
 
     padding: 20px;
 
@@ -331,29 +394,38 @@
 
     border-radius: 18px;
 
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
 
     box-shadow:
-        0 5px 18px rgba(33, 79, 59, 0.045);
+        0 5px 18px
+        rgba(33, 79, 59, 0.045);
 
 }
 
 
 /* ==========================================================
-   13. HEADER CALENDARIO
+   11. HEADER CALENDARIO
 ========================================================== */
 
 .agenda-calendario-header {
 
+    width: 100%;
+
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 15px;
 
-    margin-bottom: 18px;
+    margin-bottom: 17px;
+
+}
+
+
+.agenda-calendario-header > div:first-child {
+
+    min-width: 0;
 
 }
 
@@ -367,7 +439,6 @@
     color: #A38116;
 
     font-size: 7px;
-
     font-weight: 800;
 
     text-transform: uppercase;
@@ -384,17 +455,18 @@
     color: #214F3B;
 
     font-size: 16px;
-
     font-weight: 800;
 
 }
 
 
 /* ==========================================================
-   14. CONTROLES CALENDARIO
+   12. CONTROLES CALENDARIO
 ========================================================== */
 
 .agenda-calendario-controles {
+
+    flex-shrink: 0;
 
     display: flex;
 
@@ -408,13 +480,11 @@
 .btn-calendario-control {
 
     width: 34px;
-
     height: 34px;
 
-    display: flex;
+    display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     border: 1px solid #DCE3DE;
@@ -431,12 +501,15 @@
 
     transition:
         background 0.2s ease,
+        border-color 0.2s ease,
         transform 0.2s ease;
 
 }
 
 
 .btn-calendario-control:hover {
+
+    border-color: #D7C56E;
 
     background: #FFEDB4;
 
@@ -447,7 +520,12 @@
 
 .btn-calendario-hoy {
 
-    min-height: 34px;
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
 
     padding: 0 12px;
 
@@ -461,27 +539,41 @@
 
     font-family: inherit;
 
-    font-size: 8px;
-
+    font-size: 7px;
     font-weight: 800;
 
     cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-calendario-hoy:hover {
+
+    background: #F3CA4E;
+
+    transform: translateY(-1px);
 
 }
 
 
 /* ==========================================================
-   15. DÍAS SEMANA
+   13. DÍAS DE LA SEMANA
 ========================================================== */
 
 .agenda-calendario-semana {
 
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
-        repeat(7, 1fr);
+        repeat(7, minmax(0, 1fr));
 
-    gap: 5px;
+    gap: 6px;
 
     margin-bottom: 6px;
 
@@ -490,18 +582,16 @@
 
 .agenda-calendario-semana span {
 
+    min-height: 28px;
+
     display: flex;
 
     align-items: center;
-
     justify-content: center;
-
-    min-height: 28px;
 
     color: #7E8982;
 
     font-size: 7px;
-
     font-weight: 800;
 
     text-transform: uppercase;
@@ -510,15 +600,17 @@
 
 
 /* ==========================================================
-   16. CUADRÍCULA DÍAS
+   14. CUADRÍCULA DEL CALENDARIO
 ========================================================== */
 
 .agenda-calendario-dias {
 
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
-        repeat(7, 1fr);
+        repeat(7, minmax(0, 1fr));
 
     gap: 6px;
 
@@ -526,20 +618,23 @@
 
 
 /* ==========================================================
-   17. DÍA CALENDARIO
+   15. DÍA DEL CALENDARIO
 ========================================================== */
 
 .agenda-dia {
 
     position: relative;
 
-    min-height: 78px;
+    min-width: 0;
+    min-height: 82px;
 
-    padding: 8px;
+    padding: 7px;
 
-    border: 1px solid rgba(33, 79, 59, 0.08);
+    overflow: hidden;
 
-    border-radius: 11px;
+    border: 1px solid rgba(33, 79, 59, 0.09);
+
+    border-radius: 10px;
 
     background: #FFFFFF;
 
@@ -566,18 +661,18 @@
 
 .agenda-dia.otro-mes {
 
-    opacity: 0.32;
+    opacity: 0.35;
 
-    background: #F7F9F7;
+    background: #F6F8F6;
 
 }
 
 
 .agenda-dia.hoy {
 
-    border-color: #D9B840;
+    border-color: #D8B43B;
 
-    background: rgba(255, 237, 180, 0.33);
+    background: rgba(255, 237, 180, 0.31);
 
 }
 
@@ -587,33 +682,31 @@
     border-color: #214F3B;
 
     box-shadow:
-        0 0 0 2px rgba(33, 79, 59, 0.08);
+        0 0 0 2px
+        rgba(33, 79, 59, 0.08);
 
 }
 
 
 /* ==========================================================
-   18. NÚMERO DÍA
+   16. NÚMERO DEL DÍA
 ========================================================== */
 
 .agenda-dia-numero {
 
+    width: 24px;
+    height: 24px;
+
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
-    width: 25px;
-
-    height: 25px;
-
-    border-radius: 8px;
+    border-radius: 7px;
 
     color: #214F3B;
 
-    font-size: 8px;
-
+    font-size: 7px;
     font-weight: 800;
 
 }
@@ -628,10 +721,12 @@
 
 
 /* ==========================================================
-   19. EVENTOS DENTRO DEL DÍA
+   17. EVENTOS DEL DÍA
 ========================================================== */
 
 .agenda-dia-eventos {
+
+    width: 100%;
 
     display: flex;
 
@@ -639,20 +734,20 @@
 
     gap: 3px;
 
-    margin-top: 5px;
+    margin-top: 4px;
 
 }
 
 
 /* ==========================================================
-   20. MARCA EVENTO DÍA
+   18. EVENTO DENTRO DEL CALENDARIO
 ========================================================== */
 
 .agenda-dia-evento {
 
     width: 100%;
-
-    min-height: 18px;
+    min-width: 0;
+    min-height: 19px;
 
     display: flex;
 
@@ -671,29 +766,46 @@
     font-family: inherit;
 
     font-size: 6px;
-
     font-weight: 700;
 
     text-align: left;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
 
     cursor: pointer;
 
 }
 
 
+.agenda-dia-evento i {
+
+    flex-shrink: 0;
+
+    font-size: 7px;
+
+}
+
+
+.agenda-dia-evento span {
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
 .agenda-dia-evento:hover {
 
-    filter: brightness(0.97);
+    filter: brightness(0.96);
 
 }
 
 
 /* ==========================================================
-   21. COLORES TIPO EVENTO
+   19. COLORES POR TIPO
 ========================================================== */
 
 .agenda-dia-evento.mantenimiento,
@@ -745,24 +857,25 @@
 
 
 /* ==========================================================
-   22. MÁS EVENTOS
+   20. MÁS EVENTOS
 ========================================================== */
 
 .agenda-dia-mas {
 
-    margin-top: 2px;
+    display: block;
+
+    margin-top: 1px;
 
     color: #66746C;
 
     font-size: 6px;
-
     font-weight: 800;
 
 }
 
 
 /* ==========================================================
-   23. LEYENDA CALENDARIO
+   21. LEYENDA
 ========================================================== */
 
 .agenda-calendario-leyenda {
@@ -773,11 +886,11 @@
 
     flex-wrap: wrap;
 
-    gap: 14px;
+    gap: 13px;
 
-    margin-top: 15px;
+    margin-top: 14px;
 
-    padding-top: 13px;
+    padding-top: 12px;
 
     border-top: 1px solid rgba(33, 79, 59, 0.08);
 
@@ -795,21 +908,17 @@
     color: #6C7870;
 
     font-size: 7px;
-
     font-weight: 700;
 
 }
 
 
-/* ==========================================================
-   24. PUNTOS LEYENDA
-========================================================== */
-
 .leyenda-punto {
 
     width: 8px;
-
     height: 8px;
+
+    flex-shrink: 0;
 
     border-radius: 50%;
 
@@ -845,7 +954,7 @@
 
 
 /* ==========================================================
-   25. PRÓXIMOS EVENTOS
+   22. PRÓXIMOS EVENTOS
 ========================================================== */
 
 .agenda-proximos-card {
@@ -858,16 +967,17 @@
 
     border-radius: 18px;
 
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
 
     box-shadow:
-        0 5px 18px rgba(33, 79, 59, 0.045);
+        0 5px 18px
+        rgba(33, 79, 59, 0.045);
 
 }
 
 
 /* ==========================================================
-   26. HEADER PRÓXIMOS
+   23. HEADER PRÓXIMOS
 ========================================================== */
 
 .agenda-proximos-header {
@@ -875,12 +985,18 @@
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 12px;
 
     margin-bottom: 14px;
+
+}
+
+
+.agenda-proximos-header > div {
+
+    min-width: 0;
 
 }
 
@@ -894,7 +1010,6 @@
     color: #A38116;
 
     font-size: 7px;
-
     font-weight: 800;
 
     text-transform: uppercase;
@@ -909,7 +1024,6 @@
     color: #214F3B;
 
     font-size: 14px;
-
     font-weight: 800;
 
 }
@@ -918,13 +1032,13 @@
 .agenda-proximos-header > i {
 
     width: 36px;
-
     height: 36px;
+
+    flex-shrink: 0;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 10px;
@@ -939,7 +1053,7 @@
 
 
 /* ==========================================================
-   27. LISTA PRÓXIMOS
+   24. LISTA PRÓXIMOS
 ========================================================== */
 
 .agenda-proximos-lista {
@@ -954,12 +1068,13 @@
 
 
 /* ==========================================================
-   28. ITEM PRÓXIMO
+   25. EVENTO PRÓXIMO
 ========================================================== */
 
 .agenda-proximo-evento {
 
     width: 100%;
+    min-width: 0;
 
     display: flex;
 
@@ -983,12 +1098,15 @@
 
     transition:
         background 0.2s ease,
+        border-color 0.2s ease,
         transform 0.2s ease;
 
 }
 
 
 .agenda-proximo-evento:hover {
+
+    border-color: #E3D38C;
 
     background: #FFFDF5;
 
@@ -998,13 +1116,12 @@
 
 
 /* ==========================================================
-   29. ICONO PRÓXIMO
+   26. ICONO PRÓXIMO
 ========================================================== */
 
 .agenda-proximo-icono {
 
     width: 38px;
-
     height: 38px;
 
     flex-shrink: 0;
@@ -1012,7 +1129,6 @@
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 10px;
@@ -1023,7 +1139,7 @@
 
 
 /* ==========================================================
-   30. INFO PRÓXIMO
+   27. INFORMACIÓN PRÓXIMO
 ========================================================== */
 
 .agenda-proximo-info {
@@ -1039,12 +1155,13 @@
 
     display: block;
 
+    width: 100%;
+
     overflow: hidden;
 
     color: #214F3B;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -1063,6 +1180,8 @@
     color: #6F7C74;
 
     font-size: 6px;
+
+    white-space: nowrap;
 
 }
 
@@ -1092,30 +1211,27 @@
 
     color: #98A19B;
 
-    font-size: 10px;
+    font-size: 9px;
 
 }
 
 
 /* ==========================================================
-   31. PRÓXIMOS VACÍO
+   28. PRÓXIMOS VACÍO
 ========================================================== */
 
 .agenda-proximos-vacio {
 
-    min-height: 200px;
+    min-height: 210px;
 
     display: flex;
 
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 20px;
-
-    color: #7D8981;
 
     text-align: center;
 
@@ -1124,14 +1240,12 @@
 
 .agenda-proximos-vacio > i {
 
-    width: 52px;
-
-    height: 52px;
+    width: 50px;
+    height: 50px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     margin-bottom: 10px;
@@ -1142,7 +1256,7 @@
 
     color: #4F744B;
 
-    font-size: 20px;
+    font-size: 19px;
 
 }
 
@@ -1152,7 +1266,6 @@
     color: #214F3B;
 
     font-size: 9px;
-
     font-weight: 800;
 
 }
@@ -1160,22 +1273,26 @@
 
 .agenda-proximos-vacio span {
 
-    max-width: 210px;
+    max-width: 220px;
 
     margin-top: 4px;
 
+    color: #7D8981;
+
     font-size: 7px;
 
-    line-height: 1.5;
+    line-height: 1.55;
 
 }
 
 
 /* ==========================================================
-   32. ACTIVIDADES HOY
+   29. ACTIVIDADES PARA HOY
 ========================================================== */
 
 .agenda-hoy-card {
+
+    width: 100%;
 
     padding: 18px;
 
@@ -1183,13 +1300,17 @@
 
     border-radius: 17px;
 
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
+
+    box-shadow:
+        0 4px 14px
+        rgba(33, 79, 59, 0.04);
 
 }
 
 
 /* ==========================================================
-   33. HEADER HOY
+   30. HEADER HOY
 ========================================================== */
 
 .agenda-hoy-header {
@@ -1197,10 +1318,11 @@
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
-    margin-bottom: 14px;
+    gap: 15px;
+
+    margin-bottom: 13px;
 
 }
 
@@ -1210,7 +1332,6 @@
     color: #A38116;
 
     font-size: 7px;
-
     font-weight: 800;
 
 }
@@ -1223,7 +1344,6 @@
     color: #214F3B;
 
     font-size: 14px;
-
     font-weight: 800;
 
 }
@@ -1232,13 +1352,13 @@
 .agenda-hoy-cantidad {
 
     width: 36px;
-
     height: 36px;
+
+    flex-shrink: 0;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
@@ -1248,17 +1368,18 @@
     color: #214F3B;
 
     font-size: 10px;
-
     font-weight: 800;
 
 }
 
 
 /* ==========================================================
-   34. LISTA HOY
+   31. LISTA DE HOY
 ========================================================== */
 
 .agenda-hoy-lista {
+
+    width: 100%;
 
     display: flex;
 
@@ -1268,7 +1389,7 @@
 
 
 /* ==========================================================
-   35. EVENTO HOY
+   32. EVENTO DE HOY
 ========================================================== */
 
 .agenda-hoy-evento {
@@ -1278,7 +1399,7 @@
     display: grid;
 
     grid-template-columns:
-        60px
+        62px
         4px
         minmax(0, 1fr)
         auto;
@@ -1287,7 +1408,7 @@
 
     gap: 12px;
 
-    padding: 12px 4px;
+    padding: 12px 6px;
 
     border: none;
 
@@ -1301,6 +1422,9 @@
 
     cursor: pointer;
 
+    transition:
+        background 0.2s ease;
+
 }
 
 
@@ -1313,21 +1437,20 @@
 
 .agenda-hoy-evento:hover {
 
-    background: rgba(255, 237, 180, 0.12);
+    background: rgba(255, 237, 180, 0.13);
 
 }
 
 
 /* ==========================================================
-   36. HORA HOY
+   33. HORA DE HOY
 ========================================================== */
 
 .agenda-hoy-hora {
 
     color: #214F3B;
 
-    font-size: 9px;
-
+    font-size: 8px;
     font-weight: 800;
 
     text-align: center;
@@ -1336,14 +1459,13 @@
 
 
 /* ==========================================================
-   37. LÍNEA TIPO
+   34. LÍNEA DE TIPO
 ========================================================== */
 
 .agenda-hoy-linea {
 
     width: 4px;
-
-    height: 37px;
+    height: 38px;
 
     border-radius: 10px;
 
@@ -1379,7 +1501,7 @@
 
 
 /* ==========================================================
-   38. INFO HOY
+   35. INFO EVENTO HOY
 ========================================================== */
 
 .agenda-hoy-info {
@@ -1393,11 +1515,16 @@
 
     display: block;
 
+    overflow: hidden;
+
     color: #214F3B;
 
     font-size: 8px;
-
     font-weight: 800;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
 
 }
 
@@ -1408,61 +1535,77 @@
 
     margin-top: 3px;
 
+    overflow: hidden;
+
     color: #7C8881;
 
     font-size: 7px;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
 
 }
 
 
 /* ==========================================================
-   39. FILTROS
+   36. FILTROS
 ========================================================== */
 
 .agenda-filtros-card {
 
-    padding: 16px;
+    width: 100%;
+
+    padding: 14px;
 
     border: 1px solid rgba(33, 79, 59, 0.08);
 
     border-radius: 16px;
 
-    background: rgba(255, 255, 255, 0.86);
+    background: rgba(255, 255, 255, 0.90);
 
     box-shadow:
-        0 4px 14px rgba(33, 79, 59, 0.04);
+        0 4px 14px
+        rgba(33, 79, 59, 0.04);
 
 }
 
 
 /* ==========================================================
-   40. FORM FILTROS
+   37. FORMULARIO DE FILTROS
 ========================================================== */
 
 .agenda-filtros-form {
 
     width: 100%;
 
-    display: flex;
+    display: grid;
+
+    grid-template-columns:
+        minmax(250px, 1fr)
+        minmax(140px, 0.35fr)
+        minmax(130px, 0.32fr)
+        minmax(130px, 0.32fr)
+        minmax(155px, 0.34fr)
+        auto
+        auto;
 
     align-items: center;
 
-    gap: 9px;
+    gap: 8px;
 
 }
 
 
 /* ==========================================================
-   41. BUSCADOR
+   38. BUSCADOR
 ========================================================== */
 
 .agenda-buscador {
 
     position: relative;
 
-    flex: 1;
-
-    min-width: 220px;
+    min-width: 0;
 
 }
 
@@ -1472,14 +1615,13 @@
     position: absolute;
 
     top: 50%;
-
     left: 13px;
 
     transform: translateY(-50%);
 
     color: #7C8A82;
 
-    font-size: 12px;
+    font-size: 11px;
 
     pointer-events: none;
 
@@ -1489,7 +1631,6 @@
 .agenda-buscador input {
 
     width: 100%;
-
     height: 43px;
 
     padding:
@@ -1511,8 +1652,18 @@
     font-family: inherit;
 
     font-size: 8px;
-
     font-weight: 500;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.agenda-buscador input::placeholder {
+
+    color: #A0AAA4;
 
 }
 
@@ -1522,20 +1673,22 @@
     border-color: #D5B849;
 
     box-shadow:
-        0 0 0 3px rgba(255, 221, 113, 0.18);
+        0 0 0 3px
+        rgba(255, 221, 113, 0.18);
 
 }
 
 
 /* ==========================================================
-   42. SELECTS
+   39. SELECTS
 ========================================================== */
 
 .agenda-select {
 
+    width: 100%;
     height: 43px;
 
-    min-width: 135px;
+    min-width: 0;
 
     padding: 0 10px;
 
@@ -1552,23 +1705,37 @@
     font-family: inherit;
 
     font-size: 7px;
-
     font-weight: 600;
 
     cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.agenda-select:focus {
+
+    border-color: #D5B849;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.18);
 
 }
 
 
 /* ==========================================================
-   43. FECHA FILTRO
+   40. FECHA DE FILTRO
 ========================================================== */
 
 .agenda-fecha-filtro {
 
     position: relative;
 
-    min-width: 145px;
+    min-width: 0;
 
 }
 
@@ -1578,14 +1745,15 @@
     position: absolute;
 
     top: 50%;
-
     left: 11px;
+
+    z-index: 2;
 
     transform: translateY(-50%);
 
     color: #7C8A82;
 
-    font-size: 11px;
+    font-size: 10px;
 
     pointer-events: none;
 
@@ -1595,14 +1763,13 @@
 .agenda-fecha-filtro input {
 
     width: 100%;
-
     height: 43px;
 
     padding:
         0
         8px
         0
-        33px;
+        32px;
 
     border: 1px solid #DCE3DE;
 
@@ -1622,22 +1789,21 @@
 
 
 /* ==========================================================
-   44. BOTÓN FILTRAR
+   41. BOTÓN FILTRAR
 ========================================================== */
 
 .btn-agenda-filtrar {
 
-    min-height: 43px;
+    height: 43px;
 
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 6px;
 
-    padding: 0 14px;
+    padding: 0 13px;
 
     border: 1px solid #DDBA3F;
 
@@ -1649,32 +1815,45 @@
 
     font-family: inherit;
 
-    font-size: 8px;
-
+    font-size: 7px;
     font-weight: 800;
 
+    white-space: nowrap;
+
     cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-agenda-filtrar:hover {
+
+    background: #F3CA4E;
+
+    transform: translateY(-1px);
 
 }
 
 
 /* ==========================================================
-   45. BOTÓN LIMPIAR
+   42. LIMPIAR FILTROS
 ========================================================== */
 
 .btn-agenda-limpiar {
 
-    min-height: 43px;
+    height: 43px;
 
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 6px;
 
-    padding: 0 13px;
+    padding: 0 12px;
 
     border: 1px solid #DCE3DE;
 
@@ -1684,25 +1863,40 @@
 
     color: #66746C;
 
-    font-size: 8px;
-
+    font-size: 7px;
     font-weight: 700;
 
     text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.btn-agenda-limpiar:hover {
+
+    border-color: #CBD5CE;
+
+    background: #F5F7F5;
 
 }
 
 
 /* ==========================================================
-   46. HEADER RESULTADOS
+   43. HEADER DE RESULTADOS
 ========================================================== */
 
 .agenda-resultados-header {
 
+    width: 100%;
+
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 12px;
@@ -1729,7 +1923,7 @@
 
 
 /* ==========================================================
-   47. ETIQUETA RESULTADOS
+   44. ETIQUETA RESULTADOS
 ========================================================== */
 
 .agenda-resultados-etiqueta {
@@ -1749,14 +1943,13 @@
     color: #896817;
 
     font-size: 8px;
-
     font-weight: 800;
 
 }
 
 
 /* ==========================================================
-   48. TABLA CARD
+   45. CARD TABLA
 ========================================================== */
 
 .agenda-tabla-card {
@@ -1769,16 +1962,17 @@
 
     border-radius: 17px;
 
-    background: rgba(255, 255, 255, 0.93);
+    background: rgba(255, 255, 255, 0.94);
 
     box-shadow:
-        0 4px 15px rgba(33, 79, 59, 0.05);
+        0 4px 15px
+        rgba(33, 79, 59, 0.045);
 
 }
 
 
 /* ==========================================================
-   49. RESPONSIVE TABLA
+   46. CONTENEDOR RESPONSIVE TABLA
 ========================================================== */
 
 .agenda-tabla-responsive {
@@ -1787,20 +1981,51 @@
 
     overflow-x: auto;
 
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #D8C26A
+        #F4F6F4;
+
+}
+
+
+.agenda-tabla-responsive::-webkit-scrollbar {
+
+    height: 7px;
+
+}
+
+
+.agenda-tabla-responsive::-webkit-scrollbar-track {
+
+    background: #F4F6F4;
+
+}
+
+
+.agenda-tabla-responsive::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background: #D8C26A;
+
 }
 
 
 /* ==========================================================
-   50. TABLA
+   47. TABLA
 ========================================================== */
 
 .agenda-tabla {
 
     width: 100%;
 
-    min-width: 1150px;
+    min-width: 1050px;
 
     border-collapse: collapse;
+
+    table-layout: auto;
 
 }
 
@@ -1816,7 +2041,6 @@
     color: #214F3B;
 
     font-size: 7px;
-
     font-weight: 800;
 
     text-align: left;
@@ -1841,9 +2065,17 @@
 }
 
 
+.agenda-tabla tbody tr {
+
+    transition:
+        background 0.18s ease;
+
+}
+
+
 .agenda-tabla tbody tr:hover {
 
-    background: rgba(255, 237, 180, 0.11);
+    background: rgba(255, 237, 180, 0.12);
 
 }
 
@@ -1856,7 +2088,7 @@
 
 
 /* ==========================================================
-   51. TÍTULO EVENTO
+   48. TÍTULO DEL EVENTO
 ========================================================== */
 
 .agenda-evento-titulo {
@@ -1873,7 +2105,6 @@
 .agenda-evento-icono {
 
     width: 35px;
-
     height: 35px;
 
     flex-shrink: 0;
@@ -1881,7 +2112,6 @@
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 9px;
@@ -1891,18 +2121,24 @@
 }
 
 
+.agenda-evento-titulo > div:last-child {
+
+    min-width: 0;
+
+}
+
+
 .agenda-evento-titulo strong {
 
     display: block;
 
-    max-width: 200px;
+    max-width: 210px;
 
     overflow: hidden;
 
     color: #214F3B;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -1926,8 +2162,15 @@
 
 
 /* ==========================================================
-   52. UBICACIÓN
+   49. UBICACIÓN
 ========================================================== */
+
+.agenda-ubicacion {
+
+    min-width: 0;
+
+}
+
 
 .agenda-ubicacion strong {
 
@@ -1940,7 +2183,6 @@
     color: #214F3B;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -1968,7 +2210,7 @@
 
 
 /* ==========================================================
-   53. FECHA Y HORA
+   50. FECHA Y HORA
 ========================================================== */
 
 .agenda-fecha,
@@ -1994,25 +2236,23 @@
 
 
 /* ==========================================================
-   54. BADGE TIPO
+   51. BADGE TIPO
 ========================================================== */
 
 .agenda-tipo {
 
+    min-height: 26px;
+
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
-
-    min-height: 26px;
 
     padding: 5px 9px;
 
     border-radius: 20px;
 
     font-size: 6px;
-
     font-weight: 800;
 
     white-space: nowrap;
@@ -2057,10 +2297,12 @@
 
 
 /* ==========================================================
-   55. ESTADO
+   52. BADGE ESTADO
 ========================================================== */
 
 .agenda-estado {
+
+    min-height: 26px;
 
     display: inline-flex;
 
@@ -2068,14 +2310,11 @@
 
     gap: 6px;
 
-    min-height: 26px;
-
     padding: 5px 9px;
 
     border-radius: 20px;
 
     font-size: 6px;
-
     font-weight: 800;
 
     white-space: nowrap;
@@ -2086,8 +2325,9 @@
 .agenda-estado > span {
 
     width: 7px;
-
     height: 7px;
+
+    flex-shrink: 0;
 
     border-radius: 50%;
 
@@ -2143,18 +2383,18 @@
 
 
 /* ==========================================================
-   56. RESPONSABLE
+   53. RESPONSABLE
 ========================================================== */
 
 .agenda-responsable {
+
+    max-width: 170px;
 
     display: flex;
 
     align-items: center;
 
     gap: 6px;
-
-    max-width: 170px;
 
 }
 
@@ -2172,6 +2412,8 @@
 
 .agenda-responsable span {
 
+    min-width: 0;
+
     overflow: hidden;
 
     text-overflow: ellipsis;
@@ -2182,7 +2424,7 @@
 
 
 /* ==========================================================
-   57. ACCIONES
+   54. ACCIONES TABLA
 ========================================================== */
 
 .agenda-acciones-columna {
@@ -2195,13 +2437,11 @@
 .btn-ver-evento {
 
     width: 34px;
-
     height: 34px;
 
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     border: 1px solid #DCE3DE;
@@ -2212,30 +2452,40 @@
 
     color: #214F3B;
 
-    font-size: 12px;
+    font-size: 11px;
 
     cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 
 }
 
 
 .btn-ver-evento:hover {
 
+    border-color: #D9C670;
+
     background: #FFEDB4;
+
+    transform: translateY(-1px);
 
 }
 
 
 /* ==========================================================
-   58. PAGINACIÓN
+   55. PAGINACIÓN
 ========================================================== */
 
 .agenda-paginacion {
 
+    width: 100%;
+
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 6px;
@@ -2246,13 +2496,11 @@
 .agenda-pagina {
 
     width: 36px;
-
     height: 36px;
 
-    display: flex;
+    display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     border: 1px solid #E3DAB3;
@@ -2264,10 +2512,13 @@
     color: #214F3B;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 
 }
 
@@ -2275,6 +2526,8 @@
 .agenda-pagina:hover {
 
     background: #FFEDB4;
+
+    transform: translateY(-1px);
 
 }
 
@@ -2289,19 +2542,19 @@
 
 
 /* ==========================================================
-   59. VACÍO
+   56. ESTADO VACÍO
 ========================================================== */
 
 .agenda-vacio {
 
-    min-height: 320px;
+    width: 100%;
+    min-height: 290px;
 
     display: flex;
 
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 30px;
@@ -2310,7 +2563,7 @@
 
     border-radius: 18px;
 
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.86);
 
     text-align: center;
 
@@ -2319,17 +2572,15 @@
 
 .agenda-vacio-icono {
 
-    width: 70px;
-
-    height: 70px;
+    width: 66px;
+    height: 66px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
-    margin-bottom: 16px;
+    margin-bottom: 15px;
 
     border-radius: 50%;
 
@@ -2337,7 +2588,7 @@
 
     color: #4F744B;
 
-    font-size: 27px;
+    font-size: 25px;
 
 }
 
@@ -2348,8 +2599,7 @@
 
     color: #214F3B;
 
-    font-size: 17px;
-
+    font-size: 16px;
     font-weight: 800;
 
 }
@@ -2357,7 +2607,7 @@
 
 .agenda-vacio p {
 
-    max-width: 430px;
+    max-width: 440px;
 
     margin: 8px auto 0;
 
@@ -2365,7 +2615,7 @@
 
     font-size: 8px;
 
-    line-height: 1.6;
+    line-height: 1.65;
 
 }
 
@@ -2374,7 +2624,14 @@
 
     margin-top: 14px;
 
-    padding: 9px 14px;
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 39px;
+
+    padding: 8px 14px;
 
     border-radius: 10px;
 
@@ -2383,7 +2640,6 @@
     color: #214F3B;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-decoration: none;
@@ -2392,7 +2648,7 @@
 
 
 /* ==========================================================
-   60. MODAL OVERLAY
+   57. MODAL OVERLAY
 ========================================================== */
 
 .agenda-modal-overlay {
@@ -2406,14 +2662,15 @@
     display: none;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 22px;
 
-    background: rgba(17, 38, 27, 0.60);
+    background:
+        rgba(17, 38, 27, 0.60);
 
-    backdrop-filter: blur(5px);
+    backdrop-filter:
+        blur(5px);
 
 }
 
@@ -2426,13 +2683,12 @@
 
 
 /* ==========================================================
-   61. MODAL
+   58. MODAL
 ========================================================== */
 
 .agenda-modal {
 
     width: 100%;
-
     max-width: 720px;
 
     max-height: 90vh;
@@ -2446,11 +2702,34 @@
     background: #FFFFF7;
 
     box-shadow:
-        0 25px 70px rgba(17, 38, 27, 0.26);
+        0 25px 70px
+        rgba(17, 38, 27, 0.26);
 
     animation:
         aparecerAgendaModal
         0.22s ease;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #D8C26A
+        transparent;
+
+}
+
+
+.agenda-modal::-webkit-scrollbar {
+
+    width: 7px;
+
+}
+
+
+.agenda-modal::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background: #D8C26A;
 
 }
 
@@ -2467,6 +2746,7 @@
 
     }
 
+
     to {
 
         opacity: 1;
@@ -2481,7 +2761,7 @@
 
 
 /* ==========================================================
-   62. MODAL HEADER
+   59. HEADER MODAL
 ========================================================== */
 
 .agenda-modal-header {
@@ -2499,9 +2779,12 @@
 
     padding: 18px 20px;
 
-    border-bottom: 1px solid rgba(33, 79, 59, 0.09);
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.09);
 
-    background: rgba(255, 237, 180, 0.16);
+    background:
+        rgba(255, 237, 180, 0.16);
 
 }
 
@@ -2509,13 +2792,11 @@
 .agenda-modal-icono {
 
     width: 42px;
-
     height: 42px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 11px;
@@ -2541,7 +2822,6 @@
     color: #8B731E;
 
     font-size: 7px;
-
     font-weight: 800;
 
 }
@@ -2553,8 +2833,7 @@
 
     color: #214F3B;
 
-    font-size: 19px;
-
+    font-size: 18px;
     font-weight: 800;
 
     overflow-wrap: anywhere;
@@ -2565,13 +2844,11 @@
 .agenda-modal-cerrar {
 
     width: 35px;
-
     height: 35px;
 
-    display: flex;
+    display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     border: none;
@@ -2582,7 +2859,7 @@
 
     color: #728078;
 
-    font-size: 15px;
+    font-size: 14px;
 
     cursor: pointer;
 
@@ -2599,7 +2876,7 @@
 
 
 /* ==========================================================
-   63. MODAL BODY
+   60. BODY MODAL
 ========================================================== */
 
 .agenda-modal-body {
@@ -2617,12 +2894,13 @@
 
 
 /* ==========================================================
-   64. DATO MODAL
+   61. DATO MODAL
 ========================================================== */
 
 .agenda-modal-dato {
 
-    min-height: 72px;
+    min-width: 0;
+    min-height: 70px;
 
     display: flex;
 
@@ -2638,14 +2916,16 @@
 
     border-radius: 11px;
 
-    background: rgba(255, 237, 180, 0.21);
+    background:
+        rgba(255, 237, 180, 0.21);
 
 }
 
 
 .agenda-modal-dato-completo {
 
-    grid-column: 1 / -1;
+    grid-column:
+        1 / -1;
 
 }
 
@@ -2655,7 +2935,6 @@
     color: #66746C;
 
     font-size: 7px;
-
     font-weight: 600;
 
 }
@@ -2666,7 +2945,6 @@
     color: #214F3B;
 
     font-size: 9px;
-
     font-weight: 800;
 
     overflow-wrap: anywhere;
@@ -2675,32 +2953,40 @@
 
 
 /* ==========================================================
-   65. DESCRIPCIÓN MODAL
+   62. DESCRIPCIÓN MODAL
 ========================================================== */
 
 .agenda-modal-descripcion {
 
-    margin: 0 20px 20px;
+    margin:
+        0
+        20px
+        20px;
 
     padding: 15px;
 
-    border: 1px solid rgba(33, 79, 59, 0.08);
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
 
     border-radius: 12px;
 
-    background: rgba(255, 255, 255, 0.70);
+    background:
+        rgba(255, 255, 255, 0.72);
 
 }
 
 
 .agenda-modal-descripcion h3 {
 
-    margin: 0 0 7px;
+    margin:
+        0
+        0
+        7px;
 
     color: #214F3B;
 
     font-size: 10px;
-
     font-weight: 800;
 
 }
@@ -2732,7 +3018,7 @@
 
 
 /* ==========================================================
-   66. CREADOR
+   63. CREADOR MODAL
 ========================================================== */
 
 .agenda-modal-creador {
@@ -2743,7 +3029,10 @@
 
     gap: 10px;
 
-    margin: 0 20px 20px;
+    margin:
+        0
+        20px
+        20px;
 
     padding: 12px;
 
@@ -2751,7 +3040,8 @@
 
     border-radius: 11px;
 
-    background: rgba(231, 242, 227, 0.42);
+    background:
+        rgba(231, 242, 227, 0.42);
 
 }
 
@@ -2759,7 +3049,6 @@
 .agenda-modal-creador > i {
 
     width: 36px;
-
     height: 36px;
 
     flex-shrink: 0;
@@ -2767,7 +3056,6 @@
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 9px;
@@ -2801,14 +3089,13 @@
     color: #214F3B;
 
     font-size: 9px;
-
     font-weight: 800;
 
 }
 
 
 /* ==========================================================
-   67. FOOTER MODAL
+   64. FOOTER MODAL
 ========================================================== */
 
 .agenda-modal-footer {
@@ -2816,20 +3103,21 @@
     display: flex;
 
     align-items: center;
-
     justify-content: flex-end;
 
     gap: 9px;
 
     padding: 14px 20px;
 
-    border-top: 1px solid rgba(33, 79, 59, 0.09);
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.09);
 
 }
 
 
 /* ==========================================================
-   68. VER APIARIO
+   65. VER APIARIO
 ========================================================== */
 
 .btn-agenda-ver-apiario {
@@ -2839,7 +3127,6 @@
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 7px;
@@ -2855,21 +3142,40 @@
     color: #4F744B;
 
     font-size: 8px;
-
     font-weight: 800;
 
     text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-agenda-ver-apiario:hover {
+
+    background: #DCEFD7;
+
+    color: #214F3B;
+
+    transform: translateY(-1px);
 
 }
 
 
 /* ==========================================================
-   69. CERRAR MODAL
+   66. CERRAR MODAL
 ========================================================== */
 
 .btn-agenda-cerrar {
 
     min-height: 39px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
 
     padding: 8px 14px;
 
@@ -2884,68 +3190,46 @@
     font-family: inherit;
 
     font-size: 8px;
-
     font-weight: 800;
 
     cursor: pointer;
 
-}
-
-
-/* ==========================================================
-   70. SCROLL MODAL
-========================================================== */
-
-.agenda-modal {
-
-    scrollbar-width: thin;
-
-    scrollbar-color:
-        #D8C26A
-        transparent;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 
 }
 
 
-.agenda-modal::-webkit-scrollbar {
+.btn-agenda-cerrar:hover {
 
-    width: 7px;
+    background: #F3CA4E;
 
-}
-
-
-.agenda-modal::-webkit-scrollbar-thumb {
-
-    border-radius: 10px;
-
-    background: #D8C26A;
+    transform: translateY(-1px);
 
 }
 
 
 /* ==========================================================
-   71. RESPONSIVE 1350
+   67. RESPONSIVE - 1400px
 ========================================================== */
 
-@media (max-width: 1350px) {
+@media (max-width: 1400px) {
 
     .agenda-filtros-form {
 
-        flex-wrap: wrap;
+        grid-template-columns:
+            minmax(260px, 1fr)
+            repeat(3, minmax(135px, 0.4fr))
+            minmax(155px, 0.4fr);
 
     }
 
 
-    .agenda-buscador {
+    .btn-agenda-filtrar,
+    .btn-agenda-limpiar {
 
-        flex-basis: 100%;
-
-    }
-
-
-    .agenda-select {
-
-        flex: 1;
+        width: 100%;
 
     }
 
@@ -2953,18 +3237,43 @@
 
 
 /* ==========================================================
-   72. RESPONSIVE 1100
+   68. RESPONSIVE - 1200px
 ========================================================== */
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
 
-    .agenda-resumen {
+    .agenda-principal {
+
+        grid-template-columns:
+            minmax(0, 1.65fr)
+            minmax(280px, 0.75fr);
+
+    }
+
+
+    .agenda-filtros-form {
 
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
 
     }
 
+
+    .agenda-buscador {
+
+        grid-column:
+            1 / -1;
+
+    }
+
+}
+
+
+/* ==========================================================
+   69. RESPONSIVE - 1050px
+========================================================== */
+
+@media (max-width: 1050px) {
 
     .agenda-principal {
 
@@ -2979,14 +3288,24 @@
 
     }
 
+
+    .agenda-proximos-lista {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
 }
 
 
 /* ==========================================================
-   73. RESPONSIVE 800
+   70. RESPONSIVE - 850px
 ========================================================== */
 
-@media (max-width: 800px) {
+@media (max-width: 850px) {
 
     .agenda-encabezado {
 
@@ -2997,7 +3316,137 @@
 
     .agenda-encabezado h1 {
 
-        font-size: 24px;
+        font-size: 25px;
+
+    }
+
+
+    .agenda-resumen {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .agenda-dia {
+
+        min-height: 72px;
+
+        padding: 6px;
+
+    }
+
+
+    .agenda-hoy-evento {
+
+        grid-template-columns:
+            55px
+            4px
+            minmax(0, 1fr);
+
+    }
+
+
+    .agenda-hoy-evento
+    .agenda-estado {
+
+        grid-column: 3;
+
+        width: fit-content;
+
+    }
+
+}
+
+
+/* ==========================================================
+   71. RESPONSIVE - 700px
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .agenda-page {
+
+        gap: 17px;
+
+    }
+
+
+    .agenda-encabezado {
+
+        flex-direction: column;
+
+    }
+
+
+    .agenda-encabezado-acciones {
+
+        width: 100%;
+
+    }
+
+
+    .btn-agregar-evento {
+
+        flex: 1;
+
+    }
+
+
+    .agenda-encabezado-icono {
+
+        width: 44px;
+        height: 44px;
+
+        border-radius: 12px;
+
+        font-size: 18px;
+
+    }
+
+
+    .agenda-resumen {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+
+    }
+
+
+    .agenda-resumen-card {
+
+        min-height: 88px;
+
+        padding: 12px;
+
+    }
+
+
+    .agenda-resumen-icono {
+
+        width: 40px;
+        height: 40px;
+
+        font-size: 15px;
+
+    }
+
+
+    .agenda-resumen-card strong {
+
+        font-size: 18px;
+
+    }
+
+
+    .agenda-calendario-card,
+    .agenda-proximos-card,
+    .agenda-hoy-card {
+
+        padding: 14px;
 
     }
 
@@ -3022,116 +3471,28 @@
 
     .agenda-dia {
 
-        min-height: 68px;
+        min-height: 57px;
 
-        padding: 6px;
-
-    }
-
-
-    .agenda-hoy-evento {
-
-        grid-template-columns:
-            52px
-            4px
-            minmax(0, 1fr);
-
-    }
-
-
-    .agenda-hoy-evento
-    .agenda-estado {
-
-        grid-column: 3;
-
-        width: fit-content;
-
-    }
-
-}
-
-
-/* ==========================================================
-   74. RESPONSIVE 650
-========================================================== */
-
-@media (max-width: 650px) {
-
-    .agenda-page {
-
-        gap: 17px;
-
-    }
-
-
-    .agenda-encabezado-icono {
-
-        display: none;
-
-    }
-
-
-    .agenda-resumen {
-
-        grid-template-columns:
-            1fr
-            1fr;
-
-        gap: 10px;
-
-    }
-
-
-    .agenda-resumen-card {
-
-        min-height: 88px;
-
-        padding: 12px;
-
-    }
-
-
-    .agenda-resumen-icono {
-
-        width: 40px;
-
-        height: 40px;
-
-        font-size: 16px;
-
-    }
-
-
-    .agenda-resumen-card strong {
-
-        font-size: 18px;
-
-    }
-
-
-    .agenda-calendario-card,
-    .agenda-proximos-card,
-    .agenda-hoy-card {
-
-        padding: 14px;
-
-    }
-
-
-    .agenda-dia {
-
-        min-height: 55px;
+        padding: 5px;
 
     }
 
 
     .agenda-dia-evento {
 
-        min-height: 7px;
+        min-height: 8px;
 
         padding: 0;
 
         font-size: 0;
+
+    }
+
+
+    .agenda-dia-evento i,
+    .agenda-dia-evento span {
+
+        display: none;
 
     }
 
@@ -3141,8 +3502,9 @@
         content: "";
 
         width: 7px;
-
         height: 7px;
+
+        display: block;
 
         margin: auto;
 
@@ -3153,31 +3515,23 @@
     }
 
 
-    .agenda-dia-mas {
+    .agenda-proximos-lista {
 
-        text-align: center;
+        grid-template-columns: 1fr;
 
     }
 
 
     .agenda-filtros-form {
 
-        flex-direction: column;
-
-        align-items: stretch;
+        grid-template-columns: 1fr;
 
     }
 
 
-    .agenda-buscador,
-    .agenda-select,
-    .agenda-fecha-filtro,
-    .btn-agenda-filtrar,
-    .btn-agenda-limpiar {
+    .agenda-buscador {
 
-        width: 100%;
-
-        min-width: 100%;
+        grid-column: auto;
 
     }
 
@@ -3238,10 +3592,10 @@
 
 
 /* ==========================================================
-   75. RESPONSIVE 430
+   72. RESPONSIVE - 520px
 ========================================================== */
 
-@media (max-width: 430px) {
+@media (max-width: 520px) {
 
     .agenda-resumen {
 
@@ -3252,14 +3606,28 @@
 
     .agenda-encabezado h1 {
 
-        font-size: 21px;
+        font-size: 22px;
 
     }
 
 
     .agenda-encabezado p {
 
-        font-size: 9px;
+        font-size: 8px;
+
+    }
+
+
+    .agenda-encabezado-icono {
+
+        display: none;
+
+    }
+
+
+    .agenda-calendario-semana {
+
+        gap: 3px;
 
     }
 
@@ -3271,11 +3639,20 @@
     }
 
 
+    .agenda-calendario-dias {
+
+        gap: 4px;
+
+    }
+
+
     .agenda-dia {
 
-        min-height: 48px;
+        min-height: 50px;
 
         padding: 4px;
+
+        border-radius: 8px;
 
     }
 
@@ -3283,7 +3660,6 @@
     .agenda-dia-numero {
 
         width: 21px;
-
         height: 21px;
 
         font-size: 7px;
@@ -3301,11 +3677,75 @@
     .agenda-hoy-evento {
 
         grid-template-columns:
-            45px
+            46px
             3px
             minmax(0, 1fr);
 
         gap: 8px;
+
+    }
+
+
+    .agenda-hoy-hora {
+
+        font-size: 7px;
+
+    }
+
+
+    .agenda-resultados-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+}
+
+
+/* ==========================================================
+   73. RESPONSIVE - 390px
+========================================================== */
+
+@media (max-width: 390px) {
+
+    .agenda-calendario-card {
+
+        padding:
+            12px
+            9px;
+
+    }
+
+
+    .agenda-dia {
+
+        min-height: 46px;
+
+    }
+
+
+    .agenda-dia-numero {
+
+        width: 19px;
+        height: 19px;
+
+        font-size: 6px;
+
+    }
+
+
+    .agenda-calendario-leyenda span {
+
+        font-size: 6px;
+
+    }
+
+
+    .btn-agregar-evento {
+
+        width: 100%;
 
     }
 

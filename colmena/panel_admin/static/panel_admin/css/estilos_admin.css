@@ -205,12 +205,84 @@ SIDEBAR
 MENÚ SIDEBAR
 ==================================================*/
 
+.sidebar-menu-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 .sidebar-menu {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     padding-right: 3px;
+    scrollbar-width: thin;
+}
+
+/* Aviso de que hay más íconos del menú por debajo:
+   una franja con degradado + una flecha que invita a bajar.
+   Solo se muestra cuando el menú realmente tiene contenido
+   oculto (lo controla JS agregando la clase .visible). */
+.sidebar-menu-scroll-hint {
+    position: absolute;
+    left: 0;
+    right: 3px;
+    bottom: 0;
+    height: 40px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(
+        to bottom,
+        rgba(192, 241, 202, 0) 0%,
+        var(--verde-claro) 78%
+    );
+
+    color: var(--verde-oscuro);
+    font-size: 15px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: opacity .25s ease;
+    z-index: 5;
+}
+
+.sidebar-menu-scroll-hint.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.sidebar-menu-scroll-hint i {
+    animation: rebotarFlechaScroll 1.3s ease-in-out infinite;
+}
+
+@keyframes rebotarFlechaScroll {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(4px); }
+}
+
+.sidebar-admin.collapsed .sidebar-menu-scroll-hint {
+    right: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar-menu-scroll-hint i {
+        animation: none;
+    }
 }
 
 .menu-link {
@@ -615,1320 +687,1560 @@ MÓDULO APIARIOS
     background: #dc3545;
 }
 
-/*==================================================
-BOTONES
-==================================================*/
+/* ==========================================================
+   ==========================================================
+   INCIDENCIAS - PANEL ADMINISTRADOR
+   MI COLMENA
+   ==========================================================
+   ========================================================== */
 
-.btn-panel {
-    border: none;
-    border-radius: 12px;
-    padding: 10px 18px;
-    font-weight: 600;
-    transition: .3s ease;
-}
 
-.btn-agregar {
-    background: var(--verde-medio);
-    color: white;
-}
+/* ==========================================================
+   1. CONTENEDOR GENERAL
+========================================================== */
 
-.btn-agregar:hover {
-    background: var(--verde-oscuro);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.btn-guardar {
-    background: var(--verde-medio);
-    color: white;
-}
-
-.btn-guardar:hover {
-    background: var(--verde-oscuro);
-    color: white;
-}
-
-.btn-cancelar {
-    border: 1px solid var(--verde-medio);
-    color: var(--verde-oscuro);
-    background: transparent;
-}
-
-.btn-cancelar:hover {
-    background: var(--verde-claro);
-    color: var(--verde-oscuro);
-}
-
-.btn-eliminar {
-    background: var(--rojo);
-    color: white;
-}
-
-.btn-eliminar:hover {
-    background: #b02a37;
-    color: white;
-}
-
-/*==================================================
-TABLAS
-==================================================*/
-
-.tabla-card {
-    background: var(--blanco);
-    border-radius: 22px;
-    padding: 20px;
-    box-shadow: var(--sombra);
-}
-
-.table {
-    margin-bottom: 0;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-.table thead th {
-    color: var(--verde-oscuro);
-    font-weight: 700;
-    font-size: 12.5px;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    background: #f6faf6;
-    border-bottom: 2px solid var(--verde-claro);
-    padding: 14px;
-    white-space: nowrap;
-}
-
-.table thead th:first-child {
-    border-top-left-radius: 12px;
-}
-
-.table thead th:last-child {
-    border-top-right-radius: 12px;
-}
-
-.table tbody td {
-    padding: 14px;
-    vertical-align: middle;
-    color: var(--texto);
-    border-bottom: 1px solid #eef2ee;
-}
-
-.table tbody tr {
-    transition: background-color .25s ease, box-shadow .25s ease;
-}
-
-.table tbody tr td:first-child {
+.incidencias-container {
     position: relative;
-    border-left: 3px solid transparent;
-    transition: border-color .25s ease;
-}
 
-.table tbody tr:hover {
-    background: #f2fbf4;
-    box-shadow: inset 0 0 0 9999px rgba(95, 151, 129, .04);
-}
+    overflow: hidden;
 
-.table tbody tr:hover td:first-child {
-    border-left-color: var(--verde-medio);
-}
+    padding: 28px;
 
-.table tbody tr td img {
-    transition: transform .35s cubic-bezier(.2, .8, .2, 1);
-}
-
-.table tbody tr:hover td img {
-    transform: scale(1.08);
-}
-
-.table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .table tbody tr,
-    .table tbody tr td:first-child,
-    .table tbody tr td img {
-        transition: none !important;
-    }
-
-    .table tbody tr:hover td img {
-        transform: none !important;
-    }
-
-}
-
-.acciones {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-accion {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: none;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
-}
-
-.btn-accion i {
-    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
-}
-
-.btn-ver {
-    background: #e7f1ff;
-    color: #0d6efd;
-}
-
-.btn-editar {
-    background: #fff6d6;
-    color: #b98b00;
-}
-
-.btn-borrar {
-    background: #fdecec;
-    color: var(--rojo);
-}
-
-.btn-accion:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(33, 79, 59, .15);
-}
-
-.btn-accion:hover i {
-    transform: scale(1.15);
-}
-
-.btn-accion:active {
-    transform: translateY(0) scale(.94);
-}
-
-/*==================================================
-FORMULARIOS
-==================================================*/
-
-.form-label {
-    color: var(--verde-oscuro);
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.form-control,
-.form-select {
-    border-radius: 12px;
-    border: 1px solid rgba(33, 79, 59, .2);
-    padding: 10px 14px;
-    font-size: 14px;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--verde-medio);
-    box-shadow: 0 0 0 .20rem rgba(95, 151, 129, .20);
-}
-
-/*==================================================
-MODALES
-==================================================*/
-
-.modal-content {
     border-radius: 22px;
-    border: none;
-    overflow: hidden;
-    background: #F4F5ED;
-}
-
-.modal-header {
-    border: none;
-    background: #E8F7E9;
-    padding: 22px 26px;
-}
-
-.modal-header h4 {
-    color: var(--verde-oscuro);
-    font-weight: 700;
-}
-
-.modal-header p {
-    font-size: 14px;
-}
-
-.modal-body {
-    padding: 26px;
-}
-
-.modal-footer {
-    border: none;
-    padding: 0 26px 24px;
-}
-
-.modal-info-box {
-    background: white;
-    border-radius: 15px;
-    padding: 16px;
-    box-shadow: 0 6px 16px rgba(0,0,0,.06);
-}
-
-.modal-info-box.verde {
-    background: #E8F7E9;
-}
-
-.modal-info-box small {
-    color: var(--gris-texto);
-    font-weight: 500;
-}
-
-.modal-info-box h5 {
-    margin: 5px 0 0;
-    color: var(--texto);
-}
-
-.modal-delete-header {
-    background: #FDECEC;
-}
-
-.alerta-eliminar {
-    background: #FDECEC;
-    border: 1px solid rgba(220, 53, 69, .45);
-    color: var(--rojo);
-    border-radius: 15px;
-    padding: 15px;
-}
-
-/* =========================================================
-   MODAL ELIMINAR APIARIO
-========================================================= */
-
-.modal-eliminar-apiario {
-
-    overflow: hidden;
-
-    border-radius: 20px;
 
     background: #ffffff;
 
     box-shadow:
-        0 24px 65px
-        rgba(81, 28, 35, 0.25);
-
+        0 10px 30px
+        rgba(33, 79, 59, 0.08);
 }
 
 
-/* =========================================================
-   ENCABEZADO
-========================================================= */
+/* ==========================================================
+   2. DECORACIÓN DEL CONTENEDOR
+========================================================== */
 
-.modal-header-eliminar-apiario {
+.incidencias-container::after {
+    content: "";
 
-    padding:
-        20px
-        24px;
+    position: absolute;
 
-    border-bottom: 0;
+    top: -18px;
+    right: -18px;
+
+    width: 60px;
+    height: 60px;
+
+    background:
+        linear-gradient(
+            155deg,
+            var(--amarillo, #f6de87),
+            var(--verde-medio, #5f9781)
+        );
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    opacity: 0.12;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   3. ENCABEZADO
+========================================================== */
+
+.incidencias-header {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+.incidencias-header > div:first-child {
+    min-width: 0;
+}
+
+.incidencias-header h2 {
+    margin: 0 0 5px;
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-weight: 700;
+}
+
+.incidencias-header h2 i {
+    color:
+        var(
+            --miel,
+            #f0a000
+        );
+}
+
+.incidencias-header p {
+    margin: 0;
+
+    color: #6c757d;
+
+    line-height: 1.6;
+}
+
+/* Encabezado con polen flotante (mismo recurso de los demás
+   módulos: .dashboard-fondo-panal + .particulas-flotantes,
+   ya definidos más abajo en este archivo). Reutiliza el
+   recorrido corto @keyframes chispaFogataEncabezado, pensado
+   para encabezados bajitos como este. */
+
+.incidencias-header-panal {
+    padding: 10px 14px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+}
+
+.incidencias-header-panal .incidencias-header {
+    margin-bottom: 0;
+}
+
+.incidencias-header-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
+
+/* ==========================================================
+   4. ACCIONES DEL ENCABEZADO
+========================================================== */
+
+.incidencias-header .d-flex {
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================
+   5. BOTÓN AGREGAR INCIDENCIA
+========================================================== */
+
+.btn-agregar-incidencia {
+    padding: 11px 20px;
+
+    border: none;
+    border-radius: 12px;
 
     background:
         linear-gradient(
             135deg,
-            #a83242 0%,
-            #d95b68 100%
+            var(--verde-medio, #5f9781),
+            var(--verde-oscuro, #214f3b)
         );
 
     color: #ffffff;
 
+    font-weight: 600;
+
+    box-shadow:
+        0 4px 10px
+        rgba(33, 79, 59, 0.18);
+
+    transition:
+        transform 0.3s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow 0.25s ease,
+        background 0.3s ease;
+}
+
+.btn-agregar-incidencia:hover {
+    background:
+        linear-gradient(
+            135deg,
+            var(--verde-oscuro, #214f3b),
+            var(--verde-medio, #5f9781)
+        );
+
+    color: #ffffff;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 9px 18px
+        rgba(33, 79, 59, 0.26);
+}
+
+.btn-agregar-incidencia:active {
+    transform:
+        translateY(0)
+        scale(0.97);
 }
 
 
-.modal-header-eliminar-apiario .modal-title,
-.modal-header-eliminar-apiario p,
-.modal-header-eliminar-apiario i {
+/* ==========================================================
+   6. FILTROS
+========================================================== */
 
-    color: #ffffff !important;
+.filtros-incidencias {
+    margin-bottom: 25px;
 
+    padding: 20px;
+
+    border: 1px solid #dcebe1;
+    border-radius: 18px;
+
+    background: #f7fbf8;
+}
+
+.filtros-incidencias label {
+    margin-bottom: 6px;
+
+    color: #214f3b;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.filtros-incidencias .form-select,
+.filtros-incidencias .form-control {
+    min-height: 42px;
+
+    border: 1px solid #ceddd3;
+    border-radius: 10px;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.filtros-incidencias .form-select:focus,
+.filtros-incidencias .form-control:focus {
+    border-color: #5f9781;
+
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(95, 151, 129, 0.12);
 }
 
 
-.modal-header-eliminar-apiario p {
+/* ==========================================================
+   7. TABLA
+========================================================== */
 
-    font-size: 0.78rem;
+.tabla-incidencias {
+    width: 100%;
 
-    opacity: 0.88;
-
-}
-
-
-/* =========================================================
-   ICONO DEL HEADER
-========================================================= */
-
-.icono-header-eliminar-apiario {
-
-    width: 47px;
-
-    min-width: 47px;
-
-    height: 47px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.25);
+    overflow-x: auto;
 
     border-radius: 14px;
+}
 
-    background:
-        rgba(255, 255, 255, 0.14);
+.tabla-incidencias table {
+    min-width: 1000px;
 
-    font-size: 1.25rem;
-
+    margin: 0;
 }
 
 
-/* =========================================================
-   CONTENIDO
-========================================================= */
+/* ==========================================================
+   8. CABECERA DE TABLA
+========================================================== */
 
-.contenido-eliminar-apiario {
+.tabla-incidencias thead th {
+    padding: 15px;
 
-    text-align: center;
+    border-bottom: none;
 
-}
+    background: #f1f8f3;
 
+    color: #214f3b;
 
-/* =========================================================
-   ICONO DE ADVERTENCIA
-========================================================= */
-
-.icono-advertencia-eliminar-apiario {
-
-    width: 78px;
-
-    height: 78px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    margin:
-        5px
-        auto
-        18px;
-
-    border-radius: 50%;
-
-    background: #fff1f2;
-
-    color: #d34c5a;
-
-    font-size: 2rem;
-
-}
-
-
-/* =========================================================
-   TÍTULO Y DESCRIPCIÓN
-========================================================= */
-
-.contenido-eliminar-apiario h5 {
-
-    color: #35483f;
-
-    font-weight: 750;
-
-}
-
-
-.contenido-eliminar-apiario > p {
-
-    margin-bottom: 14px;
-
-    color: #7e8b85;
-
-    font-size: 0.82rem;
-
-}
-
-
-/* =========================================================
-   NOMBRE DEL APIARIO
-========================================================= */
-
-.nombre-apiario-eliminar {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 8px;
-
-    padding:
-        10px
-        17px;
-
-    border-radius: 12px;
-
-    background: #f4f7f5;
-
-    color:
-        var(--verde-oscuro);
-
-}
-
-
-.nombre-apiario-eliminar i {
-
-    color:
-        var(--verde-medio);
-
-}
-
-
-/* =========================================================
-   ALERTAS
-========================================================= */
-
-.alerta-eliminacion-apiario-permitida,
-.alerta-eliminacion-apiario-bloqueada {
-
-    display: flex;
-
-    align-items: flex-start;
-
-    gap: 11px;
-
-    margin-top: 22px;
-
-    padding: 14px;
-
-    border-radius: 13px;
-
-    text-align: left;
-
-}
-
-
-/* =========================================================
-   PERMITIDO
-========================================================= */
-
-.alerta-eliminacion-apiario-permitida {
-
-    border:
-        1px solid
-        #f0d3d7;
-
-    background: #fff7f8;
-
-    color: #9c3b47;
-
-}
-
-
-/* =========================================================
-   BLOQUEADO
-========================================================= */
-
-.alerta-eliminacion-apiario-bloqueada {
-
-    border:
-        1px solid
-        #efd58a;
-
-    background: #fff9e5;
-
-    color: #806300;
-
-}
-
-
-/* =========================================================
-   ICONOS DE ALERTA
-========================================================= */
-
-.alerta-eliminacion-apiario-permitida > i,
-.alerta-eliminacion-apiario-bloqueada > i {
-
-    margin-top: 2px;
-
-    font-size: 1rem;
-
-}
-
-
-/* =========================================================
-   CONTENIDO DE ALERTAS
-========================================================= */
-
-.alerta-eliminacion-apiario-permitida div,
-.alerta-eliminacion-apiario-bloqueada div {
-
-    display: flex;
-
-    flex-direction: column;
-
-}
-
-
-.alerta-eliminacion-apiario-permitida strong,
-.alerta-eliminacion-apiario-bloqueada strong {
-
-    font-size: 0.8rem;
-
-}
-
-
-.alerta-eliminacion-apiario-permitida span,
-.alerta-eliminacion-apiario-bloqueada span {
-
-    margin-top: 3px;
-
-    font-size: 0.72rem;
-
-    line-height: 1.45;
-
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.modal-footer-eliminar-apiario {
-
-    padding:
-        17px
-        24px;
-
-    border-top:
-        1px solid
-        #ecefed;
-
-    background: #fafbfa;
-
-}
-
-
-/* =========================================================
-   BOTONES
-========================================================= */
-
-.btn-cancelar-eliminacion-apiario,
-.btn-confirmar-eliminacion-apiario {
-
-    min-height: 41px;
-
-    padding:
-        9px
-        17px;
-
-    border-radius: 11px;
-
-    font-size: 0.78rem;
-
+    font-size: 0.88rem;
     font-weight: 700;
 
+    white-space: nowrap;
 }
 
 
-/* =========================================================
-   CANCELAR
-========================================================= */
+/* ==========================================================
+   9. FILAS DE TABLA
+========================================================== */
 
-.btn-cancelar-eliminacion-apiario {
+.tabla-incidencias tbody td {
+    padding: 15px;
 
-    border:
-        1px solid
-        #d8dfdb;
+    color: #34473e;
 
-    background: #ffffff;
+    vertical-align: middle;
+}
 
-    color: #637069;
+.tabla-incidencias tbody tr {
+    transition:
+        background 0.2s ease;
+}
 
+.tabla-incidencias tbody tr:hover {
+    background:
+        rgba(247, 251, 248, 0.72);
 }
 
 
-.btn-cancelar-eliminacion-apiario:hover {
+/* ==========================================================
+   10. BADGE DE ENTIDAD
+========================================================== */
 
-    background: #eef3f0;
+.entidad-badge {
+    display: inline-flex;
+    align-items: center;
 
-    color: #3e5147;
+    gap: 6px;
 
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 0.82rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.entidad-apicultor {
+    background: #e9f2ff;
+    color: #2f65a7;
+}
+
+.entidad-apiario {
+    background: #e6f6eb;
+    color: #287547;
+}
+
+.entidad-colmena {
+    background: #fff5d8;
+    color: #8c6812;
 }
 
 
-/* =========================================================
-   CONFIRMAR ELIMINACIÓN
-========================================================= */
+/* ==========================================================
+   11. BADGES DE PRIORIDAD
+========================================================== */
 
-.btn-confirmar-eliminacion-apiario {
+.badge-prioridad {
+    display: inline-flex;
+    align-items: center;
 
-    border:
-        1px solid
-        #bd3f4d;
+    gap: 6px;
 
-    background: #bd3f4d;
+    padding: 7px 11px;
 
-    color: #ffffff;
+    border-radius: 20px;
 
+    font-size: 0.80rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.badge-prioridad::before {
+    content: "";
+
+    width: 7px;
+    height: 7px;
+
+    flex-shrink: 0;
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    background:
+        currentColor;
+}
+
+.prioridad-baja {
+    background: #dff5e5;
+    color: #287547;
+}
+
+.prioridad-media {
+    background: #fff4ca;
+    color: #8c6812;
+}
+
+.prioridad-alta {
+    background: #ffe2cc;
+    color: #a44e14;
+}
+
+.prioridad-critica {
+    background: #ffd9dc;
+    color: #a72330;
+
+    animation:
+        pulsoPrioridadCritica
+        1.8s ease-in-out infinite;
 }
 
 
-.btn-confirmar-eliminacion-apiario:hover {
+/* ==========================================================
+   12. ANIMACIÓN PRIORIDAD CRÍTICA
+========================================================== */
 
-    border-color: #9e2e3a;
+@keyframes pulsoPrioridadCritica {
 
-    background: #9e2e3a;
-
-    color: #ffffff;
-
-}
-
-
-/* =========================================================
-   BOTÓN DESHABILITADO
-========================================================= */
-
-.btn-confirmar-eliminacion-apiario:disabled,
-.btn-confirmar-eliminacion-apiario.disabled {
-
-    border-color: #b7beb9;
-
-    background: #b7beb9;
-
-    color: #ffffff;
-
-    opacity: 1;
-
-    cursor: not-allowed;
-
-    pointer-events: none;
-
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 575px) {
-
-    .modal-header-eliminar-apiario {
-
-        padding:
-            17px
-            18px;
-
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 0
+            rgba(167, 35, 48, 0.35);
     }
 
-
-    .modal-footer-eliminar-apiario {
-
-        display: flex;
-
-        flex-direction: column-reverse;
-
-        gap: 9px;
-
-        padding:
-            14px
-            18px;
-
-    }
-
-
-    .btn-cancelar-eliminacion-apiario,
-    .btn-confirmar-eliminacion-apiario {
-
-        width: 100%;
-
-    }
-
-
-    .icono-advertencia-eliminar-apiario {
-
-        width: 68px;
-
-        height: 68px;
-
-        font-size: 1.7rem;
-
+    50% {
+        box-shadow:
+            0 0 0 5px
+            rgba(167, 35, 48, 0);
     }
 
 }
 
-/*==================================================
-BADGES
-==================================================*/
+
+/* ==========================================================
+   13. BADGES DE ESTADO
+========================================================== */
 
 .badge-estado {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 0.80rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.estado-pendiente {
+    background: #fff4ca;
+    color: #8c6812;
+}
+
+.estado-proceso {
+    background: #dcecff;
+    color: #245e9e;
+}
+
+.estado-resuelta {
+    background: #dff5e5;
+    color: #287547;
+}
+
+
+/* ==========================================================
+   14. ACCIONES DE INCIDENCIA
+========================================================== */
+
+.acciones-incidencia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     gap: 6px;
-    padding: 8px 13px;
-    border-radius: 30px;
-    font-size: 12px;
 }
 
-.badge-estado::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    flex-shrink: 0;
-    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-    background: currentColor;
+
+/* ==========================================================
+   15-16. BOTONES DE ACCIÓN (.btn-accion, .btn-ver, .btn-editar,
+   .btn-borrar / .btn-eliminar)
+
+   Se quitaron las definiciones que había aquí: son las mismas
+   clases que ya usan Apiarios, Colmenas, Mantenimientos, etc.,
+   con un estilo genérico definido una sola vez en la sección
+   TABLAS. Tenerlas repetidas aquí no rompía nada (esa versión
+   genérica llega después en el archivo y siempre gana), pero
+   quedaban como código muerto que nunca se veía. Las tarjetas y
+   la tabla de incidencias siguen usando exactamente las mismas
+   clases en el HTML, así que el estilo no cambia.
+========================================================== */
+
+
+
+/* ==========================================================
+   17. MODALES
+========================================================== */
+
+.modal-header-incidencia {
+    padding: 20px 24px;
+
+    border-bottom: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #214f3b,
+            #3a6152
+        );
+
+    color: #ffffff;
 }
 
-.badge-bueno {
-    background: #dff5e7;
-    color: #198754;
+.modal-header-incidencia .modal-title {
+    font-weight: 700;
 }
 
-.badge-precaucion {
-    background: #fff5d6;
-    color: #b98b00;
+.modal-header-incidencia small {
+    color:
+        rgba(255, 255, 255, 0.78);
 }
 
-.badge-deficiente {
-    background: #fdecec;
-    color: var(--rojo);
+
+/* ==========================================================
+   18. BODY DEL MODAL
+========================================================== */
+
+.modal-body label {
+    margin-bottom: 6px;
+
+    color: #214f3b;
+
+    font-weight: 600;
 }
 
-/*==================================================
-RESPONSIVE
-==================================================*/
+.modal-body .form-control,
+.modal-body .form-select {
+    border: 1px solid #ceddd3;
+    border-radius: 10px;
 
-@media (max-width: 992px) {
-    .sidebar-admin {
-        transform: translateX(-100%);
-        width: 260px;
-    }
+    box-shadow: none;
 
-    .sidebar-admin.mobile-active {
-        transform: translateX(0);
-    }
-
-    .sidebar-admin.collapsed {
-        width: 260px;
-    }
-
-    .sidebar-admin.collapsed .brand-text,
-    .sidebar-admin.collapsed .menu-link span,
-    .sidebar-admin.collapsed .user-info {
-        display: block;
-    }
-
-    .sidebar-admin.collapsed .menu-link {
-        justify-content: flex-start;
-    }
-
-    .btn-collapse-sidebar {
-        display: none;
-    }
-
-    .contenido-admin,
-    .sidebar-admin.collapsed + .contenido-admin {
-        margin-left: 0;
-        width: 100%;
-    }
-
-    .btn-mobile-sidebar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .overlay-sidebar.active {
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.35);
-        z-index: 900;
-    }
-
-    .topbar-admin {
-        padding: 18px 20px;
-    }
-
-    .topbar-admin h1 {
-        font-size: 22px;
-    }
-
-    .contenido-page {
-        padding: 20px;
-    }
-
-    .apiarios-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-@media (max-width: 576px) {
-    .sidebar-admin,
-    .sidebar-admin.collapsed {
-        width: 235px;
-    }
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #5f9781;
 
-    .topbar-admin h1 {
-        font-size: 19px;
-    }
-
-    .topbar-admin p {
-        font-size: 12px;
-    }
-
-    .contenido-page {
-        padding: 15px;
-    }
-
-    .card-admin,
-    .tabla-card {
-        padding: 16px;
-        border-radius: 18px;
-    }
-
-    .modal-body {
-        padding: 18px;
-    }
-
-    .modal-header {
-        padding: 18px;
-    }
-
-    .modal-footer {
-        padding: 0 18px 18px;
-    }
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(95, 151, 129, 0.12);
 }
 
-/*==================================================
-PAGINADOR
-==================================================*/
 
-.pagination {
-    gap: 8px;
+/* ==========================================================
+   19. IMAGEN ANTIGUA
+   Se conserva por compatibilidad
+========================================================== */
+
+.imagen-incidencia {
+    width: 100%;
+    max-height: 280px;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+}
+
+.sin-imagen {
+    padding: 35px;
+
+    border-radius: 14px;
+
+    background: #f1f8f3;
+
+    color: #789085;
+
+    text-align: center;
+}
+
+
+/* ==========================================================
+   20. DATOS DEL DETALLE
+========================================================== */
+
+.detalle-item {
+    height: 100%;
+
+    padding: 12px 15px;
+
+    border: 1px solid rgba(33, 79, 59, 0.05);
+    border-radius: 12px;
+
+    background: #f7fbf8;
+}
+
+.detalle-item small {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #708178;
+}
+
+.detalle-item strong {
+    color: #214f3b;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   EVIDENCIAS MÚLTIPLES
+   MODAL VER INCIDENCIA
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   21. CONTENEDOR GENERAL
+========================================================== */
+
+.admin-incidencia-evidencias-detalle {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
     margin-top: 8px;
 }
 
-.pagination .page-item .page-link {
-    min-width: 42px;
-    height: 42px;
-    padding: 0 14px;
+
+/* ==========================================================
+   22. BLOQUE PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.admin-evidencias-bloque {
+    width: 100%;
+
+    padding: 16px;
+
+    border: 1px solid #dfe8e2;
+    border-radius: 15px;
+
+    background: #ffffff;
+}
+
+.admin-evidencias-bloque.problema {
+    border-color: #ead5d2;
+
+    background: #fffafa;
+}
+
+.admin-evidencias-bloque.solucion {
+    border-color: #d7e7d5;
+
+    background: #f9fcf8;
+}
+
+
+/* ==========================================================
+   23. HEADER DE EVIDENCIAS
+========================================================== */
+
+.admin-evidencias-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+
+/* ==========================================================
+   24. INFORMACIÓN DEL HEADER
+========================================================== */
+
+.admin-evidencias-header-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+.admin-evidencias-header-info > div:last-child {
+    min-width: 0;
+}
+
+.admin-evidencias-header-info h6 {
+    margin: 0;
+
+    color: #214f3b;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.admin-evidencias-header-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #77877e;
+
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   25. ICONOS PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.admin-evidencias-icono {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border: none;
-    border-radius: 14px;
+    border-radius: 11px;
 
-    background: var(--blanco);
-    color: var(--verde-oscuro);
-
-    font-weight: 600;
-    font-size: 14px;
-
-    box-shadow: 0 8px 20px rgba(33, 79, 59, .10);
-    transition: .25s ease;
+    font-size: 1rem;
 }
 
-.pagination .page-item .page-link:hover {
-    background: var(--verde-claro);
-    color: var(--verde-oscuro);
-    transform: translateY(-2px);
+.admin-evidencias-icono.problema {
+    background: #fce2de;
+    color: #a84d44;
 }
 
-.pagination .page-item.active .page-link {
-    background: var(--verde-medio);
-    color: white;
-    box-shadow: 0 10px 24px rgba(95, 151, 129, .35);
+.admin-evidencias-icono.solucion {
+    background: #e7f2e3;
+    color: #4f744b;
 }
 
-.pagination .page-item.disabled .page-link {
-    background: #edf6f0;
-    color: #8aa397;
-    box-shadow: none;
-}
 
-@media (max-width: 576px) {
-    .pagination {
-        flex-wrap: wrap;
-        gap: 6px;
-    }
+/* ==========================================================
+   26. CONTADORES
+========================================================== */
 
-    .pagination .page-item .page-link {
-        min-width: 36px;
-        height: 36px;
-        font-size: 12px;
-        border-radius: 11px;
-    }
-}
+.admin-evidencias-contador {
+    flex-shrink: 0;
 
-/* estilo de la foto del adm y el boton de cerrar seccion */
-
-.user-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.logout-sidebar {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.admin-evidencias-contador.problema {
+    background: #fce2de;
+    color: #a84d44;
+}
+
+.admin-evidencias-contador.solucion {
+    background: #e7f2e3;
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   27. GRID DE FOTOGRAFÍAS
+========================================================== */
+
+.admin-evidencias-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   28. TARJETA DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-item {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #dfe6e1;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 10px
+        rgba(33, 79, 59, 0.05);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-evidencia-item:hover {
+    border-color: #c7d5cc;
+
+    box-shadow:
+        0 7px 16px
+        rgba(33, 79, 59, 0.09);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* ==========================================================
+   29. IMAGEN DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-imagen {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+
+    background: #eef3ef;
+}
+
+.admin-evidencia-imagen img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.25s ease;
+}
+
+.admin-evidencia-item:hover
+.admin-evidencia-imagen img {
+    transform:
+        scale(1.025);
+}
+
+
+/* ==========================================================
+   30. NÚMERO DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-numero {
+    position: absolute;
+
+    top: 8px;
+    left: 8px;
+
+    z-index: 2;
+
+    min-width: 25px;
+    height: 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 7px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(33, 79, 59, 0.90);
+
+    color: #ffffff;
+
+    font-size: 0.70rem;
+    font-weight: 700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+/* ==========================================================
+   31. BADGE PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.admin-evidencia-badge {
+    position: absolute;
+
+    bottom: 8px;
+    left: 8px;
+
+    z-index: 2;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 0.67rem;
+    font-weight: 700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+.admin-evidencia-badge.problema {
+    background:
+        rgba(252, 226, 222, 0.95);
+
+    color: #a84d44;
+}
+
+.admin-evidencia-badge.solucion {
+    background:
+        rgba(231, 242, 227, 0.95);
+
+    color: #4f744b;
+}
+
+
+/* ==========================================================
+   32. INFORMACIÓN DE EVIDENCIA
+========================================================== */
+
+.admin-evidencia-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 10px 11px;
+}
+
+.admin-evidencia-info > div {
+    min-width: 0;
+}
+
+.admin-evidencia-info strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #214f3b;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-evidencia-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #849087;
+
+    font-size: 0.69rem;
+}
+
+.admin-evidencia-info > i {
+    flex-shrink: 0;
+
+    color: #9b7772;
+
+    font-size: 1rem;
+}
+
+.admin-evidencia-item.solucion
+.admin-evidencia-info > i {
+    color: #5f9781;
+}
+
+
+/* ==========================================================
+   33. SIN EVIDENCIAS
+========================================================== */
+
+.admin-evidencias-vacio {
+    min-height: 82px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 14px;
+
+    border: 1px dashed #dfd2cf;
+    border-radius: 11px;
+
+    background: #fffafa;
+
+    color: #78867e;
+}
+
+.admin-evidencias-vacio > i {
+    flex-shrink: 0;
+
+    font-size: 1.3rem;
+
+    color: #a84d44;
+}
+
+.admin-evidencias-vacio strong {
+    display: block;
+
+    color: #214f3b;
+
+    font-size: 0.82rem;
+}
+
+.admin-evidencias-vacio span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #849087;
+
+    font-size: 0.73rem;
+}
+
+.admin-evidencias-vacio.solucion {
+    border-color: #d7e4d5;
+
+    background: #f9fcf8;
+}
+
+.admin-evidencias-vacio.solucion > i {
+    color: #5f9781;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   EDITAR INCIDENCIA
+   EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   34. BLOQUE DE EDICIÓN
+========================================================== */
+
+.admin-editar-evidencias {
+    width: 100%;
+
+    padding: 16px;
+
+    border: 1px solid #dfe7e1;
+    border-radius: 14px;
+
+    background: #fafcfb;
+}
+
+.admin-editar-evidencias.problema {
+    border-color: #ead7d4;
+
+    background: #fffafa;
+}
+
+.admin-editar-evidencias.solucion {
+    border-color: #d8e6d6;
+
+    background: #f9fcf8;
+}
+
+
+/* ==========================================================
+   35. HEADER DE EDICIÓN
+========================================================== */
+
+.admin-editar-evidencias-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+.admin-editar-evidencias-header > div:first-child {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.admin-editar-evidencias-header > div:first-child > i {
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+}
+
+.admin-editar-evidencias.problema
+.admin-editar-evidencias-header
+> div:first-child
+> i {
+    background: #fce2de;
+    color: #a84d44;
+}
+
+.admin-editar-evidencias.solucion
+.admin-editar-evidencias-header
+> div:first-child
+> i {
+    background: #e7f2e3;
+    color: #4f744b;
+}
+
+.admin-editar-evidencias-header h6 {
+    margin: 0;
+
+    color: #214f3b;
+
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.admin-editar-evidencias-header span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7a8980;
+
+    font-size: 0.73rem;
+}
+
+
+/* ==========================================================
+   36. GRID DENTRO DE EDITAR
+========================================================== */
+
+.admin-evidencias-grid.editar {
+    margin-bottom: 15px;
+}
+
+
+/* ==========================================================
+   37. AGREGAR NUEVAS EVIDENCIAS
+========================================================== */
+
+.admin-agregar-evidencias {
+    margin-top: 14px;
+
+    padding-top: 14px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+}
+
+.admin-agregar-evidencias .form-label {
+    display: flex;
+    align-items: center;
+
     gap: 5px;
-    margin-top: 4px;
-    font-size: 11px;
-    color: #b3261e;
-    text-decoration: none;
-    font-weight: 600;
+
+    margin-bottom: 7px;
+
+    color: #214f3b;
+
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 
-.logout-sidebar:hover {
-    color: #7a1111;
+.admin-agregar-evidencias .form-control {
+    min-height: 44px;
+
+    border: 1px solid #ceddd3;
+    border-radius: 10px;
+
+    background: #ffffff;
 }
 
-/* estilos INCIDENCIAS */
+.admin-agregar-evidencias .form-control:focus {
+    border-color: #5f9781;
 
-    .incidencias-container {
-        background: #ffffff;
-        border-radius: 22px;
-        padding: 28px;
-        box-shadow: 0 10px 30px rgba(33, 79, 59, 0.08);
-        position: relative;
-        overflow: hidden;
-    }
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(95, 151, 129, 0.12);
+}
 
-    .incidencias-container::after {
-        content: "";
-        position: absolute;
-        top: -18px;
-        right: -18px;
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(155deg, var(--amarillo, #F6DE87), var(--verde-medio, #5f9781));
-        clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-        opacity: .12;
-        pointer-events: none;
-    }
+.admin-agregar-evidencias .form-text {
+    margin-top: 6px;
 
-    .incidencias-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 25px;
-        position: relative;
-        z-index: 1;
-    }
+    color: #829087;
 
-    .incidencias-header h2 {
-        color: var(--verde-oscuro, #214f3b);
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
+    font-size: 0.72rem;
+}
 
-    .incidencias-header h2 i {
-        color: var(--miel, #f0a000);
-    }
 
-    .incidencias-header p {
-        color: #6c757d;
-        margin: 0;
-    }
+/* ==========================================================
+   38. MODAL EDITAR
+========================================================== */
 
-    .btn-agregar-incidencia {
-        background: linear-gradient(135deg, var(--verde-medio, #5f9781), var(--verde-oscuro, #214f3b));
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 11px 20px;
-        font-weight: 600;
-        box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
-        transition:
-            transform .3s cubic-bezier(.34, 1.56, .64, 1),
-            box-shadow .25s ease,
-            background .3s ease;
-    }
+.modal-editar-incidencia
+.modal-dialog {
+    max-width: 900px;
+}
 
-    .btn-agregar-incidencia:hover {
-        background: linear-gradient(135deg, var(--verde-oscuro, #214f3b), var(--verde-medio, #5f9781));
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
-    }
 
-    .btn-agregar-incidencia:active {
-        transform: translateY(0) scale(.97);
-    }
+/* ==========================================================
+   39. FOOTER DEL MODAL
 
-    .filtros-incidencias {
-        background: #f7fbf8;
-        border: 1px solid #dcebe1;
-        border-radius: 18px;
-        padding: 20px;
-        margin-bottom: 25px;
-    }
+   Se quitó la regla que había aquí (agregaba un border-top):
+   la sección MODALES, más abajo en el archivo, define
+   ".modal-footer { border: none; ... }" con la misma
+   especificidad y aparece después, así que siempre ganaba y el
+   border-top nunca llegó a verse. Los modales de incidencias ya
+   se ven así (sin esa línea) desde siempre; se documenta para
+   que no se vuelva a agregar pensando que falta.
+========================================================== */
 
-    .filtros-incidencias label {
-        color: #214f3b;
-        font-size: 0.88rem;
-        font-weight: 600;
-        margin-bottom: 6px;
-    }
 
-    .filtros-incidencias .form-select,
-    .filtros-incidencias .form-control {
-        border-radius: 10px;
-        border: 1px solid #ceddd3;
-        min-height: 42px;
-    }
+/* ==========================================================
+   40. PAGINACIÓN
+========================================================== */
 
-    .tabla-incidencias {
-        overflow-x: auto;
-    }
+.paginacion-incidencias .page-link {
+    margin: 0 3px;
 
-    .tabla-incidencias table {
-        min-width: 1000px;
-    }
+    border-radius: 9px;
 
-    .tabla-incidencias thead th {
-        background: #f1f8f3;
-        color: #214f3b;
-        border-bottom: none;
-        font-size: 0.88rem;
-        white-space: nowrap;
-        padding: 15px;
-    }
+    color: #214f3b;
 
-    .tabla-incidencias tbody td {
-        vertical-align: middle;
-        padding: 15px;
-        color: #34473e;
-    }
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
 
-    .entidad-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 7px 11px;
-        border-radius: 20px;
-        font-size: 0.82rem;
-        font-weight: 600;
-    }
+.paginacion-incidencias .page-link:hover {
+    background: #f1f8f3;
 
-    .entidad-apicultor {
-        background: #e9f2ff;
-        color: #2f65a7;
-    }
+    color: #214f3b;
+}
 
-    .entidad-apiario {
-        background: #e6f6eb;
-        color: #287547;
-    }
+.paginacion-incidencias
+.page-item.active
+.page-link {
+    border-color: #214f3b;
 
-    .entidad-colmena {
-        background: #fff5d8;
-        color: #8c6812;
-    }
+    background: #214f3b;
 
-    .badge-prioridad,
-    .badge-estado {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 7px 11px;
-        border-radius: 20px;
-        font-size: 0.80rem;
-        font-weight: 600;
-    }
+    color: #ffffff;
+}
 
-    .badge-prioridad::before {
-        content: "";
-        width: 7px;
-        height: 7px;
-        flex-shrink: 0;
-        clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-        background: currentColor;
-    }
 
-    .prioridad-baja {
-        background: #dff5e5;
-        color: #287547;
-    }
+/* ==========================================================
+   41. SCROLLBAR TABLA
+========================================================== */
 
-    .prioridad-media {
-        background: #fff4ca;
-        color: #8c6812;
-    }
+.tabla-incidencias {
+    scrollbar-width: thin;
+    scrollbar-color: #aac4b4 transparent;
+}
 
-    .prioridad-alta {
-        background: #ffe2cc;
-        color: #a44e14;
-    }
+.tabla-incidencias::-webkit-scrollbar {
+    height: 7px;
+}
+
+.tabla-incidencias::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabla-incidencias::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+
+    background: #aac4b4;
+}
+
+
+/* ==========================================================
+   42. ACCESIBILIDAD - MENOS ANIMACIONES
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
 
     .prioridad-critica {
-        background: #ffd9dc;
-        color: #a72330;
-        animation: pulsoPrioridadCritica 1.8s ease-in-out infinite;
+        animation: none;
     }
 
-    @keyframes pulsoPrioridadCritica {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(167, 35, 48, .35); }
-        50%      { box-shadow: 0 0 0 5px rgba(167, 35, 48, 0); }
+    .btn-agregar-incidencia,
+    .btn-accion,
+    .admin-evidencia-item,
+    .admin-evidencia-imagen img {
+        transition: none;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        .prioridad-critica {
-            animation: none;
-        }
+}
+
+
+/* ==========================================================
+   43. RESPONSIVE - 992px
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .incidencias-header {
+        align-items: flex-start;
     }
 
-    .estado-pendiente {
-        background: #fff4ca;
-        color: #8c6812;
+
+    .admin-evidencias-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
     }
 
-    .estado-proceso {
-        background: #dcecff;
-        color: #245e9e;
+}
+
+
+/* ==========================================================
+   44. RESPONSIVE - 768px
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .incidencias-container {
+        padding: 18px;
     }
 
-    .estado-resuelta {
-        background: #dff5e5;
-        color: #287547;
+
+    /* ======================================================
+       ENCABEZADO
+    ====================================================== */
+
+    .incidencias-header {
+        align-items: stretch;
+
+        flex-direction: column;
     }
 
-    .acciones-incidencia {
-        display: flex;
-        justify-content: center;
-        gap: 6px;
+
+    .incidencias-header > .d-flex {
+        width: 100%;
+
+        flex-wrap: wrap;
     }
 
-    .btn-accion {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
-        border: none;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
+
+    .btn-agregar-incidencia {
+        width: 100%;
     }
 
-    .btn-ver {
-        background: #e9f2ff;
-        color: #2f65a7;
+
+    /* ======================================================
+       EVIDENCIAS
+    ====================================================== */
+
+    .admin-evidencias-header,
+    .admin-editar-evidencias-header {
+        align-items: flex-start;
     }
 
-    .btn-editar {
-        background: #fff4ca;
-        color: #8c6812;
+
+    .admin-evidencias-grid {
+        grid-template-columns: 1fr;
     }
 
-    .btn-eliminar {
-        background: #ffdfe2;
-        color: #a72330;
+
+    .admin-evidencia-imagen {
+        aspect-ratio: 16 / 10;
     }
 
-    .modal-content {
-        border: none;
-        border-radius: 20px;
-        overflow: hidden;
+}
+
+
+/* ==========================================================
+   45. RESPONSIVE - 576px
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .incidencias-container {
+        padding: 14px;
+
+        border-radius: 16px;
     }
+
+
+    /* ======================================================
+       FILTROS
+    ====================================================== */
+
+    .filtros-incidencias {
+        padding: 14px;
+
+        border-radius: 14px;
+    }
+
+
+    /* ======================================================
+       MODAL
+    ====================================================== */
 
     .modal-header-incidencia {
-        background: linear-gradient(135deg, #214f3b, #5f9781);
-        color: white;
-        border-bottom: none;
-        padding: 20px 24px;
+        padding: 16px;
     }
+
 
     .modal-body {
-        padding: 24px;
+        padding: 16px;
     }
 
-    .modal-body label {
-        color: #214f3b;
-        font-weight: 600;
-        margin-bottom: 6px;
+
+    /* ======================================================
+       HEADER EVIDENCIAS
+    ====================================================== */
+
+    .admin-evidencias-header,
+    .admin-editar-evidencias-header {
+        flex-direction: column;
+
+        gap: 10px;
     }
 
-    .modal-body .form-control,
-    .modal-body .form-select {
-        border-radius: 10px;
-        border: 1px solid #ceddd3;
+
+    .admin-evidencias-contador {
+        align-self: flex-start;
     }
 
-    .imagen-incidencia {
-        width: 100%;
-        max-height: 280px;
-        object-fit: cover;
-        border-radius: 14px;
-    }
 
-    .sin-imagen {
-        background: #f1f8f3;
-        border-radius: 14px;
-        padding: 35px;
-        text-align: center;
-        color: #789085;
-    }
+    /* ======================================================
+       BLOQUES
+    ====================================================== */
 
-    .detalle-item {
-        background: #f7fbf8;
+    .admin-evidencias-bloque,
+    .admin-editar-evidencias {
+        padding: 12px;
+
         border-radius: 12px;
-        padding: 12px 15px;
-        height: 100%;
     }
 
-    .detalle-item small {
-        color: #708178;
-        display: block;
-        margin-bottom: 3px;
+
+    /* ======================================================
+       EVIDENCIA
+    ====================================================== */
+
+    .admin-evidencia-imagen {
+        aspect-ratio: 4 / 3;
     }
 
-    .detalle-item strong {
-        color: #214f3b;
+
+    .admin-evidencia-info {
+        padding: 9px;
     }
 
-    .paginacion-incidencias .page-link {
-        color: #214f3b;
-        border-radius: 9px;
-        margin: 0 3px;
+
+    /* ======================================================
+       FOOTER MODAL
+    ====================================================== */
+
+    .modal-footer {
+        flex-direction: column-reverse;
+
+        align-items: stretch;
     }
 
-    .paginacion-incidencias .page-item.active .page-link {
-        background: #214f3b;
-        border-color: #214f3b;
-        color: white;
+
+    .modal-footer .btn {
+        width: 100%;
     }
 
-    @media (max-width: 768px) {
-        .incidencias-container {
-            padding: 18px;
-        }
+}
 
-        .incidencias-header {
-            align-items: flex-start;
-            flex-direction: column;
-        }
 
-        .btn-agregar-incidencia {
-            width: 100%;
-        }
+/* ==========================================================
+   46. RESPONSIVE - 400px
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .admin-evidencias-header-info {
+        align-items: flex-start;
     }
 
+
+    .admin-evidencias-icono {
+        width: 36px;
+        height: 36px;
+    }
+
+
+    .admin-editar-evidencias-header
+    > div:first-child {
+        align-items: flex-start;
+    }
+
+
+    .admin-evidencia-numero {
+        min-width: 23px;
+        height: 23px;
+    }
+
+}
+
+/*==================================================
+MÓDULO APICULTORES
+==================================================*/
 
 /* =========================================================
    TABLA DE APICULTORES
@@ -2426,10 +2738,8 @@ PAGINADOR
 
 }
 
-/* AGREGAR APICULTOR*/
-
 /* =========================================================
-   MODAL DE APICULTORES
+   MODAL AGREGAR APICULTOR
 ========================================================= */
 
 .modal-apicultor {
@@ -2442,17 +2752,16 @@ PAGINADOR
 .modal-header-apicultor {
     padding: 22px 28px;
     border-bottom: 0;
-    background:
-        linear-gradient(
-            135deg,
-            var(--verde-oscuro),
-            var(--verde-medio)
-        );
-    color: #ffffff;
+    background: #E8F7E9;
+    color: var(--verde-oscuro);
+}
+
+.modal-header-apicultor .modal-title {
+    color: var(--verde-oscuro);
 }
 
 .modal-header-apicultor p {
-    color: rgba(255, 255, 255, 0.78);
+    color: #5c7669;
     font-size: 0.85rem;
 }
 
@@ -2463,10 +2772,10 @@ PAGINADOR
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(33, 79, 59, 0.14);
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.13);
-    color: #ffffff;
+    background: #ffffff;
+    color: var(--verde-medio);
     font-size: 1.4rem;
 }
 
@@ -2923,31 +3232,27 @@ Esto permite que modal-body tenga un scroll independiente.
 ========================================================= */
 
 #modalAgregarApicultor .modal-header-apicultor {
-    background: linear-gradient(
-        135deg,
-        #214f3b 0%,
-        #5f9781 100%
-    ) !important;
+    background: #E8F7E9 !important;
 }
 
 #modalAgregarApicultor .modal-header-apicultor .modal-title,
-#modalAgregarApicultor .modal-header-apicultor h4,
-#modalAgregarApicultor .modal-header-apicultor p {
-    color: #ffffff !important;
+#modalAgregarApicultor .modal-header-apicultor h4 {
+    color: var(--verde-oscuro) !important;
 }
 
 #modalAgregarApicultor .modal-header-apicultor p {
-    opacity: 0.9;
+    color: #5c7669 !important;
+    opacity: 1;
 }
 
 #modalAgregarApicultor .modal-icono-apicultor,
 #modalAgregarApicultor .modal-icono-apicultor i {
-    color: #ffffff !important;
+    color: var(--verde-medio) !important;
 }
 
 #modalAgregarApicultor .modal-header-apicultor .btn-close {
     opacity: 1;
-    filter: brightness(0) invert(1);
+    filter: none;
 }
 
 
@@ -3056,23 +3361,19 @@ Esto permite que modal-body tenga un scroll independiente.
 .modal-header-detalle-apicultor {
     padding: 22px 26px;
     border-bottom: 0;
-    background:
-        linear-gradient(
-            135deg,
-            #214f3b 0%,
-            #5f9781 100%
-        );
-    color: #ffffff;
+    background: #E8F7E9;
+    color: var(--verde-oscuro);
 }
 
 .modal-header-detalle-apicultor .modal-title,
 .modal-header-detalle-apicultor p {
-    color: #ffffff !important;
+    color: var(--verde-oscuro) !important;
 }
 
 .modal-header-detalle-apicultor p {
+    color: #5c7669 !important;
     font-size: 0.82rem;
-    opacity: 0.86;
+    opacity: 1;
 }
 
 .icono-header-detalle-apicultor {
@@ -3082,10 +3383,10 @@ Esto permite que modal-body tenga un scroll independiente.
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(33, 79, 59, 0.14);
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
+    background: #ffffff;
+    color: var(--verde-medio);
     font-size: 1.35rem;
 }
 
@@ -3782,13 +4083,13 @@ Esto permite que modal-body tenga un scroll independiente.
 }
 
 #modalEditarApicultor .modal-header-apicultor .modal-title,
-#modalEditarApicultor .modal-header-apicultor p,
 #modalEditarApicultor .modal-header-apicultor i {
-    color: #ffffff !important;
+    color: var(--verde-oscuro) !important;
 }
 
 #modalEditarApicultor .modal-header-apicultor p {
-    opacity: 0.9;
+    color: #5c7669 !important;
+    opacity: 1;
 }
 
 
@@ -3924,24 +4225,20 @@ Esto permite que modal-body tenga un scroll independiente.
 .modal-header-eliminar-apicultor {
     padding: 20px 24px;
     border-bottom: 0;
-    background:
-        linear-gradient(
-            135deg,
-            #a83242 0%,
-            #d95b68 100%
-        );
-    color: #ffffff;
+    background: #FDECEC !important;
+    color: var(--rojo);
 }
 
 .modal-header-eliminar-apicultor .modal-title,
 .modal-header-eliminar-apicultor p,
 .modal-header-eliminar-apicultor i {
-    color: #ffffff !important;
+    color: var(--rojo) !important;
 }
 
 .modal-header-eliminar-apicultor p {
+    color: #a34a53 !important;
     font-size: 0.78rem;
-    opacity: 0.88;
+    opacity: 1;
 }
 
 .icono-header-eliminar {
@@ -3951,9 +4248,9 @@ Esto permite que modal-body tenga un scroll independiente.
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(220, 53, 69, 0.25);
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.14);
+    background: #ffffff;
     font-size: 1.25rem;
 }
 
@@ -4996,7 +5293,3009 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 }
 
 /* =========================================================
-   AGENDA
+   ANIMACIONES DEL MÓDULO APICULTORES
+========================================================= */
+
+/* ---------- FOTO DE PERFIL: leve "respiro" al pasar el mouse ---------- */
+
+.foto-apicultor,
+.foto-apicultor-sin-imagen {
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+
+tr:hover .foto-apicultor,
+tr:hover .foto-apicultor-sin-imagen,
+.tarjeta-apicultor-card:hover .foto-apicultor,
+.tarjeta-apicultor-card:hover .foto-apicultor-sin-imagen {
+    transform: scale(1.06);
+    box-shadow: 0 8px 18px rgba(33, 79, 59, 0.18);
+}
+
+/* ---------- PUNTO DE ESTADO: pulso "en línea" para apicultores activos ---------- */
+
+.estado-activo {
+    animation: pulsoApicultorActivo 2.2s ease-in-out infinite;
+}
+
+@keyframes pulsoApicultorActivo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(46, 184, 92, .45); }
+    50%      { box-shadow: 0 0 0 5px rgba(46, 184, 92, 0); }
+}
+
+/* ---------- ICONOS DE CONTACTO: rebote suave al pasar el mouse ---------- */
+
+.icono-contacto {
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background-color .25s ease, color .25s ease;
+}
+
+.dato-contacto:hover .icono-contacto {
+    transform: scale(1.15) rotate(-6deg);
+    background: var(--verde-medio, #5f9781);
+    color: #ffffff;
+}
+
+/* Nota: la entrada de los modales (agregar/editar/detalle/eliminar)
+   ya la cubre la transición global .modal.fade .modal-dialog
+   (sección "RONDA 2 DE MEJORAS — APIARIOS", más abajo en este mismo
+   archivo) y el escalonado interno lo aplica apicultores_vista.js
+   con la clase .anim-entrada-modal — no se duplica aquí. */
+
+/* ---------- MODAL ELIMINAR: aviso con más énfasis ---------- */
+
+.icono-advertencia-eliminar {
+    animation: pulsoAdvertenciaEliminar 1.8s ease-in-out infinite;
+}
+
+@keyframes pulsoAdvertenciaEliminar {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+}
+
+.alerta-eliminacion-permitida,
+.alerta-eliminacion-bloqueada {
+    animation: entraAlertaEliminacion .3s ease both;
+}
+
+@keyframes entraAlertaEliminacion {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .foto-apicultor,
+    .foto-apicultor-sin-imagen,
+    .icono-contacto {
+        transition: none !important;
+    }
+
+    .estado-activo,
+    .icono-advertencia-eliminar {
+        animation: none !important;
+    }
+
+    .alerta-eliminacion-permitida,
+    .alerta-eliminacion-bloqueada {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+}
+
+/* ---------- ENCABEZADO DE APICULTORES — FONDO CON POLEN FLOTANTE ----------
+   (mismo recurso visual de Apiarios/Colmenas/Mantenimientos:
+   .dashboard-fondo-panal + .particulas-flotantes, reutilizado
+   aquí sin duplicar reglas) ---------- */
+
+.encabezado-apicultores-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+}
+
+/* El encabezado es bajito (~90px) y el recorrido original de las
+   chispas (-560px) queda casi todo cortado por el overflow:hidden
+   del contenedor, así que aquí se ve casi apagado. Se le da a las
+   chispas de este encabezado un recorrido corto, pensado para esa
+   altura, sin tocar la animación genérica que usan los demás. */
+
+.encabezado-apicultores-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
+@keyframes chispaFogataEncabezado {
+    0%   { transform: translate(0, 0) scale(.6); opacity: 0; }
+    12%  { opacity: 1; }
+    55%  { transform: translate(calc(var(--deriva, 20px) * .6), -60px) scale(1); opacity: .9; }
+    100% { transform: translate(var(--deriva, 20px), -100px) scale(.4); opacity: 0; }
+}
+
+/*==================================================
+BOTONES
+==================================================*/
+
+.btn-panel {
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-weight: 600;
+    transition: .3s ease;
+}
+
+.btn-agregar {
+    background: var(--verde-medio);
+    color: white;
+}
+
+.btn-agregar:hover {
+    background: var(--verde-oscuro);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-guardar {
+    background: var(--verde-medio);
+    color: white;
+}
+
+.btn-guardar:hover {
+    background: var(--verde-oscuro);
+    color: white;
+}
+
+.btn-cancelar {
+    border: 1px solid var(--verde-medio);
+    color: var(--verde-oscuro);
+    background: transparent;
+}
+
+.btn-cancelar:hover {
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+}
+
+.btn-eliminar {
+    background: var(--rojo);
+    color: white;
+}
+
+.btn-eliminar:hover {
+    background: #b02a37;
+    color: white;
+}
+
+/*==================================================
+TABLAS
+==================================================*/
+
+.tabla-card {
+    background: var(--blanco);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: var(--sombra);
+}
+
+.table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    color: var(--verde-oscuro);
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    background: #f6faf6;
+    border-bottom: 2px solid var(--verde-claro);
+    padding: 14px;
+    white-space: nowrap;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.table tbody td {
+    padding: 14px;
+    vertical-align: middle;
+    color: var(--texto);
+    border-bottom: 1px solid #eef2ee;
+}
+
+.table tbody tr {
+    transition: background-color .25s ease, box-shadow .25s ease;
+}
+
+.table tbody tr td:first-child {
+    position: relative;
+    border-left: 3px solid transparent;
+    transition: border-color .25s ease;
+}
+
+.table tbody tr:hover {
+    background: #f2fbf4;
+    box-shadow: inset 0 0 0 9999px rgba(95, 151, 129, .04);
+}
+
+.table tbody tr:hover td:first-child {
+    border-left-color: var(--verde-medio);
+}
+
+.table tbody tr td img {
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+
+.table tbody tr:hover td img {
+    transform: scale(1.08);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .table tbody tr,
+    .table tbody tr td:first-child,
+    .table tbody tr td img {
+        transition: none !important;
+    }
+
+    .table tbody tr:hover td img {
+        transform: none !important;
+    }
+
+}
+
+.acciones {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-accion {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+
+.btn-accion i {
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-ver {
+    background: #e7f1ff;
+    color: #0d6efd;
+}
+
+.btn-editar {
+    background: #fff6d6;
+    color: #b98b00;
+}
+
+.btn-borrar {
+    background: #fdecec;
+    color: var(--rojo);
+}
+
+.btn-accion:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(33, 79, 59, .15);
+}
+
+.btn-accion:hover i {
+    transform: scale(1.15);
+}
+
+.btn-accion:active {
+    transform: translateY(0) scale(.94);
+}
+
+/*==================================================
+FORMULARIOS
+==================================================*/
+
+.form-label {
+    color: var(--verde-oscuro);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid rgba(33, 79, 59, .2);
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 .20rem rgba(95, 151, 129, .20);
+}
+
+/*==================================================
+MODALES
+==================================================*/
+
+.modal-content {
+    border-radius: 22px;
+    border: none;
+    overflow: hidden;
+    background: #F4F5ED;
+}
+
+.modal-header {
+    border: none;
+    background: #E8F7E9;
+    padding: 22px 26px;
+}
+
+.modal-header h4 {
+    color: var(--verde-oscuro);
+    font-weight: 700;
+}
+
+.modal-header p {
+    font-size: 14px;
+}
+
+.modal-body {
+    padding: 26px;
+}
+
+.modal-footer {
+    border: none;
+    padding: 0 26px 24px;
+}
+
+.modal-info-box {
+    background: white;
+    border-radius: 15px;
+    padding: 16px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.06);
+}
+
+.modal-info-box.verde {
+    background: #E8F7E9;
+}
+
+.modal-info-box small {
+    color: var(--gris-texto);
+    font-weight: 500;
+}
+
+.modal-info-box h5 {
+    margin: 5px 0 0;
+    color: var(--texto);
+}
+
+.modal-delete-header {
+    background: #FDECEC;
+}
+
+.alerta-eliminar {
+    background: #FDECEC;
+    border: 1px solid rgba(220, 53, 69, .45);
+    color: var(--rojo);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+/* =========================================================
+   MODAL ELIMINAR APIARIO
+========================================================= */
+
+.modal-eliminar-apiario {
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.modal-header-eliminar-apiario {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-apiario .modal-title,
+.modal-header-eliminar-apiario p,
+.modal-header-eliminar-apiario i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-apiario p {
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO DEL HEADER
+========================================================= */
+
+.icono-header-eliminar-apiario {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.contenido-eliminar-apiario {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO DE ADVERTENCIA
+========================================================= */
+
+.icono-advertencia-eliminar-apiario {
+
+    width: 78px;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        5px
+        auto
+        18px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 2rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO Y DESCRIPCIÓN
+========================================================= */
+
+.contenido-eliminar-apiario h5 {
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-apiario > p {
+
+    margin-bottom: 14px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+}
+
+
+/* =========================================================
+   NOMBRE DEL APIARIO
+========================================================= */
+
+.nombre-apiario-eliminar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        17px;
+
+    border-radius: 12px;
+
+    background: #f4f7f5;
+
+    color:
+        var(--verde-oscuro);
+
+}
+
+
+.nombre-apiario-eliminar i {
+
+    color:
+        var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida,
+.alerta-eliminacion-apiario-bloqueada {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin-top: 22px;
+
+    padding: 14px;
+
+    border-radius: 13px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   PERMITIDO
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+/* =========================================================
+   BLOQUEADO
+========================================================= */
+
+.alerta-eliminacion-apiario-bloqueada {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+/* =========================================================
+   ICONOS DE ALERTA
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida > i,
+.alerta-eliminacion-apiario-bloqueada > i {
+
+    margin-top: 2px;
+
+    font-size: 1rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DE ALERTAS
+========================================================= */
+
+.alerta-eliminacion-apiario-permitida div,
+.alerta-eliminacion-apiario-bloqueada div {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.alerta-eliminacion-apiario-permitida strong,
+.alerta-eliminacion-apiario-bloqueada strong {
+
+    font-size: 0.8rem;
+
+}
+
+
+.alerta-eliminacion-apiario-permitida span,
+.alerta-eliminacion-apiario-bloqueada span {
+
+    margin-top: 3px;
+
+    font-size: 0.72rem;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-apiario {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-apiario,
+.btn-confirmar-eliminacion-apiario {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CANCELAR
+========================================================= */
+
+.btn-cancelar-eliminacion-apiario {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-apiario:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR ELIMINACIÓN
+========================================================= */
+
+.btn-confirmar-eliminacion-apiario {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-apiario:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   BOTÓN DESHABILITADO
+========================================================= */
+
+.btn-confirmar-eliminacion-apiario:disabled,
+.btn-confirmar-eliminacion-apiario.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+/* =========================================================
+   ANCHO DEL MODAL
+========================================================= */
+
+.modal-dialog-eliminar-apiario {
+
+    max-width: 680px;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DEL BLOQUEO
+========================================================= */
+
+.contenido-bloqueo-eliminar-apiario {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+/* =========================================================
+   LISTA DE MOTIVOS
+========================================================= */
+
+.lista-bloqueos-eliminar-apiario {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+
+    margin:
+        13px
+        0
+        8px;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+.item-bloqueo-eliminar-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 43px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(128, 99, 0, 0.16);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.62);
+
+}
+
+
+.item-bloqueo-eliminar-apiario i {
+
+    flex-shrink: 0;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(128, 99, 0, 0.10);
+
+    font-size: 0.8rem;
+
+}
+
+
+.item-bloqueo-eliminar-apiario span {
+
+    margin: 0;
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   NOTA INFERIOR
+========================================================= */
+
+.nota-bloqueo-eliminar-apiario {
+
+    display: block;
+
+    margin-top: 10px;
+
+    padding-top: 9px;
+
+    border-top:
+        1px solid
+        rgba(128, 99, 0, 0.14);
+
+    font-size: 0.69rem;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-apiario {
+
+        max-width: none;
+
+    }
+
+
+    .lista-bloqueos-eliminar-apiario {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-header-eliminar-apiario {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-footer-eliminar-apiario {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-apiario,
+    .btn-confirmar-eliminacion-apiario {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-apiario {
+
+        width: 68px;
+
+        height: 68px;
+
+        font-size: 1.7rem;
+
+    }
+
+}
+
+/* =========================================================
+   MODAL ELIMINAR COLMENA
+========================================================= */
+
+.modal-dialog-eliminar-colmena {
+
+    max-width: 680px;
+
+}
+
+
+.modal-eliminar-colmena {
+
+    overflow: hidden;
+
+    border: 0;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.modal-header-eliminar-colmena {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-colmena .modal-title,
+.modal-header-eliminar-colmena p,
+.modal-header-eliminar-colmena i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-colmena p {
+
+    margin-bottom: 0;
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO DEL HEADER
+========================================================= */
+
+.icono-header-eliminar-colmena {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   CUERPO
+========================================================= */
+
+.modal-body-eliminar-colmena {
+
+    padding:
+        25px
+        28px;
+
+}
+
+
+.contenido-eliminar-colmena {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO PRINCIPAL
+========================================================= */
+
+.icono-advertencia-eliminar-colmena {
+
+    width: 78px;
+
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        3px
+        auto
+        18px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 2rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO Y TEXTO
+========================================================= */
+
+.contenido-eliminar-colmena h5 {
+
+    margin-bottom: 7px;
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-colmena > p {
+
+    max-width: 520px;
+
+    margin:
+        0
+        auto
+        16px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   IDENTIFICADOR DE COLMENA
+========================================================= */
+
+.nombre-colmena-eliminar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        10px
+        17px;
+
+    border-radius: 12px;
+
+    background: #f4f7f5;
+
+    color:
+        var(--verde-oscuro);
+
+    font-weight: 700;
+
+}
+
+
+.nombre-colmena-eliminar i {
+
+    color:
+        var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida,
+.alerta-eliminacion-colmena-bloqueada {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 22px;
+
+    padding:
+        16px
+        17px;
+
+    border-radius: 14px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   ELIMINACIÓN PERMITIDA
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+/* =========================================================
+   ELIMINACIÓN BLOQUEADA
+========================================================= */
+
+.alerta-eliminacion-colmena-bloqueada {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+/* =========================================================
+   ICONOS DE ALERTA
+========================================================= */
+
+.alerta-eliminacion-colmena-permitida > i,
+.alerta-eliminacion-colmena-bloqueada > i {
+
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    font-size: 1.05rem;
+
+}
+
+
+/* =========================================================
+   CONTENIDO DE ALERTA
+========================================================= */
+
+.contenido-alerta-eliminar-colmena {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.contenido-alerta-eliminar-colmena strong {
+
+    display: block;
+
+    font-size: 0.82rem;
+
+}
+
+
+.contenido-alerta-eliminar-colmena > span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 0.74rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   LISTA DE MOTIVOS
+========================================================= */
+
+.lista-bloqueos-eliminar-colmena {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 9px;
+
+    margin:
+        14px
+        0
+        8px;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+.item-bloqueo-eliminar-colmena {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-height: 46px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(128, 99, 0, 0.16);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.58);
+
+}
+
+
+.item-bloqueo-eliminar-colmena i {
+
+    flex-shrink: 0;
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(128, 99, 0, 0.10);
+
+    font-size: 0.82rem;
+
+}
+
+
+.item-bloqueo-eliminar-colmena div {
+
+    min-width: 0;
+
+}
+
+
+.item-bloqueo-eliminar-colmena strong {
+
+    display: block;
+
+    color: #685200;
+
+    font-size: 0.77rem;
+
+}
+
+
+.item-bloqueo-eliminar-colmena small {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color: #8a750d;
+
+    font-size: 0.68rem;
+
+}
+
+
+/* =========================================================
+   NOTA DE CONSERVACIÓN
+========================================================= */
+
+.nota-historial-eliminar-colmena {
+
+    display: block;
+
+    margin-top: 11px;
+
+    padding-top: 10px;
+
+    border-top:
+        1px solid
+        rgba(128, 99, 0, 0.14);
+
+    font-size: 0.71rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-colmena {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-colmena,
+.btn-confirmar-eliminacion-colmena {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CANCELAR
+========================================================= */
+
+.btn-cancelar-eliminacion-colmena {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-colmena:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR
+========================================================= */
+
+.btn-confirmar-eliminacion-colmena {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-colmena:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   ELIMINAR BLOQUEADO
+========================================================= */
+
+.btn-confirmar-eliminacion-colmena:disabled,
+.btn-confirmar-eliminacion-colmena.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-colmena {
+
+        max-width: none;
+
+    }
+
+
+    .modal-header-eliminar-colmena {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-body-eliminar-colmena {
+
+        padding:
+            21px
+            18px;
+
+    }
+
+
+    .modal-footer-eliminar-colmena {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-colmena,
+    .btn-confirmar-eliminacion-colmena {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-colmena {
+
+        width: 68px;
+
+        height: 68px;
+
+        font-size: 1.7rem;
+
+    }
+
+
+    .lista-bloqueos-eliminar-colmena {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+/* =========================================================
+   MODAL ELIMINAR MANTENIMIENTO
+========================================================= */
+
+.modal-dialog-eliminar-mantenimiento {
+
+    max-width: 680px;
+
+}
+
+
+.modal-eliminar-mantenimiento {
+
+    overflow: hidden;
+
+    border: 0;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.modal-header-eliminar-mantenimiento {
+
+    padding:
+        20px
+        24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #d95b68 100%
+        );
+
+    color: #ffffff;
+
+}
+
+
+.modal-header-eliminar-mantenimiento .modal-title,
+.modal-header-eliminar-mantenimiento p,
+.modal-header-eliminar-mantenimiento i {
+
+    color: #ffffff !important;
+
+}
+
+
+.modal-header-eliminar-mantenimiento p {
+
+    margin-bottom: 0;
+
+    font-size: 0.78rem;
+
+    opacity: 0.88;
+
+}
+
+
+/* =========================================================
+   ICONO HEADER
+========================================================= */
+
+.icono-header-eliminar-mantenimiento {
+
+    width: 47px;
+
+    min-width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.modal-body-eliminar-mantenimiento {
+
+    padding:
+        25px
+        28px;
+
+}
+
+
+.contenido-eliminar-mantenimiento {
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   ICONO PRINCIPAL
+========================================================= */
+
+.icono-advertencia-eliminar-mantenimiento {
+
+    width: 76px;
+
+    height: 76px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        2px
+        auto
+        17px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 1.9rem;
+
+}
+
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.contenido-eliminar-mantenimiento h5 {
+
+    margin-bottom: 7px;
+
+    color: #35483f;
+
+    font-weight: 750;
+
+}
+
+
+.contenido-eliminar-mantenimiento > p {
+
+    max-width: 520px;
+
+    margin:
+        0
+        auto
+        18px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN DEL MANTENIMIENTO
+========================================================= */
+
+.resumen-eliminar-mantenimiento {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+.item-resumen-eliminar-mantenimiento {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-height: 58px;
+
+    padding:
+        11px
+        13px;
+
+    border:
+        1px solid
+        #e5ebe7;
+
+    border-radius: 12px;
+
+    background: #f7f9f8;
+
+    text-align: left;
+
+}
+
+
+.item-resumen-eliminar-mantenimiento > i {
+
+    flex-shrink: 0;
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #e8f1ec;
+
+    color:
+        var(--verde-medio);
+
+    font-size: 0.95rem;
+
+}
+
+
+.item-resumen-eliminar-mantenimiento div {
+
+    min-width: 0;
+
+}
+
+
+.item-resumen-eliminar-mantenimiento small {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #89958f;
+
+    font-size: 0.66rem;
+
+}
+
+
+.item-resumen-eliminar-mantenimiento strong {
+
+    display: block;
+
+    overflow: hidden;
+
+    color: #405148;
+
+    font-size: 0.78rem;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminar-mantenimiento-permitido,
+.alerta-eliminar-mantenimiento-bloqueado {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 21px;
+
+    padding:
+        15px
+        16px;
+
+    border-radius: 13px;
+
+    text-align: left;
+
+}
+
+
+.alerta-eliminar-mantenimiento-permitido {
+
+    border:
+        1px solid
+        #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+
+}
+
+
+.alerta-eliminar-mantenimiento-bloqueado {
+
+    border:
+        1px solid
+        #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+
+}
+
+
+.alerta-eliminar-mantenimiento-permitido > i,
+.alerta-eliminar-mantenimiento-bloqueado > i {
+
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    font-size: 1rem;
+
+}
+
+
+.alerta-eliminar-mantenimiento-permitido strong,
+.alerta-eliminar-mantenimiento-bloqueado strong {
+
+    display: block;
+
+    font-size: 0.8rem;
+
+}
+
+
+.alerta-eliminar-mantenimiento-permitido span,
+.alerta-eliminar-mantenimiento-bloqueado span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 0.72rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   AVISO DE EVIDENCIAS
+========================================================= */
+
+.aviso-evidencias-eliminar-mantenimiento {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 11px;
+
+    padding:
+        9px
+        10px;
+
+    border-radius: 9px;
+
+    background:
+        rgba(255, 255, 255, 0.6);
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-mantenimiento {
+
+    padding:
+        17px
+        24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-mantenimiento,
+.btn-confirmar-eliminacion-mantenimiento {
+
+    min-height: 41px;
+
+    padding:
+        9px
+        17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+}
+
+
+/* CANCELAR */
+
+.btn-cancelar-eliminacion-mantenimiento {
+
+    border:
+        1px solid
+        #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+
+}
+
+
+.btn-cancelar-eliminacion-mantenimiento:hover {
+
+    background: #eef3f0;
+
+    color: #3e5147;
+
+}
+
+
+/* ELIMINAR */
+
+.btn-confirmar-eliminacion-mantenimiento {
+
+    border:
+        1px solid
+        #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+
+}
+
+
+.btn-confirmar-eliminacion-mantenimiento:hover {
+
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+
+}
+
+
+/* BLOQUEADO */
+
+.btn-confirmar-eliminacion-mantenimiento:disabled,
+.btn-confirmar-eliminacion-mantenimiento.disabled {
+
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-mantenimiento {
+
+        max-width: none;
+
+    }
+
+
+    .modal-header-eliminar-mantenimiento {
+
+        padding:
+            17px
+            18px;
+
+    }
+
+
+    .modal-body-eliminar-mantenimiento {
+
+        padding:
+            21px
+            18px;
+
+    }
+
+
+    .resumen-eliminar-mantenimiento {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .modal-footer-eliminar-mantenimiento {
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding:
+            14px
+            18px;
+
+    }
+
+
+    .btn-cancelar-eliminacion-mantenimiento,
+    .btn-confirmar-eliminacion-mantenimiento {
+
+        width: 100%;
+
+    }
+
+
+    .icono-advertencia-eliminar-mantenimiento {
+
+        width: 66px;
+
+        height: 66px;
+
+        font-size: 1.65rem;
+
+    }
+
+}
+
+/* =========================================================
+   MODAL ELIMINAR INCIDENCIA
+========================================================= */
+
+.modal-dialog-eliminar-incidencia {
+    max-width: 680px;
+}
+
+
+.modal-eliminar-incidencia {
+    overflow: hidden;
+    border: 0;
+    border-radius: 20px;
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 65px
+        rgba(81, 28, 35, 0.25);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.modal-header-eliminar-incidencia {
+    padding: 20px 24px;
+
+    border-bottom: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a83242 0%,
+            #b8404e 100%
+        );
+
+    color: #ffffff;
+}
+
+
+.modal-header-eliminar-incidencia .modal-title,
+.modal-header-eliminar-incidencia p,
+.modal-header-eliminar-incidencia i {
+    color: #ffffff !important;
+}
+
+
+.modal-header-eliminar-incidencia p {
+    margin-bottom: 0;
+    font-size: 0.78rem;
+    opacity: 0.88;
+}
+
+
+/* =========================================================
+   ICONO HEADER
+========================================================= */
+
+.icono-header-eliminar-incidencia {
+    width: 47px;
+    min-width: 47px;
+    height: 47px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    font-size: 1.25rem;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.modal-body-eliminar-incidencia {
+    padding: 25px 28px;
+}
+
+
+.contenido-eliminar-incidencia {
+    text-align: center;
+}
+
+
+/* =========================================================
+   ICONO PRINCIPAL
+========================================================= */
+
+.icono-advertencia-eliminar-incidencia {
+    width: 76px;
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin:
+        2px
+        auto
+        17px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+
+    color: #d34c5a;
+
+    font-size: 1.9rem;
+}
+
+
+/* =========================================================
+   TÍTULOS
+========================================================= */
+
+.contenido-eliminar-incidencia h5 {
+    margin-bottom: 7px;
+
+    color: #35483f;
+
+    font-weight: 750;
+}
+
+
+.contenido-eliminar-incidencia > p {
+    max-width: 520px;
+
+    margin:
+        0
+        auto
+        18px;
+
+    color: #7e8b85;
+
+    font-size: 0.82rem;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   RESUMEN
+========================================================= */
+
+.resumen-eliminar-incidencia {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+.item-resumen-eliminar-incidencia {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-height: 58px;
+
+    padding: 11px 13px;
+
+    border:
+        1px solid
+        #e5ebe7;
+
+    border-radius: 12px;
+
+    background: #f7f9f8;
+
+    text-align: left;
+}
+
+
+.item-resumen-eliminar-incidencia > i {
+    flex-shrink: 0;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #e8f1ec;
+
+    color: var(--verde-medio);
+
+    font-size: 0.95rem;
+}
+
+
+.item-resumen-eliminar-incidencia div {
+    min-width: 0;
+}
+
+
+.item-resumen-eliminar-incidencia small {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #89958f;
+
+    font-size: 0.66rem;
+}
+
+
+.item-resumen-eliminar-incidencia strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #405148;
+
+    font-size: 0.78rem;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alerta-eliminar-incidencia-permitida,
+.alerta-eliminar-incidencia-bloqueada {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 21px;
+
+    padding: 15px 16px;
+
+    border-radius: 13px;
+
+    text-align: left;
+}
+
+
+.alerta-eliminar-incidencia-permitida {
+    border: 1px solid #f0d3d7;
+
+    background: #fff7f8;
+
+    color: #9c3b47;
+}
+
+
+.alerta-eliminar-incidencia-bloqueada {
+    border: 1px solid #efd58a;
+
+    background: #fff9e5;
+
+    color: #806300;
+}
+
+
+.alerta-eliminar-incidencia-permitida > i,
+.alerta-eliminar-incidencia-bloqueada > i {
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    font-size: 1rem;
+}
+
+
+.alerta-eliminar-incidencia-permitida strong,
+.alerta-eliminar-incidencia-bloqueada strong {
+    display: block;
+
+    font-size: 0.8rem;
+}
+
+
+.alerta-eliminar-incidencia-permitida span,
+.alerta-eliminar-incidencia-bloqueada span {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 0.72rem;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   EVIDENCIAS
+========================================================= */
+
+.aviso-evidencias-eliminar-incidencia {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 11px;
+
+    padding: 9px 10px;
+
+    border-radius: 9px;
+
+    background:
+        rgba(255, 255, 255, 0.62);
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.modal-footer-eliminar-incidencia {
+    padding: 17px 24px;
+
+    border-top:
+        1px solid
+        #ecefed;
+
+    background: #fafbfa;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-cancelar-eliminacion-incidencia,
+.btn-confirmar-eliminacion-incidencia {
+    min-height: 41px;
+
+    padding: 9px 17px;
+
+    border-radius: 11px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+}
+
+
+.btn-cancelar-eliminacion-incidencia {
+    border: 1px solid #d8dfdb;
+
+    background: #ffffff;
+
+    color: #637069;
+}
+
+
+.btn-cancelar-eliminacion-incidencia:hover {
+    background: #eef3f0;
+
+    color: #3e5147;
+}
+
+
+.btn-confirmar-eliminacion-incidencia {
+    border: 1px solid #bd3f4d;
+
+    background: #bd3f4d;
+
+    color: #ffffff;
+}
+
+
+.btn-confirmar-eliminacion-incidencia:hover {
+    border-color: #9e2e3a;
+
+    background: #9e2e3a;
+
+    color: #ffffff;
+}
+
+
+.btn-confirmar-eliminacion-incidencia:disabled,
+.btn-confirmar-eliminacion-incidencia.disabled {
+    border-color: #b7beb9;
+
+    background: #b7beb9;
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .modal-dialog-eliminar-incidencia {
+        max-width: none;
+    }
+
+
+    .modal-header-eliminar-incidencia {
+        padding: 17px 18px;
+    }
+
+
+    .modal-body-eliminar-incidencia {
+        padding: 21px 18px;
+    }
+
+
+    .resumen-eliminar-incidencia {
+        grid-template-columns: 1fr;
+    }
+
+
+    .modal-footer-eliminar-incidencia {
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        gap: 9px;
+
+        padding: 14px 18px;
+    }
+
+
+    .btn-cancelar-eliminacion-incidencia,
+    .btn-confirmar-eliminacion-incidencia {
+        width: 100%;
+    }
+
+
+    .icono-advertencia-eliminar-incidencia {
+        width: 66px;
+        height: 66px;
+
+        font-size: 1.65rem;
+    }
+
+}
+
+/*==================================================
+BADGES
+==================================================*/
+
+.badge-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+.badge-estado::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    background: currentColor;
+}
+
+.badge-bueno {
+    background: #dff5e7;
+    color: #198754;
+}
+
+.badge-precaucion {
+    background: #fff5d6;
+    color: #b98b00;
+}
+
+.badge-deficiente {
+    background: #fdecec;
+    color: var(--rojo);
+}
+
+/*==================================================
+RESPONSIVE
+==================================================*/
+
+@media (max-width: 992px) {
+    .sidebar-admin {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+
+    .sidebar-admin.mobile-active {
+        transform: translateX(0);
+    }
+
+    .sidebar-admin.collapsed {
+        width: 260px;
+    }
+
+    .sidebar-admin.collapsed .brand-text,
+    .sidebar-admin.collapsed .menu-link span,
+    .sidebar-admin.collapsed .user-info {
+        display: block;
+    }
+
+    .sidebar-admin.collapsed .menu-link {
+        justify-content: flex-start;
+    }
+
+    .btn-collapse-sidebar {
+        display: none;
+    }
+
+    .contenido-admin,
+    .sidebar-admin.collapsed + .contenido-admin {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .btn-mobile-sidebar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .overlay-sidebar.active {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.35);
+        z-index: 900;
+    }
+
+    .topbar-admin {
+        padding: 18px 20px;
+    }
+
+    .topbar-admin h1 {
+        font-size: 22px;
+    }
+
+    .contenido-page {
+        padding: 20px;
+    }
+
+    .apiarios-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar-admin,
+    .sidebar-admin.collapsed {
+        width: 235px;
+    }
+
+    .topbar-admin h1 {
+        font-size: 19px;
+    }
+
+    .topbar-admin p {
+        font-size: 12px;
+    }
+
+    .contenido-page {
+        padding: 15px;
+    }
+
+    .card-admin,
+    .tabla-card {
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+    .modal-body {
+        padding: 18px;
+    }
+
+    .modal-header {
+        padding: 18px;
+    }
+
+    .modal-footer {
+        padding: 0 18px 18px;
+    }
+}
+
+/*==================================================
+PAGINADOR
+==================================================*/
+
+.pagination {
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pagination .page-item .page-link {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 14px;
+
+    background: var(--blanco);
+    color: var(--verde-oscuro);
+
+    font-weight: 600;
+    font-size: 14px;
+
+    box-shadow: 0 8px 20px rgba(33, 79, 59, .10);
+    transition: .25s ease;
+}
+
+.pagination .page-item .page-link:hover {
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+    transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--verde-medio);
+    color: white;
+    box-shadow: 0 10px 24px rgba(95, 151, 129, .35);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #edf6f0;
+    color: #8aa397;
+    box-shadow: none;
+}
+
+@media (max-width: 576px) {
+    .pagination {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pagination .page-item .page-link {
+        min-width: 36px;
+        height: 36px;
+        font-size: 12px;
+        border-radius: 11px;
+    }
+}
+
+/* estilo de la foto del adm y el boton de cerrar seccion */
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.logout-sidebar {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #b3261e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.logout-sidebar:hover {
+    color: #7a1111;
+}
+
+/* =========================================================
+   MÓDULO DE AGENDA
+   (calendario, filtros y estilos base de los modales de evento)
 ========================================================= */
 
 .pagina-agenda {
@@ -5004,11 +8303,26 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 }
 
 .encabezado-agenda {
+    margin-bottom: 22px;
+}
+
+/* El fondo/decoración (.dashboard-fondo-panal) ya aporta
+   position:relative + overflow:hidden + border-radius.
+   Aquí solo el espaciado interno del panal. */
+.encabezado-agenda-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+}
+
+/* El layout de "título a la izquierda, botón a la derecha"
+   vive en el contenido (por encima de las partículas y la
+   abeja decorativas, gracias a z-index:2 de
+   .dashboard-fondo-panal-contenido). */
+.encabezado-agenda-contenido {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    margin-bottom: 22px;
 }
 
 .encabezado-agenda h2 {
@@ -5021,6 +8335,33 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     margin: 4px 0 0;
     color: #7d8b84;
     font-size: 0.78rem;
+}
+
+/* ---------- ABEJA DECORATIVA DEL ENCABEZADO DE AGENDA ---------- */
+
+.abeja-agenda-vuelo {
+    position: absolute;
+    top: 12px;
+    left: 2%;
+    z-index: 2;
+    font-size: 20px;
+    line-height: 1;
+    pointer-events: none;
+    animation: vueloAbejaAgenda 9s ease-in-out infinite;
+}
+
+@keyframes vueloAbejaAgenda {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(90px, -8px) rotate(6deg); }
+    50%  { transform: translate(180px, 2px) rotate(-4deg); }
+    75%  { transform: translate(90px, 10px) rotate(4deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .abeja-agenda-vuelo {
+        animation: none !important;
+    }
 }
 
 .btn-agregar-evento {
@@ -5339,13 +8680,500 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 @media (max-width: 600px) {
 
-    .encabezado-agenda {
+    .encabezado-agenda-contenido {
         align-items: stretch;
         flex-direction: column;
     }
 
+    .abeja-agenda-vuelo {
+        display: none;
+    }
+
     .filtros-agenda {
         grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   ANIMACIONES DE HOVER Y NAVEGACIÓN
+   (celdas, eventos, botones de mes, día de hoy)
+--------------------------------------------------------- */
+ 
+/* ---------- HOVER EN LAS CELDAS DEL CALENDARIO ---------- */
+ 
+.celda-calendario {
+    transition: background-color .25s ease;
+}
+ 
+.celda-calendario:hover {
+    background: #fbfdfc;
+}
+ 
+/* ---------- HOVER EN LOS EVENTOS ---------- */
+ 
+.evento-calendario {
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .2s ease;
+}
+ 
+.evento-calendario:hover {
+    transform: translateX(2px) scale(1.03);
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .12);
+}
+ 
+/* ---------- BOTONES DE NAVEGACIÓN DE MES ---------- */
+ 
+.btn-navegar-mes {
+    transition:
+        transform .25s cubic-bezier(.34, 1.56, .64, 1),
+        background-color .25s ease;
+}
+ 
+.btn-navegar-mes:hover {
+    background: var(--verde-medio);
+    color: #ffffff;
+    transform: scale(1.12);
+}
+ 
+/* ---------- RESALTADO PULSANTE DEL DÍA DE HOY ---------- */
+ 
+.dia-hoy .numero-dia {
+    position: relative;
+}
+ 
+.dia-hoy .numero-dia::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--verde-oscuro);
+    border-radius: 50%;
+    animation: latidoDiaHoy 2.2s ease-out infinite;
+}
+ 
+@keyframes latidoDiaHoy {
+    0% {
+        transform: scale(1);
+        opacity: .7;
+    }
+    100% {
+        transform: scale(1.35);
+        opacity: 0;
+    }
+}
+ 
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+ 
+@media (prefers-reduced-motion: reduce) {
+    .dia-hoy .numero-dia::after {
+        animation: none !important;
+        opacity: 0;
+    }
+ 
+    .evento-calendario,
+    .btn-navegar-mes,
+    .celda-calendario {
+        transition: none !important;
+    }
+}
+
+/* ---------------------------------------------------------
+   BOTÓN AGREGAR, FILTROS, CELDAS Y TRANSICIÓN DE MES
+   (más micro-interacciones en los modales de evento)
+--------------------------------------------------------- */
+
+/* ---------- BOTÓN "AGREGAR EVENTO": mismo tratamiento que
+   los botones de agregar de otros módulos (gradiente + relieve) ---------- */
+
+.btn-agregar-evento {
+    background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro));
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+    transition:
+        transform .3s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .25s ease,
+        background .3s ease;
+}
+
+.btn-agregar-evento:hover {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    transform: translateY(-2px);
+    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+}
+
+.btn-agregar-evento:active {
+    transform: translateY(0) scale(.97);
+}
+
+.btn-agregar-evento i {
+    display: inline-block;
+    transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-agregar-evento:hover i {
+    transform: rotate(90deg);
+}
+
+/* ---------- FILTROS: foco más visible al usarlos con teclado/mouse ---------- */
+
+.filtros-agenda .form-select,
+.buscador-agenda {
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+.filtros-agenda .form-select:hover,
+.buscador-agenda:hover {
+    border-color: var(--verde-medio);
+}
+
+.filtros-agenda .form-select:focus,
+.buscador-agenda:focus-within {
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 3px rgba(95, 151, 129, .18);
+}
+
+.buscador-agenda i {
+    color: var(--gris-texto);
+    transition: color .2s ease;
+}
+
+.buscador-agenda:focus-within i {
+    color: var(--verde-oscuro);
+}
+
+.btn-buscar-agenda {
+    transition:
+        transform .25s cubic-bezier(.34, 1.56, .64, 1),
+        background-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.btn-buscar-agenda:hover {
+    background: var(--verde-medio);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(33, 79, 59, .2);
+}
+
+.btn-buscar-agenda:active {
+    transform: translateY(0) scale(.96);
+}
+
+/* ---------- CELDAS DEL CALENDARIO: resalte más presente,
+   sin usar transform (son celdas de una grilla con bordes
+   compartidos; un scale ahí se ve "roto") ---------- */
+
+.celda-calendario {
+    transition: background-color .25s ease, box-shadow .2s ease;
+}
+
+.celda-calendario:hover {
+    background: #fbfdfc;
+    box-shadow: inset 0 0 0 1px rgba(95, 151, 129, .35);
+    position: relative;
+    z-index: 1;
+}
+
+.dia-otro-mes:hover {
+    box-shadow: none;
+}
+
+/* ---------- TÍTULO DEL MES: pequeña entrada al cargar ---------- */
+
+.navegacion-calendario h3 {
+    animation: entradaTituloMes .35s ease both;
+}
+
+@keyframes entradaTituloMes {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- TRANSICIÓN DIRECCIONAL AL CAMBIAR DE MES ----------
+   agenda.js guarda en sessionStorage hacia qué lado se navegó
+   y, apenas carga la página siguiente, le agrega a la tarjeta
+   una de estas dos clases para que el calendario "entre" desde
+   ese lado en vez de aparecer siempre igual. */
+
+.tarjeta-calendario.entra-mes-siguiente {
+    animation: entraDesdeDerecha .38s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-calendario.entra-mes-anterior {
+    animation: entraDesdeIzquierda .38s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes entraDesdeDerecha {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes entraDesdeIzquierda {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ---------- MODAL DETALLE: filas con entrada escalonada
+   (se reutiliza .anim-entrada-lista, aplicada por agenda.js
+   cuando el modal termina de mostrarse) ---------- */
+
+.lista-detalle-evento > div {
+    opacity: 0;
+}
+
+.lista-detalle-evento > div.anim-entrada-lista {
+    opacity: 1;
+}
+
+.badge-tipo-evento {
+    display: inline-block;
+    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+#modalDetalleEvento.show .badge-tipo-evento {
+    animation: entradaTituloMes .3s ease both;
+}
+
+/* ---------- MODAL DETALLE: iconos de los botones con
+   el mismo micro-rebote que ya usan los íconos de contacto
+   de Apicultores ---------- */
+
+.btn-editar-evento i,
+.btn-eliminar-evento i,
+.btn-cerrar-evento i {
+    display: inline-block;
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-editar-evento:hover i {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+.btn-eliminar-evento:hover i {
+    transform: scale(1.15) rotate(8deg);
+}
+
+.btn-cerrar-evento:hover i {
+    transform: rotate(90deg);
+}
+
+.btn-editar-evento,
+.btn-eliminar-evento,
+.btn-cerrar-evento,
+.btn-guardar-evento {
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .2s ease,
+        background-color .2s ease;
+}
+
+.btn-editar-evento:hover,
+.btn-eliminar-evento:hover,
+.btn-cerrar-evento:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(33, 79, 59, .14);
+}
+
+.btn-guardar-evento:hover {
+    background: var(--verde-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(33, 79, 59, .22);
+}
+
+.btn-guardar-evento:active,
+.btn-editar-evento:active,
+.btn-eliminar-evento:active,
+.btn-cerrar-evento:active {
+    transform: translateY(0) scale(.97);
+}
+
+/* ---------- MODAL ELIMINAR: mismo aviso con énfasis que
+   usa el módulo de Apicultores (ícono con pulso + texto que
+   entra) ---------- */
+
+.icono-eliminar-evento {
+    animation: pulsoAdvertenciaEliminar 1.8s ease-in-out infinite;
+}
+
+.modal-eliminar-texto {
+    animation: entraAlertaEliminacion .3s ease both;
+}
+
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-agregar-evento,
+    .btn-agregar-evento i,
+    .filtros-agenda .form-select,
+    .buscador-agenda,
+    .buscador-agenda i,
+    .btn-buscar-agenda,
+    .celda-calendario,
+    .btn-editar-evento i,
+    .btn-eliminar-evento i,
+    .btn-cerrar-evento i,
+    .btn-editar-evento,
+    .btn-eliminar-evento,
+    .btn-cerrar-evento,
+    .btn-guardar-evento,
+    .badge-tipo-evento {
+        transition: none !important;
+    }
+
+    .navegacion-calendario h3,
+    .tarjeta-calendario.entra-mes-siguiente,
+    .tarjeta-calendario.entra-mes-anterior,
+    #modalDetalleEvento.show .badge-tipo-evento,
+    .icono-eliminar-evento,
+    .modal-eliminar-texto {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .lista-detalle-evento > div {
+        opacity: 1 !important;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   ENCABEZADOS DE LOS MODALES DE EVENTO
+   (degradado de color + insignia circular con ícono)
+--------------------------------------------------------- */
+
+/* ---------- BASE COMÚN: crear / editar / detalle / eliminar ---------- */
+
+.modal-header-evento,
+.modal-header-evento-detalle,
+.modal-header-evento-eliminar {
+    padding: 20px 26px;
+    border-bottom: 0;
+    color: #ffffff;
+    transition: background .3s ease;
+}
+
+.modal-header-evento h5,
+.modal-header-evento-detalle h5,
+.modal-header-evento-eliminar h5 {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.modal-header-evento p {
+    margin: 0;
+    color: rgba(255, 255, 255, .82);
+    font-size: .8rem;
+}
+
+.modal-header-evento .btn-close,
+.modal-header-evento-detalle .btn-close,
+.modal-header-evento-eliminar .btn-close {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease;
+}
+
+.modal-header-evento .btn-close:hover,
+.modal-header-evento-detalle .btn-close:hover,
+.modal-header-evento-eliminar .btn-close:hover {
+    opacity: .75;
+    transform: rotate(90deg);
+}
+
+/* ---------- INSIGNIA CIRCULAR DEL ÍCONO ---------- */
+
+.modal-icono-evento {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .16);
+    color: #ffffff;
+    font-size: 1.15rem;
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), background .3s ease;
+}
+
+.modal.show .modal-icono-evento {
+    animation: entradaTituloMes .35s .05s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+/* ---------- CREAR / EDITAR: mismo verde que usa el resto del panel ---------- */
+
+.modal-header-evento-crear,
+.modal-header-evento-editar {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+}
+
+/* ---------- ELIMINAR: mismo rojo que usan Apiarios/Apicultores ---------- */
+
+.modal-header-evento-eliminar {
+    background: linear-gradient(135deg, #a83242 0%, #d95b68 100%);
+}
+
+/* ---------- DETALLE: color dinámico según el tipo de evento
+   (el mismo código de color que ya usan la celda del calendario
+   y el badge, así el modal "hace juego" con lo que se hizo clic) ---------- */
+
+.modal-header-evento-detalle {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+}
+
+.modal-header-evento-detalle.tipo-mantenimiento {
+    background: linear-gradient(135deg, #1f7a44, #28a65a);
+}
+
+.modal-header-evento-detalle.tipo-revision {
+    background: linear-gradient(135deg, #a9740b, #eea33a);
+}
+
+.modal-header-evento-detalle.tipo-incidencia {
+    background: linear-gradient(135deg, #a83e34, #e85e4f);
+}
+
+.modal-header-evento-detalle.tipo-evento {
+    background: linear-gradient(135deg, #2c6585, #4d9ac7);
+}
+
+/* Dentro del encabezado coloreado, el badge de tipo pasa a un
+   estilo translúcido en vez de su fondo pastel habitual, para
+   que no se pierda el contraste sobre el degradado. */
+
+.modal-header-evento-detalle .badge-tipo-evento {
+    background: rgba(255, 255, 255, .22) !important;
+    color: #ffffff !important;
+}
+
+.modal-header-evento-detalle .encabezado-detalle-evento h5 {
+    margin: 4px 0 0;
+    font-size: 1.05rem;
+}
+
+/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .modal-header-evento,
+    .modal-header-evento-detalle,
+    .modal-header-evento-eliminar,
+    .modal-icono-evento,
+    .modal-header-evento .btn-close,
+    .modal-header-evento-detalle .btn-close,
+    .modal-header-evento-eliminar .btn-close {
+        transition: none !important;
+    }
+
+    .modal.show .modal-icono-evento {
+        animation: none !important;
     }
 
 }
@@ -6651,176 +10479,2143 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 }
 
-/* ---------- GRID DE TARJETAS DE MANTENIMIENTOS ---------- */
+/* ==========================================================
+   ==========================================================
+   MÓDULO MANTENIMIENTOS - PANEL ADMINISTRADOR
+   MI COLMENA
+   ==========================================================
+   ========================================================== */
 
-.grid-tarjetas-mantenimientos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-}
 
-.tarjeta-mantenimiento {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #e6eee9;
-    border-left: 5px solid #c8d4ce;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow: var(--sombra);
-    padding: 18px;
-    transition: transform .22s ease, box-shadow .22s ease, border-left-color .22s ease;
-}
-
-.tarjeta-mantenimiento:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
-}
-
-.tarjeta-mantenimiento.prioridad-alta {
-    border-left-color: #e05656;
-    animation: pulsoAlertaRoja 2.2s ease-in-out infinite;
-}
-
-.tarjeta-mantenimiento.prioridad-media {
-    border-left-color: #e0a856;
-}
-
-.tarjeta-mantenimiento.prioridad-baja {
-    border-left-color: #56b17a;
-}
-
-.tarjeta-mantenimiento-encabezado {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.tarjeta-mantenimiento-encabezado h5 {
-    margin: 0;
-    color: var(--verde-oscuro);
-    font-weight: 700;
-    font-size: 1.02rem;
-}
-
-/* Pulso en los badges de estados que requieren atención */
-.tarjeta-mantenimiento-encabezado .badge-estado.badge-precaucion,
-.tarjeta-mantenimiento-encabezado .badge-estado.badge-deficiente {
-    animation: pulsoAlertaMiel 1.8s ease-in-out infinite;
-}
-
-.tarjeta-mantenimiento-encabezado .badge-estado.badge-deficiente {
-    animation-name: pulsoAlertaRoja;
-}
-
-.tarjeta-mantenimiento-dato {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    color: var(--gris-texto);
-    font-size: .85rem;
-}
-
-.tarjeta-mantenimiento-dato i {
-    color: var(--verde-medio);
-    min-width: 16px;
-}
-
-/* Pequeño rebote en los íconos de datos al pasar el mouse por la tarjeta */
-.tarjeta-mantenimiento:hover .tarjeta-mantenimiento-dato i {
-    animation: rebotitoIconoTarjeta .5s ease;
-}
-
-.tarjeta-mantenimiento-prioridad {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: .78rem;
-    font-weight: 600;
-    color: #8a7350;
-    background: #fbf3e6;
-    padding: 4px 10px;
-    border-radius: 999px;
-}
-
-/* Entrada escalonada "potente" específica de las tarjetas (pop + leve giro) */
-.tarjeta-mantenimiento.anim-entrada-tarjeta {
-    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
-}
-
-/* Foco visible para navegación por teclado */
-.tarjeta-mantenimiento:focus-within {
-    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
-}
-
-/* Botones de acción: aparecen al hover solo en escritorio */
-@media (hover: hover) and (pointer: fine) {
-
-    .tarjeta-mantenimiento .acciones .btn-accion {
-        opacity: 0;
-        transform: translateY(6px);
-        transition: opacity .25s ease, transform .25s ease;
-    }
-
-    .tarjeta-mantenimiento:hover .acciones .btn-accion,
-    .tarjeta-mantenimiento:focus-within .acciones .btn-accion {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .tarjeta-mantenimiento .acciones .btn-accion:nth-child(1) { transition-delay: 0s; }
-    .tarjeta-mantenimiento .acciones .btn-accion:nth-child(2) { transition-delay: .04s; }
-    .tarjeta-mantenimiento .acciones .btn-accion:nth-child(3) { transition-delay: .08s; }
-
-}
-
-/* Presión táctil en móvil (sin hover disponible) */
-@media (hover: none) {
-
-    .tarjeta-mantenimiento:active {
-        transform: scale(.97);
-        transition: transform .15s ease;
-    }
-
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .tarjeta-mantenimiento,
-    .tarjeta-mantenimiento:hover {
-        transform: none !important;
-    }
-
-    .tarjeta-mantenimiento.prioridad-alta,
-    .tarjeta-mantenimiento-encabezado .badge-estado.badge-precaucion,
-    .tarjeta-mantenimiento-encabezado .badge-estado.badge-deficiente,
-    .tarjeta-mantenimiento:hover .tarjeta-mantenimiento-dato i {
-        animation: none !important;
-    }
-
-    .tarjeta-mantenimiento.anim-entrada-tarjeta {
-        animation: none !important;
-    }
-
-    .tarjeta-mantenimiento .acciones .btn-accion {
-        opacity: 1 !important;
-        transform: none !important;
-    }
-
-}
-
-@media (max-width: 576px) {
-    .grid-tarjetas-mantenimientos {
-        grid-template-columns: 1fr;
-    }
-}
+/* ==========================================================
+   1. ENCABEZADO DEL MÓDULO
+========================================================== */
 
 .encabezado-mantenimientos-panal {
     padding: 14px 18px;
     border-radius: 18px;
 }
+
+
+/* ==========================================================
+   2. GRID DE TARJETAS
+========================================================== */
+
+.grid-tarjetas-mantenimientos {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(280px, 1fr)
+        );
+
+    gap: 20px;
+}
+
+
+/* ==========================================================
+   3. TARJETA DE MANTENIMIENTO
+========================================================== */
+
+.tarjeta-mantenimiento {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 18px;
+
+    border:
+        1px solid
+        #e6eee9;
+
+    border-left:
+        5px solid
+        #c8d4ce;
+
+    border-radius: 16px;
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        var(
+            --sombra,
+            0 12px 30px rgba(0,0,0,.08)
+        );
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-left-color .22s ease;
+}
+
+
+/* ==========================================================
+   4. HOVER DE LA TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento:hover {
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 14px 28px
+        rgba(33, 79, 59, .12);
+}
+
+
+/* ==========================================================
+   5. PRIORIDADES
+========================================================== */
+
+.tarjeta-mantenimiento.prioridad-baja {
+    border-left-color:
+        #56b17a;
+}
+
+
+.tarjeta-mantenimiento.prioridad-media {
+    border-left-color:
+        #e0a856;
+}
+
+
+.tarjeta-mantenimiento.prioridad-alta {
+    border-left-color:
+        #e05656;
+
+    animation:
+        pulsoAlertaRoja
+        2.2s
+        ease-in-out
+        infinite;
+}
+
+
+.tarjeta-mantenimiento.prioridad-crítica,
+.tarjeta-mantenimiento.prioridad-critica {
+    border-left-color:
+        #a72330;
+
+    animation:
+        pulsoAlertaRoja
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   6. ENCABEZADO DE TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento-encabezado {
+    display: flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap: 10px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.tarjeta-mantenimiento-encabezado h5 {
+    margin: 0;
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-size:
+        1.02rem;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.4;
+}
+
+
+/* ==========================================================
+   7. ESTADOS QUE REQUIEREN ATENCIÓN
+========================================================== */
+
+.tarjeta-mantenimiento-encabezado
+.badge-estado.badge-precaucion,
+
+.tarjeta-mantenimiento-encabezado
+.badge-estado.badge-deficiente {
+
+    animation:
+        pulsoAlertaMiel
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+
+.tarjeta-mantenimiento-encabezado
+.badge-estado.badge-deficiente {
+
+    animation-name:
+        pulsoAlertaRoja;
+}
+
+
+/* ==========================================================
+   8. DATOS DE LA TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento-dato {
+    display: flex;
+
+    align-items:
+        center;
+
+    gap: 8px;
+
+    margin-bottom:
+        8px;
+
+    color:
+        var(
+            --gris-texto,
+            #5f6f66
+        );
+
+    font-size:
+        .85rem;
+}
+
+
+.tarjeta-mantenimiento-dato i {
+    min-width:
+        16px;
+
+    color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+}
+
+
+.tarjeta-mantenimiento-dato small {
+    color:
+        #89958e;
+
+    font-size:
+        .72rem;
+}
+
+
+/* ==========================================================
+   9. ANIMACIÓN DE ICONOS
+========================================================== */
+
+.tarjeta-mantenimiento:hover
+.tarjeta-mantenimiento-dato i {
+
+    animation:
+        rebotitoIconoTarjeta
+        .5s
+        ease;
+}
+
+
+/* ==========================================================
+   10. PRIORIDAD EN TARJETA
+========================================================== */
+
+.tarjeta-mantenimiento-prioridad {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        5px 10px;
+
+    border-radius:
+        999px;
+
+    background:
+        #fbf3e6;
+
+    color:
+        #8a7350;
+
+    font-size:
+        .78rem;
+
+    font-weight:
+        600;
+}
+
+
+/* ==========================================================
+   11. ANIMACIÓN DE ENTRADA
+========================================================== */
+
+.tarjeta-mantenimiento.anim-entrada-tarjeta {
+    animation:
+        entradaTarjetaApiario
+        .55s
+        cubic-bezier(.2, .8, .2, 1)
+        both;
+}
+
+
+/* ==========================================================
+   12. FOCO ACCESIBLE
+========================================================== */
+
+.tarjeta-mantenimiento:focus-within {
+    box-shadow:
+        0 0 0 3px
+        rgba(240, 160, 0, .4),
+
+        0 20px 40px
+        rgba(33, 79, 59, .18);
+}
+
+
+/* ==========================================================
+   ==========================================================
+   FORMULARIOS DE MANTENIMIENTO
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   13. SECCIÓN INTERNA DEL FORMULARIO
+========================================================== */
+
+.mantenimiento-form-seccion {
+    padding:
+        18px;
+
+    border:
+        1px solid
+        #e2ebe5;
+
+    border-radius:
+        16px;
+
+    background:
+        #fbfdfc;
+}
+
+
+/* ==========================================================
+   14. HEADER DE SECCIÓN
+========================================================== */
+
+.mantenimiento-form-seccion-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    margin-bottom:
+        18px;
+}
+
+
+.mantenimiento-form-seccion-header > i {
+    width:
+        42px;
+
+    height:
+        42px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        12px;
+
+    background:
+        #e7f4ea;
+
+    color:
+        #287547;
+
+    font-size:
+        1rem;
+}
+
+
+.mantenimiento-form-seccion-header h5 {
+    margin:
+        0 0 3px;
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-size:
+        .96rem;
+
+    font-weight:
+        700;
+}
+
+
+.mantenimiento-form-seccion-header p {
+    margin:
+        0;
+
+    color:
+        #79877f;
+
+    font-size:
+        .75rem;
+
+    line-height:
+        1.5;
+}
+
+
+/* ==========================================================
+   15. OPCIONES DE ALCANCE
+========================================================== */
+
+.mantenimiento-alcance-opciones {
+    width:
+        100%;
+}
+
+
+.mantenimiento-alcance-opcion {
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        border-color .2s ease;
+}
+
+
+.mantenimiento-alcance-opcion:hover {
+    transform:
+        translateY(-2px);
+}
+
+
+.mantenimiento-alcance-opcion
+input[type="radio"] {
+
+    margin-right:
+        4px;
+
+    accent-color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+}
+
+
+/* ==========================================================
+   ==========================================================
+   INPUTS DE EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   16. CAJA DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-input {
+    height:
+        100%;
+
+    padding:
+        14px;
+
+    border:
+        1px solid
+        #e1e9e4;
+
+    border-radius:
+        14px;
+
+    background:
+        #ffffff;
+}
+
+
+/* ==========================================================
+   17. COLORES DE CADA ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-input.antes {
+    border-color:
+        #ead8c8;
+
+    background:
+        #fffaf5;
+}
+
+
+.mantenimiento-evidencia-input.durante {
+    border-color:
+        #d7e2ef;
+
+    background:
+        #f8fbff;
+}
+
+
+.mantenimiento-evidencia-input.despues {
+    border-color:
+        #d5e6d6;
+
+    background:
+        #f8fcf8;
+}
+
+
+/* ==========================================================
+   18. HEADER DEL INPUT
+========================================================== */
+
+.mantenimiento-evidencia-input-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.mantenimiento-evidencia-input-header h6 {
+    margin:
+        0;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .86rem;
+
+    font-weight:
+        700;
+}
+
+
+.mantenimiento-evidencia-input-header span {
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        #839087;
+
+    font-size:
+        .68rem;
+}
+
+
+/* ==========================================================
+   19. ICONOS DE ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-icono {
+    width:
+        38px;
+
+    height:
+        38px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        11px;
+
+    font-size:
+        .95rem;
+}
+
+
+.mantenimiento-evidencia-icono.antes {
+    background:
+        #f9e7d6;
+
+    color:
+        #a86628;
+}
+
+
+.mantenimiento-evidencia-icono.durante {
+    background:
+        #dceafb;
+
+    color:
+        #396eaa;
+}
+
+
+.mantenimiento-evidencia-icono.despues {
+    background:
+        #e2f1df;
+
+    color:
+        #4f744b;
+}
+
+
+/* ==========================================================
+   20. INPUT FILE
+========================================================== */
+
+.mantenimiento-input-evidencias {
+    min-height:
+        45px;
+
+    border:
+        1px solid
+        #ceddd3;
+
+    border-radius:
+        10px;
+
+    background:
+        #ffffff;
+
+    font-size:
+        .78rem;
+}
+
+
+.mantenimiento-input-evidencias:focus {
+    border-color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+
+    box-shadow:
+        0 0 0 .2rem
+        rgba(95, 151, 129, .12);
+}
+
+
+/* ==========================================================
+   ==========================================================
+   DETALLE DE EVIDENCIAS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   21. CONTENEDOR GENERAL
+========================================================== */
+
+.mantenimiento-evidencias-detalle {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        18px;
+}
+
+
+/* ==========================================================
+   22. BLOQUE DE ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-bloque {
+    padding:
+        16px;
+
+    border:
+        1px solid
+        #e0e8e3;
+
+    border-radius:
+        15px;
+
+    background:
+        #ffffff;
+}
+
+
+.mantenimiento-evidencia-bloque.antes {
+    border-color:
+        #ead8c8;
+
+    background:
+        #fffaf6;
+}
+
+
+.mantenimiento-evidencia-bloque.durante {
+    border-color:
+        #d5e1ed;
+
+    background:
+        #f8fbff;
+}
+
+
+.mantenimiento-evidencia-bloque.despues {
+    border-color:
+        #d4e5d5;
+
+    background:
+        #f8fcf8;
+}
+
+
+/* ==========================================================
+   23. HEADER DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        14px;
+
+    margin-bottom:
+        14px;
+}
+
+
+/* ==========================================================
+   24. TÍTULO DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-titulo {
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+
+.mantenimiento-evidencia-titulo > div {
+    min-width:
+        0;
+}
+
+
+.mantenimiento-evidencia-titulo h5 {
+    margin:
+        0;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .91rem;
+
+    font-weight:
+        700;
+}
+
+
+.mantenimiento-evidencia-titulo
+> div
+> span {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        #7d8982;
+
+    font-size:
+        .71rem;
+}
+
+
+/* ==========================================================
+   25. CONTADOR
+========================================================== */
+
+.mantenimiento-evidencia-contador {
+    flex-shrink:
+        0;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        29px;
+
+    padding:
+        6px 10px;
+
+    border-radius:
+        30px;
+
+    font-size:
+        .70rem;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+}
+
+
+.mantenimiento-evidencia-contador.antes {
+    background:
+        #f8e7d8;
+
+    color:
+        #9b612b;
+}
+
+
+.mantenimiento-evidencia-contador.durante {
+    background:
+        #dceafb;
+
+    color:
+        #396eaa;
+}
+
+
+.mantenimiento-evidencia-contador.despues {
+    background:
+        #e2f1df;
+
+    color:
+        #4f744b;
+}
+
+
+/* ==========================================================
+   26. GRID DE FOTOGRAFÍAS
+========================================================== */
+
+.mantenimiento-evidencias-grid {
+    width:
+        100%;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap:
+        12px;
+}
+
+
+/* ==========================================================
+   27. GRID EN EDICIÓN
+========================================================== */
+
+.mantenimiento-evidencias-grid.editar {
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    margin-bottom:
+        16px;
+}
+
+
+/* ==========================================================
+   28. TARJETA DE EVIDENCIA
+========================================================== */
+
+.mantenimiento-evidencia-item {
+    min-width:
+        0;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        #dee7e1;
+
+    border-radius:
+        12px;
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 3px 10px
+        rgba(33, 79, 59, .05);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+
+.mantenimiento-evidencia-item:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        #c6d6cc;
+
+    box-shadow:
+        0 7px 16px
+        rgba(33, 79, 59, .09);
+}
+
+
+/* ==========================================================
+   29. CONTENEDOR DE IMAGEN
+========================================================== */
+
+.mantenimiento-evidencia-imagen {
+    position:
+        relative;
+
+    width:
+        100%;
+
+    aspect-ratio:
+        4 / 3;
+
+    overflow:
+        hidden;
+
+    background:
+        #eef3ef;
+}
+
+
+/* ==========================================================
+   30. IMAGEN
+========================================================== */
+
+.mantenimiento-evidencia-imagen img {
+    display:
+        block;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .25s ease,
+        filter .25s ease;
+}
+
+
+.mantenimiento-evidencia-item:hover
+.mantenimiento-evidencia-imagen img {
+
+    transform:
+        scale(1.03);
+
+    filter:
+        brightness(.96);
+}
+
+
+/* ==========================================================
+   31. NÚMERO
+========================================================== */
+
+.mantenimiento-evidencia-numero {
+    position:
+        absolute;
+
+    top:
+        8px;
+
+    left:
+        8px;
+
+    z-index:
+        2;
+
+    min-width:
+        25px;
+
+    height:
+        25px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        0 7px;
+
+    border-radius:
+        30px;
+
+    background:
+        rgba(33, 79, 59, .90);
+
+    color:
+        #ffffff;
+
+    font-size:
+        .68rem;
+
+    font-weight:
+        700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+/* ==========================================================
+   32. BADGE DE ETAPA
+========================================================== */
+
+.mantenimiento-evidencia-badge {
+    position:
+        absolute;
+
+    left:
+        8px;
+
+    bottom:
+        8px;
+
+    z-index:
+        2;
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        30px;
+
+    font-size:
+        .65rem;
+
+    font-weight:
+        700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+.mantenimiento-evidencia-badge.antes {
+    background:
+        rgba(249, 231, 214, .95);
+
+    color:
+        #95591f;
+}
+
+
+.mantenimiento-evidencia-badge.durante {
+    background:
+        rgba(220, 234, 251, .95);
+
+    color:
+        #356da9;
+}
+
+
+.mantenimiento-evidencia-badge.despues {
+    background:
+        rgba(226, 241, 223, .95);
+
+    color:
+        #4f744b;
+}
+
+
+/* ==========================================================
+   33. INFORMACIÓN DE LA FOTO
+========================================================== */
+
+.mantenimiento-evidencia-info {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    padding:
+        10px 11px;
+}
+
+
+.mantenimiento-evidencia-info > div {
+    min-width:
+        0;
+}
+
+
+.mantenimiento-evidencia-info strong {
+    display:
+        block;
+
+    overflow:
+        hidden;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .75rem;
+
+    font-weight:
+        700;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+
+.mantenimiento-evidencia-info span {
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        #849087;
+
+    font-size:
+        .65rem;
+}
+
+
+.mantenimiento-evidencia-info > i {
+    flex-shrink:
+        0;
+
+    color:
+        #5f9781;
+
+    font-size:
+        .95rem;
+}
+
+
+/* ==========================================================
+   34. SIN EVIDENCIAS
+========================================================== */
+
+.mantenimiento-evidencias-vacio {
+    min-height:
+        80px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        10px;
+
+    padding:
+        14px;
+
+    border:
+        1px dashed
+        #cfdcd4;
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 255, 255, .70);
+
+    color:
+        #7c8981;
+
+    font-size:
+        .73rem;
+
+    text-align:
+        center;
+}
+
+
+.mantenimiento-evidencias-vacio i {
+    color:
+        #6e9680;
+
+    font-size:
+        1.25rem;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   EDITAR MANTENIMIENTO
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   35. CONTENEDOR EVIDENCIAS EXISTENTES
+========================================================== */
+
+.mantenimiento-editar-evidencias {
+    padding:
+        18px;
+
+    border:
+        1px solid
+        #e1e9e4;
+
+    border-radius:
+        16px;
+
+    background:
+        #fbfdfc;
+}
+
+
+/* ==========================================================
+   36. SUBTÍTULOS
+========================================================== */
+
+.mantenimiento-subtitulo-evidencia {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+    margin:
+        16px 0 10px;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .82rem;
+
+    font-weight:
+        700;
+}
+
+
+/* ==========================================================
+   37. INPUTS DEL MODAL
+========================================================== */
+
+.form-mantenimiento .form-control,
+.form-mantenimiento .form-select {
+    min-height:
+        43px;
+
+    border:
+        1px solid
+        #ceddd3;
+
+    border-radius:
+        10px;
+
+    box-shadow:
+        none;
+}
+
+
+.form-mantenimiento textarea.form-control {
+    min-height:
+        100px;
+
+    resize:
+        vertical;
+}
+
+
+.form-mantenimiento .form-control:focus,
+.form-mantenimiento .form-select:focus {
+
+    border-color:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+
+    box-shadow:
+        0 0 0 .2rem
+        rgba(95, 151, 129, .12);
+}
+
+
+/* ==========================================================
+   38. LABELS
+========================================================== */
+
+.form-mantenimiento .form-label {
+    margin-bottom:
+        6px;
+
+    color:
+        #214f3b;
+
+    font-size:
+        .80rem;
+
+    font-weight:
+        700;
+}
+
+
+/* ==========================================================
+   39. MODALES DE MANTENIMIENTO
+========================================================== */
+
+.modal-editar-mantenimiento
+.modal-dialog {
+
+    max-width:
+        1100px;
+}
+
+
+.modal-editar-mantenimiento
+.modal-body {
+
+    background:
+        #ffffff;
+}
+
+
+/* ==========================================================
+   40. FOTO EN MODAL
+========================================================== */
+
+.mantenimiento-evidencia-imagen img {
+    user-select:
+        none;
+}
+
+
+/* ==========================================================
+   ==========================================================
+   INTERACCIONES
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   41. BOTONES DE ACCIÓN AL HOVER
+========================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(6px);
+
+        transition:
+            opacity .25s ease,
+            transform .25s ease;
+    }
+
+
+    .tarjeta-mantenimiento:hover
+    .acciones
+    .btn-accion,
+
+    .tarjeta-mantenimiento:focus-within
+    .acciones
+    .btn-accion {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion:nth-child(1) {
+
+        transition-delay:
+            0s;
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion:nth-child(2) {
+
+        transition-delay:
+            .04s;
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion:nth-child(3) {
+
+        transition-delay:
+            .08s;
+    }
+
+}
+
+
+/* ==========================================================
+   42. DISPOSITIVOS TÁCTILES
+========================================================== */
+
+@media (hover: none) {
+
+    .tarjeta-mantenimiento:active {
+        transform:
+            scale(.97);
+
+        transition:
+            transform .15s ease;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   RESPONSIVE
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   43. TABLET GRANDE
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .mantenimiento-evidencias-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .mantenimiento-evidencias-grid.editar {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+/* ==========================================================
+   44. TABLET / MÓVIL
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .mantenimiento-evidencia-header {
+        align-items:
+            flex-start;
+    }
+
+
+    .mantenimiento-form-seccion {
+        padding:
+            14px;
+    }
+
+
+    .mantenimiento-editar-evidencias {
+        padding:
+            14px;
+    }
+
+}
+
+
+/* ==========================================================
+   45. MÓVIL
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .grid-tarjetas-mantenimientos {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencias-grid,
+    .mantenimiento-evidencias-grid.editar {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mantenimiento-evidencia-header {
+        flex-direction:
+            column;
+
+        gap:
+            9px;
+    }
+
+
+    .mantenimiento-evidencia-contador {
+        align-self:
+            flex-start;
+    }
+
+
+    .mantenimiento-form-seccion-header {
+        align-items:
+            flex-start;
+    }
+
+
+    .mantenimiento-alcance-opcion {
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+    }
+
+
+    .mantenimiento-evidencia-imagen {
+        aspect-ratio:
+            16 / 10;
+    }
+
+
+    .mantenimiento-form-seccion,
+    .mantenimiento-editar-evidencias,
+    .mantenimiento-evidencia-bloque {
+
+        padding:
+            12px;
+
+        border-radius:
+            12px;
+    }
+
+}
+
+
+/* ==========================================================
+   46. MÓVILES PEQUEÑOS
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .mantenimiento-form-seccion-header > i,
+    .mantenimiento-evidencia-icono {
+
+        width:
+            35px;
+
+        height:
+            35px;
+    }
+
+
+    .mantenimiento-evidencia-titulo {
+        align-items:
+            flex-start;
+    }
+
+
+    .mantenimiento-evidencia-info {
+        padding:
+            9px;
+    }
+
+}
+
+
+/* ==========================================================
+   47. REDUCIR MOVIMIENTO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-mantenimiento,
+    .tarjeta-mantenimiento:hover {
+
+        transform:
+            none !important;
+    }
+
+
+    .tarjeta-mantenimiento.prioridad-alta,
+
+    .tarjeta-mantenimiento.prioridad-crítica,
+
+    .tarjeta-mantenimiento.prioridad-critica,
+
+    .tarjeta-mantenimiento-encabezado
+    .badge-estado.badge-precaucion,
+
+    .tarjeta-mantenimiento-encabezado
+    .badge-estado.badge-deficiente,
+
+    .tarjeta-mantenimiento:hover
+    .tarjeta-mantenimiento-dato i {
+
+        animation:
+            none !important;
+    }
+
+
+    .tarjeta-mantenimiento.anim-entrada-tarjeta {
+        animation:
+            none !important;
+    }
+
+
+    .tarjeta-mantenimiento
+    .acciones
+    .btn-accion {
+
+        opacity:
+            1 !important;
+
+        transform:
+            none !important;
+    }
+
+
+    .mantenimiento-evidencia-item,
+    .mantenimiento-evidencia-imagen img,
+    .mantenimiento-alcance-opcion {
+
+        transition:
+            none !important;
+    }
+
+}
+
+/* ==========================================================
+   48. SCROLL INTERNO DE LOS MODALES DE MANTENIMIENTO
+========================================================== */
+
+
+/* ==========================================================
+   TAMAÑO MÁXIMO DEL MODAL
+========================================================== */
+
+#modalAgregarMantenimiento .modal-dialog,
+.modal-editar-mantenimiento .modal-dialog {
+
+    width:
+        calc(100% - 2rem);
+
+    height:
+        calc(100vh - 2rem);
+
+    height:
+        calc(100dvh - 2rem);
+
+    max-height:
+        calc(100vh - 2rem);
+
+    max-height:
+        calc(100dvh - 2rem);
+
+    margin:
+        1rem auto;
+}
+
+
+/* ==========================================================
+   CONTENEDOR DEL MODAL
+========================================================== */
+
+#modalAgregarMantenimiento .modal-content,
+.modal-editar-mantenimiento .modal-content {
+
+    height:
+        100%;
+
+    max-height:
+        100%;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    overflow:
+        hidden;
+}
+
+
+/* ==========================================================
+   FORMULARIO
+   IMPORTANTE:
+   El formulario ocupa toda la altura disponible.
+========================================================== */
+
+#modalAgregarMantenimiento .form-mantenimiento,
+.modal-editar-mantenimiento .form-mantenimiento {
+
+    display:
+        flex;
+
+    flex:
+        1 1 auto;
+
+    flex-direction:
+        column;
+
+    min-height:
+        0;
+
+    height:
+        100%;
+
+    overflow:
+        hidden;
+}
+
+
+/* ==========================================================
+   HEADER FIJO
+========================================================== */
+
+#modalAgregarMantenimiento .modal-header,
+.modal-editar-mantenimiento .modal-header {
+
+    flex:
+        0 0 auto;
+}
+
+
+/* ==========================================================
+   BODY CON SCROLL
+========================================================== */
+
+#modalAgregarMantenimiento .modal-body,
+.modal-editar-mantenimiento .modal-body {
+
+    flex:
+        1 1 auto;
+
+    min-height:
+        0;
+
+    overflow-x:
+        hidden;
+
+    overflow-y:
+        auto !important;
+
+    overscroll-behavior:
+        contain;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #8eb6a5
+        #edf3ef;
+}
+
+
+/* ==========================================================
+   FOOTER FIJO
+========================================================== */
+
+#modalAgregarMantenimiento .modal-footer,
+.modal-editar-mantenimiento .modal-footer {
+
+    flex:
+        0 0 auto;
+
+    background:
+        #F4F5ED;
+}
+
+
+/* ==========================================================
+   SCROLLBAR - CHROME / EDGE
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar {
+
+    width:
+        9px;
+}
+
+
+/* ==========================================================
+   FONDO DE LA BARRA
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar-track,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar-track {
+
+    background:
+        #edf3ef;
+
+    border-radius:
+        20px;
+}
+
+
+/* ==========================================================
+   BARRA
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar-thumb,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #edf3ef;
+
+    border-radius:
+        20px;
+
+    background:
+        #8eb6a5;
+}
+
+
+/* ==========================================================
+   HOVER DE LA BARRA
+========================================================== */
+
+#modalAgregarMantenimiento
+.modal-body::-webkit-scrollbar-thumb:hover,
+
+.modal-editar-mantenimiento
+.modal-body::-webkit-scrollbar-thumb:hover {
+
+    background:
+        var(
+            --verde-medio,
+            #5f9781
+        );
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 575.98px) {
+
+    #modalAgregarMantenimiento .modal-dialog,
+    .modal-editar-mantenimiento .modal-dialog {
+
+        width:
+            auto;
+
+        height:
+            calc(100vh - 1rem);
+
+        height:
+            calc(100dvh - 1rem);
+
+        max-height:
+            calc(100vh - 1rem);
+
+        max-height:
+            calc(100dvh - 1rem);
+
+        margin:
+            .5rem;
+    }
+
+}
+
+/* ==========================================================
+   49. MODAL DE VALIDACIONES
+========================================================== */
+
+.modal-validacion-mantenimiento-header {
+    padding: 20px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff8dc,
+            #fffdf3
+        );
+}
+
+
+/* ==========================================================
+   ICONO
+========================================================== */
+
+.modal-validacion-mantenimiento-icono {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #fff1bd;
+
+    color: #b77a00;
+
+    font-size: 1.25rem;
+}
+
+
+/* ==========================================================
+   TÍTULO
+========================================================== */
+
+.modal-validacion-mantenimiento-header
+.modal-title {
+
+    color:
+        var(
+            --verde-oscuro,
+            #214f3b
+        );
+
+    font-size: 1rem;
+}
+
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+.modal-validacion-mantenimiento-body {
+    padding: 22px;
+}
+
+
+/* ==========================================================
+   CAJA DEL MENSAJE
+========================================================== */
+
+.modal-validacion-mantenimiento-aviso {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        #f0dfae;
+
+    border-radius: 14px;
+
+    background:
+        #fffdf5;
+
+    color:
+        #5e563d;
+}
+
+
+/* ==========================================================
+   ICONO DEL MENSAJE
+========================================================== */
+
+.modal-validacion-mantenimiento-aviso > i {
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    color: #d79a17;
+
+    font-size: 1.1rem;
+}
+
+
+/* ==========================================================
+   TEXTO
+========================================================== */
+
+.modal-validacion-mantenimiento-aviso p {
+    color: #526058;
+
+    font-size: .84rem;
+
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+
+/* ==========================================================
+   ANIMACIÓN
+========================================================== */
+
+#modalValidacionMantenimiento
+.modal-dialog {
+
+    transition:
+        transform .3s
+        cubic-bezier(.34, 1.56, .64, 1);
+}
+
+
+/* ==========================================================
+   FIN MÓDULO MANTENIMIENTOS
+========================================================== */
+
+
 
 /* ---------- GRID DE TARJETAS DE INCIDENCIAS ---------- */
 
@@ -6831,6 +12626,8 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 }
 
 .tarjeta-incidencia {
+    position: relative;
+    overflow: hidden;
     border: 1px solid #e6eee9;
     border-radius: 16px;
     background: #ffffff;
@@ -6842,6 +12639,41 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 .tarjeta-incidencia:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+/* Borde degradado animado al pasar el mouse, mismo lenguaje visual
+   de las tarjetas de Apicultores/Colmenas/Reportes/Usuarios
+   (reutiliza @keyframes girarBordeMiel, definido más abajo) */
+.tarjeta-incidencia::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.tarjeta-incidencia:hover::before {
+    opacity: 1;
+}
+
+/* Entrada "con más personalidad" (pop + leve giro), reutiliza
+   @keyframes entradaTarjetaApiario ya definido */
+.tarjeta-incidencia.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-incidencia:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
 }
 
 .tarjeta-incidencia-encabezado {
@@ -6872,6 +12704,13 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 .tarjeta-incidencia-dato i {
     color: var(--verde-medio);
     min-width: 16px;
+    transition: transform .25s ease;
+}
+
+/* Pequeño rebote en los íconos al pasar el mouse por la tarjeta,
+   reutiliza @keyframes rebotitoIconoTarjeta ya definido */
+.tarjeta-incidencia:hover .tarjeta-incidencia-dato i {
+    animation: rebotitoIconoTarjeta .5s ease;
 }
 
 
@@ -6889,6 +12728,11 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform .3s ease;
+}
+
+.tarjeta-incidencia:hover .tarjeta-incidencia-imagen img {
+    transform: scale(1.06);
 }
 
 .tarjeta-incidencia-sin-imagen {
@@ -6902,13 +12746,66 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     font-size: 1.8rem;
 }
 
-.tarjeta-incidencia {
-    overflow: hidden;
+/* Botones de acción: aparecen solo al hover, en escritorio */
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-incidencia .acciones-incidencia .btn-accion {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease, background-color .2s ease, color .2s ease;
+    }
+
+    .tarjeta-incidencia:hover .acciones-incidencia .btn-accion,
+    .tarjeta-incidencia:focus-within .acciones-incidencia .btn-accion {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tarjeta-incidencia .acciones-incidencia .btn-accion:nth-child(1) { transition-delay: 0s; }
+    .tarjeta-incidencia .acciones-incidencia .btn-accion:nth-child(2) { transition-delay: .04s; }
+    .tarjeta-incidencia .acciones-incidencia .btn-accion:nth-child(3) { transition-delay: .08s; }
+
+}
+
+@media (hover: none) {
+    .tarjeta-incidencia:active {
+        transform: scale(.97);
+        transition: transform .15s ease;
+    }
 }
 
 @media (max-width: 576px) {
     .grid-tarjetas-incidencias {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-incidencia,
+    .tarjeta-incidencia:hover,
+    .tarjeta-incidencia-imagen img,
+    .tarjeta-incidencia-dato i {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .tarjeta-incidencia::before {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-incidencia.anim-entrada-tarjeta {
+        animation: none !important;
+    }
+
+    .tarjeta-incidencia:hover .tarjeta-incidencia-dato i {
+        animation: none !important;
+    }
+
+    .tarjeta-incidencia .acciones-incidencia .btn-accion {
+        opacity: 1 !important;
+        transform: none !important;
     }
 }
 
@@ -6925,6 +12822,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 }
 
 .tarjeta-apicultor-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     border: 1px solid #e6eee9;
@@ -6938,6 +12836,29 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 .tarjeta-apicultor-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 28px rgba(33, 79, 59, .12);
+}
+
+/* Borde-degradado animado que aparece solo en hover (mismo lenguaje que Colmenas/Apiarios) */
+.tarjeta-apicultor-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo, var(--miel)), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.tarjeta-apicultor-card:hover::before {
+    opacity: 1;
 }
 
 .tarjeta-apicultor-card-header {
@@ -6960,6 +12881,11 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     padding: 14px 18px;
 }
 
+/* Pequeño rebote en los íconos de contacto al pasar el mouse por la tarjeta */
+.tarjeta-apicultor-card:hover .tarjeta-apicultor-card-datos .icono-contacto i {
+    animation: rebotitoIconoTarjeta .5s ease;
+}
+
 .tarjeta-apicultor-card-footer {
     display: flex;
     flex-direction: column;
@@ -6977,6 +12903,78 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 
 .tarjeta-apicultor-card-footer .acciones-apicultor {
     justify-content: center;
+}
+
+/* Entrada escalonada "potente" específica de las tarjetas (pop + leve giro) */
+.tarjeta-apicultor-card.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* ---------- FOCO VISIBLE PARA NAVEGACIÓN POR TECLADO ---------- */
+
+.tarjeta-apicultor-card:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
+}
+
+/* ---------- BOTONES DE ACCIÓN: APARECEN AL HOVER SOLO EN ESCRITORIO ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .tarjeta-apicultor-card .acciones-apicultor .btn-accion-apicultor {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .tarjeta-apicultor-card:hover .acciones-apicultor .btn-accion-apicultor,
+    .tarjeta-apicultor-card:focus-within .acciones-apicultor .btn-accion-apicultor {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tarjeta-apicultor-card .acciones-apicultor .btn-accion-apicultor:nth-child(1) { transition-delay: 0s; }
+    .tarjeta-apicultor-card .acciones-apicultor .btn-accion-apicultor:nth-child(2) { transition-delay: .04s; }
+    .tarjeta-apicultor-card .acciones-apicultor .btn-accion-apicultor:nth-child(3) { transition-delay: .08s; }
+
+}
+
+/* ---------- PRESIÓN TÁCTIL EN MÓVIL (sin hover disponible) ---------- */
+
+@media (hover: none) {
+
+    .tarjeta-apicultor-card:active {
+        transform: scale(.97);
+        transition: transform .15s ease;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-apicultor-card,
+    .tarjeta-apicultor-card:hover {
+        transform: none !important;
+    }
+
+    .tarjeta-apicultor-card::before {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-apicultor-card:hover .tarjeta-apicultor-card-datos .icono-contacto i {
+        animation: none !important;
+    }
+
+    .tarjeta-apicultor-card.anim-entrada-tarjeta {
+        animation: none !important;
+    }
+
+    .tarjeta-apicultor-card .acciones-apicultor .btn-accion-apicultor {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
 }
 
 @media (max-width: 576px) {
@@ -7355,97 +13353,32 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     }
 }
 
-/* =========================================================
-   AGREGAR AL FINAL de estilos_admin.css
-   ANIMACIONES DE LA AGENDA
-========================================================= */
- 
-/* ---------- HOVER EN LAS CELDAS DEL CALENDARIO ---------- */
- 
-.celda-calendario {
-    transition: background-color .25s ease;
-}
- 
-.celda-calendario:hover {
-    background: #fbfdfc;
-}
- 
-/* ---------- HOVER EN LOS EVENTOS ---------- */
- 
-.evento-calendario {
-    transition:
-        transform .2s cubic-bezier(.34, 1.56, .64, 1),
-        box-shadow .2s ease;
-}
- 
-.evento-calendario:hover {
-    transform: translateX(2px) scale(1.03);
-    box-shadow: 0 4px 10px rgba(33, 79, 59, .12);
-}
- 
-/* ---------- BOTONES DE NAVEGACIÓN DE MES ---------- */
- 
-.btn-navegar-mes {
-    transition:
-        transform .25s cubic-bezier(.34, 1.56, .64, 1),
-        background-color .25s ease;
-}
- 
-.btn-navegar-mes:hover {
-    background: var(--verde-medio);
-    color: #ffffff;
-    transform: scale(1.12);
-}
- 
-/* ---------- RESALTADO PULSANTE DEL DÍA DE HOY ---------- */
- 
-.dia-hoy .numero-dia {
-    position: relative;
-}
- 
-.dia-hoy .numero-dia::after {
-    content: "";
-    position: absolute;
-    inset: -4px;
-    border: 2px solid var(--verde-oscuro);
-    border-radius: 50%;
-    animation: latidoDiaHoy 2.2s ease-out infinite;
-}
- 
-@keyframes latidoDiaHoy {
-    0% {
-        transform: scale(1);
-        opacity: .7;
-    }
-    100% {
-        transform: scale(1.35);
-        opacity: 0;
-    }
-}
- 
-/* ---------- RESPETAR "REDUCIR MOVIMIENTO" ---------- */
- 
-@media (prefers-reduced-motion: reduce) {
-    .dia-hoy .numero-dia::after {
-        animation: none !important;
-        opacity: 0;
-    }
- 
-    .evento-calendario,
-    .btn-navegar-mes,
-    .celda-calendario {
-        transition: none !important;
-    }
-}
 
 /* =========================================================
    AGREGAR AL FINAL de estilos_admin.css
    ANIMACIONES DEL MÓDULO REPORTES
 ========================================================= */
  
+/* ---------- ENCABEZADO DE REPORTES — FONDO CON POLEN FLOTANTE ----------
+   (mismo recurso de Apiarios/Colmenas/Mantenimientos/Apicultores:
+   .dashboard-fondo-panal + .particulas-flotantes; reutiliza también
+   el recorrido corto @keyframes chispaFogataEncabezado ya definido
+   para el encabezado de Apicultores, pensado para encabezados bajitos) ---------- */
+
+.encabezado-reportes-panal {
+    padding: 14px 18px;
+    border-radius: 18px;
+}
+
+.encabezado-reportes-panal .particulas-flotantes span {
+    animation-name: chispaFogataEncabezado;
+}
+
 /* ---------- HOVER EN LAS TARJETAS DE TIPO DE REPORTE ---------- */
  
 .tarjeta-tipo-reporte {
+    position: relative;
+    overflow: hidden;
     transition: transform .25s ease, box-shadow .25s ease;
 }
  
@@ -7455,11 +13388,44 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 }
  
 .tarjeta-tipo-reporte .icono-tipo-reporte {
-    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease;
 }
  
 .tarjeta-tipo-reporte:not(.reporte-no-disponible):hover .icono-tipo-reporte {
     transform: scale(1.12) rotate(-4deg);
+    box-shadow: 0 0 0 8px rgba(95, 151, 129, .16);
+}
+
+/* Borde degradado animado, igual que en las tarjetas de Apicultores/Colmenas */
+.tarjeta-tipo-reporte:not(.reporte-no-disponible)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(120deg, var(--miel), var(--verde-medio), var(--amarillo, var(--miel)), var(--miel));
+    background-size: 260% 260%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity .35s ease;
+    animation: girarBordeMiel 2.6s linear infinite;
+    pointer-events: none;
+}
+
+.tarjeta-tipo-reporte:not(.reporte-no-disponible):hover::before {
+    opacity: 1;
+}
+
+/* Entrada "con más personalidad" (pop + leve giro), reutilizando el mismo
+   keyframe que usan las tarjetas de Apiarios/Apicultores */
+.tarjeta-tipo-reporte.anim-entrada-tarjeta {
+    animation: entradaTarjetaApiario .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tarjeta-tipo-reporte:focus-within {
+    box-shadow: 0 0 0 3px rgba(240, 160, 0, .4), 0 20px 40px rgba(33, 79, 59, .18);
 }
  
 /* ---------- BOTÓN "ABRIR REPORTE" DEL HISTORIAL ---------- */
@@ -7473,6 +13439,19 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
 .btn-abrir-reporte:hover {
     transform: translateY(-3px) scale(1.08);
 }
+
+/* ---------- FILAS DEL HISTORIAL: leve resalte al pasar el mouse ---------- */
+
+.tabla-reportes tbody tr {
+    transition: background-color .2s ease;
+}
+
+.tabla-reportes tbody tr:hover {
+    background: #f7fbf8;
+}
+
+/* ---------- ENTRADA ESCALONADA DENTRO DEL MODAL DE REPORTE ---------- */
+/* (reutiliza .anim-entrada-modal, ya definido de forma genérica) */
  
 /* ---------- PULSO MIENTRAS SE GENERA EL PDF ---------- */
  
@@ -7496,6 +13475,16 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     .tarjeta-tipo-reporte .icono-tipo-reporte,
     .btn-abrir-reporte {
         transition: none !important;
+    }
+
+    .tarjeta-tipo-reporte::before {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .tarjeta-tipo-reporte.anim-entrada-tarjeta {
+        animation: none !important;
     }
  
     .btn-generando-reporte {
@@ -9136,6 +15125,908 @@ tr.fila-oculta-busqueda {
     .tarjeta-apiario .acciones .btn-accion {
         opacity: 1 !important;
         transform: none !important;
+    }
+
+}
+/* =========================================================
+   AGREGAR AL FINAL de estilos_admin.css
+   MODALES "PEQUEÑOS" DE AGENDA (Detalle / Eliminar) MÁS GRANDES
+   Pasan a modal-lg (misma anchura que Crear/Editar) y se
+   escalan tipografías, íconos y espaciados en consecuencia.
+========================================================= */
+
+/* ---------- MÁS AIRE EN EL ENCABEZADO Y EL CUERPO ---------- */
+
+.modal-evento-ampliado .modal-header-evento-detalle,
+.modal-evento-ampliado .modal-header-evento-eliminar {
+    padding: 26px 32px;
+}
+
+.modal-evento-ampliado .modal-body {
+    padding: 30px 32px;
+}
+
+.modal-evento-ampliado .modal-footer {
+    padding: 18px 32px 26px;
+}
+
+/* ---------- INSIGNIA DEL ÍCONO MÁS GRANDE ---------- */
+
+.modal-evento-ampliado .modal-icono-evento {
+    width: 56px;
+    min-width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
+    border-radius: 16px;
+}
+
+/* ---------- DETALLE: título, badge y filas más grandes ---------- */
+
+#modalDetalleEvento .encabezado-detalle-evento {
+    gap: 16px;
+}
+
+#modalDetalleEvento .encabezado-detalle-evento h5,
+#modalDetalleEvento .modal-header-evento-detalle .encabezado-detalle-evento h5 {
+    font-size: 1.3rem;
+}
+
+#modalDetalleEvento .badge-tipo-evento {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+}
+
+#modalDetalleEvento .lista-detalle-evento {
+    gap: 22px;
+}
+
+#modalDetalleEvento .lista-detalle-evento > div {
+    grid-template-columns: 160px 1fr;
+    gap: 18px;
+}
+
+#modalDetalleEvento .lista-detalle-evento strong,
+#modalDetalleEvento .lista-detalle-evento span {
+    font-size: 0.95rem;
+}
+
+#modalDetalleEvento .btn-editar-evento,
+#modalDetalleEvento .btn-eliminar-evento,
+#modalDetalleEvento .btn-cerrar-evento {
+    font-size: 0.85rem;
+    padding: 11px 20px;
+}
+
+#modalDetalleEvento .btn-editar-evento i,
+#modalDetalleEvento .btn-eliminar-evento i,
+#modalDetalleEvento .btn-cerrar-evento i {
+    font-size: 1rem;
+}
+
+/* ---------- ELIMINAR: aviso más grande y legible ---------- */
+
+#modalEliminarEvento .modal-title {
+    font-size: 1.3rem;
+}
+
+#modalEliminarEvento .modal-body {
+    padding-top: 36px;
+    padding-bottom: 36px;
+}
+
+#modalEliminarEvento .icono-eliminar-evento {
+    font-size: 3.4rem;
+    margin-bottom: 18px;
+}
+
+#modalEliminarEvento .modal-eliminar-texto h5 {
+    font-size: 1.3rem;
+}
+
+#modalEliminarEvento .modal-eliminar-texto p {
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+#modalEliminarEvento .modal-eliminar-texto small {
+    font-size: 0.85rem;
+}
+
+#modalEliminarEvento .btn-secondary,
+#modalEliminarEvento .btn-danger {
+    font-size: 0.92rem;
+    padding: 11px 24px;
+}
+
+/* ---------- RESPONSIVE: en pantallas chicas, que no se pasen de ancho ---------- */
+
+@media (max-width: 600px) {
+
+    .modal-evento-ampliado .modal-header-evento-detalle,
+    .modal-evento-ampliado .modal-header-evento-eliminar,
+    .modal-evento-ampliado .modal-body {
+        padding: 20px;
+    }
+
+    #modalDetalleEvento .lista-detalle-evento > div {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+}
+
+/* =========================================================
+   DETALLE APIARIO
+   COLMENAS PERTENECIENTES
+========================================================= */
+
+
+/* =========================================================
+   CAPACIDAD EN CAJA DE INFORMACIÓN
+========================================================= */
+
+.capacidad-apiario-detalle {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--gris-texto);
+
+    font-size: 0.68rem;
+
+}
+
+
+.capacidad-apiario-detalle strong {
+
+    color: var(--verde-oscuro);
+
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+========================================================= */
+
+.seccion-colmenas-detalle-apiario {
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(95, 151, 129, 0.18);
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 6px 16px
+        rgba(0, 0, 0, 0.06);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.encabezado-colmenas-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        15px
+        17px;
+
+    border-bottom:
+        1px solid
+        rgba(95, 151, 129, 0.15);
+
+    background:
+        linear-gradient(
+            135deg,
+            #f1faf3,
+            #e8f7e9
+        );
+
+}
+
+
+.titulo-colmenas-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    min-width: 0;
+
+}
+
+
+.icono-colmenas-detalle-apiario {
+
+    flex-shrink: 0;
+
+    width: 39px;
+
+    height: 39px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        rgba(95, 151, 129, 0.14);
+
+    color: var(--verde-oscuro);
+
+    font-size: 1rem;
+
+}
+
+
+.titulo-colmenas-detalle-apiario h6 {
+
+    margin: 0 0 2px;
+
+    color: var(--verde-oscuro);
+
+    font-size: 0.86rem;
+
+    font-weight: 750;
+
+}
+
+
+.titulo-colmenas-detalle-apiario p {
+
+    margin: 0;
+
+    color: var(--gris-texto);
+
+    font-size: 0.68rem;
+
+}
+
+
+/* =========================================================
+   CONTADOR
+========================================================= */
+
+.contador-colmenas-detalle-apiario {
+
+    flex-shrink: 0;
+
+    min-width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0 9px;
+
+    border-radius: 999px;
+
+    background: var(--verde-oscuro);
+
+    color: #ffffff;
+
+    font-size: 0.76rem;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   LISTADO
+   SOLO ESTA ZONA HACE SCROLL
+========================================================= */
+
+.lista-colmenas-detalle-apiario {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    max-height: 215px;
+
+    padding: 14px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(95, 151, 129, 0.75)
+        #edf4ef;
+
+}
+
+
+/* =========================================================
+   SCROLLBAR DEL LISTADO
+========================================================= */
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar {
+
+    width: 6px;
+
+}
+
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar-track {
+
+    background: #edf4ef;
+
+    border-radius: 999px;
+
+}
+
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar-thumb {
+
+    background:
+        rgba(95, 151, 129, 0.75);
+
+    border-radius: 999px;
+
+}
+
+
+.lista-colmenas-detalle-apiario::-webkit-scrollbar-thumb:hover {
+
+    background:
+        var(--verde-oscuro);
+
+}
+
+
+/* =========================================================
+   COLMENA
+========================================================= */
+
+.item-colmena-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    min-width: 0;
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px solid
+        #e5ece8;
+
+    border-radius: 12px;
+
+    background: #fafcfb;
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease;
+
+}
+
+
+.item-colmena-detalle-apiario:hover {
+
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(95, 151, 129, 0.38);
+
+    box-shadow:
+        0 8px 18px
+        rgba(33, 79, 59, 0.09);
+
+}
+
+
+/* =========================================================
+   ICONO COLMENA
+========================================================= */
+
+.icono-colmena-detalle-apiario {
+
+    flex-shrink: 0;
+
+    width: 37px;
+
+    height: 37px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #e8f7e9;
+
+    color: var(--verde-medio);
+
+    font-size: 1rem;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.contenido-colmena-detalle-apiario {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.encabezado-item-colmena-detalle {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+}
+
+
+.encabezado-item-colmena-detalle > strong {
+
+    overflow: hidden;
+
+    color: var(--verde-oscuro);
+
+    font-size: 0.77rem;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   FECHA
+========================================================= */
+
+.datos-colmena-detalle-apiario {
+
+    margin-top: 5px;
+
+}
+
+
+.datos-colmena-detalle-apiario span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: var(--gris-texto);
+
+    font-size: 0.64rem;
+
+}
+
+
+.datos-colmena-detalle-apiario i {
+
+    color: var(--verde-medio);
+
+}
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.estado-colmena-detalle {
+
+    flex-shrink: 0;
+
+    padding:
+        4px
+        8px;
+
+    border-radius: 999px;
+
+    font-size: 0.59rem;
+
+    font-weight: 750;
+
+}
+
+
+/* ACTIVA */
+
+.estado-colmena-activa {
+
+    background: #e3f6e8;
+
+    color: #287341;
+
+}
+
+
+/* RIESGO */
+
+.estado-colmena-riesgo {
+
+    background: #fde8e8;
+
+    color: #b53642;
+
+}
+
+
+/* REVISIÓN */
+
+.estado-colmena-revision {
+
+    background: #fff4d1;
+
+    color: #806300;
+
+}
+
+
+/* INACTIVA */
+
+.estado-colmena-inactiva {
+
+    background: #ecefed;
+
+    color: #68716c;
+
+}
+
+
+/* =========================================================
+   APIARIO SIN COLMENAS
+========================================================= */
+
+.sin-colmenas-detalle-apiario {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    min-height: 105px;
+
+    padding: 20px;
+
+    color: var(--gris-texto);
+
+}
+
+
+.icono-sin-colmenas-detalle {
+
+    flex-shrink: 0;
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #eef5f0;
+
+    color: var(--verde-medio);
+
+    font-size: 1.05rem;
+
+}
+
+
+.sin-colmenas-detalle-apiario strong {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: var(--verde-oscuro);
+
+    font-size: 0.78rem;
+
+}
+
+
+.sin-colmenas-detalle-apiario span {
+
+    display: block;
+
+    font-size: 0.67rem;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .lista-colmenas-detalle-apiario {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media (max-width: 575px) {
+
+    .encabezado-colmenas-detalle-apiario {
+
+        align-items: flex-start;
+
+    }
+
+
+    .titulo-colmenas-detalle-apiario p {
+
+        max-width: 210px;
+
+    }
+
+
+    .lista-colmenas-detalle-apiario {
+
+        grid-template-columns: 1fr;
+
+        max-height: 230px;
+
+        padding: 10px;
+
+    }
+
+
+    .encabezado-item-colmena-detalle {
+
+        align-items: flex-start;
+
+    }
+
+}
+
+/* =========================================================
+   PAGINACIÓN
+   HISTORIAL DE REPORTES
+========================================================= */
+
+.paginacion-reportes-wrap {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        15px
+        20px;
+
+    border-top:
+        1px solid
+        #e7eeea;
+
+    background:
+        #fafcfb;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.informacion-paginacion-reportes {
+
+    color: #7d8c85;
+
+    font-size: 0.72rem;
+
+}
+
+
+.informacion-paginacion-reportes strong {
+
+    color:
+        var(--verde-oscuro);
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   PAGINADOR
+========================================================= */
+
+.paginacion-reportes {
+
+    gap: 5px;
+
+    margin: 0;
+
+}
+
+
+.paginacion-reportes
+.page-item
+.page-link {
+
+    min-width: 35px;
+
+    height: 35px;
+
+    padding:
+        0
+        10px;
+
+    border-radius: 10px;
+
+    font-size: 0.75rem;
+
+    box-shadow:
+        0 5px 13px
+        rgba(33, 79, 59, 0.08);
+
+}
+
+
+.paginacion-reportes
+.page-item.active
+.page-link {
+
+    background:
+        var(--verde-oscuro);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 7px 17px
+        rgba(33, 79, 59, 0.20);
+
+}
+
+
+.paginacion-reportes
+.page-item
+.page-link:hover {
+
+    background: #e5f3e9;
+
+    color:
+        var(--verde-oscuro);
+
+}
+
+
+.paginacion-reportes
+.page-item.disabled
+.page-link {
+
+    background: #f0f4f2;
+
+    color: #b4bdb8;
+
+    box-shadow: none;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .paginacion-reportes-wrap {
+
+        flex-direction: column;
+
+        align-items: center;
+
+        padding:
+            14px
+            12px;
+
+    }
+
+
+    .informacion-paginacion-reportes {
+
+        text-align: center;
+
+    }
+
+}
+
+
+@media (max-width: 575px) {
+
+    .paginacion-reportes {
+
+        gap: 4px;
+
+    }
+
+
+    .paginacion-reportes
+    .page-item
+    .page-link {
+
+        min-width: 31px;
+
+        height: 31px;
+
+        padding:
+            0
+            8px;
+
+        border-radius: 9px;
+
+        font-size: 0.69rem;
+
     }
 
 }

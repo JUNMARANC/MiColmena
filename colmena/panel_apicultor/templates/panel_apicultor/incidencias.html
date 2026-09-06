@@ -21,11 +21,10 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/incidencias.css' %}?v=1"
+    href="{% static 'panel_apicultor/css/incidencias.css' %}?v=2"
 >
 
 {% endblock %}
-
 
 
 {% block content %}
@@ -45,25 +44,19 @@
 
 
             <span class="incidencias-etiqueta">
-
                 Seguimiento de novedades
-
             </span>
 
 
             <h1>
-
                 Incidencias
-
             </h1>
 
 
             <p>
-
                 Consulta las novedades registradas en tus
                 apiarios y colmenas, revisa su prioridad,
-                estado y evidencia asociada.
-
+                estado y evidencias fotográficas asociadas.
             </p>
 
 
@@ -71,6 +64,7 @@
 
 
         <div class="incidencias-encabezado-acciones">
+
 
             <a
                 href="{% url 'crear_incidencia_apicultor' %}"
@@ -84,7 +78,6 @@
                 </span>
 
             </a>
-
 
 
         </div>
@@ -101,7 +94,9 @@
     <section class="incidencias-resumen">
 
 
-        <!-- TOTAL -->
+        <!-- =================================================
+             TOTAL
+        ================================================== -->
 
         <article class="incidencia-resumen-card total">
 
@@ -116,15 +111,11 @@
             <div>
 
                 <strong>
-
                     {{ total_incidencias|default:0 }}
-
                 </strong>
 
                 <span>
-
                     Total registradas
-
                 </span>
 
             </div>
@@ -134,7 +125,9 @@
 
 
 
-        <!-- ABIERTAS -->
+        <!-- =================================================
+             PENDIENTES
+        ================================================== -->
 
         <article class="incidencia-resumen-card abierta">
 
@@ -149,9 +142,7 @@
             <div>
 
                 <strong>
-
                     {{ total_pendientes|default:0 }}
-
                 </strong>
 
                 <span>
@@ -165,15 +156,19 @@
 
 
 
-        <!-- RESUELTAS -->
+        <!-- =================================================
+             RESUELTAS
+        ================================================== -->
 
         <article class="incidencia-resumen-card resueltas">
+
 
             <div class="incidencia-resumen-icono">
 
                 <i class="bi bi-check-circle-fill"></i>
 
             </div>
+
 
             <div>
 
@@ -187,11 +182,14 @@
 
             </div>
 
+
         </article>
 
 
 
-        <!-- RESULTADOS -->
+        <!-- =================================================
+             RESULTADOS
+        ================================================== -->
 
         <article class="incidencia-resumen-card resultados">
 
@@ -206,15 +204,11 @@
             <div>
 
                 <strong>
-
                     {{ total_resultados|default:0 }}
-
                 </strong>
 
                 <span>
-
                     Resultados actuales
-
                 </span>
 
             </div>
@@ -228,7 +222,7 @@
 
 
     <!-- =====================================================
-        AVISO
+         AVISO
     ====================================================== -->
 
     <section class="incidencias-aviso">
@@ -243,20 +237,19 @@
 
         <div>
 
+
             <strong>
-
                 Seguimiento de incidencias
-
             </strong>
 
 
             <p>
-
                 Una incidencia puede corresponder directamente
                 a una colmena o afectar de manera general a todo
-                un apiario.
-
+                un apiario. Las fotografías del problema y de la
+                solución se conservarán como historial.
             </p>
+
 
         </div>
 
@@ -312,9 +305,7 @@
 
 
                 <option value="">
-
                     Todos los apiarios
-
                 </option>
 
 
@@ -342,7 +333,7 @@
 
 
             <!-- =================================================
-                ESTADO
+                 ESTADO
             ================================================== -->
 
             <select
@@ -352,9 +343,7 @@
 
 
                 <option value="">
-
                     Todos los estados
-
                 </option>
 
 
@@ -392,9 +381,7 @@
 
 
                 <option value="">
-
                     Todas las prioridades
-
                 </option>
 
 
@@ -433,9 +420,7 @@
                 <i class="bi bi-funnel-fill"></i>
 
                 <span>
-
                     Filtrar
-
                 </span>
 
             </button>
@@ -457,9 +442,7 @@
                     <i class="bi bi-x-lg"></i>
 
                     <span>
-
                         Limpiar
-
                     </span>
 
                 </a>
@@ -476,7 +459,7 @@
 
 
     <!-- =====================================================
-         CABECERA RESULTADOS
+         CABECERA DE RESULTADOS
     ====================================================== -->
 
     <section class="incidencias-resultados-header">
@@ -519,9 +502,7 @@
         <p>
 
             <strong>
-
                 {{ total_resultados }}
-
             </strong>
 
             resultado{{ total_resultados|pluralize }}
@@ -550,7 +531,7 @@
 
 
                     <!-- =========================================
-                        CABECERA
+                         CABECERA
                     ========================================== -->
 
                     <thead>
@@ -560,51 +541,37 @@
 
 
                             <th>
-
                                 Incidencia
-
                             </th>
 
 
                             <th>
-
                                 Ubicación
-
                             </th>
 
 
                             <th>
-
                                 Fecha
-
                             </th>
 
 
                             <th>
-
                                 Prioridad
-
                             </th>
 
 
                             <th>
-
                                 Estado
-
                             </th>
 
 
                             <th>
-
                                 Responsable
-
                             </th>
 
 
                             <th class="tabla-acciones-incidencia">
-
                                 Acciones
-
                             </th>
 
 
@@ -649,16 +616,12 @@
 
 
                                             <strong>
-
                                                 {{ incidencia.titulo }}
-
                                             </strong>
 
 
                                             <span>
-
                                                 #{{ incidencia.id_incidencia }}
-
                                             </span>
 
 
@@ -697,7 +660,6 @@
 
 
                                         </strong>
-
 
 
                                         <span>
@@ -836,7 +798,7 @@
 
                                         <span></span>
 
-                                        {{ incidencia.estado }}
+                                        {{ incidencia.estado|default:"Sin definir" }}
 
                                     </span>
 
@@ -873,10 +835,11 @@
 
 
                                 <!-- =============================
-                                    ACCIONES
+                                     ACCIONES
                                 ============================== -->
 
                                 <td class="acciones-incidencia-tabla">
+
 
                                     <!-- VER -->
 
@@ -885,11 +848,13 @@
                                         class="btn-ver-incidencia"
                                         data-modal-incidencia="modalIncidencia{{ incidencia.id_incidencia }}"
                                         title="Ver detalle"
+                                        aria-label="Ver incidencia {{ incidencia.id_incidencia }}"
                                     >
 
                                         <i class="bi bi-eye"></i>
 
                                     </button>
+
 
 
                                     <!-- EDITAR -->
@@ -898,11 +863,13 @@
                                         href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
                                         class="btn-editar-incidencia"
                                         title="Gestionar incidencia"
+                                        aria-label="Gestionar incidencia {{ incidencia.id_incidencia }}"
                                     >
 
                                         <i class="bi bi-pencil-square"></i>
 
                                     </a>
+
 
                                 </td>
 
@@ -944,6 +911,7 @@
                     <a
                         href="?page={{ incidencias.previous_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}&prioridad={{ prioridad_seleccionada }}"
                         class="incidencias-pagina"
+                        aria-label="Página anterior"
                     >
 
                         <i class="bi bi-chevron-left"></i>
@@ -998,6 +966,7 @@
                     <a
                         href="?page={{ incidencias.next_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&estado={{ estado_seleccionado }}&prioridad={{ prioridad_seleccionada }}"
                         class="incidencias-pagina"
+                        aria-label="Página siguiente"
                     >
 
                         <i class="bi bi-chevron-right"></i>
@@ -1054,8 +1023,7 @@
 
                 {% if busqueda or apiario_seleccionado or estado_seleccionado or prioridad_seleccionada %}
 
-                    Intenta cambiar o limpiar los filtros
-                    utilizados.
+                    Intenta cambiar o limpiar los filtros utilizados.
 
                 {% else %}
 
@@ -1096,7 +1064,7 @@
 
 <!-- =========================================================
      MODALES DE DETALLE
-========================================================== -->
+========================================================= -->
 
 {% for incidencia in incidencias %}
 
@@ -1127,9 +1095,7 @@
 
 
                     <span>
-
                         Incidencia #{{ incidencia.id_incidencia }}
-
                     </span>
 
 
@@ -1162,21 +1128,21 @@
 
 
             <!-- =================================================
-                 INFORMACIÓN
+                 INFORMACIÓN GENERAL
             ================================================== -->
 
             <div class="incidencia-modal-body">
 
 
-                <!-- APIARIO -->
+                <!-- =========================================
+                     APIARIO
+                ========================================== -->
 
                 <div class="incidencia-modal-dato">
 
 
                     <span>
-
                         Apiario
-
                     </span>
 
 
@@ -1201,7 +1167,9 @@
 
 
 
-                <!-- COLMENA / APIARIO -->
+                <!-- =========================================
+                     COLMENA / APIARIO
+                ========================================== -->
 
                 <div class="incidencia-modal-dato">
 
@@ -1210,16 +1178,12 @@
 
 
                         <span>
-
                             Colmena
-
                         </span>
 
 
                         <strong>
-
                             {{ incidencia.id_colmena.codigocolmena }}
-
                         </strong>
 
 
@@ -1227,9 +1191,7 @@
 
 
                         <span>
-
                             Incidencia aplicada a
-
                         </span>
 
 
@@ -1244,16 +1206,12 @@
 
 
                         <span>
-
                             Ubicación
-
                         </span>
 
 
                         <strong>
-
                             Sin ubicación asociada
-
                         </strong>
 
 
@@ -1264,15 +1222,15 @@
 
 
 
-                <!-- FECHA -->
+                <!-- =========================================
+                     FECHA
+                ========================================== -->
 
                 <div class="incidencia-modal-dato">
 
 
                     <span>
-
                         Fecha de detección
-
                     </span>
 
 
@@ -1297,22 +1255,20 @@
 
 
 
-                <!-- PRIORIDAD -->
+                <!-- =========================================
+                     PRIORIDAD
+                ========================================== -->
 
                 <div class="incidencia-modal-dato">
 
 
                     <span>
-
                         Prioridad
-
                     </span>
 
 
                     <strong>
-
                         {{ incidencia.prioridad|default:"Sin definir" }}
-
                     </strong>
 
 
@@ -1320,22 +1276,20 @@
 
 
 
-                <!-- ESTADO -->
+                <!-- =========================================
+                     ESTADO
+                ========================================== -->
 
                 <div class="incidencia-modal-dato">
 
 
                     <span>
-
                         Estado
-
                     </span>
 
 
                     <strong>
-
                         {{ incidencia.estado|default:"Sin definir" }}
-
                     </strong>
 
 
@@ -1343,22 +1297,20 @@
 
 
 
-                <!-- RESPONSABLE -->
+                <!-- =========================================
+                     RESPONSABLE
+                ========================================== -->
 
                 <div class="incidencia-modal-dato">
 
 
                     <span>
-
                         Responsable
-
                     </span>
 
 
                     <strong>
-
                         {{ incidencia.responsable|default:"Sin responsable" }}
-
                     </strong>
 
 
@@ -1377,9 +1329,7 @@
 
 
                 <h3>
-
                     Observaciones
-
                 </h3>
 
 
@@ -1387,9 +1337,7 @@
 
 
                     <p>
-
                         {{ incidencia.observaciones }}
-
                     </p>
 
 
@@ -1397,9 +1345,7 @@
 
 
                     <p class="sin-observaciones">
-
                         No se registraron observaciones.
-
                     </p>
 
 
@@ -1411,32 +1357,306 @@
 
 
             <!-- =================================================
-                 EVIDENCIA
+                 HISTORIAL FOTOGRÁFICO
             ================================================== -->
 
-            {% if incidencia.imagen %}
+            <div class="incidencia-modal-evidencias">
 
 
-                <div class="incidencia-modal-evidencia">
+                <!-- =============================================
+                     EVIDENCIAS DEL PROBLEMA
+                ============================================== -->
 
+                <section class="incidencia-modal-evidencia problema">
+
+
+                    <!-- =========================================
+                         HEADER PROBLEMA
+                    ========================================== -->
 
                     <div class="incidencia-evidencia-header">
 
 
-                        <div>
+                        <div class="incidencia-evidencia-titulo">
 
 
-                            <h3>
+                            <span class="incidencia-evidencia-icono problema">
 
-                                Evidencia fotográfica
+                                <i class="bi bi-exclamation-triangle-fill"></i>
 
-                            </h3>
+                            </span>
+
+
+                            <div>
+
+
+                                <h3>
+                                    Evidencias del problema
+                                </h3>
+
+
+                                <span>
+                                    Fotografías tomadas para documentar
+                                    el estado inicial de la incidencia.
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- =====================================
+                             CONTADOR
+                        ====================================== -->
+
+                        <span class="incidencia-evidencia-contador problema">
+
+
+                            {% if incidencia.evidencias_problema_modal %}
+
+                                {{ incidencia.evidencias_problema_modal|length }}
+                                fotografía{{ incidencia.evidencias_problema_modal|length|pluralize }}
+
+
+                            {% elif incidencia.imagen %}
+
+                                1 fotografía
+
+
+                            {% else %}
+
+                                0 fotografías
+
+                            {% endif %}
+
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         NUEVO SISTEMA DE EVIDENCIAS
+                    ========================================== -->
+
+                    {% if incidencia.evidencias_problema_modal %}
+
+
+                        <div class="incidencia-evidencias-grid">
+
+
+                            {% for evidencia in incidencia.evidencias_problema_modal %}
+
+
+                                <article class="incidencia-evidencia-item problema">
+
+
+                                    <!-- =============================
+                                         IMAGEN
+                                    ============================== -->
+
+                                    <div class="incidencia-evidencia-imagen">
+
+
+                                        <img
+                                            src="{{ evidencia.imagen.url }}"
+                                            alt="Evidencia del problema {{ forloop.counter }} de {{ incidencia.titulo }}"
+                                            loading="lazy"
+                                        >
+
+
+
+                                        <!-- =========================
+                                             NÚMERO
+                                        ========================== -->
+
+                                        <span class="incidencia-evidencia-numero">
+
+                                            {{ forloop.counter }}
+
+                                        </span>
+
+
+
+                                        <!-- =========================
+                                             BADGE
+                                        ========================== -->
+
+                                        <span class="incidencia-evidencia-badge problema">
+
+                                            Problema
+
+                                        </span>
+
+
+
+                                        <!-- =========================
+                                             ZOOM
+                                        ========================== -->
+
+                                        <div class="incidencia-evidencia-zoom">
+
+                                            <i class="bi bi-arrows-fullscreen"></i>
+
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                    <!-- =============================
+                                         INFORMACIÓN
+                                    ============================== -->
+
+                                    <div class="incidencia-evidencia-info">
+
+
+                                        <div>
+
+
+                                            <strong>
+                                                Evidencia {{ forloop.counter }}
+                                            </strong>
+
+
+                                            <span>
+
+
+                                                {% if evidencia.fecha_registro %}
+
+                                                    {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                {% else %}
+
+                                                    Sin fecha de registro
+
+                                                {% endif %}
+
+
+                                            </span>
+
+
+                                        </div>
+
+
+                                        <i class="bi bi-image"></i>
+
+
+                                    </div>
+
+
+                                </article>
+
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+
+                    <!-- =========================================
+                         COMPATIBILIDAD CON FOTO ANTIGUA
+
+                         Solo aparece cuando todavía no existen
+                         registros en EvidenciaIncidencia.
+                    ========================================== -->
+
+                    {% elif incidencia.imagen %}
+
+
+                        <div class="incidencia-evidencias-grid">
+
+
+                            <article class="incidencia-evidencia-item problema">
+
+
+                                <div class="incidencia-evidencia-imagen">
+
+
+                                    <img
+                                        src="{{ incidencia.imagen.url }}"
+                                        alt="Evidencia original de {{ incidencia.titulo }}"
+                                        loading="lazy"
+                                    >
+
+
+                                    <span class="incidencia-evidencia-numero">
+                                        1
+                                    </span>
+
+
+                                    <span class="incidencia-evidencia-badge problema">
+                                        Problema
+                                    </span>
+
+
+                                    <div class="incidencia-evidencia-zoom">
+
+                                        <i class="bi bi-arrows-fullscreen"></i>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="incidencia-evidencia-info">
+
+
+                                    <div>
+
+                                        <strong>
+                                            Evidencia original
+                                        </strong>
+
+                                        <span>
+                                            Registro anterior
+                                        </span>
+
+                                    </div>
+
+
+                                    <i class="bi bi-image"></i>
+
+
+                                </div>
+
+
+                            </article>
+
+
+                        </div>
+
+
+
+                    <!-- =========================================
+                         SIN FOTOS DEL PROBLEMA
+                    ========================================== -->
+
+                    {% else %}
+
+
+                        <div class="incidencia-sin-evidencias problema">
+
+
+                            <div>
+
+                                <i class="bi bi-image"></i>
+
+                            </div>
 
 
                             <span>
 
-                                Imagen registrada al reportar
-                                la incidencia
+                                No se registraron fotografías
+                                del problema.
 
                             </span>
 
@@ -1444,29 +1664,233 @@
                         </div>
 
 
-                        <i class="bi bi-image-fill"></i>
+                    {% endif %}
+
+
+                </section>
+
+
+
+                <!-- =============================================
+                     EVIDENCIAS DE LA SOLUCIÓN
+                ============================================== -->
+
+                <section class="incidencia-modal-evidencia solucion">
+
+
+                    <!-- =========================================
+                         HEADER SOLUCIÓN
+                    ========================================== -->
+
+                    <div class="incidencia-evidencia-header">
+
+
+                        <div class="incidencia-evidencia-titulo">
+
+
+                            <span class="incidencia-evidencia-icono solucion">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                            </span>
+
+
+                            <div>
+
+
+                                <h3>
+                                    Evidencias de la solución
+                                </h3>
+
+
+                                <span>
+                                    Fotografías tomadas después
+                                    de realizar las acciones correctivas.
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- =====================================
+                             CONTADOR
+                        ====================================== -->
+
+                        <span class="incidencia-evidencia-contador solucion">
+
+
+                            {{ incidencia.evidencias_solucion_modal|length }}
+
+                            fotografía{{ incidencia.evidencias_solucion_modal|length|pluralize }}
+
+
+                        </span>
 
 
                     </div>
 
 
-                    <div class="incidencia-evidencia-imagen">
+
+                    <!-- =========================================
+                         GALERÍA DE SOLUCIONES
+                    ========================================== -->
+
+                    {% if incidencia.evidencias_solucion_modal %}
 
 
-                        <img
-                            src="{{ incidencia.imagen.url }}"
-                            alt="Evidencia de {{ incidencia.titulo }}"
-                            loading="lazy"
-                        >
+                        <div class="incidencia-evidencias-grid">
 
 
-                    </div>
+                            {% for evidencia in incidencia.evidencias_solucion_modal %}
 
 
-                </div>
+                                <article class="incidencia-evidencia-item solucion">
 
 
-            {% endif %}
+                                    <!-- =============================
+                                         IMAGEN
+                                    ============================== -->
+
+                                    <div class="incidencia-evidencia-imagen">
+
+
+                                        <img
+                                            src="{{ evidencia.imagen.url }}"
+                                            alt="Evidencia de solución {{ forloop.counter }} de {{ incidencia.titulo }}"
+                                            loading="lazy"
+                                        >
+
+
+
+                                        <!-- =========================
+                                             NÚMERO
+                                        ========================== -->
+
+                                        <span class="incidencia-evidencia-numero">
+
+                                            {{ forloop.counter }}
+
+                                        </span>
+
+
+
+                                        <!-- =========================
+                                             BADGE
+                                        ========================== -->
+
+                                        <span class="incidencia-evidencia-badge solucion">
+
+                                            Solución
+
+                                        </span>
+
+
+
+                                        <!-- =========================
+                                             ZOOM
+                                        ========================== -->
+
+                                        <div class="incidencia-evidencia-zoom">
+
+                                            <i class="bi bi-arrows-fullscreen"></i>
+
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                    <!-- =============================
+                                         INFORMACIÓN
+                                    ============================== -->
+
+                                    <div class="incidencia-evidencia-info">
+
+
+                                        <div>
+
+
+                                            <strong>
+                                                Solución {{ forloop.counter }}
+                                            </strong>
+
+
+                                            <span>
+
+
+                                                {% if evidencia.fecha_registro %}
+
+                                                    {{ evidencia.fecha_registro|date:"d/m/Y H:i" }}
+
+                                                {% else %}
+
+                                                    Sin fecha de registro
+
+                                                {% endif %}
+
+
+                                            </span>
+
+
+                                        </div>
+
+
+                                        <i class="bi bi-check-circle"></i>
+
+
+                                    </div>
+
+
+                                </article>
+
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+
+                    <!-- =========================================
+                         SIN SOLUCIONES
+                    ========================================== -->
+
+                    {% else %}
+
+
+                        <div class="incidencia-sin-evidencias solucion">
+
+
+                            <div>
+
+                                <i class="bi bi-camera"></i>
+
+                            </div>
+
+
+                            <span>
+
+                                Aún no se han registrado fotografías
+                                de la solución.
+
+                            </span>
+
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </section>
+
+
+            </div>
 
 
 
@@ -1477,7 +1901,7 @@
             <div class="incidencia-modal-footer">
 
 
-                {% if incidencia.id_colmena %}
+                {% if incidencia.id_apiario %}
 
 
                     <a
@@ -1488,28 +1912,7 @@
                         <i class="bi bi-flower1"></i>
 
                         <span>
-
                             Ver apiario
-
-                        </span>
-
-                    </a>
-
-
-                {% elif incidencia.id_apiario %}
-
-
-                    <a
-                        href="{% url 'detalle_apiario_apicultor' incidencia.id_apiario.id_apiario %}"
-                        class="btn-incidencia-ver-apiario"
-                    >
-
-                        <i class="bi bi-flower1"></i>
-
-                        <span>
-
-                            Ver apiario
-
                         </span>
 
                     </a>
@@ -1549,7 +1952,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_apicultor/js/incidencias.js' %}?v=1"
+    src="{% static 'panel_apicultor/js/incidencias.js' %}?v=2"
 ></script>
 
 {% endblock %}

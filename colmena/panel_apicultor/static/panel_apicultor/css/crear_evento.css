@@ -1,0 +1,1628 @@
+/* ==========================================================
+   CREAR EVENTO - PANEL APICULTOR
+   MI COLMENA
+========================================================== */
+
+
+/* ==========================================================
+   1. CONTENEDOR GENERAL
+========================================================== */
+
+.crear-evento-page {
+
+    width: 100%;
+
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 22px;
+
+}
+
+
+/* ==========================================================
+   2. ENCABEZADO
+========================================================== */
+
+.crear-evento-encabezado {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+}
+
+
+.crear-evento-encabezado-info {
+
+    min-width: 0;
+
+}
+
+
+.crear-evento-etiqueta {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin-top: 15px;
+
+    margin-bottom: 7px;
+
+    padding: 5px 11px;
+
+    border-radius: 30px;
+
+    background: #FFEDB4;
+
+    color: #896817;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+}
+
+
+.crear-evento-encabezado h1 {
+
+    margin: 0;
+
+    color: var(--apicultor-verde-oscuro, #214F3B);
+
+    font-size: 29px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+}
+
+
+.crear-evento-encabezado p {
+
+    max-width: 680px;
+
+    margin: 7px 0 0;
+
+    color: var(--apicultor-texto-secundario, #66746C);
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    line-height: 1.7;
+
+}
+
+
+/* ==========================================================
+   3. BOTÓN VOLVER
+========================================================== */
+
+.btn-volver-agenda {
+
+    width: fit-content;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 11px;
+
+    border: 1px solid rgba(33, 79, 59, 0.12);
+
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    color: #214F3B;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-volver-agenda:hover {
+
+    background: #FFFFFF;
+
+    border-color: rgba(33, 79, 59, 0.22);
+
+    transform: translateX(-2px);
+
+}
+
+
+/* ==========================================================
+   4. ICONO ENCABEZADO
+========================================================== */
+
+.crear-evento-encabezado-icono {
+
+    width: 62px;
+
+    height: 62px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #FFEDB4;
+
+    color: #214F3B;
+
+    font-size: 25px;
+
+}
+
+
+/* ==========================================================
+   5. AVISO
+========================================================== */
+
+.crear-evento-aviso {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 15px 17px;
+
+    border: 1px solid #D9E8D6;
+
+    border-radius: 15px;
+
+    background: rgba(231, 242, 227, 0.52);
+
+}
+
+
+.crear-evento-aviso-icono {
+
+    width: 40px;
+
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #DCEFD7;
+
+    color: #4F744B;
+
+    font-size: 16px;
+
+}
+
+
+.crear-evento-aviso strong {
+
+    display: block;
+
+    color: #214F3B;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+}
+
+
+.crear-evento-aviso p {
+
+    margin: 4px 0 0;
+
+    color: #66746C;
+
+    font-size: 8px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   6. FORMULARIO
+========================================================== */
+
+.crear-evento-form {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+}
+
+
+/* ==========================================================
+   7. TARJETAS
+========================================================== */
+
+.crear-evento-card {
+
+    padding: 20px;
+
+    border: 1px solid rgba(33, 79, 59, 0.09);
+
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    box-shadow:
+        0 5px 18px rgba(33, 79, 59, 0.045);
+
+    animation:
+        entradaCrearEvento
+        0.3s ease both;
+
+}
+
+
+/* ==========================================================
+   8. HEADER TARJETAS
+========================================================== */
+
+.crear-evento-card-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.crear-evento-card-icono {
+
+    width: 43px;
+
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #FFEDB4;
+
+    color: #214F3B;
+
+    font-size: 17px;
+
+}
+
+
+.crear-evento-card-header > div:last-child {
+
+    min-width: 0;
+
+}
+
+
+.crear-evento-card-header span {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #A38116;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.35px;
+
+}
+
+
+.crear-evento-card-header h2 {
+
+    margin: 0;
+
+    color: #214F3B;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+.crear-evento-card-header p {
+
+    max-width: 650px;
+
+    margin: 4px 0 0;
+
+    color: #66746C;
+
+    font-size: 8px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   9. SELECTOR TIPO DE EVENTO
+========================================================== */
+
+.tipo-evento-selector {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 13px;
+
+}
+
+
+/* ==========================================================
+   10. OPCIÓN TIPO
+========================================================== */
+
+.tipo-evento-opcion {
+
+    position: relative;
+
+    min-height: 108px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 16px;
+
+    border: 1px solid #DCE3DE;
+
+    border-radius: 14px;
+
+    background: #FFFFFF;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.tipo-evento-opcion:hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   11. RADIO REAL
+========================================================== */
+
+.tipo-evento-opcion input[type="radio"] {
+
+    position: absolute;
+
+    width: 1px;
+
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+
+/* ==========================================================
+   12. RADIO VISUAL
+========================================================== */
+
+.tipo-evento-radio-visual {
+
+    width: 17px;
+
+    height: 17px;
+
+    flex-shrink: 0;
+
+    border: 2px solid #C7D0CA;
+
+    border-radius: 50%;
+
+    background: #FFFFFF;
+
+    box-shadow:
+        inset 0 0 0 4px #FFFFFF;
+
+}
+
+
+/* ==========================================================
+   13. ICONO TIPO
+========================================================== */
+
+.tipo-evento-icono {
+
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 18px;
+
+}
+
+
+/* ==========================================================
+   14. REVISIÓN
+========================================================== */
+
+.tipo-evento-opcion.revision
+.tipo-evento-icono {
+
+    background: #E5EFFA;
+
+    color: #456889;
+
+}
+
+
+.tipo-evento-opcion.revision:hover {
+
+    border-color: #AFC5DA;
+
+    background: #F7FAFD;
+
+}
+
+
+.tipo-evento-opcion.revision:has(input:checked),
+.tipo-evento-opcion.revision.activa {
+
+    border-color: #6591BC;
+
+    background: rgba(229, 239, 250, 0.58);
+
+    box-shadow:
+        0 0 0 3px rgba(101, 145, 188, 0.10);
+
+}
+
+
+.tipo-evento-opcion.revision:has(input:checked)
+.tipo-evento-radio-visual,
+.tipo-evento-opcion.revision.activa
+.tipo-evento-radio-visual {
+
+    border-color: #6591BC;
+
+    background: #6591BC;
+
+}
+
+
+/* ==========================================================
+   15. EVENTO GENERAL
+========================================================== */
+
+.tipo-evento-opcion.evento
+.tipo-evento-icono {
+
+    background: #E7F2E3;
+
+    color: #4F744B;
+
+}
+
+
+.tipo-evento-opcion.evento:hover {
+
+    border-color: #BAD4B4;
+
+    background: #F8FCF7;
+
+}
+
+
+.tipo-evento-opcion.evento:has(input:checked),
+.tipo-evento-opcion.evento.activa {
+
+    border-color: #74A66D;
+
+    background: rgba(231, 242, 227, 0.62);
+
+    box-shadow:
+        0 0 0 3px rgba(116, 166, 109, 0.10);
+
+}
+
+
+.tipo-evento-opcion.evento:has(input:checked)
+.tipo-evento-radio-visual,
+.tipo-evento-opcion.evento.activa
+.tipo-evento-radio-visual {
+
+    border-color: #74A66D;
+
+    background: #74A66D;
+
+}
+
+/* ==========================================================
+   MANTENIMIENTO
+========================================================== */
+
+.tipo-evento-opcion.mantenimiento
+.tipo-evento-icono {
+
+    background: #FFF0BE;
+
+    color: #896817;
+
+}
+
+
+.tipo-evento-opcion.mantenimiento:hover {
+
+    border-color: #DABF59;
+
+    background: #FFFDF5;
+
+}
+
+
+.tipo-evento-opcion.mantenimiento:has(input:checked),
+.tipo-evento-opcion.mantenimiento.activa {
+
+    border-color: #D4A62A;
+
+    background: rgba(255, 240, 190, 0.52);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(212, 166, 42, 0.10);
+
+}
+
+
+.tipo-evento-opcion.mantenimiento:has(input:checked)
+.tipo-evento-radio-visual,
+.tipo-evento-opcion.mantenimiento.activa
+.tipo-evento-radio-visual {
+
+    border-color: #D4A62A;
+
+    background: #D4A62A;
+
+}
+
+
+
+/* ==========================================================
+   INCIDENCIA
+========================================================== */
+
+.tipo-evento-opcion.incidencia
+.tipo-evento-icono {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+
+}
+
+
+.tipo-evento-opcion.incidencia:hover {
+
+    border-color: #E3AAA4;
+
+    background: #FFF9F8;
+
+}
+
+
+.tipo-evento-opcion.incidencia:has(input:checked),
+.tipo-evento-opcion.incidencia.activa {
+
+    border-color: #D86659;
+
+    background: rgba(252, 226, 222, 0.62);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(216, 102, 89, 0.10);
+
+}
+
+
+.tipo-evento-opcion.incidencia:has(input:checked)
+.tipo-evento-radio-visual,
+.tipo-evento-opcion.incidencia.activa
+.tipo-evento-radio-visual {
+
+    border-color: #D86659;
+
+    background: #D86659;
+
+}
+
+
+/* ==========================================================
+   16. TEXTO TIPO
+========================================================== */
+
+.tipo-evento-texto {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+}
+
+
+.tipo-evento-texto strong {
+
+    color: #214F3B;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+.tipo-evento-texto small {
+
+    max-width: 350px;
+
+    color: #66746C;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   17. GRID DE CAMPOS
+========================================================== */
+
+.crear-evento-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 17px;
+
+}
+
+
+.campo-completo {
+
+    grid-column: 1 / -1;
+
+}
+
+
+/* ==========================================================
+   18. CAMPO
+========================================================== */
+
+.campo-evento {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+/* ==========================================================
+   19. LABEL
+========================================================== */
+
+.campo-evento > label {
+
+    color: #214F3B;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+}
+
+
+.campo-evento > label > span:not(.campo-opcional) {
+
+    color: #B9574D;
+
+}
+
+
+/* ==========================================================
+   20. ETIQUETA OPCIONAL
+========================================================== */
+
+.campo-opcional {
+
+    margin-left: 6px;
+
+    padding: 3px 6px;
+
+    border-radius: 20px;
+
+    background: #EFF3F0;
+
+    color: #7B8880 !important;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   21. CONTROL
+========================================================== */
+
+.campo-evento-control {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+
+.campo-evento-control > i {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 14px;
+
+    z-index: 2;
+
+    transform: translateY(-50%);
+
+    color: #829087;
+
+    font-size: 13px;
+
+    pointer-events: none;
+
+}
+
+
+/* ==========================================================
+   22. INPUTS / SELECTS
+========================================================== */
+
+.campo-evento-control input,
+.campo-evento-control select {
+
+    width: 100%;
+
+    height: 46px;
+
+    padding:
+        0
+        14px
+        0
+        40px;
+
+    border: 1px solid #DCE3DE;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color: #163324;
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+
+}
+
+
+.campo-evento-control select {
+
+    cursor: pointer;
+
+}
+
+
+.campo-evento-control input::placeholder {
+
+    color: #A2ACA6;
+
+    font-weight: 500;
+
+}
+
+
+/* ==========================================================
+   23. FOCUS
+========================================================== */
+
+.campo-evento-control input:focus,
+.campo-evento-control select:focus,
+.campo-evento textarea:focus {
+
+    border-color: #D5B849;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 221, 113, 0.20);
+
+}
+
+
+/* ==========================================================
+   24. SELECT DESHABILITADO
+========================================================== */
+
+.campo-evento-control select:disabled {
+
+    background: #F4F6F4;
+
+    color: #9BA49E;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ==========================================================
+   25. AYUDA
+========================================================== */
+
+.campo-ayuda {
+
+    color: #89938D;
+
+    font-size: 7px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   26. TEXTAREA
+========================================================== */
+
+.campo-evento textarea {
+
+    width: 100%;
+
+    min-height: 135px;
+
+    padding: 13px 14px;
+
+    resize: vertical;
+
+    border: 1px solid #DCE3DE;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color: #163324;
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    line-height: 1.7;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.campo-evento textarea::placeholder {
+
+    color: #A2ACA6;
+
+}
+
+
+/* ==========================================================
+   27. META / CONTADORES
+========================================================== */
+
+.campo-meta {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+}
+
+
+.campo-meta small {
+
+    color: #89938D;
+
+    font-size: 7px;
+
+    line-height: 1.5;
+
+}
+
+
+.campo-meta > span {
+
+    flex-shrink: 0;
+
+    color: #849087;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   28. CONTADORES
+========================================================== */
+
+.campo-meta > span.cerca-limite {
+
+    color: #B2761E;
+
+}
+
+
+.campo-meta > span.limite-alcanzado {
+
+    color: #AE4D43;
+
+}
+
+
+/* ==========================================================
+   29. CAMPO ERROR
+========================================================== */
+
+.campo-evento.error
+.campo-evento-control input,
+
+.campo-evento.error
+.campo-evento-control select,
+
+.campo-evento.error textarea {
+
+    border-color: #D9665C;
+
+    background: #FFFAFA;
+
+    box-shadow:
+        0 0 0 3px rgba(217, 102, 92, 0.10);
+
+}
+
+
+/* ==========================================================
+   30. MENSAJE ERROR
+========================================================== */
+
+.campo-error-mensaje {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 2px;
+
+    color: #AD5148;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   31. ERROR TIPO EVENTO
+========================================================== */
+
+.tipo-evento-selector.error {
+
+    padding: 8px;
+
+    border: 1px solid #D9665C;
+
+    border-radius: 15px;
+
+    background: rgba(252, 226, 222, 0.18);
+
+}
+
+
+/* ==========================================================
+   32. RESUMEN
+========================================================== */
+
+.crear-evento-resumen {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #E8DBA4;
+
+    border-radius: 14px;
+
+    background: rgba(255, 237, 180, 0.32);
+
+}
+
+
+.crear-evento-resumen-icono {
+
+    width: 39px;
+
+    height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #FFEDB4;
+
+    color: #214F3B;
+
+    font-size: 15px;
+
+}
+
+
+.crear-evento-resumen strong {
+
+    display: block;
+
+    color: #214F3B;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+}
+
+
+.crear-evento-resumen p {
+
+    margin: 4px 0 0;
+
+    color: #66746C;
+
+    font-size: 8px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   33. ACCIONES
+========================================================== */
+
+.crear-evento-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding-top: 3px;
+
+}
+
+
+/* ==========================================================
+   34. CANCELAR
+========================================================== */
+
+.btn-cancelar-evento {
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 16px;
+
+    border: 1px solid #D8DFDA;
+
+    border-radius: 11px;
+
+    background: #FFFFFF;
+
+    color: #66746C;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.btn-cancelar-evento:hover {
+
+    background: #F4F6F4;
+
+    border-color: #CBD4CE;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   35. GUARDAR
+========================================================== */
+
+.btn-guardar-evento {
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 9px 18px;
+
+    border: 1px solid #D6B63F;
+
+    border-radius: 11px;
+
+    background: #FFDD71;
+
+    color: #214F3B;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 11px rgba(150, 119, 24, 0.10);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-guardar-evento:hover {
+
+    background: #F3CA4E;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 15px rgba(150, 119, 24, 0.14);
+
+}
+
+
+.btn-guardar-evento:disabled {
+
+    opacity: 0.65;
+
+    cursor: wait;
+
+    transform: none;
+
+}
+
+
+/* ==========================================================
+   36. ANIMACIONES
+========================================================== */
+
+.crear-evento-card:nth-of-type(1) {
+
+    animation-delay: 0.03s;
+
+}
+
+
+.crear-evento-card:nth-of-type(2) {
+
+    animation-delay: 0.06s;
+
+}
+
+
+.crear-evento-card:nth-of-type(3) {
+
+    animation-delay: 0.09s;
+
+}
+
+
+.crear-evento-card:nth-of-type(4) {
+
+    animation-delay: 0.12s;
+
+}
+
+
+@keyframes entradaCrearEvento {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(8px);
+
+    }
+
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+/* ==========================================================
+   37. RESPONSIVE 900px
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .crear-evento-page {
+
+        max-width: 100%;
+
+    }
+
+
+    .crear-evento-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .campo-completo {
+
+        grid-column: auto;
+
+    }
+
+}
+
+
+/* ==========================================================
+   38. RESPONSIVE 700px
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .crear-evento-encabezado {
+
+        align-items: flex-start;
+
+    }
+
+
+    .crear-evento-encabezado h1 {
+
+        font-size: 24px;
+
+    }
+
+
+    .crear-evento-encabezado-icono {
+
+        width: 52px;
+
+        height: 52px;
+
+        font-size: 21px;
+
+    }
+
+
+    .tipo-evento-selector {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+/* ==========================================================
+   39. RESPONSIVE 600px
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .crear-evento-page {
+
+        gap: 17px;
+
+    }
+
+
+    .crear-evento-encabezado-icono {
+
+        display: none;
+
+    }
+
+
+    .crear-evento-card {
+
+        padding: 16px;
+
+        border-radius: 15px;
+
+    }
+
+
+    .crear-evento-card-header {
+
+        margin-bottom: 16px;
+
+    }
+
+
+    .tipo-evento-opcion {
+
+        min-height: 95px;
+
+        padding: 14px;
+
+    }
+
+
+    .crear-evento-acciones {
+
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+
+    }
+
+
+    .btn-cancelar-evento,
+    .btn-guardar-evento {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* ==========================================================
+   40. RESPONSIVE 450px
+========================================================== */
+
+@media (max-width: 450px) {
+
+    .crear-evento-encabezado h1 {
+
+        font-size: 21px;
+
+    }
+
+
+    .crear-evento-encabezado p {
+
+        font-size: 9px;
+
+    }
+
+
+    .crear-evento-aviso,
+    .crear-evento-resumen {
+
+        padding: 13px;
+
+    }
+
+
+    .crear-evento-card-header {
+
+        gap: 10px;
+
+    }
+
+
+    .crear-evento-card-icono {
+
+        width: 39px;
+
+        height: 39px;
+
+        font-size: 15px;
+
+    }
+
+
+    .crear-evento-card-header h2 {
+
+        font-size: 12px;
+
+    }
+
+
+    .tipo-evento-opcion {
+
+        gap: 10px;
+
+    }
+
+
+    .tipo-evento-icono {
+
+        width: 40px;
+
+        height: 40px;
+
+        font-size: 16px;
+
+    }
+
+
+    .campo-meta {
+
+        align-items: flex-start;
+
+    }
+
+}

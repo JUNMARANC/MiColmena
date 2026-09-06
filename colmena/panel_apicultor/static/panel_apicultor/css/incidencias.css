@@ -2732,3 +2732,928 @@
     font-size: 12px;
 
 }
+
+/* ==========================================================
+   ==========================================================
+   EVIDENCIAS MÚLTIPLES
+   MODAL DE INCIDENCIAS
+   OVERRIDES SEGUROS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   1. CONTENEDOR GENERAL DEL HISTORIAL
+========================================================== */
+
+.incidencia-modal-evidencias {
+
+    margin:
+        0
+        22px
+        22px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+}
+
+
+/* ==========================================================
+   2. CADA BLOQUE DE EVIDENCIAS
+========================================================== */
+
+.incidencia-modal-evidencias
+.incidencia-modal-evidencia {
+
+    margin: 0;
+
+    padding: 16px;
+
+    border-radius: 14px;
+
+}
+
+
+/* ==========================================================
+   3. EVIDENCIAS DEL PROBLEMA
+========================================================== */
+
+.incidencia-modal-evidencia.problema {
+
+    border:
+        1px solid
+        rgba(168, 77, 68, 0.14);
+
+    background:
+        rgba(255, 250, 249, 0.92);
+
+}
+
+
+/* ==========================================================
+   4. EVIDENCIAS DE LA SOLUCIÓN
+========================================================== */
+
+.incidencia-modal-evidencia.solucion {
+
+    border:
+        1px solid
+        rgba(79, 116, 75, 0.16);
+
+    background:
+        rgba(248, 252, 247, 0.94);
+
+}
+
+
+/* ==========================================================
+   5. HEADER DE CADA BLOQUE
+========================================================== */
+
+.incidencia-modal-evidencias
+.incidencia-evidencia-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 14px;
+
+}
+
+
+/* ==========================================================
+   6. TÍTULO + ICONO
+========================================================== */
+
+.incidencia-evidencia-titulo {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.incidencia-evidencia-titulo > div {
+
+    min-width: 0;
+
+}
+
+
+/* ==========================================================
+   7. TÍTULO
+========================================================== */
+
+.incidencia-evidencia-titulo h3 {
+
+    margin: 0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro,
+            #214F3B
+        );
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   8. SUBTÍTULO
+========================================================== */
+
+.incidencia-evidencia-titulo
+> div
+> span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    margin-bottom: 0;
+
+    color:
+        var(
+            --apicultor-texto-secundario,
+            #66746C
+        );
+
+    font-size: 7px;
+
+    font-weight: 500;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   9. ICONO PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.incidencia-evidencia-icono {
+
+    width: 36px;
+
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+}
+
+
+.incidencia-evidencia-icono.problema {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+.incidencia-evidencia-icono.solucion {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+/* ==========================================================
+   10. CONTADOR DE FOTOS
+========================================================== */
+
+.incidencia-modal-evidencias
+.incidencia-evidencia-contador {
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 28px;
+
+    margin: 0;
+
+    padding:
+        5px
+        10px;
+
+    border-radius: 30px;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+}
+
+
+.incidencia-evidencia-contador.problema {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+.incidencia-evidencia-contador.solucion {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+/* ==========================================================
+   11. GRID DE FOTOGRAFÍAS
+========================================================== */
+
+.incidencia-evidencias-grid {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+
+}
+
+
+/* ==========================================================
+   12. TARJETA DE FOTOGRAFÍA
+========================================================== */
+
+.incidencia-evidencia-item {
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 12px;
+
+    background:
+        #FFFFFF;
+
+    box-shadow:
+        0 3px 10px
+        rgba(33, 79, 59, 0.045);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.incidencia-evidencia-item:hover {
+
+    border-color:
+        rgba(33, 79, 59, 0.20);
+
+    box-shadow:
+        0 6px 15px
+        rgba(33, 79, 59, 0.08);
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* ==========================================================
+   13. CONTENEDOR DE IMAGEN
+========================================================== */
+
+.incidencia-evidencias-grid
+.incidencia-evidencia-imagen {
+
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio:
+        4 / 3;
+
+    overflow: hidden;
+
+    border: none;
+
+    border-radius: 0;
+
+    background:
+        #F1F4F2;
+
+}
+
+
+/* ==========================================================
+   14. FOTOGRAFÍA
+========================================================== */
+
+.incidencia-evidencias-grid
+.incidencia-evidencia-imagen
+img {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    max-height: none;
+
+    object-fit: cover;
+
+    background:
+        #F5F7F5;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        filter 0.25s ease;
+
+}
+
+
+.incidencia-evidencia-item:hover
+.incidencia-evidencia-imagen
+img {
+
+    transform:
+        scale(1.03);
+
+    filter:
+        brightness(0.96);
+
+}
+
+
+/* ==========================================================
+   15. NÚMERO DE FOTOGRAFÍA
+========================================================== */
+
+.incidencia-evidencia-numero {
+
+    position: absolute;
+
+    top: 8px;
+
+    left: 8px;
+
+    z-index: 3;
+
+    min-width: 24px;
+
+    height: 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0;
+
+    padding:
+        0
+        6px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(33, 79, 59, 0.90);
+
+    color:
+        #FFFFFF;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    backdrop-filter:
+        blur(5px);
+
+    pointer-events: none;
+
+}
+
+
+/* ==========================================================
+   16. BADGE PROBLEMA / SOLUCIÓN
+========================================================== */
+
+.incidencia-evidencia-badge {
+
+    position: absolute;
+
+    bottom: 8px;
+
+    left: 8px;
+
+    z-index: 3;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin: 0;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 30px;
+
+    font-size: 6px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    backdrop-filter:
+        blur(5px);
+
+    pointer-events: none;
+
+}
+
+
+.incidencia-evidencia-badge.problema {
+
+    background:
+        rgba(
+            252,
+            226,
+            222,
+            0.96
+        );
+
+    color:
+        #A84D44;
+
+}
+
+
+.incidencia-evidencia-badge.solucion {
+
+    background:
+        rgba(
+            231,
+            242,
+            227,
+            0.96
+        );
+
+    color:
+        #4F744B;
+
+}
+
+
+/* ==========================================================
+   17. ICONO AMPLIAR
+========================================================== */
+
+.incidencia-evidencia-zoom {
+
+    position: absolute;
+
+    right: 8px;
+
+    bottom: 8px;
+
+    z-index: 3;
+
+    width: 29px;
+
+    height: 29px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.94
+        );
+
+    color:
+        #214F3B;
+
+    font-size: 11px;
+
+    box-shadow:
+        0 2px 8px
+        rgba(33, 79, 59, 0.15);
+
+    backdrop-filter:
+        blur(4px);
+
+    pointer-events: none;
+
+}
+
+
+/* ==========================================================
+   18. INFORMACIÓN INFERIOR
+========================================================== */
+
+.incidencia-evidencia-info {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding:
+        10px
+        11px;
+
+}
+
+
+/* ==========================================================
+   19. CONTENEDOR DE TEXTO
+========================================================== */
+
+.incidencia-evidencia-info > div {
+
+    min-width: 0;
+
+}
+
+
+/* ==========================================================
+   20. NOMBRE
+========================================================== */
+
+.incidencia-evidencia-info strong {
+
+    display: block;
+
+    overflow: hidden;
+
+    color:
+        #214F3B;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   21. FECHA
+========================================================== */
+
+.incidencia-evidencia-info span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    margin-bottom: 0;
+
+    color:
+        #89938D;
+
+    font-size: 6.5px;
+
+    font-weight: 500;
+
+}
+
+
+/* ==========================================================
+   22. ICONO INFERIOR
+========================================================== */
+
+.incidencia-evidencia-info > i {
+
+    flex-shrink: 0;
+
+    color:
+        #A07872;
+
+    font-size: 12px;
+
+}
+
+
+.incidencia-evidencia-item.solucion
+.incidencia-evidencia-info
+> i {
+
+    color:
+        #74A66D;
+
+}
+
+
+/* ==========================================================
+   23. SIN EVIDENCIAS
+========================================================== */
+
+.incidencia-sin-evidencias {
+
+    min-height: 82px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 14px;
+
+    border:
+        1px dashed
+        #E3D4D1;
+
+    border-radius: 11px;
+
+    background:
+        #FFFAF9;
+
+    color:
+        #87928B;
+
+    font-size: 7px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   24. ICONO SIN EVIDENCIAS
+========================================================== */
+
+.incidencia-sin-evidencias > div {
+
+    width: 36px;
+
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+    font-size: 14px;
+
+}
+
+
+/* ==========================================================
+   25. SIN EVIDENCIAS SOLUCIÓN
+========================================================== */
+
+.incidencia-sin-evidencias.solucion {
+
+    border-color:
+        #D9E6D7;
+
+    background:
+        #F9FCF8;
+
+}
+
+
+.incidencia-sin-evidencias.solucion
+> div {
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+/* ==========================================================
+   26. ERROR AL CARGAR IMAGEN
+========================================================== */
+
+.incidencia-evidencias-grid
+.incidencia-evidencia-error {
+
+    width: 100%;
+
+    height: 100%;
+
+    min-height: 170px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 16px;
+
+    background:
+        #FFF8F7;
+
+    color:
+        #9A6964;
+
+    font-size: 7px;
+
+    text-align: center;
+
+}
+
+
+.incidencia-evidencia-error i {
+
+    color:
+        #B56C65;
+
+    font-size: 22px;
+
+}
+
+
+/* ==========================================================
+   27. RESPONSIVE TABLET
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .incidencia-modal-evidencias {
+
+        margin:
+            0
+            16px
+            16px;
+
+        gap: 13px;
+
+    }
+
+
+    .incidencia-modal-evidencias
+    .incidencia-modal-evidencia {
+
+        padding: 13px;
+
+    }
+
+
+    .incidencia-evidencias-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .incidencia-evidencias-grid
+    .incidencia-evidencia-imagen {
+
+        aspect-ratio:
+            16 / 10;
+
+    }
+
+}
+
+
+/* ==========================================================
+   28. RESPONSIVE MÓVIL
+========================================================== */
+
+@media (max-width: 430px) {
+
+    .incidencia-modal-evidencias
+    .incidencia-evidencia-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 9px;
+
+    }
+
+
+    .incidencia-evidencia-contador {
+
+        align-self: flex-start;
+
+    }
+
+
+    .incidencia-evidencia-titulo {
+
+        align-items: flex-start;
+
+    }
+
+
+    .incidencia-evidencia-icono {
+
+        width: 33px;
+
+        height: 33px;
+
+        font-size: 13px;
+
+    }
+
+}

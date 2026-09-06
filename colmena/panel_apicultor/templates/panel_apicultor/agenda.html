@@ -21,15 +21,13 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/agenda.css' %}?v=1"
+    href="{% static 'panel_apicultor/css/agenda.css' %}?v=3"
 >
 
 {% endblock %}
 
 
-
 {% block content %}
-
 
 <div class="agenda-page">
 
@@ -40,42 +38,54 @@
 
     <section class="agenda-encabezado">
 
-
         <div>
-
 
             <span class="agenda-etiqueta">
                 Planificación
             </span>
 
-
             <h1>
                 Mi agenda
             </h1>
-
 
             <p>
                 Consulta mantenimientos, revisiones, incidencias
                 y eventos relacionados con tus apiarios asignados.
             </p>
 
-
         </div>
 
 
-        <div class="agenda-encabezado-icono">
+        <div class="agenda-encabezado-acciones">
 
-            <i class="bi bi-calendar-week-fill"></i>
+            <a
+                href="{% url 'crear_evento_apicultor' %}"
+                class="btn-agregar-evento"
+            >
+
+                <i class="bi bi-plus-lg"></i>
+
+                <span>
+                    Agregar evento
+                </span>
+
+            </a>
+
+
+            <div class="agenda-encabezado-icono">
+
+                <i class="bi bi-calendar-week-fill"></i>
+
+            </div>
 
         </div>
-
 
     </section>
 
 
 
     <!-- =====================================================
-         TARJETAS DE RESUMEN
+         RESUMEN
     ====================================================== -->
 
     <section class="agenda-resumen">
@@ -85,13 +95,11 @@
 
         <article class="agenda-resumen-card programados">
 
-
             <div class="agenda-resumen-icono">
 
                 <i class="bi bi-calendar-check-fill"></i>
 
             </div>
-
 
             <div>
 
@@ -100,27 +108,24 @@
                 </strong>
 
                 <span>
-                    Programados
+                    Eventos programados
                 </span>
 
             </div>
-
 
         </article>
 
 
 
-        <!-- HOY -->
+        <!-- PARA HOY -->
 
         <article class="agenda-resumen-card hoy">
-
 
             <div class="agenda-resumen-icono">
 
                 <i class="bi bi-calendar-day-fill"></i>
 
             </div>
-
 
             <div>
 
@@ -133,65 +138,6 @@
                 </span>
 
             </div>
-
-
-        </article>
-
-
-
-        <!-- COMPLETADOS -->
-
-        <article class="agenda-resumen-card completados">
-
-
-            <div class="agenda-resumen-icono">
-
-                <i class="bi bi-check-circle-fill"></i>
-
-            </div>
-
-
-            <div>
-
-                <strong>
-                    {{ total_completados|default:0 }}
-                </strong>
-
-                <span>
-                    Completados
-                </span>
-
-            </div>
-
-
-        </article>
-
-
-
-        <!-- CANCELADOS -->
-
-        <article class="agenda-resumen-card cancelados">
-
-
-            <div class="agenda-resumen-icono">
-
-                <i class="bi bi-x-circle-fill"></i>
-
-            </div>
-
-
-            <div>
-
-                <strong>
-                    {{ total_cancelados|default:0 }}
-                </strong>
-
-                <span>
-                    Cancelados
-                </span>
-
-            </div>
-
 
         </article>
 
@@ -218,26 +164,20 @@
 
             <div class="agenda-calendario-header">
 
-
                 <div>
-
 
                     <span>
                         Calendario
                     </span>
 
-
                     <h2 id="tituloMesAgenda">
                         —
                     </h2>
 
-
                 </div>
 
 
-
                 <div class="agenda-calendario-controles">
-
 
                     <button
                         type="button"
@@ -273,9 +213,7 @@
 
                     </button>
 
-
                 </div>
-
 
             </div>
 
@@ -285,7 +223,6 @@
 
             <div class="agenda-calendario-semana">
 
-
                 <span>Lun</span>
                 <span>Mar</span>
                 <span>Mié</span>
@@ -294,30 +231,22 @@
                 <span>Sáb</span>
                 <span>Dom</span>
 
-
             </div>
 
 
 
-            <!-- DÍAS DEL CALENDARIO -->
+            <!-- CALENDARIO GENERADO POR JS -->
 
             <div
                 class="agenda-calendario-dias"
                 id="calendarioAgenda"
-            >
-
-                <!--
-                    Los días se generan con JavaScript
-                -->
-
-            </div>
+            ></div>
 
 
 
             <!-- LEYENDA -->
 
             <div class="agenda-calendario-leyenda">
-
 
                 <span>
 
@@ -354,7 +283,6 @@
 
                 </span>
 
-
             </div>
 
 
@@ -371,25 +299,20 @@
 
             <div class="agenda-proximos-header">
 
-
                 <div>
-
 
                     <span>
                         Próximamente
                     </span>
 
-
                     <h2>
                         Próximos eventos
                     </h2>
-
 
                 </div>
 
 
                 <i class="bi bi-clock-history"></i>
-
 
             </div>
 
@@ -397,9 +320,7 @@
 
             <div class="agenda-proximos-lista">
 
-
                 {% for evento in proximos_eventos %}
-
 
                     <button
                         type="button"
@@ -416,7 +337,6 @@
                                 {{ evento.tipo_evento }}
                             "
                         >
-
 
                             {% if evento.tipo_evento == "mantenimiento" %}
 
@@ -436,20 +356,16 @@
 
                             {% endif %}
 
-
                         </div>
 
 
 
-                        <!-- INFO -->
+                        <!-- INFORMACIÓN -->
 
                         <div class="agenda-proximo-info">
 
-
                             <strong>
-
                                 {{ evento.titulo }}
-
                             </strong>
 
 
@@ -470,12 +386,13 @@
 
                             <small>
 
-
                                 {% if evento.id_colmena %}
 
                                     {{ evento.id_apiario.nombreapiario }}
-                                    ·
-                                    Colmena {{ evento.id_colmena.codigocolmena }}
+
+                                    · Colmena
+
+                                    {{ evento.id_colmena.codigocolmena }}
 
                                 {% else %}
 
@@ -483,15 +400,18 @@
 
                                 {% endif %}
 
-
                             </small>
-
 
                         </div>
 
 
-
-                        <i class="bi bi-chevron-right agenda-proximo-flecha"></i>
+                        <i
+                            class="
+                                bi
+                                bi-chevron-right
+                                agenda-proximo-flecha
+                            "
+                        ></i>
 
 
                     </button>
@@ -502,25 +422,20 @@
 
                     <div class="agenda-proximos-vacio">
 
-
                         <i class="bi bi-calendar2-check"></i>
-
 
                         <strong>
                             Sin próximos eventos
                         </strong>
 
-
                         <span>
                             No tienes actividades programadas próximamente.
                         </span>
-
 
                     </div>
 
 
                 {% endfor %}
-
 
             </div>
 
@@ -533,30 +448,25 @@
 
 
     <!-- =====================================================
-         EVENTOS DE HOY
+         ACTIVIDADES PARA HOY
     ====================================================== -->
 
     {% if eventos_hoy %}
-
 
         <section class="agenda-hoy-card">
 
 
             <div class="agenda-hoy-header">
 
-
                 <div>
-
 
                     <span>
                         {{ hoy|date:"d/m/Y" }}
                     </span>
 
-
                     <h2>
                         Actividades para hoy
                     </h2>
-
 
                 </div>
 
@@ -567,16 +477,13 @@
 
                 </div>
 
-
             </div>
 
 
 
             <div class="agenda-hoy-lista">
 
-
                 {% for evento in eventos_hoy %}
-
 
                     <button
                         type="button"
@@ -585,12 +492,17 @@
                     >
 
 
+                        <!-- HORA -->
+
                         <div class="agenda-hoy-hora">
 
                             {{ evento.hora|time:"H:i" }}
 
                         </div>
 
+
+
+                        <!-- LÍNEA -->
 
                         <div
                             class="
@@ -600,18 +512,16 @@
                         ></div>
 
 
+
+                        <!-- INFORMACIÓN -->
+
                         <div class="agenda-hoy-info">
 
-
                             <strong>
-
                                 {{ evento.titulo }}
-
                             </strong>
 
-
                             <span>
-
 
                                 {% if evento.id_colmena %}
 
@@ -627,12 +537,13 @@
 
                                 {% endif %}
 
-
                             </span>
-
 
                         </div>
 
+
+
+                        <!-- ESTADO -->
 
                         <span
                             class="
@@ -641,6 +552,8 @@
                             "
                         >
 
+                            <span></span>
+
                             {{ evento.get_estado_display }}
 
                         </span>
@@ -648,15 +561,12 @@
 
                     </button>
 
-
                 {% endfor %}
-
 
             </div>
 
 
         </section>
-
 
     {% endif %}
 
@@ -675,13 +585,11 @@
         >
 
 
-            <!-- BUSCAR -->
+            <!-- BUSCADOR -->
 
             <div class="agenda-buscador">
 
-
                 <i class="bi bi-search"></i>
-
 
                 <input
                     type="text"
@@ -690,7 +598,6 @@
                     placeholder="Buscar evento, apiario o colmena..."
                     autocomplete="off"
                 >
-
 
             </div>
 
@@ -703,14 +610,11 @@
                 class="agenda-select"
             >
 
-
                 <option value="">
                     Todos los apiarios
                 </option>
 
-
                 {% for apiario in apiarios %}
-
 
                     <option
                         value="{{ apiario.id_apiario }}"
@@ -724,9 +628,7 @@
 
                     </option>
 
-
                 {% endfor %}
-
 
             </select>
 
@@ -739,14 +641,11 @@
                 class="agenda-select"
             >
 
-
                 <option value="">
                     Todos los tipos
                 </option>
 
-
                 {% for tipo in tipos_disponibles %}
-
 
                     <option
                         value="{{ tipo.valor }}"
@@ -760,9 +659,7 @@
 
                     </option>
 
-
                 {% endfor %}
-
 
             </select>
 
@@ -775,14 +672,11 @@
                 class="agenda-select"
             >
 
-
                 <option value="">
                     Todos los estados
                 </option>
 
-
                 {% for estado in estados_disponibles %}
-
 
                     <option
                         value="{{ estado.valor }}"
@@ -796,9 +690,7 @@
 
                     </option>
 
-
                 {% endfor %}
-
 
             </select>
 
@@ -808,16 +700,13 @@
 
             <div class="agenda-fecha-filtro">
 
-
                 <i class="bi bi-calendar3"></i>
-
 
                 <input
                     type="date"
                     name="fecha"
                     value="{{ fecha_seleccionada }}"
                 >
-
 
             </div>
 
@@ -844,7 +733,6 @@
 
             {% if busqueda or apiario_seleccionado or tipo_seleccionado or estado_seleccionado or fecha_seleccionada %}
 
-
                 <a
                     href="{% url 'agenda_apicultor' %}"
                     class="btn-agenda-limpiar"
@@ -858,7 +746,6 @@
 
                 </a>
 
-
             {% endif %}
 
 
@@ -870,14 +757,12 @@
 
 
     <!-- =====================================================
-         HEADER LISTADO
+         ENCABEZADO LISTADO
     ====================================================== -->
 
     <section class="agenda-resultados-header">
 
-
         <div>
-
 
             <span class="agenda-resultados-etiqueta">
 
@@ -886,7 +771,6 @@
                 Eventos de agenda
 
             </span>
-
 
         </div>
 
@@ -901,75 +785,60 @@
 
         </p>
 
-
     </section>
 
 
 
     <!-- =====================================================
-         TABLA
+         LISTADO DE EVENTOS
     ====================================================== -->
 
     {% if eventos %}
 
-
         <section class="agenda-tabla-card">
 
-
             <div class="agenda-tabla-responsive">
-
 
                 <table class="agenda-tabla">
 
 
                     <thead>
 
-
                         <tr>
-
 
                             <th>
                                 Evento
                             </th>
 
-
                             <th>
                                 Ubicación
                             </th>
-
 
                             <th>
                                 Fecha
                             </th>
 
-
                             <th>
                                 Hora
                             </th>
-
 
                             <th>
                                 Tipo
                             </th>
 
-
                             <th>
                                 Estado
                             </th>
-
 
                             <th>
                                 Responsable
                             </th>
 
-
                             <th class="agenda-acciones-columna">
                                 Acción
                             </th>
 
-
                         </tr>
-
 
                     </thead>
 
@@ -977,17 +846,16 @@
 
                     <tbody>
 
-
                         {% for evento in eventos %}
-
 
                             <tr>
 
 
-                                <!-- EVENTO -->
+                                <!-- =========================
+                                     EVENTO
+                                ========================== -->
 
                                 <td>
-
 
                                     <div class="agenda-evento-titulo">
 
@@ -998,7 +866,6 @@
                                                 {{ evento.tipo_evento }}
                                             "
                                         >
-
 
                                             {% if evento.tipo_evento == "mantenimiento" %}
 
@@ -1018,54 +885,42 @@
 
                                             {% endif %}
 
-
                                         </div>
 
 
                                         <div>
 
-
                                             <strong>
-
                                                 {{ evento.titulo }}
-
                                             </strong>
 
-
                                             <span>
-
                                                 #{{ evento.id_evento }}
-
                                             </span>
-
 
                                         </div>
 
 
                                     </div>
 
-
                                 </td>
 
 
 
-                                <!-- UBICACIÓN -->
+                                <!-- =========================
+                                     UBICACIÓN
+                                ========================== -->
 
                                 <td>
 
-
                                     <div class="agenda-ubicacion">
 
-
                                         <strong>
-
                                             {{ evento.id_apiario.nombreapiario }}
-
                                         </strong>
 
 
                                         <span>
-
 
                                             {% if evento.id_colmena %}
 
@@ -1082,61 +937,55 @@
 
                                             {% endif %}
 
-
                                         </span>
 
-
                                     </div>
-
 
                                 </td>
 
 
 
-                                <!-- FECHA -->
+                                <!-- =========================
+                                     FECHA
+                                ========================== -->
 
                                 <td>
 
-
                                     <div class="agenda-fecha">
-
 
                                         <i class="bi bi-calendar3"></i>
 
                                         {{ evento.fecha|date:"d/m/Y" }}
 
-
                                     </div>
-
 
                                 </td>
 
 
 
-                                <!-- HORA -->
+                                <!-- =========================
+                                     HORA
+                                ========================== -->
 
                                 <td>
 
-
                                     <div class="agenda-hora">
-
 
                                         <i class="bi bi-clock"></i>
 
                                         {{ evento.hora|time:"H:i" }}
 
-
                                     </div>
-
 
                                 </td>
 
 
 
-                                <!-- TIPO -->
+                                <!-- =========================
+                                     TIPO
+                                ========================== -->
 
                                 <td>
-
 
                                     <span
                                         class="
@@ -1149,15 +998,15 @@
 
                                     </span>
 
-
                                 </td>
 
 
 
-                                <!-- ESTADO -->
+                                <!-- =========================
+                                     ESTADO
+                                ========================== -->
 
                                 <td>
-
 
                                     <span
                                         class="
@@ -1172,24 +1021,22 @@
 
                                     </span>
 
-
                                 </td>
 
 
 
-                                <!-- RESPONSABLE -->
+                                <!-- =========================
+                                     RESPONSABLE
+                                ========================== -->
 
                                 <td>
 
-
                                     <div class="agenda-responsable">
-
 
                                         <i class="bi bi-person-circle"></i>
 
 
                                         <span>
-
 
                                             {% if evento.responsable %}
 
@@ -1209,21 +1056,19 @@
 
                                             {% endif %}
 
-
                                         </span>
 
-
                                     </div>
-
 
                                 </td>
 
 
 
-                                <!-- ACCIÓN -->
+                                <!-- =========================
+                                     ACCIÓN
+                                ========================== -->
 
                                 <td class="agenda-acciones-columna">
-
 
                                     <button
                                         type="button"
@@ -1236,24 +1081,19 @@
 
                                     </button>
 
-
                                 </td>
 
 
                             </tr>
 
-
                         {% endfor %}
-
 
                     </tbody>
 
 
                 </table>
 
-
             </div>
-
 
         </section>
 
@@ -1265,12 +1105,10 @@
 
         {% if eventos.paginator.num_pages > 1 %}
 
-
             <nav class="agenda-paginacion">
 
 
                 {% if eventos.has_previous %}
-
 
                     <a
                         href="?page={{ eventos.previous_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&tipo={{ tipo_seleccionado }}&estado={{ estado_seleccionado }}&fecha={{ fecha_seleccionada }}"
@@ -1281,16 +1119,13 @@
 
                     </a>
 
-
                 {% endif %}
 
 
 
                 {% for numero in eventos.paginator.page_range %}
 
-
                     {% if numero == eventos.number %}
-
 
                         <span class="agenda-pagina active">
 
@@ -1298,9 +1133,7 @@
 
                         </span>
 
-
                     {% else %}
-
 
                         <a
                             href="?page={{ numero }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&tipo={{ tipo_seleccionado }}&estado={{ estado_seleccionado }}&fecha={{ fecha_seleccionada }}"
@@ -1311,16 +1144,13 @@
 
                         </a>
 
-
                     {% endif %}
-
 
                 {% endfor %}
 
 
 
                 {% if eventos.has_next %}
-
 
                     <a
                         href="?page={{ eventos.next_page_number }}&q={{ busqueda }}&apiario={{ apiario_seleccionado }}&tipo={{ tipo_seleccionado }}&estado={{ estado_seleccionado }}&fecha={{ fecha_seleccionada }}"
@@ -1331,25 +1161,23 @@
 
                     </a>
 
-
                 {% endif %}
 
 
             </nav>
 
-
         {% endif %}
+
 
 
     {% else %}
 
 
         <!-- =================================================
-             VACÍO
+             SIN EVENTOS
         ================================================== -->
 
         <section class="agenda-vacio">
-
 
             <div class="agenda-vacio-icono">
 
@@ -1382,8 +1210,8 @@
 
                 {% else %}
 
-                    Los eventos programados por los administradores
-                    para tus apiarios aparecerán en esta sección.
+                    Los eventos relacionados con tus apiarios
+                    aparecerán en esta sección.
 
                 {% endif %}
 
@@ -1391,7 +1219,6 @@
 
 
             {% if busqueda or apiario_seleccionado or tipo_seleccionado or estado_seleccionado or fecha_seleccionada %}
-
 
                 <a
                     href="{% url 'agenda_apicultor' %}"
@@ -1401,7 +1228,6 @@
                     Ver toda la agenda
 
                 </a>
-
 
             {% endif %}
 
@@ -1422,13 +1248,11 @@
 
 {% for evento in eventos %}
 
-
     <div
         class="agenda-modal-overlay"
         id="modalEvento{{ evento.id_evento }}"
         aria-hidden="true"
     >
-
 
         <div
             class="agenda-modal"
@@ -1437,7 +1261,9 @@
         >
 
 
-            <!-- HEADER -->
+            <!-- =================================================
+                 HEADER MODAL
+            ================================================== -->
 
             <div class="agenda-modal-header">
 
@@ -1448,7 +1274,6 @@
                         {{ evento.tipo_evento }}
                     "
                 >
-
 
                     {% if evento.tipo_evento == "mantenimiento" %}
 
@@ -1468,36 +1293,33 @@
 
                     {% endif %}
 
-
                 </div>
+
 
 
                 <div class="agenda-modal-header-info">
 
-
                     <span>
 
                         {{ evento.get_tipo_evento_display }}
-                        ·
-                        Evento #{{ evento.id_evento }}
+
+                        · Evento #{{ evento.id_evento }}
 
                     </span>
 
-
                     <h2>
-
                         {{ evento.titulo }}
-
                     </h2>
 
-
                 </div>
+
 
 
                 <button
                     type="button"
                     class="agenda-modal-cerrar"
                     data-cerrar-modal-evento
+                    aria-label="Cerrar"
                 >
 
                     <i class="bi bi-x-lg"></i>
@@ -1509,161 +1331,121 @@
 
 
 
-            <!-- BODY -->
+            <!-- =================================================
+                 DATOS
+            ================================================== -->
 
             <div class="agenda-modal-body">
 
 
-                <!-- APIARIO -->
-
                 <div class="agenda-modal-dato">
-
 
                     <span>
                         Apiario
                     </span>
 
-
                     <strong>
-
                         {{ evento.id_apiario.nombreapiario }}
-
                     </strong>
-
 
                 </div>
 
 
 
-                <!-- COLMENA -->
-
                 <div class="agenda-modal-dato">
 
-
                     <span>
-
                         Ubicación
-
                     </span>
 
-
                     <strong>
-
 
                         {% if evento.id_colmena %}
 
-                            Colmena {{ evento.id_colmena.codigocolmena }}
+                            Colmena
+                            {{ evento.id_colmena.codigocolmena }}
 
                         {% else %}
 
-                            Apiario {{ evento.id_apiario.nombreapiario }}
+                            Apiario
+                            {{ evento.id_apiario.nombreapiario }}
 
                         {% endif %}
 
-
                     </strong>
-
 
                 </div>
 
 
 
-                <!-- FECHA -->
-
                 <div class="agenda-modal-dato">
-
 
                     <span>
                         Fecha
                     </span>
 
-
                     <strong>
-
                         {{ evento.fecha|date:"d/m/Y" }}
-
                     </strong>
-
 
                 </div>
 
 
 
-                <!-- HORA -->
-
                 <div class="agenda-modal-dato">
-
 
                     <span>
                         Hora
                     </span>
 
-
                     <strong>
-
                         {{ evento.hora|time:"H:i" }}
-
                     </strong>
-
 
                 </div>
 
 
 
-                <!-- TIPO -->
-
                 <div class="agenda-modal-dato">
-
 
                     <span>
                         Tipo
                     </span>
 
-
                     <strong>
-
                         {{ evento.get_tipo_evento_display }}
-
                     </strong>
-
 
                 </div>
 
 
 
-                <!-- ESTADO -->
-
                 <div class="agenda-modal-dato">
-
 
                     <span>
                         Estado
                     </span>
 
-
                     <strong>
-
                         {{ evento.get_estado_display }}
-
                     </strong>
-
 
                 </div>
 
 
 
-                <!-- RESPONSABLE -->
-
-                <div class="agenda-modal-dato agenda-modal-dato-completo">
-
+                <div
+                    class="
+                        agenda-modal-dato
+                        agenda-modal-dato-completo
+                    "
+                >
 
                     <span>
                         Responsable
                     </span>
 
-
                     <strong>
-
 
                         {% if evento.responsable %}
 
@@ -1683,9 +1465,7 @@
 
                         {% endif %}
 
-
                     </strong>
-
 
                 </div>
 
@@ -1694,68 +1474,52 @@
 
 
 
-            <!-- DESCRIPCIÓN -->
+            <!-- =================================================
+                 DESCRIPCIÓN
+            ================================================== -->
 
             <div class="agenda-modal-descripcion">
 
-
                 <h3>
-
                     Descripción
-
                 </h3>
 
 
                 {% if evento.descripcion %}
 
-
                     <p>
-
                         {{ evento.descripcion }}
-
                     </p>
-
 
                 {% else %}
 
-
                     <p class="sin-descripcion">
-
                         Este evento no tiene una descripción registrada.
-
                     </p>
 
-
                 {% endif %}
-
 
             </div>
 
 
 
-            <!-- CREADO POR -->
+            <!-- =================================================
+                 CREADO POR
+            ================================================== -->
 
             {% if evento.creado_por %}
 
-
                 <div class="agenda-modal-creador">
-
 
                     <i class="bi bi-person-badge-fill"></i>
 
-
                     <div>
 
-
                         <span>
-
                             Evento creado por
-
                         </span>
 
-
                         <strong>
-
 
                             {% if evento.creado_por.get_full_name %}
 
@@ -1767,27 +1531,24 @@
 
                             {% endif %}
 
-
                         </strong>
-
 
                     </div>
 
-
                 </div>
-
 
             {% endif %}
 
 
 
-            <!-- FOOTER -->
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
 
             <div class="agenda-modal-footer">
 
 
                 {% if evento.id_apiario %}
-
 
                     <a
                         href="{% url 'detalle_apiario_apicultor' evento.id_apiario.id_apiario %}"
@@ -1801,7 +1562,6 @@
                         </span>
 
                     </a>
-
 
                 {% endif %}
 
@@ -1822,16 +1582,14 @@
 
         </div>
 
-
     </div>
-
 
 {% endfor %}
 
 
 
 <!-- =========================================================
-     DATOS DEL CALENDARIO PARA JAVASCRIPT
+     DATOS DEL CALENDARIO
 ========================================================== -->
 
 {{ eventos_calendario|json_script:"eventosAgendaData" }}
@@ -1840,11 +1598,10 @@
 {% endblock %}
 
 
-
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_apicultor/js/agenda.js' %}?v=1"
+    src="{% static 'panel_apicultor/js/agenda.js' %}?v=3"
 ></script>
 
 {% endblock %}

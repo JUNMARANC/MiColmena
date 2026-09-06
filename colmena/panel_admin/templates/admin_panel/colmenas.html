@@ -399,7 +399,14 @@
                                 action="{% url 'editar_colmena' colmena.id_colmena %}"
                                 enctype="multipart/form-data"
                                 class="form-validar-colmena"
+
                                 data-apiario-original="{% if colmena.id_apiario %}{{ colmena.id_apiario.id_apiario }}{% endif %}"
+
+                                data-estado-original="{{ colmena.estadocolmena }}"
+
+                                data-mantenimientos-pendientes="{{ colmena.mantenimientos_pendientes }}"
+
+                                data-incidencias-abiertas="{{ colmena.incidencias_abiertas }}"
                             >
 
                                 {% csrf_token %}
@@ -589,11 +596,20 @@
 
                                                 <option
                                                     value="Inactiva"
+
                                                     {% if colmena.estadocolmena == "Inactiva" %}
                                                         selected
                                                     {% endif %}
+
+                                                    {% if colmena.estadocolmena != "Inactiva" and not colmena.puede_inactivar %}
+                                                        disabled
+                                                    {% endif %}
                                                 >
                                                     Inactiva
+
+                                                    {% if colmena.estadocolmena != "Inactiva" and not colmena.puede_inactivar %}
+                                                        (No disponible: tiene pendientes)
+                                                    {% endif %}
                                                 </option>
 
 
@@ -607,6 +623,32 @@
                                                 </option>
 
                                             </select>
+
+                                            {% if colmena.estadocolmena != "Inactiva" and not colmena.puede_inactivar %}
+
+                                                <small class="form-text text-danger">
+
+                                                    No se puede inactivar esta colmena.
+
+                                                    {% if colmena.mantenimientos_pendientes > 0 %}
+
+                                                        Tiene
+                                                        {{ colmena.mantenimientos_pendientes }}
+                                                        mantenimiento(s) pendiente(s).
+
+                                                    {% endif %}
+
+                                                    {% if colmena.incidencias_abiertas > 0 %}
+
+                                                        Tiene
+                                                        {{ colmena.incidencias_abiertas }}
+                                                        incidencia(s) sin resolver.
+
+                                                    {% endif %}
+
+                                                </small>
+
+                                            {% endif %}
 
                                         </div>
 
@@ -745,102 +787,591 @@
 
                 </div>
 
-                <!-- MODAL ELIMINAR -->
-                <div class="modal fade" id="modalEliminarColmena{{ colmena.id_colmena }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
+                <!-- =========================================================
+                    MODAL ELIMINAR COLMENA
+                ========================================================== -->
 
-                            <form method="POST" action="{% url 'eliminar_colmena' colmena.id_colmena %}">
+                <div
+                    class="modal fade"
+                    id="modalEliminarColmena{{ colmena.id_colmena }}"
+                    tabindex="-1"
+                    aria-hidden="true"
+                >
+
+                    <div
+                        class="
+                            modal-dialog
+                            modal-dialog-centered
+                            modal-dialog-eliminar-colmena
+                        "
+                    >
+
+                        <div
+                            class="
+                                modal-content
+                                modal-eliminar-colmena
+                            "
+                        >
+
+                            <form
+                                method="POST"
+                                action="{% url 'eliminar_colmena' colmena.id_colmena %}"
+                            >
+
                                 {% csrf_token %}
 
-                                <div class="modal-header border-0 modal-delete-header">
-                                    <div>
-                                        <h4 class="fw-bold text-danger mb-1">
-                                            <i class="bi bi-trash-fill me-2"></i>
-                                            Eliminar Colmena
-                                        </h4>
-                                        <p class="text-muted mb-0">
-                                            Esta acción no se puede deshacer.
-                                        </p>
-                                    </div>
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
+                                <!-- =================================================
+                                    HEADER
+                                ================================================== -->
 
-                                <div class="modal-body">
+                                <div
+                                    class="
+                                        modal-header
+                                        modal-header-eliminar-colmena
+                                    "
+                                >
 
-                                    <div class="alerta-eliminar mb-3">
-                                        <strong>Advertencia:</strong>
-                                        al eliminar esta colmena, se eliminará el registro seleccionado.
-                                    </div>
+                                    <div
+                                        class="
+                                            d-flex
+                                            align-items-center
+                                            gap-3
+                                        "
+                                    >
 
-                                    <div class="row g-3">
+                                        <div
+                                            class="
+                                                icono-header-eliminar-colmena
+                                            "
+                                        >
 
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box verde">
-                                                <small>Código de Colmena</small>
-                                                <h5>{{ colmena.codigocolmena }}</h5>
-                                            </div>
+                                            {% if colmena.puede_eliminar %}
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-trash3-fill
+                                                    "
+                                                ></i>
+
+                                            {% else %}
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-shield-lock-fill
+                                                    "
+                                                ></i>
+
+                                            {% endif %}
+
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Estado</small>
-                                                <h5>{{ colmena.estadocolmena }}</h5>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Fecha Registro</small>
-                                                <h5>{{ colmena.fecharegistro }}</h5>
-                                            </div>
-                                        </div>
+                                        <div>
 
-                                        <div class="col-md-6">
-                                            <div class="modal-info-box">
-                                                <small>Apiario</small>
-                                                <h5>
-                                                    {% if colmena.id_apiario %}
-                                                        {{ colmena.id_apiario.nombreapiario }}
-                                                    {% else %}
-                                                        Sin apiario
-                                                    {% endif %}
-                                                </h5>
-                                            </div>
-                                        </div>
+                                            <h5
+                                                class="
+                                                    modal-title
+                                                    fw-bold
+                                                    mb-1
+                                                "
+                                            >
 
-                                        <div class="col-12">
-                                            <div class="modal-info-box text-center">
-                                                {% if colmena.imagen %}
-                                                    <img src="{{ colmena.imagen.url }}"
-                                                         alt="Imagen de la colmena"
-                                                         style="width:100%;max-height:180px;object-fit:cover;border-radius:18px;">
+                                                {% if colmena.puede_eliminar %}
+
+                                                    Eliminar Colmena
+
                                                 {% else %}
-                                                    <span class="text-muted">Sin imagen registrada</span>
+
+                                                    Eliminación bloqueada
+
                                                 {% endif %}
-                                            </div>
+
+                                            </h5>
+
+
+                                            <p>
+
+                                                {% if colmena.puede_eliminar %}
+
+                                                    Confirma la eliminación del registro.
+
+                                                {% else %}
+
+                                                    Esta colmena tiene información
+                                                    que debe conservarse.
+
+                                                {% endif %}
+
+                                            </p>
+
                                         </div>
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn-close
+                                            btn-close-white
+                                        "
+                                        data-bs-dismiss="modal"
+                                    ></button>
+
+                                </div>
+
+
+                                <!-- =================================================
+                                    BODY
+                                ================================================== -->
+
+                                <div
+                                    class="
+                                        modal-body
+                                        modal-body-eliminar-colmena
+                                    "
+                                >
+
+                                    <div
+                                        class="
+                                            contenido-eliminar-colmena
+                                        "
+                                    >
+
+
+                                        <!-- =========================================
+                                            ICONO
+                                        ========================================== -->
+
+                                        <div
+                                            class="
+                                                icono-advertencia-eliminar-colmena
+                                            "
+                                        >
+
+                                            {% if colmena.puede_eliminar %}
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-trash3-fill
+                                                    "
+                                                ></i>
+
+                                            {% else %}
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-lock-fill
+                                                    "
+                                                ></i>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        <!-- =========================================
+                                            TÍTULO
+                                        ========================================== -->
+
+                                        {% if colmena.puede_eliminar %}
+
+                                            <h5>
+                                                ¿Eliminar esta colmena?
+                                            </h5>
+
+                                            <p>
+                                                Esta colmena no tiene información
+                                                histórica asociada. Si continúas,
+                                                el registro será eliminado
+                                                permanentemente.
+                                            </p>
+
+                                        {% else %}
+
+                                            <h5>
+                                                Esta colmena no puede eliminarse
+                                            </h5>
+
+                                            <p>
+                                                Existen registros asociados a esta
+                                                colmena y forman parte del historial
+                                                operativo de Mi Colmena.
+                                            </p>
+
+                                        {% endif %}
+
+
+                                        <!-- =========================================
+                                            CÓDIGO
+                                        ========================================== -->
+
+                                        <div
+                                            class="
+                                                nombre-colmena-eliminar
+                                            "
+                                        >
+
+                                            <i
+                                                class="
+                                                    bi
+                                                    bi-hexagon-fill
+                                                "
+                                            ></i>
+
+                                            <span>
+                                                {{ colmena.codigocolmena }}
+                                            </span>
+
+                                            <span>
+                                                ·
+                                            </span>
+
+                                            <span>
+                                                {{ colmena.estadocolmena }}
+                                            </span>
+
+                                        </div>
+
+
+                                        <!-- =========================================
+                                            ELIMINACIÓN PERMITIDA
+                                        ========================================== -->
+
+                                        {% if colmena.puede_eliminar %}
+
+                                            <div
+                                                class="
+                                                    alerta-eliminacion-colmena-permitida
+                                                "
+                                            >
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-exclamation-triangle-fill
+                                                    "
+                                                ></i>
+
+
+                                                <div
+                                                    class="
+                                                        contenido-alerta-eliminar-colmena
+                                                    "
+                                                >
+
+                                                    <strong>
+                                                        Esta acción es permanente
+                                                    </strong>
+
+                                                    <span>
+                                                        Una vez eliminada la colmena,
+                                                        no será posible recuperar
+                                                        este registro.
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+
+                                        <!-- =========================================
+                                            ELIMINACIÓN BLOQUEADA
+                                        ========================================== -->
+
+                                        {% else %}
+
+                                            <div
+                                                class="
+                                                    alerta-eliminacion-colmena-bloqueada
+                                                "
+                                            >
+
+                                                <i
+                                                    class="
+                                                        bi
+                                                        bi-info-circle-fill
+                                                    "
+                                                ></i>
+
+
+                                                <div
+                                                    class="
+                                                        contenido-alerta-eliminar-colmena
+                                                    "
+                                                >
+
+                                                    <strong>
+                                                        ¿Por qué no se puede eliminar?
+                                                    </strong>
+
+                                                    <span>
+                                                        La colmena tiene información
+                                                        relacionada que debe mantenerse
+                                                        para conservar la trazabilidad
+                                                        del sistema.
+                                                    </span>
+
+
+                                                    <!-- =============================
+                                                        MOTIVOS
+                                                    ============================== -->
+
+                                                    <ul
+                                                        class="
+                                                            lista-bloqueos-eliminar-colmena
+                                                        "
+                                                    >
+
+
+                                                        {% if colmena.total_mantenimientos_historial > 0 %}
+
+                                                            <li
+                                                                class="
+                                                                    item-bloqueo-eliminar-colmena
+                                                                "
+                                                            >
+
+                                                                <i
+                                                                    class="
+                                                                        bi
+                                                                        bi-tools
+                                                                    "
+                                                                ></i>
+
+                                                                <div>
+
+                                                                    <strong>
+                                                                        {{ colmena.total_mantenimientos_historial }}
+                                                                        mantenimiento(s)
+                                                                    </strong>
+
+                                                                    <small>
+                                                                        Registrados en el historial
+                                                                    </small>
+
+                                                                </div>
+
+                                                            </li>
+
+                                                        {% endif %}
+
+
+                                                        {% if colmena.total_incidencias_historial > 0 %}
+
+                                                            <li
+                                                                class="
+                                                                    item-bloqueo-eliminar-colmena
+                                                                "
+                                                            >
+
+                                                                <i
+                                                                    class="
+                                                                        bi
+                                                                        bi-exclamation-triangle-fill
+                                                                    "
+                                                                ></i>
+
+                                                                <div>
+
+                                                                    <strong>
+                                                                        {{ colmena.total_incidencias_historial }}
+                                                                        incidencia(s)
+                                                                    </strong>
+
+                                                                    <small>
+                                                                        Registradas en el historial
+                                                                    </small>
+
+                                                                </div>
+
+                                                            </li>
+
+                                                        {% endif %}
+
+
+                                                        {% if colmena.total_seguimientos_historial > 0 %}
+
+                                                            <li
+                                                                class="
+                                                                    item-bloqueo-eliminar-colmena
+                                                                "
+                                                            >
+
+                                                                <i
+                                                                    class="
+                                                                        bi
+                                                                        bi-clipboard2-pulse-fill
+                                                                    "
+                                                                ></i>
+
+                                                                <div>
+
+                                                                    <strong>
+                                                                        {{ colmena.total_seguimientos_historial }}
+                                                                        seguimiento(s)
+                                                                    </strong>
+
+                                                                    <small>
+                                                                        Asociados a la colmena
+                                                                    </small>
+
+                                                                </div>
+
+                                                            </li>
+
+                                                        {% endif %}
+
+
+                                                        {% if colmena.total_eventos_agenda > 0 %}
+
+                                                            <li
+                                                                class="
+                                                                    item-bloqueo-eliminar-colmena
+                                                                "
+                                                            >
+
+                                                                <i
+                                                                    class="
+                                                                        bi
+                                                                        bi-calendar-event-fill
+                                                                    "
+                                                                ></i>
+
+                                                                <div>
+
+                                                                    <strong>
+                                                                        {{ colmena.total_eventos_agenda }}
+                                                                        evento(s)
+                                                                    </strong>
+
+                                                                    <small>
+                                                                        Registrados en Agenda
+                                                                    </small>
+
+                                                                </div>
+
+                                                            </li>
+
+                                                        {% endif %}
+
+                                                    </ul>
+
+
+                                                    <span
+                                                        class="
+                                                            nota-historial-eliminar-colmena
+                                                        "
+                                                    >
+
+                                                        Si la colmena ya no está
+                                                        en funcionamiento,
+                                                        debe conservarse en estado
+                                                        <strong>
+                                                            Inactiva
+                                                        </strong>.
+
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+                                        {% endif %}
 
                                     </div>
 
                                 </div>
 
-                                <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">
-                                        Cancelar
+
+                                <!-- =================================================
+                                    FOOTER
+                                ================================================== -->
+
+                                <div
+                                    class="
+                                        modal-footer
+                                        modal-footer-eliminar-colmena
+                                    "
+                                >
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn
+                                            btn-cancelar-eliminacion-colmena
+                                        "
+                                        data-bs-dismiss="modal"
+                                    >
+
+                                        {% if colmena.puede_eliminar %}
+
+                                            Cancelar
+
+                                        {% else %}
+
+                                            Cerrar
+
+                                        {% endif %}
+
                                     </button>
 
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash me-2"></i>
-                                        Sí, eliminar
+
+                                    <button
+                                        type="{% if colmena.puede_eliminar %}submit{% else %}button{% endif %}"
+
+                                        class="
+                                            btn
+                                            btn-confirmar-eliminacion-colmena
+                                        "
+
+                                        {% if not colmena.puede_eliminar %}
+                                            disabled
+                                            aria-disabled="true"
+                                        {% endif %}
+                                    >
+
+                                        {% if colmena.puede_eliminar %}
+
+                                            <i
+                                                class="
+                                                    bi
+                                                    bi-trash3-fill
+                                                    me-2
+                                                "
+                                            ></i>
+
+                                            Sí, eliminar
+
+                                        {% else %}
+
+                                            <i
+                                                class="
+                                                    bi
+                                                    bi-lock-fill
+                                                    me-2
+                                                "
+                                            ></i>
+
+                                            Eliminar bloqueado
+
+                                        {% endif %}
+
                                     </button>
+
                                 </div>
 
                             </form>
 
                         </div>
+
                     </div>
+
                 </div>
 
                 {% empty %}

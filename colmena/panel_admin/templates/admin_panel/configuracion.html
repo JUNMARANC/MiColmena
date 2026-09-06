@@ -32,33 +32,48 @@
          ENCABEZADO
     ====================================================== -->
 
-    <section class="configuracion-encabezado">
+    <div class="dashboard-fondo-panal configuracion-encabezado-panal">
 
-        <div>
+        <div class="particulas-flotantes" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
 
-            <span class="configuracion-etiqueta">
+        <div class="dashboard-fondo-panal-contenido">
 
-                <i class="bi bi-gear-fill"></i>
+            <section class="configuracion-encabezado">
 
-                CONFIGURACIÓN DEL SISTEMA
+                <div>
 
-            </span>
+                    <span class="configuracion-etiqueta">
+
+                        <i class="bi bi-gear-fill"></i>
+
+                        CONFIGURACIÓN DEL SISTEMA
+
+                    </span>
 
 
-            <h2>
-                Configuración
-            </h2>
+                    <h2>
+                        <i class="bi bi-gear-fill me-2" style="color: var(--miel);"></i>
+                        Configuración
+                    </h2>
 
 
-            <p>
-                Administra las preferencias generales,
-                notificaciones y opciones de seguridad
-                de Mi Colmena.
-            </p>
+                    <p>
+                        Administra las preferencias generales,
+                        notificaciones y opciones de seguridad
+                        de Mi Colmena.
+                    </p>
+
+                </div>
+
+            </section>
 
         </div>
 
-    </section>
+    </div>
 
 
 
@@ -75,7 +90,7 @@
 
         <button
             type="button"
-            class="configuracion-opcion active"
+            class="configuracion-opcion active anim-entrada-tarjeta"
             id="config-general-tab"
             data-bs-toggle="pill"
             data-bs-target="#config-general"
@@ -120,7 +135,7 @@
 
         <button
             type="button"
-            class="configuracion-opcion"
+            class="configuracion-opcion anim-entrada-tarjeta"
             id="config-notificaciones-tab"
             data-bs-toggle="pill"
             data-bs-target="#config-notificaciones"
@@ -165,7 +180,7 @@
 
         <button
             type="button"
-            class="configuracion-opcion"
+            class="configuracion-opcion anim-entrada-tarjeta"
             id="config-seguridad-tab"
             data-bs-toggle="pill"
             data-bs-target="#config-seguridad"
@@ -336,6 +351,7 @@
                                         id="nombreSistema"
                                         name="nombre_sistema"
                                         value="{{ configuracion.nombre_sistema }}"
+                                        minlength="2"
                                         maxlength="100"
                                         required
                                     >
@@ -450,16 +466,24 @@
 
                                             maxlength="254"
 
-                                            pattern="[A-Za-z0-9._%+-]+@gmail[.]com"
-
-                                            title="Debes ingresar una dirección de Gmail válida"
-                                            placeholder="Ejemplo: micolmena@gmail.com"
-
                                             autocomplete="email"
+                                            autocapitalize="none"
                                             spellcheck="false"
+
+                                            placeholder="Ejemplo: micolmena@gmail.com"
                                         >
 
                                     </div>
+
+                                    <small class="form-text">
+                                        Se permiten correos de Gmail, Outlook, Hotmail y Yahoo.
+                                    </small>
+
+                                    <small
+                                        id="mensajeCorreoContacto"
+                                        class="form-text d-none"
+                                        aria-live="polite"
+                                    ></small>
 
                                 </div>
 
@@ -507,6 +531,12 @@
                                         >
 
                                     </div>
+
+                                    <small
+                                        id="mensajeTelefonoContacto"
+                                        class="form-text d-none"
+                                        aria-live="polite"
+                                    ></small>
 
                                 </div>
 

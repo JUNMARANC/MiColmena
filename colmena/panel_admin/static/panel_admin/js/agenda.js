@@ -111,6 +111,73 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+
+            /* ---------- Encabezado y su ícono, coloreados
+               según el tipo del evento (igual que en el
+               calendario y el badge) ---------- */
+
+            const encabezadoDetalle = document.getElementById(
+                "detalleHeaderEvento"
+            );
+
+            if (encabezadoDetalle) {
+
+                encabezadoDetalle.className =
+                    "modal-header modal-header-evento-detalle " +
+                    `tipo-${eventoSeleccionado.dataset.tipo}`;
+
+            }
+
+            const iconoDetalle = document.getElementById(
+                "detalleIconoEvento"
+            );
+
+            if (iconoDetalle) {
+
+                const iconosPorTipo = {
+                    mantenimiento: "bi-tools",
+                    revision: "bi-clipboard2-check",
+                    incidencia: "bi-exclamation-triangle-fill",
+                    evento: "bi-calendar-event"
+                };
+
+                const nombreIcono =
+                    iconosPorTipo[eventoSeleccionado.dataset.tipo] ||
+                    "bi-calendar-event";
+
+                iconoDetalle.className = `bi ${nombreIcono}`;
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       ENTRADA ESCALONADA DE LAS FILAS DEL DETALLE
+       (título, apiario, colmena, etc.), una vez que el
+       modal ya terminó de mostrarse y los textos de arriba
+       ya quedaron asignados.
+    ====================================================== */
+
+    modalDetalleElemento.addEventListener(
+        "shown.bs.modal",
+        function () {
+
+            const filas = document.querySelectorAll(
+                "#modalDetalleEvento .lista-detalle-evento > div"
+            );
+
+            filas.forEach(function (fila, indice) {
+
+                fila.classList.remove("anim-entrada-lista");
+                void fila.offsetWidth;
+
+                fila.style.animationDelay = (indice * 50) + "ms";
+                fila.classList.add("anim-entrada-lista");
+
+            });
+
         }
     );
 
@@ -150,10 +217,38 @@ document.addEventListener("DOMContentLoaded", function () {
             eventoSeleccionado.dataset.apiarioId
         );
 
+
+        // =====================================================
+        // COLMENA ORIGINAL DEL EVENTO
+        //
+        // Si el evento ya estaba asociado a una colmena que
+        // posteriormente quedó Inactiva, permitimos conservar
+        // ESA MISMA asociación al editar.
+        // =====================================================
+
+        const selectorColmenaEditar =
+            document.getElementById(
+                "editarColmenaEvento"
+            );
+
+
+        if (selectorColmenaEditar) {
+
+            selectorColmenaEditar.dataset.colmenaOriginal =
+                eventoSeleccionado.dataset.colmenaId
+                ||
+                "";
+
+        }
+
+
         filtrarColmenas(
-            document.getElementById("editarApiarioEvento"),
-            document.getElementById("editarColmenaEvento")
+            document.getElementById(
+                "editarApiarioEvento"
+            ),
+            selectorColmenaEditar
         );
+
 
         asignarValor(
             "editarColmenaEvento",
@@ -255,37 +350,143 @@ document.addEventListener("DOMContentLoaded", function () {
         selectorColmena
     ) {
 
-        if (!selectorApiario || !selectorColmena) {
+        if (
+            !selectorApiario
+            ||
+            !selectorColmena
+        ) {
+
             return;
+
         }
+
 
         const apiarioSeleccionado =
             selectorApiario.value;
 
+
+        // =====================================================
+        // COLMENA ORIGINAL
+        //
+        // Solo existe en el selector de Editar.
+        // Permite conservar una asociación histórica con una
+        // colmena Inactiva.
+        // =====================================================
+
+        const colmenaOriginal =
+            selectorColmena.dataset.colmenaOriginal
+            ||
+            "";
+
+
         Array.from(
             selectorColmena.options
-        ).forEach(function (opcion) {
+        ).forEach(
+            function (opcion) {
 
-            if (!opcion.value) {
-                opcion.hidden = false;
-                return;
+
+                // =============================================
+                // OPCIÓN "SIN COLMENA ESPECÍFICA"
+                // =============================================
+
+                if (!opcion.value) {
+
+                    opcion.hidden =
+                        false;
+
+                    opcion.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                // =============================================
+                // ¿PERTENECE AL APIARIO?
+                // =============================================
+
+                const correspondeApiario =
+                    opcion.dataset.apiario
+                    ===
+                    apiarioSeleccionado;
+
+
+                // =============================================
+                // ¿ESTÁ INACTIVA?
+                // =============================================
+
+                const estaInactiva =
+                    opcion.dataset.inactiva
+                    ===
+                    "1";
+
+
+                // =============================================
+                // ¿ES LA COLMENA HISTÓRICA DEL EVENTO?
+                // =============================================
+
+                const esColmenaOriginal =
+                    colmenaOriginal
+                    &&
+                    opcion.value
+                    ===
+                    colmenaOriginal;
+
+
+                // =============================================
+                // MOSTRAR SOLO LAS DEL APIARIO
+                // =============================================
+
+                opcion.hidden =
+                    !correspondeApiario;
+
+
+                // =============================================
+                // BLOQUEAR INACTIVAS
+                //
+                // Excepción:
+                // si estamos editando y es exactamente la
+                // colmena que ya tenía ese evento.
+                // =============================================
+
+                opcion.disabled = (
+                    !correspondeApiario
+                    ||
+                    (
+                        estaInactiva
+                        &&
+                        !esColmenaOriginal
+                    )
+                );
+
             }
+        );
 
-            opcion.hidden = (
-                opcion.dataset.apiario !==
-                apiarioSeleccionado
-            );
 
-        });
+        // =====================================================
+        // VALIDAR LA SELECCIÓN ACTUAL
+        // =====================================================
 
         const opcionActual =
             selectorColmena.selectedOptions[0];
 
+
         if (
-            opcionActual &&
-            opcionActual.hidden
+            opcionActual
+            &&
+            opcionActual.value
+            &&
+            (
+                opcionActual.hidden
+                ||
+                opcionActual.disabled
+            )
         ) {
-            selectorColmena.value = "";
+
+            selectorColmena.value =
+                "";
+
         }
 
     }
@@ -334,6 +535,69 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+/* =========================================================
+   TRANSICIÓN DIRECCIONAL AL CAMBIAR DE MES
+========================================================= */
+//
+// Los botones de "mes anterior / mes siguiente" son enlaces
+// normales (recargan la página), así que no podemos animar
+// la salida. Lo que sí podemos hacer es recordar hacia qué
+// lado se navegó (con sessionStorage) y, apenas carga la
+// página nueva, hacer que el calendario "entre" desde ese
+// mismo lado en vez de aparecer siempre igual.
+
+(function () {
+
+    const CLAVE_DIRECCION = "agendaDireccionMes";
+
+    document.querySelectorAll(".btn-navegar-mes").forEach(
+        function (boton) {
+
+            boton.addEventListener("click", function () {
+
+                const esAnterior = boton.querySelector(
+                    ".bi-chevron-left"
+                ) !== null;
+
+                try {
+                    sessionStorage.setItem(
+                        CLAVE_DIRECCION,
+                        esAnterior ? "anterior" : "siguiente"
+                    );
+                } catch (error) {
+                    // sessionStorage no disponible: sin animación
+                    // direccional, pero la navegación sigue igual.
+                }
+
+            });
+
+        }
+    );
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const tarjeta = document.querySelector(".tarjeta-calendario");
+        if (!tarjeta) return;
+
+        let direccion = null;
+
+        try {
+            direccion = sessionStorage.getItem(CLAVE_DIRECCION);
+            sessionStorage.removeItem(CLAVE_DIRECCION);
+        } catch (error) {
+            return;
+        }
+
+        if (direccion === "siguiente") {
+            tarjeta.classList.add("entra-mes-siguiente");
+        } else if (direccion === "anterior") {
+            tarjeta.classList.add("entra-mes-anterior");
+        }
+
+    });
+
+})();
 
 /* =========================================================
    ANIMACIONES DE ENTRADA DEL CALENDARIO
@@ -526,20 +790,84 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // 4) Refuerzo silencioso: la colmena elegida debe
-            //    pertenecer al apiario elegido (por si el filtrado no
-            //    llegó a aplicarse a tiempo). No bloquea el envío,
-            //    solo limpia el valor si no corresponde.
-            if (apiario && colmena && colmena.value) {
+            // =================================================
+            // 4) VALIDAR COLMENA
+            // =================================================
 
-                const opcionColmena = colmena.selectedOptions[0];
+            if (
+                apiario
+                &&
+                colmena
+            ) {
 
-                if (
-                    opcionColmena &&
-                    opcionColmena.dataset.apiario !== apiario.value
-                ) {
-                    colmena.value = "";
+                colmena.setCustomValidity("");
+
+
+                if (colmena.value) {
+
+                    const opcionColmena =
+                        colmena.selectedOptions[0];
+
+
+                    if (opcionColmena) {
+
+
+                        // =====================================
+                        // DEBE PERTENECER AL APIARIO
+                        // =====================================
+
+                        if (
+                            opcionColmena.dataset.apiario
+                            !==
+                            apiario.value
+                        ) {
+
+                            colmena.setCustomValidity(
+                                "La colmena seleccionada no pertenece al apiario indicado."
+                            );
+
+                        }
+
+
+                        // =====================================
+                        // COLMENA INACTIVA
+                        // =====================================
+
+                        else if (
+                            opcionColmena.dataset.inactiva
+                            ===
+                            "1"
+                        ) {
+
+                            const colmenaOriginal =
+                                colmena.dataset.colmenaOriginal
+                                ||
+                                "";
+
+
+                            const esOriginalEdicion = (
+                                !esCreacion
+                                &&
+                                colmenaOriginal
+                                ===
+                                opcionColmena.value
+                            );
+
+
+                            if (!esOriginalEdicion) {
+
+                                colmena.setCustomValidity(
+                                    "No puedes asignar un evento a una colmena Inactiva."
+                                );
+
+                            }
+
+                        }
+
+                    }
+
                 }
+
             }
 
             // El navegador ya revisa por nosotros: required, pattern,

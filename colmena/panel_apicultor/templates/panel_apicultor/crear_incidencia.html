@@ -21,11 +21,10 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/crear_incidencia.css' %}?v=1"
+    href="{% static 'panel_apicultor/css/crear_incidencia.css' %}?v=2"
 >
 
 {% endblock %}
-
 
 
 {% block content %}
@@ -75,7 +74,8 @@
 
             <p>
                 Registra una novedad encontrada durante la revisión
-                de tus apiarios o colmenas asignadas.
+                de tus apiarios o colmenas asignadas y adjunta
+                evidencias fotográficas del problema.
             </p>
 
 
@@ -143,7 +143,8 @@
 
 
         <!-- =================================================
-             1. TIPO DE INCIDENCIA
+             PASO 1
+             TIPO DE INCIDENCIA
         ================================================== -->
 
         <section class="crear-incidencia-card">
@@ -285,7 +286,8 @@
 
 
         <!-- =================================================
-             2. UBICACIÓN
+             PASO 2
+             UBICACIÓN
         ================================================== -->
 
         <section class="crear-incidencia-card">
@@ -448,9 +450,7 @@
                                 >
 
                                     {{ colmena.codigocolmena }}
-
                                     -
-                                    
                                     {{ colmena.id_apiario.nombreapiario }}
 
                                 </option>
@@ -482,7 +482,8 @@
 
 
         <!-- =================================================
-             3. INFORMACIÓN DE LA INCIDENCIA
+             PASO 3
+             INFORMACIÓN DE LA INCIDENCIA
         ================================================== -->
 
         <section class="crear-incidencia-card">
@@ -681,9 +682,7 @@
                             type="date"
                             id="fechaIncidencia"
                             name="fecha"
-
                             value="{% if valores_formulario.fecha %}{{ valores_formulario.fecha }}{% else %}{{ fecha_hoy|date:'Y-m-d' }}{% endif %}"
-
                             max="{{ fecha_hoy|date:'Y-m-d' }}"
                             required
                         >
@@ -710,7 +709,8 @@
 
 
         <!-- =================================================
-             4. OBSERVACIONES
+             PASO 4
+             OBSERVACIONES
         ================================================== -->
 
         <section class="crear-incidencia-card">
@@ -755,6 +755,10 @@
 
                     Descripción de la novedad
 
+                    <span class="campo-opcional">
+                        Opcional
+                    </span>
+
                 </label>
 
 
@@ -770,8 +774,7 @@
                 <div class="campo-meta">
 
                     <small>
-                        Puedes incluir detalles de la inspección
-                        realizada.
+                        Puedes incluir detalles de la inspección realizada.
                     </small>
 
                     <span id="contadorObservaciones">
@@ -789,7 +792,8 @@
 
 
         <!-- =================================================
-             5. EVIDENCIA FOTOGRÁFICA
+             PASO 5
+             EVIDENCIAS DEL PROBLEMA
         ================================================== -->
 
         <section class="crear-incidencia-card">
@@ -812,12 +816,12 @@
                     </span>
 
                     <h2>
-                        Evidencia fotográfica
+                        Evidencias del problema
                     </h2>
 
                     <p>
-                        Puedes adjuntar una imagen que ayude al
-                        administrador a evaluar mejor la situación.
+                        Adjunta fotografías que permitan observar
+                        claramente cómo se encuentra la incidencia.
                     </p>
 
                 </div>
@@ -827,31 +831,71 @@
 
 
 
-            <div class="evidencia-incidencia">
+            <div
+                class="evidencias-incidencia"
+                id="contenedorEvidenciasProblema"
+                data-max-archivos="{{ max_evidencias_problema|default:6 }}"
+                data-max-mb="{{ max_tamano_imagen_mb|default:5 }}"
+            >
 
 
                 <!-- =========================================
-                     INPUT
+                     INFORMACIÓN
+                ========================================== -->
+
+                <div class="evidencias-informacion">
+
+
+                    <div class="evidencias-informacion-icono">
+
+                        <i class="bi bi-images"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Evidencia fotográfica inicial
+                        </strong>
+
+                        <p>
+                            Estas fotografías representarán el estado
+                            del problema al momento de reportarlo.
+                            Más adelante podrás agregar fotografías
+                            de la solución.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     INPUT MULTIPLE
                 ========================================== -->
 
                 <input
                     type="file"
-                    name="imagen"
-                    id="imagenIncidencia"
+                    name="evidencias_problema"
+                    id="evidenciasProblema"
                     accept="image/jpeg,image/png,image/webp"
+                    multiple
                     hidden
                 >
 
 
 
                 <!-- =========================================
-                     SELECTOR
+                     ZONA DE CARGA
                 ========================================== -->
 
                 <label
-                    for="imagenIncidencia"
-                    class="evidencia-selector"
-                    id="selectorImagenIncidencia"
+                    for="evidenciasProblema"
+                    class="evidencia-selector evidencia-selector-multiple"
+                    id="selectorEvidenciasProblema"
                 >
 
 
@@ -862,22 +906,38 @@
                     </div>
 
 
-                    <div>
+                    <div class="evidencia-selector-contenido">
+
 
                         <strong>
-                            Seleccionar fotografía
+                            Seleccionar fotografías
                         </strong>
 
+
                         <span>
-                            JPG, PNG o WEBP · Máximo 5 MB
+                            Puedes seleccionar hasta
+                            {{ max_evidencias_problema|default:6 }}
+                            fotografías.
                         </span>
+
+
+                        <small>
+                            JPG, PNG o WEBP · Máximo
+                            {{ max_tamano_imagen_mb|default:5 }} MB
+                            por fotografía
+                        </small>
+
 
                     </div>
 
 
                     <div class="evidencia-selector-boton">
 
-                        Examinar
+                        <i class="bi bi-images"></i>
+
+                        <span>
+                            Examinar
+                        </span>
 
                     </div>
 
@@ -887,65 +947,169 @@
 
 
                 <!-- =========================================
+                     ESTADO DE LA SELECCIÓN
+                ========================================== -->
+
+                <div class="evidencias-estado">
+
+
+                    <div class="evidencias-contador">
+
+
+                        <i class="bi bi-camera"></i>
+
+
+                        <span>
+                            <strong id="contadorEvidenciasProblema">
+                                0
+                            </strong>
+
+                            de
+
+                            <strong>
+                                {{ max_evidencias_problema|default:6 }}
+                            </strong>
+
+                            fotografías seleccionadas
+                        </span>
+
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="btn-limpiar-evidencias"
+                        id="btnLimpiarEvidenciasProblema"
+                        hidden
+                    >
+
+                        <i class="bi bi-trash3"></i>
+
+                        <span>
+                            Quitar todas
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     MENSAJE DE AYUDA
+                ========================================== -->
+
+                <div class="evidencias-ayuda">
+
+
+                    <i class="bi bi-info-circle"></i>
+
+
+                    <span>
+                        Las fotografías son opcionales, pero ayudan
+                        a documentar el estado inicial de la incidencia.
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     ERROR DE EVIDENCIAS
+                ========================================== -->
+
+                <div
+                    class="evidencias-error"
+                    id="errorEvidenciasProblema"
+                    hidden
+                >
+
+                    <i class="bi bi-exclamation-circle-fill"></i>
+
+                    <span></span>
+
+                </div>
+
+
+
+                <!-- =========================================
                      VISTA PREVIA
                 ========================================== -->
 
                 <div
-                    class="evidencia-preview"
-                    id="previewImagenIncidencia"
+                    class="evidencias-preview"
+                    id="previewEvidenciasProblema"
                     hidden
                 >
 
 
-                    <div class="evidencia-preview-imagen">
-
-
-                        <img
-                            id="imagenPreview"
-                            src=""
-                            alt="Vista previa de la evidencia"
-                        >
-
-
-                    </div>
-
-
-                    <div class="evidencia-preview-info">
+                    <div class="evidencias-preview-header">
 
 
                         <div>
 
-
-                            <strong id="nombreImagen">
-                                Imagen
+                            <strong>
+                                Fotografías seleccionadas
                             </strong>
 
-
-                            <span id="pesoImagen">
-                                —
+                            <span>
+                                Puedes retirar una fotografía antes
+                                de enviar el reporte.
                             </span>
-
 
                         </div>
 
 
-                        <button
-                            type="button"
-                            id="btnEliminarImagen"
-                            class="btn-eliminar-imagen"
-                        >
-
-                            <i class="bi bi-trash3"></i>
-
-                            <span>
-                                Quitar
-                            </span>
-
-                        </button>
-
-
                     </div>
 
+
+
+                    <!-- =====================================
+                         JS INSERTARÁ AQUÍ LAS FOTOGRAFÍAS
+
+                         Ejemplo:
+
+                         <article class="evidencia-preview-item">
+
+                             <img ...>
+
+                             <button>
+                                 X
+                             </button>
+
+                             <span>
+                                 foto.jpg
+                             </span>
+
+                         </article>
+                    ====================================== -->
+
+                    <div
+                        class="evidencias-preview-grid"
+                        id="gridEvidenciasProblema"
+                    ></div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     AVISO AL VOLVER POR ERRORES DEL BACKEND
+                ========================================== -->
+
+                <div class="evidencias-nota">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <span>
+                        Por seguridad del navegador, si el formulario
+                        presenta un error después de enviarlo tendrás
+                        que volver a seleccionar las fotografías.
+                    </span>
 
                 </div>
 
@@ -979,8 +1143,9 @@
 
                 <p>
                     Una vez reportada aparecerá en tu listado de
-                    incidencias y también podrá ser consultada por
-                    los administradores del sistema.
+                    incidencias. Las fotografías seleccionadas quedarán
+                    registradas como evidencias del problema y posteriormente
+                    podrás agregar evidencias de la solución.
                 </p>
 
             </div>
@@ -991,7 +1156,7 @@
 
 
         <!-- =================================================
-             BOTONES
+             ACCIONES
         ================================================== -->
 
         <div class="crear-incidencia-acciones">
@@ -1043,11 +1208,10 @@
 {% endblock %}
 
 
-
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_apicultor/js/crear_incidencia.js' %}?v=1"
+    src="{% static 'panel_apicultor/js/crear_incidencia.js' %}?v=2"
 ></script>
 
 {% endblock %}

@@ -934,7 +934,7 @@
 
 
                     <a
-                        href="{% url 'registrar_mantenimiento_apicultor' colmena.id_colmena %}"
+                        href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ colmena.id_apiario_id }}&colmena_nueva={{ colmena.id_colmena }}"
                         class="btn-modal-mantenimiento"
                     >
                         <i class="bi bi-tools"></i>

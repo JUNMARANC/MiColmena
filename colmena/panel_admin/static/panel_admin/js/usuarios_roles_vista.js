@@ -20,23 +20,26 @@ document.addEventListener("DOMContentLoaded", function () {
     function aplicarEntradaEscalonadaUsuarios(
         contenedor,
         selectorHijos,
-        retraso
+        retraso,
+        claseAnimacion
     ) {
 
         if (!contenedor) {
             return;
         }
 
+        const clase = claseAnimacion || "anim-entrada-lista";
+
         contenedor.querySelectorAll(selectorHijos).forEach(function (hijo, indice) {
 
-            hijo.classList.remove("anim-entrada-lista");
+            hijo.classList.remove(clase);
 
             // Fuerza reflow para poder volver a ejecutar la animación
             void hijo.offsetWidth;
 
             hijo.style.animationDelay = (indice * retraso) + "ms";
 
-            hijo.classList.add("anim-entrada-lista");
+            hijo.classList.add(clase);
         });
     }
 
@@ -97,7 +100,8 @@ document.addEventListener("DOMContentLoaded", function () {
     aplicarEntradaEscalonadaUsuarios(
         vistaTarjetas,
         ".tarjeta-usuario-card",
-        70
+        70,
+        "anim-entrada-tarjeta"
     );
 
 
@@ -152,7 +156,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 aplicarEntradaEscalonadaUsuarios(
                     elementoAMostrar,
                     ".tarjeta-usuario-card",
-                    70
+                    70,
+                    "anim-entrada-tarjeta"
                 );
 
             } else {
@@ -290,5 +295,108 @@ document.addEventListener("DOMContentLoaded", function () {
             btnVistaTarjetas
         );
     }
+
+});
+
+
+// =========================================================
+// ANIMACIONES ADICIONALES: MODALES DE ADMINISTRADOR
+// =========================================================
+//
+// Bloque independiente para no arriesgar la lógica existente
+// del selector de vista. Reutiliza clases ya definidas en
+// estilos_admin.css (.anim-entrada-modal, .particula-rafaga-polen),
+// igual que en Apicultores, Colmenas y Reportes.
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ---------------------------------------------------------
+    // ENTRADA ESCALONADA DENTRO DE LOS MODALES GRANDES
+    // (Agregar y Editar Administrador)
+    // ---------------------------------------------------------
+
+    ["modalAgregarAdministrador", "modalEditarAdministrador"].forEach(function (idModal) {
+
+        const modal = document.getElementById(idModal);
+
+        if (!modal) {
+            return;
+        }
+
+        modal.addEventListener("shown.bs.modal", function () {
+
+            const cuerpoModal = modal.querySelector(".modal-body");
+
+            if (!cuerpoModal) {
+                return;
+            }
+
+            cuerpoModal
+                .querySelectorAll(".row > div")
+                .forEach(function (hijo, indice) {
+                    hijo.classList.remove("anim-entrada-modal");
+                    void hijo.offsetWidth;
+                    hijo.style.animationDelay = (indice * 35) + "ms";
+                    hijo.classList.add("anim-entrada-modal");
+                });
+
+        });
+
+    });
+
+    // ---------------------------------------------------------
+    // RÁFAGA DE POLEN AL GUARDAR
+    // ---------------------------------------------------------
+
+    const botonesConPolen = [
+        "btnGuardarAdministrador",
+        "btnGuardarEdicionAdministrador",
+        "btnGuardarPermisos"
+    ];
+
+    botonesConPolen.forEach(function (idBoton) {
+
+        const boton = document.getElementById(idBoton);
+
+        if (!boton) {
+            return;
+        }
+
+        boton.addEventListener("click", function () {
+
+            if (boton.disabled) {
+                return;
+            }
+
+            const rect = boton.getBoundingClientRect();
+            const centroX = rect.left + rect.width / 2;
+            const centroY = rect.top + rect.height / 2;
+            const CANTIDAD_PARTICULAS = 10;
+
+            for (let i = 0; i < CANTIDAD_PARTICULAS; i++) {
+
+                const angulo = (Math.PI * 2 * i) / CANTIDAD_PARTICULAS;
+                const distancia = 40 + Math.random() * 30;
+                const dx = Math.cos(angulo) * distancia;
+                const dy = Math.sin(angulo) * distancia;
+
+                const particula = document.createElement("span");
+                particula.className = "particula-rafaga-polen";
+                particula.style.left = centroX + "px";
+                particula.style.top = centroY + "px";
+                particula.style.setProperty("--dx", dx.toFixed(1) + "px");
+                particula.style.setProperty("--dy", dy.toFixed(1) + "px");
+
+                document.body.appendChild(particula);
+
+                window.setTimeout(function () {
+                    particula.remove();
+                }, 700);
+
+            }
+
+        });
+
+    });
 
 });

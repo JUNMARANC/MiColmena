@@ -6,6 +6,8 @@ from panel_apicultor.views import (
     detalle_apiario_apicultor,
     mis_colmenas,
     registrar_mantenimiento_apicultor,
+    editar_mantenimiento_apicultor,
+    crear_mantenimiento_apicultor,
     reportar_incidencia_apicultor,
     mantenimientos_apicultor,
     completar_mantenimiento_apicultor,
@@ -14,7 +16,8 @@ from panel_apicultor.views import (
     crear_incidencia_apicultor,
     editar_incidencia_apicultor,
     reportar_incidencia_apicultor,
-    agenda_apicultor
+    agenda_apicultor,
+    crear_evento_apicultor,
 )
 
 
@@ -51,8 +54,10 @@ urlpatterns = [
     # MANTENIMIENTOS
     # ============================================================
 
-    path("mantenimientos/",mantenimientos_apicultor,name="mantenimientos_apicultor"),
-    path("mantenimientos/registrar/colmena/<int:id_colmena>/",registrar_mantenimiento_apicultor,name="registrar_mantenimiento_apicultor"),
+    path(
+    "mantenimientos/",mantenimientos_apicultor,name="mantenimientos_apicultor"),
+    path("mantenimientos/crear/",crear_mantenimiento_apicultor,name="crear_mantenimiento_apicultor"),
+    path("mantenimientos/<int:id_mantenimiento>/editar/",editar_mantenimiento_apicultor,name="editar_mantenimiento_apicultor"),
     path("mantenimientos/<int:id_mantenimiento>/completar/",completar_mantenimiento_apicultor,name="completar_mantenimiento_apicultor"),
     path("mantenimientos/<int:id_mantenimiento>/observacion/",actualizar_observacion_mantenimiento_apicultor,name="actualizar_observacion_mantenimiento_apicultor"),
 
@@ -75,9 +80,6 @@ urlpatterns = [
     # AGENDA
     # ============================================================
 
-    path(
-        "agenda/",
-        agenda_apicultor,
-        name="agenda_apicultor"
-    ),
+    path("agenda/",agenda_apicultor,name="agenda_apicultor"),
+    path("agenda/crear/",crear_evento_apicultor,name="crear_evento_apicultor"),
 ]
