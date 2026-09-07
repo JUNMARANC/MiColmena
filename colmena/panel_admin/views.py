@@ -311,19 +311,75 @@ def obtener_datos_dashboard():
     for m in ultimos_mantenimientos:
 
         if m.id_apiario:
-            lugar = m.id_apiario.nombreapiario
+
+            lugar = (
+                m.id_apiario.nombreapiario
+            )
+
         elif m.id_colmena:
-            lugar = m.id_colmena.codigocolmena
+
+            lugar = (
+                m.id_colmena.codigocolmena
+            )
+
         else:
+
             lugar = "N/D"
 
+
+        # ====================================================
+        # RESPONSABLE
+        # ====================================================
+
+        responsable = (
+            m.responsable
+            or
+            ""
+        ).strip()
+
+
+        if (
+            not responsable
+            or
+            responsable.lower()
+            ==
+            "sin responsable"
+        ):
+
+            responsable = (
+                "Sin asignar"
+            )
+
+
+        # ====================================================
+        # NOTIFICACIÓN
+        # ====================================================
+
         notificaciones.append({
-            "id": f"mantenimiento-{m.id_mantenimiento}",
-            "titulo": "Mantenimiento",
-            "descripcion": f'Programado en "{lugar}"',
-            "fecha": m.fechaejecucion.isoformat() if m.fechaejecucion else None,
-            "orden": m.id_mantenimiento,
-            "icono": "bi-tools",
+
+            "id":
+                f"mantenimiento-{m.id_mantenimiento}",
+
+            "titulo":
+                "Mantenimiento",
+
+            "descripcion": (
+                f'Programado en "{lugar}" '
+                f'· Responsable: {responsable}'
+            ),
+
+            "fecha": (
+                m.fechaejecucion.isoformat()
+                if m.fechaejecucion
+                else None
+            ),
+
+            "orden":
+                m.id_mantenimiento,
+
+            "icono":
+                "bi-tools",
+
         })
 
     ultimas_incidencias = (
@@ -334,20 +390,94 @@ def obtener_datos_dashboard():
 
     for inc in ultimas_incidencias:
 
+
+        # ====================================================
+        # RESPONSABLE
+        # ====================================================
+
+        responsable = (
+            inc.responsable
+            or
+            ""
+        ).strip()
+
+
+        if (
+            not responsable
+            or
+            responsable.lower()
+            ==
+            "sin responsable"
+        ):
+
+            responsable = (
+                "Sin asignar"
+            )
+
+
+        # ====================================================
+        # DESCRIPCIÓN
+        # ====================================================
+
         if inc.id_colmena:
-            descripcion = f'Colmena {inc.id_colmena.codigocolmena} requiere atención'
+
+            descripcion = (
+                f"Colmena "
+                f"{inc.id_colmena.codigocolmena} "
+                f"requiere atención"
+            )
+
         elif inc.id_apiario:
-            descripcion = f'Reportada en "{inc.id_apiario.nombreapiario}"'
+
+            descripcion = (
+                f'Reportada en '
+                f'"{inc.id_apiario.nombreapiario}"'
+            )
+
         else:
-            descripcion = inc.titulo
+
+            descripcion = (
+                inc.titulo
+            )
+
+
+        # ====================================================
+        # AGREGAR RESPONSABLE
+        # ====================================================
+
+        descripcion += (
+            f" · Responsable: "
+            f"{responsable}"
+        )
+
+
+        # ====================================================
+        # NOTIFICACIÓN
+        # ====================================================
 
         notificaciones.append({
-            "id": f"incidencia-{inc.id_incidencia}",
-            "titulo": "Nueva incidencia",
-            "descripcion": descripcion,
-            "fecha": inc.fechadeteccion.isoformat() if inc.fechadeteccion else None,
-            "orden": inc.id_incidencia,
-            "icono": "bi-exclamation-triangle-fill",
+
+            "id":
+                f"incidencia-{inc.id_incidencia}",
+
+            "titulo":
+                "Nueva incidencia",
+
+            "descripcion":
+                descripcion,
+
+            "fecha": (
+                inc.fechadeteccion.isoformat()
+                if inc.fechadeteccion
+                else None
+            ),
+
+            "orden":
+                inc.id_incidencia,
+
+            "icono":
+                "bi-exclamation-triangle-fill",
+
         })
 
     # Se ordenan TODAS por fecha y solo se dejan las 3 más recientes.

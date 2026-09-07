@@ -604,6 +604,87 @@ FOOTER
     font-weight: bold;
 }
 
+/* =========================
+ENLACES LEGALES DEL FOOTER
+========================= */
+
+.footer-legales{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    margin: 0;
+
+    color: #000;
+}
+
+
+/* ENLACES */
+
+.footer-legales a{
+    position: relative;
+
+    color: #000;
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    transition:
+        color .25s ease;
+}
+
+
+/* EVITAR COLOR MORADO AL VISITAR */
+
+.footer-legales a:visited{
+    color: #000;
+}
+
+
+/* LÍNEA INFERIOR SUTIL */
+
+.footer-legales a::after{
+    content: "";
+
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+
+    width: 0;
+    height: 1px;
+
+    background: #2CAE76;
+
+    transition:
+        width .25s ease;
+}
+
+
+/* HOVER Y TECLADO */
+
+.footer-legales a:hover,
+.footer-legales a:focus-visible{
+    color: #2CAE76;
+}
+
+
+.footer-legales a:hover::after,
+.footer-legales a:focus-visible::after{
+    width: 100%;
+}
+
+
+/* SEPARADOR */
+
+.footer-legales-separador{
+    color: #7a857f;
+
+    font-weight: 500;
+}
+
 .logo-footer{
     width: 65px;
     height: 65px;
@@ -786,6 +867,16 @@ CELULARES PEQUEÑOS
 
     .footer-abajo{
         text-align: center;
+    }
+
+    .footer-legales{
+        width: 100%;
+        justify-content: center;
+    }
+
+
+    .footer-legales a{
+        font-size: 11px;
     }
 }
 

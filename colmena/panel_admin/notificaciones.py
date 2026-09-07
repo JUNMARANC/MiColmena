@@ -113,6 +113,37 @@ def obtener_administradores_activos():
         .distinct()
     )
 
+# ============================================================
+# OBTENER RESPONSABLE DE UN TRABAJO
+# ============================================================
+
+def obtener_responsable_trabajo(
+    registro
+):
+
+    responsable = (
+        getattr(
+            registro,
+            "responsable",
+            ""
+        )
+        or ""
+    ).strip()
+
+
+    if (
+        not responsable
+        or
+        responsable.lower()
+        ==
+        "sin responsable"
+    ):
+
+        return "Sin asignar"
+
+
+    return responsable
+
 
 # ============================================================
 # NOTIFICAR NUEVA INCIDENCIA
@@ -170,6 +201,16 @@ def notificar_incidencia_creada(
         None
     )
 
+    # ========================================================
+    # RESPONSABLE
+    # ========================================================
+
+    responsable = (
+        obtener_responsable_trabajo(
+            incidencia
+        )
+    )
+
 
     # ========================================================
     # NOMBRE DEL APIARIO
@@ -212,7 +253,11 @@ def notificar_incidencia_creada(
     # ========================================================
 
     partes = [
-        f'Se registró la incidencia "{titulo_incidencia}".'
+
+        f'Se registró la incidencia "{titulo_incidencia}".',
+
+        f"Responsable: {responsable}.",
+
     ]
 
 
@@ -358,13 +403,27 @@ def notificar_mantenimiento_creado(
         None
     )
 
+    # ========================================================
+    # RESPONSABLE
+    # ========================================================
+
+    responsable = (
+        obtener_responsable_trabajo(
+            mantenimiento
+        )
+    )
+
 
     # ========================================================
     # MENSAJE
     # ========================================================
 
     partes = [
-        f'Se registró el mantenimiento "{tipo_mantenimiento}".'
+
+        f'Se registró el mantenimiento "{tipo_mantenimiento}".',
+
+        f"Responsable: {responsable}.",
+
     ]
 
 
@@ -686,6 +745,18 @@ def crear_alerta_mantenimiento_proximo(
         f"{fecha_texto}."
     )
 
+    responsable = (
+        obtener_responsable_trabajo(
+            mantenimiento
+        )
+    )
+
+
+    mensaje += (
+        f" Responsable: "
+        f"{responsable}."
+    )
+
 
     if mantenimiento.id_apiario:
 
@@ -777,6 +848,18 @@ def crear_alerta_mantenimiento_vencido(
         f'El mantenimiento "{tipo_mantenimiento}" '
         f"estaba programado para el "
         f"{fecha_texto} y continúa pendiente."
+    )
+
+    responsable = (
+        obtener_responsable_trabajo(
+            mantenimiento
+        )
+    )
+
+
+    mensaje += (
+        f" Responsable: "
+        f"{responsable}."
     )
 
 
@@ -1230,6 +1313,44 @@ def construir_mensaje_evento(
 
 
     # ========================================================
+    # RESPONSABLE
+    # ========================================================
+
+    if evento.responsable:
+
+        usuario_responsable = getattr(
+            evento.responsable,
+            "user",
+            None
+        )
+
+
+        if usuario_responsable:
+
+            nombre_responsable = (
+                usuario_responsable
+                .get_full_name()
+                .strip()
+
+                or
+
+                usuario_responsable.username
+            )
+
+
+            partes.append(
+                f"Responsable: "
+                f"{nombre_responsable}."
+            )
+
+    else:
+
+        partes.append(
+            "Responsable: Sin asignar."
+        )
+
+
+    # ========================================================
     # APIARIO
     # ========================================================
 
@@ -1288,38 +1409,14 @@ def construir_mensaje_evento(
 
 
     # ========================================================
-    # RESPONSABLE
+    # MENSAJE FINAL
     # ========================================================
-
-    if evento.responsable:
-
-        usuario_responsable = getattr(
-            evento.responsable,
-            "user",
-            None
-        )
-
-
-        if usuario_responsable:
-
-            nombre_responsable = (
-                usuario_responsable
-                .get_full_name()
-                .strip()
-                or
-                usuario_responsable.username
-            )
-
-
-            partes.append(
-                f"Responsable: "
-                f"{nombre_responsable}."
-            )
-
 
     return " ".join(
         partes
     )
+
+
 
 
 
@@ -1343,7 +1440,7 @@ def crear_alerta_evento_manana(
         evento,
 
         (
-            "Tienes un evento programado "
+            "Hay un evento programado "
             f"para mañana, {fecha_texto}."
         )
 
@@ -1387,7 +1484,7 @@ def crear_alerta_evento_hoy(
 
         evento,
 
-        "Tienes un evento programado para hoy."
+            "Hay un evento programado para hoy."
 
     )
 
@@ -1406,7 +1503,7 @@ def crear_alerta_evento_hoy(
             evento,
 
         titulo=
-            "Tienes un evento para hoy",
+            "Evento programado para hoy",
 
         mensaje=
             mensaje,
@@ -1716,6 +1813,45 @@ def notificar_colmena_en_riesgo(
             or ""
         )
 
+    # ========================================================
+    # APICULTOR RESPONSABLE DEL APIARIO
+    # ========================================================
+
+    nombre_responsable = (
+        "Sin asignar"
+    )
+
+
+    if apiario:
+
+        apicultor = getattr(
+            apiario,
+            "id_apicultor",
+            None
+        )
+
+
+        if apicultor:
+
+            usuario_apicultor = getattr(
+                apicultor,
+                "user",
+                None
+            )
+
+
+            if usuario_apicultor:
+
+                nombre_responsable = (
+                    usuario_apicultor
+                    .get_full_name()
+                    .strip()
+
+                    or
+
+                    usuario_apicultor.username
+                )
+
 
     # ========================================================
     # MENSAJE
@@ -1724,6 +1860,12 @@ def notificar_colmena_en_riesgo(
     mensaje = (
         f'La colmena "{codigo}" '
         f"fue marcada con estado Riesgo."
+    )
+
+
+    mensaje += (
+        f" Responsable del apiario: "
+        f"{nombre_responsable}."
     )
 
 
