@@ -32,11 +32,11 @@
 
             <button
                 type="button"
-                class="btn btn-success"
+                class="btn btn-agregar"
                 data-bs-toggle="modal"
                 data-bs-target="#modalAgregarApicultor"
             >
-                <i class="bi bi-person-plus-fill me-1"></i>
+                <i class="bi bi-plus-circle me-2"></i>
                 Agregar apicultor
             </button>
 
@@ -168,8 +168,13 @@
 {% block scripts %}
 
 <script>
+
     const URL_VERIFICAR_DATO_APICULTOR =
         "{% url 'verificar_dato_apicultor' %}";
+
+    const URL_VALIDAR_PASSWORD_APICULTOR =
+        "{% url 'validar_password_apicultor' %}";
+
 </script>
 
 <script

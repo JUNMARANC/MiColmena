@@ -2241,6 +2241,284 @@ function inicializarValidacionesRegistroAdministrador(
         return true;
     }
 
+    /* ========================================================
+    VALIDAR CONTRASEÑA CON DJANGO
+    ======================================================== */
+
+    async function validarPasswordConDjango() {
+
+        const campo =
+            campos.password;
+
+
+        if (!campo) {
+
+            return true;
+
+        }
+
+
+        // =====================================================
+        // VALIDACIÓN LOCAL PRIMERO
+        // =====================================================
+
+        if (!validarPassword()) {
+
+            return false;
+
+        }
+
+
+        const passwordConsultado =
+            campo.value;
+
+
+        // =====================================================
+        // ESTADO VISUAL
+        // =====================================================
+
+        campo.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        mostrarFeedback(
+            campo,
+            "verificando",
+            "Verificando seguridad de la contraseña..."
+        );
+
+
+        // =====================================================
+        // DATOS
+        // =====================================================
+
+        const datos =
+            new FormData();
+
+
+        const csrf =
+            formulario.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            );
+
+
+        if (csrf) {
+
+            datos.append(
+                "csrfmiddlewaretoken",
+                csrf.value
+            );
+
+        }
+
+
+        datos.append(
+            "password",
+            passwordConsultado
+        );
+
+
+        datos.append(
+            "username",
+            campos.username
+                ? campos.username.value
+                : ""
+        );
+
+
+        datos.append(
+            "correo",
+            campos.correo
+                ? campos.correo.value
+                : ""
+        );
+
+
+        datos.append(
+            "primer_nombre",
+            campos.primerNombre
+                ? campos.primerNombre.value
+                : ""
+        );
+
+
+        datos.append(
+            "segundo_nombre",
+            campos.segundoNombre
+                ? campos.segundoNombre.value
+                : ""
+        );
+
+
+        datos.append(
+            "primer_apellido",
+            campos.primerApellido
+                ? campos.primerApellido.value
+                : ""
+        );
+
+
+        datos.append(
+            "segundo_apellido",
+            campos.segundoApellido
+                ? campos.segundoApellido.value
+                : ""
+        );
+
+
+        // =====================================================
+        // CONSULTAR DJANGO
+        // =====================================================
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    URL_VALIDAR_PASSWORD_ADMINISTRADOR,
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                            datos,
+
+                        credentials:
+                            "same-origin",
+
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible validar la contraseña."
+                );
+
+            }
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            // =================================================
+            // IGNORAR RESPUESTA SI CAMBIÓ LA CONTRASEÑA
+            // =================================================
+
+            if (
+                campo.value
+                !==
+                passwordConsultado
+            ) {
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // INVÁLIDA
+            // =================================================
+
+            if (!resultado.valido) {
+
+                const mensajes =
+                    (
+                        resultado.mensajes
+                        &&
+                        resultado.mensajes.length
+                    )
+                        ?
+                        resultado.mensajes
+                        :
+                        [
+                            (
+                                "La contraseña no cumple "
+                                + "los requisitos de seguridad."
+                            )
+                        ];
+
+
+                const mensaje =
+                    mensajes.join(
+                        " "
+                    );
+
+
+                marcarCampo(
+                    campo,
+                    false,
+                    mensaje
+                );
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // VÁLIDA
+            // =================================================
+
+            const mensajeValido =
+                (
+                    resultado.mensajes
+                    &&
+                    resultado.mensajes.length
+                )
+                    ?
+                    resultado.mensajes.join(
+                        " "
+                    )
+                    :
+                    (
+                        "La contraseña cumple los "
+                        + "requisitos de seguridad."
+                    );
+
+
+            marcarCampo(
+                campo,
+                true,
+                mensajeValido
+            );
+
+
+            return true;
+
+
+        } catch (error) {
+
+            console.error(
+                "[usuarios_roles] Error validando contraseña:",
+                error
+            );
+
+
+            marcarCampo(
+                campo,
+                false,
+                (
+                    "No fue posible verificar la contraseña. "
+                    + "Intenta nuevamente."
+                )
+            );
+
+
+            return false;
+
+        }
+
+    }
+
 
     function validarConfirmacionPassword() {
 
@@ -2330,11 +2608,32 @@ function inicializarValidacionesRegistroAdministrador(
 
 
                 if (
-                    campos.confirmarPassword &&
+                    campos.confirmarPassword
+                    &&
                     campos.confirmarPassword.value
                 ) {
 
                     validarConfirmacionPassword();
+
+                }
+
+            }
+        );
+
+
+        // =====================================================
+        // VALIDACIÓN REAL AL SALIR DEL CAMPO
+        // =====================================================
+
+        campos.password.addEventListener(
+            "blur",
+            function () {
+
+                if (
+                    campos.password.value
+                ) {
+
+                    validarPasswordConDjango();
 
                 }
 
@@ -2358,12 +2657,53 @@ function inicializarValidacionesRegistroAdministrador(
 
 
     /* ========================================================
-       SUBMIT
+        SUBMIT
     ======================================================== */
+
+    let permitirEnvioAdministrador =
+        false;
+
 
     formulario.addEventListener(
         "submit",
-        function (evento) {
+        async function (evento) {
+
+
+            // =================================================
+            // SEGUNDO ENVÍO:
+            // Django ya confirmó la contraseña.
+            // =================================================
+
+            if (
+                permitirEnvioAdministrador
+            ) {
+
+                permitirEnvioAdministrador =
+                    false;
+
+
+                activarBotonRegistrando(
+                    campos.botonGuardar
+                );
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // DETENER ENVÍO TEMPORALMENTE
+            // =================================================
+
+            evento.preventDefault();
+
+            evento.stopPropagation();
+
+
+            // =================================================
+            // NORMALIZAR
+            // =================================================
 
             normalizarRegistroAdministrador(
                 campos
@@ -2379,6 +2719,10 @@ function inicializarValidacionesRegistroAdministrador(
 
             }
 
+
+            // =================================================
+            // VALIDACIONES LOCALES
+            // =================================================
 
             const nombresValidos =
                 configuracionNombres.every(
@@ -2426,22 +2770,29 @@ function inicializarValidacionesRegistroAdministrador(
                 );
 
 
+            // =================================================
+            // DETENER POR ERRORES LOCALES
+            // =================================================
+
             if (
-                !nombresValidos ||
-                !celularValido ||
-                !correoValido ||
-                !usernameValido ||
-                !passwordValido ||
-                !confirmacionValida ||
-                hayVerificando ||
-                hayDuplicado ||
+                !nombresValidos
+                ||
+                !celularValido
+                ||
+                !correoValido
+                ||
+                !usernameValido
+                ||
+                !passwordValido
+                ||
+                !confirmacionValida
+                ||
+                hayVerificando
+                ||
+                hayDuplicado
+                ||
                 !formulario.checkValidity()
             ) {
-
-                evento.preventDefault();
-
-                evento.stopPropagation();
-
 
                 formulario.classList.add(
                     "was-validated"
@@ -2452,12 +2803,102 @@ function inicializarValidacionesRegistroAdministrador(
 
 
                 return;
+
             }
 
 
-            activarBotonRegistrando(
-                campos.botonGuardar
-            );
+            // =================================================
+            // VALIDACIÓN REAL DE CONTRASEÑA CON DJANGO
+            // =================================================
+
+            const passwordDjangoValido =
+                await validarPasswordConDjango();
+
+
+            if (
+                !passwordDjangoValido
+            ) {
+
+                if (campos.password) {
+
+                    campos.password.focus();
+
+                }
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // VOLVER A COMPROBAR CONFIRMACIÓN
+            // =================================================
+
+            if (
+                !validarConfirmacionPassword()
+            ) {
+
+                if (
+                    campos.confirmarPassword
+                ) {
+
+                    campos.confirmarPassword.focus();
+
+                }
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // COMPROBAR DUPLICADOS NUEVAMENTE
+            // =================================================
+
+            const verificandoFinal =
+                formulario.querySelector(
+                    '[data-verificando="1"]'
+                );
+
+
+            const duplicadoFinal =
+                formulario.querySelector(
+                    '[data-duplicado="1"]'
+                );
+
+
+            if (
+                verificandoFinal
+                ||
+                duplicadoFinal
+                ||
+                !formulario.checkValidity()
+            ) {
+
+                formulario.classList.add(
+                    "was-validated"
+                );
+
+
+                formulario.reportValidity();
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // TODO CORRECTO
+            // =================================================
+
+            permitirEnvioAdministrador =
+                true;
+
+
+            formulario.requestSubmit();
 
         },
         true
@@ -2514,6 +2955,15 @@ function inicializarValidacionesRegistroAdministrador(
                 false
             );
 
+            mostrarFeedback(
+                campos.password,
+                null,
+                ""
+            );
+
+
+            permitirEnvioAdministrador =
+                false;
         }
     );
 

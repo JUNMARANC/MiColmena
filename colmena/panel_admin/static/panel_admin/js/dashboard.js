@@ -77,39 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ===========================================================
-    // ESTELA DE POLEN AL MOVER EL MOUSE
-    // ===========================================================
-
-    (function () {
-        var contenedor = document.querySelector(".dashboard-fondo-panal-contenido");
-        if (!contenedor) return;
-
-        var prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefiereMenosMovimiento) return;
-
-        var ultimoTiempo = 0;
-        var intervaloMinimo = 70; // ms entre partículas, para no saturar
-
-        contenedor.addEventListener("mousemove", function (evento) {
-            var ahora = performance.now();
-            if (ahora - ultimoTiempo < intervaloMinimo) return;
-            ultimoTiempo = ahora;
-
-            var particula = document.createElement("span");
-            particula.className = "estela-polen";
-            particula.style.left = evento.clientX + "px";
-            particula.style.top = evento.clientY + "px";
-
-            document.body.appendChild(particula);
-
-            particula.addEventListener("animationend", function () {
-                particula.remove();
-            });
-        });
-    })();
-
-
-    // ===========================================================
     // SONIDO DE NOTIFICACIONES (apagado por defecto)
     // ===========================================================
 

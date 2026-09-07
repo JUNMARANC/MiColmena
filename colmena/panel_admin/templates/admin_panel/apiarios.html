@@ -87,12 +87,7 @@
             {% if "ag" in permisos_usuario %}
 
                 <button
-                    class="
-                        btn
-                        btn-success
-                        rounded-3
-                        px-4
-                    "
+                    class="btn btn-agregar"
                     data-bs-toggle="modal"
                     data-bs-target="#modalAgregarApiario"
                 >
@@ -220,10 +215,10 @@
 
             <button
                 type="submit"
-                class="btn btn-outline-success"
+                class="btn btn-filtrar"
             >
 
-                <i class="bi bi-filter me-2"></i>
+                <i class="bi bi-search me-2"></i>
 
                 Filtrar
 
@@ -232,7 +227,7 @@
 
             <a
                 href="{% url 'apiarios_admin' %}"
-                class="btn btn-cancelar"
+                class="btn btn-limpiar"
             >
 
                 Limpiar

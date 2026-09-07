@@ -7137,6 +7137,117 @@ def verificar_dato_apicultor(request):
         status=400
     )
 
+# ============================================================
+# VALIDAR CONTRASEÑA DE APICULTOR EN TIEMPO REAL
+# ============================================================
+
+@administrador_requerido
+@require_POST
+def validar_password_apicultor(request):
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    password = request.POST.get(
+        "password",
+        ""
+    )
+
+    username = request.POST.get(
+        "username",
+        ""
+    ).strip()
+
+    correo = normalizar_correo(
+        request.POST.get(
+            "correo",
+            ""
+        )
+    )
+
+    primer_nombre = request.POST.get(
+        "primer_nombre",
+        ""
+    ).strip()
+
+    primer_apellido = request.POST.get(
+        "primer_apellido",
+        ""
+    ).strip()
+
+
+    # ========================================================
+    # CAMPO VACÍO
+    # ========================================================
+
+    if not password:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes": [
+                    "La contraseña es obligatoria."
+                ],
+            }
+        )
+
+
+    # ========================================================
+    # USUARIO TEMPORAL
+    # ========================================================
+    #
+    # Se construye igual que al registrar el apicultor para que
+    # Django también pueda validar similitud con nombre,
+    # usuario y correo.
+    # ========================================================
+
+    usuario_temporal = User(
+        username=username,
+        email=correo,
+        first_name=primer_nombre,
+        last_name=primer_apellido,
+    )
+
+
+    # ========================================================
+    # VALIDADORES OFICIALES DE DJANGO
+    # ========================================================
+
+    try:
+
+        validate_password(
+            password,
+            user=usuario_temporal
+        )
+
+
+    except ValidationError as error:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes": error.messages,
+            }
+        )
+
+
+    # ========================================================
+    # CONTRASEÑA VÁLIDA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "valido": True,
+            "mensajes": [
+                (
+                    "La contraseña cumple los "
+                    "requisitos de seguridad."
+                )
+            ],
+        }
+    )
+
 #CREAR APICULTOR
 
 @administrador_requerido
@@ -9537,13 +9648,54 @@ def reportes_admin(request):
 
 
     # ========================================================
-    # PAGINACIÓN
-    # 3 REPORTES POR PÁGINA
+    # PAGINACIÓN DEL HISTORIAL
+    # ========================================================
+
+    opciones_por_pagina = {
+        3,
+        5,
+        10,
+        20,
+    }
+
+
+    try:
+
+        reportes_por_pagina = int(
+            request.GET.get(
+                "por_pagina",
+                3
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        reportes_por_pagina = 3
+
+
+    # ========================================================
+    # VALIDAR OPCIÓN PERMITIDA
+    # ========================================================
+
+    if (
+        reportes_por_pagina
+        not in
+        opciones_por_pagina
+    ):
+
+        reportes_por_pagina = 3
+
+
+    # ========================================================
+    # PAGINADOR
     # ========================================================
 
     paginador_historial = Paginator(
         historial_lista,
-        3
+        reportes_por_pagina
     )
 
 
@@ -9671,6 +9823,7 @@ def reportes_admin(request):
             "apiarios": apiarios,
             "apicultores": apicultores,
             "historial": historial,
+            "reportes_por_pagina":reportes_por_pagina,
             "tipos_reportes": tipos_reportes,
             "prioridades_incidencia": prioridades_incidencia,
             "estados_incidencia": estados_incidencia,
@@ -11391,6 +11544,151 @@ def verificar_dato_administrador(request):
             "mensaje": "Campo de validación no permitido.",
         },
         status=400
+    )
+
+# ============================================================
+# VALIDAR CONTRASEÑA DE ADMINISTRADOR EN TIEMPO REAL
+# ============================================================
+
+@administrador_requerido
+@permiso_requerido(
+    "ug",
+    redireccion="usuarios_roles_admin"
+)
+@require_POST
+def validar_password_administrador(request):
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    password = request.POST.get(
+        "password",
+        ""
+    )
+
+    username = request.POST.get(
+        "username",
+        ""
+    ).strip()
+
+    correo = normalizar_correo(
+        request.POST.get(
+            "correo",
+            ""
+        )
+    )
+
+    primer_nombre = request.POST.get(
+        "primer_nombre",
+        ""
+    ).strip()
+
+    segundo_nombre = request.POST.get(
+        "segundo_nombre",
+        ""
+    ).strip()
+
+    primer_apellido = request.POST.get(
+        "primer_apellido",
+        ""
+    ).strip()
+
+    segundo_apellido = request.POST.get(
+        "segundo_apellido",
+        ""
+    ).strip()
+
+
+    # ========================================================
+    # CAMPO VACÍO
+    # ========================================================
+
+    if not password:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes": [
+                    "La contraseña es obligatoria."
+                ],
+            }
+        )
+
+
+    # ========================================================
+    # CONSTRUIR NOMBRES
+    # ========================================================
+
+    nombres = " ".join(
+        valor
+        for valor in [
+            primer_nombre,
+            segundo_nombre,
+        ]
+        if valor
+    )
+
+
+    apellidos = " ".join(
+        valor
+        for valor in [
+            primer_apellido,
+            segundo_apellido,
+        ]
+        if valor
+    )
+
+
+    # ========================================================
+    # USUARIO TEMPORAL
+    # ========================================================
+
+    usuario_temporal = User(
+        username=username,
+        email=correo,
+        first_name=nombres,
+        last_name=apellidos,
+    )
+
+
+    # ========================================================
+    # VALIDADORES REALES DE DJANGO
+    # ========================================================
+
+    try:
+
+        validate_password(
+            password,
+            user=usuario_temporal
+        )
+
+
+    except ValidationError as error:
+
+        return JsonResponse(
+            {
+                "valido": False,
+                "mensajes":
+                    error.messages,
+            }
+        )
+
+
+    # ========================================================
+    # CONTRASEÑA VÁLIDA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "valido": True,
+            "mensajes": [
+                (
+                    "La contraseña cumple los "
+                    "requisitos de seguridad."
+                )
+            ],
+        }
     )
 
 # ============================================================

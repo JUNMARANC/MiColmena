@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensajePasswordNoCoincide = document.getElementById(
         "mensajePasswordNoCoincide"
     );
+
+    const mensajePasswordSeguridadAgregar = document.getElementById(
+        "mensajePasswordSeguridadAgregar"
+    );
  
     const botonGuardarApicultor = document.getElementById(
         "btnGuardarApicultor"
@@ -262,15 +266,435 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
  
     }
+
+    /* =========================================================
+        VALIDAR SEGURIDAD DE CONTRASEÑA CON DJANGO
+    ========================================================= */
+
+    async function validarSeguridadPasswordAgregar() {
+
+        if (
+            !passwordAgregar
+            ||
+            !formularioAgregar
+            ||
+            !mensajePasswordSeguridadAgregar
+        ) {
+
+            return false;
+        }
+
+
+        const passwordConsultado =
+            passwordAgregar.value;
+
+
+        // =====================================================
+        // CAMPO VACÍO
+        // =====================================================
+
+        if (!passwordConsultado) {
+
+            passwordAgregar.setCustomValidity(
+                "La contraseña es obligatoria."
+            );
+
+            return false;
+        }
+
+
+        // =====================================================
+        // LONGITUD MÍNIMA
+        // =====================================================
+
+        if (passwordConsultado.length < 8) {
+
+            passwordAgregar.setCustomValidity(
+                "La contraseña debe tener mínimo 8 caracteres."
+            );
+
+            passwordAgregar.classList.remove(
+                "is-valid"
+            );
+
+            passwordAgregar.classList.add(
+                "is-invalid"
+            );
+
+
+            mensajePasswordSeguridadAgregar.textContent =
+                "La contraseña debe tener mínimo 8 caracteres.";
+
+            mensajePasswordSeguridadAgregar.classList.remove(
+                "d-none",
+                "text-success",
+                "text-muted"
+            );
+
+            mensajePasswordSeguridadAgregar.classList.add(
+                "text-danger"
+            );
+
+
+            return false;
+        }
+
+
+        // =====================================================
+        // ESTADO: VALIDANDO
+        // =====================================================
+
+        passwordAgregar.setCustomValidity("");
+
+        passwordAgregar.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        mensajePasswordSeguridadAgregar.textContent =
+            "Verificando seguridad de la contraseña...";
+
+        mensajePasswordSeguridadAgregar.classList.remove(
+            "d-none",
+            "text-danger",
+            "text-success"
+        );
+
+        mensajePasswordSeguridadAgregar.classList.add(
+            "text-muted"
+        );
+
+
+        // =====================================================
+        // DATOS PARA DJANGO
+        // =====================================================
+
+        const datos = new FormData();
+
+
+        const csrf = formularioAgregar.querySelector(
+            '[name="csrfmiddlewaretoken"]'
+        );
+
+
+        if (csrf) {
+
+            datos.append(
+                "csrfmiddlewaretoken",
+                csrf.value
+            );
+
+        }
+
+
+        datos.append(
+            "password",
+            passwordConsultado
+        );
+
+
+        const usernameAgregar =
+            document.getElementById(
+                "usernameAgregar"
+            );
+
+        const correoAgregar =
+            document.getElementById(
+                "correoAgregar"
+            );
+
+        const primerNombreAgregar =
+            document.getElementById(
+                "primerNombreAgregar"
+            );
+
+        const primerApellidoAgregar =
+            document.getElementById(
+                "primerApellidoAgregar"
+            );
+
+
+        datos.append(
+            "username",
+            usernameAgregar
+                ? usernameAgregar.value
+                : ""
+        );
+
+        datos.append(
+            "correo",
+            correoAgregar
+                ? correoAgregar.value
+                : ""
+        );
+
+        datos.append(
+            "primer_nombre",
+            primerNombreAgregar
+                ? primerNombreAgregar.value
+                : ""
+        );
+
+        datos.append(
+            "primer_apellido",
+            primerApellidoAgregar
+                ? primerApellidoAgregar.value
+                : ""
+        );
+
+
+        // =====================================================
+        // CONSULTAR AL SERVIDOR
+        // =====================================================
+
+        try {
+
+            const respuesta = await fetch(
+                URL_VALIDAR_PASSWORD_APICULTOR,
+                {
+                    method: "POST",
+                    body: datos,
+                    credentials: "same-origin"
+                }
+            );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible validar la contraseña."
+                );
+
+            }
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            // El usuario cambió la contraseña mientras
+            // llegaba la respuesta del servidor.
+
+            if (
+                passwordAgregar.value
+                !==
+                passwordConsultado
+            ) {
+
+                return false;
+            }
+
+
+            // =================================================
+            // CONTRASEÑA INVÁLIDA
+            // =================================================
+
+            if (!resultado.valido) {
+
+                const mensajes = (
+                    resultado.mensajes
+                    &&
+                    resultado.mensajes.length
+                )
+                    ?
+                    resultado.mensajes
+                    :
+                    [
+                        "La contraseña no cumple los requisitos de seguridad."
+                    ];
+
+
+                const mensajeCompleto =
+                    mensajes.join(" ");
+
+
+                passwordAgregar.setCustomValidity(
+                    mensajeCompleto
+                );
+
+
+                passwordAgregar.classList.remove(
+                    "is-valid"
+                );
+
+                passwordAgregar.classList.add(
+                    "is-invalid"
+                );
+
+
+                mensajePasswordSeguridadAgregar.textContent =
+                    mensajeCompleto;
+
+                mensajePasswordSeguridadAgregar.classList.remove(
+                    "d-none",
+                    "text-success",
+                    "text-muted"
+                );
+
+                mensajePasswordSeguridadAgregar.classList.add(
+                    "text-danger"
+                );
+
+
+                return false;
+            }
+
+
+            // =================================================
+            // CONTRASEÑA VÁLIDA
+            // =================================================
+
+            passwordAgregar.setCustomValidity("");
+
+
+            passwordAgregar.classList.remove(
+                "is-invalid"
+            );
+
+            passwordAgregar.classList.add(
+                "is-valid"
+            );
+
+
+            mensajePasswordSeguridadAgregar.textContent =
+                (
+                    resultado.mensajes
+                    &&
+                    resultado.mensajes.length
+                )
+                    ?
+                    resultado.mensajes.join(" ")
+                    :
+                    "La contraseña cumple los requisitos de seguridad.";
+
+
+            mensajePasswordSeguridadAgregar.classList.remove(
+                "d-none",
+                "text-danger",
+                "text-muted"
+            );
+
+            mensajePasswordSeguridadAgregar.classList.add(
+                "text-success"
+            );
+
+
+            return true;
+
+
+        } catch (error) {
+
+            console.error(
+                "Error validando contraseña:",
+                error
+            );
+
+
+            const mensaje =
+                (
+                    "No fue posible verificar la contraseña. "
+                    +
+                    "Intenta nuevamente."
+                );
+
+
+            passwordAgregar.setCustomValidity(
+                mensaje
+            );
+
+
+            passwordAgregar.classList.remove(
+                "is-valid"
+            );
+
+            passwordAgregar.classList.add(
+                "is-invalid"
+            );
+
+
+            mensajePasswordSeguridadAgregar.textContent =
+                mensaje;
+
+            mensajePasswordSeguridadAgregar.classList.remove(
+                "d-none",
+                "text-success",
+                "text-muted"
+            );
+
+            mensajePasswordSeguridadAgregar.classList.add(
+                "text-danger"
+            );
+
+
+            return false;
+        }
+
+    }
  
  
     if (passwordAgregar) {
- 
+
         passwordAgregar.addEventListener(
             "input",
-            validarContrasenas
+            function () {
+
+                // El usuario modificó la contraseña.
+                // Quitamos cualquier resultado anterior.
+
+                passwordAgregar.setCustomValidity("");
+
+                passwordAgregar.classList.remove(
+                    "is-valid",
+                    "is-invalid"
+                );
+
+
+                if (
+                    mensajePasswordSeguridadAgregar
+                ) {
+
+                    mensajePasswordSeguridadAgregar
+                        .textContent = "";
+
+                    mensajePasswordSeguridadAgregar
+                        .classList.add(
+                            "d-none"
+                        );
+
+                    mensajePasswordSeguridadAgregar
+                        .classList.remove(
+                            "text-danger",
+                            "text-success",
+                            "text-muted"
+                        );
+
+                }
+
+
+                validarContrasenas();
+
+            }
         );
- 
+
+
+        // Cuando el administrador pasa al campo
+        // "Confirmar contraseña", comprobamos la contraseña
+        // contra los validadores reales de Django.
+
+        passwordAgregar.addEventListener(
+            "blur",
+            function () {
+
+                if (passwordAgregar.value) {
+
+                    validarSeguridadPasswordAgregar();
+
+                }
+
+            }
+        );
+
     }
  
     if (confirmarPasswordAgregar) {
@@ -284,55 +708,140 @@ document.addEventListener("DOMContentLoaded", function () {
  
  
     /* =========================================================
-       ENVÍO DEL FORMULARIO
+        ENVÍO DEL FORMULARIO
     ========================================================= */
- 
+
+    let permitirSiguienteEnvioAgregar =
+        false;
+
+
     if (formularioAgregar) {
- 
+
         formularioAgregar.addEventListener(
             "submit",
-            function (evento) {
- 
-                const contrasenasValidas = validarContrasenas();
- 
-                if (!contrasenasValidas) {
- 
-                    evento.preventDefault();
- 
-                    confirmarPasswordAgregar.focus();
- 
+            async function (evento) {
+
+
+                // =================================================
+                // SEGUNDO ENVÍO
+                // =================================================
+                //
+                // Este segundo envío ocurre únicamente después
+                // de que Django confirmó que la contraseña es válida.
+                // =================================================
+
+                if (permitirSiguienteEnvioAgregar) {
+
+                    permitirSiguienteEnvioAgregar =
+                        false;
+
+
+                    if (botonGuardarApicultor) {
+
+                        botonGuardarApicultor.disabled =
+                            true;
+
+                        botonGuardarApicultor.innerHTML = `
+                            <span
+                                class="spinner-border spinner-border-sm me-2"
+                                aria-hidden="true"
+                            ></span>
+                            Registrando...
+                        `;
+
+                    }
+
+
                     return;
                 }
- 
-                if (!formularioAgregar.checkValidity()) {
- 
-                    evento.preventDefault();
-                    evento.stopPropagation();
- 
+
+
+                // Por ahora NO dejamos enviar.
+
+                evento.preventDefault();
+
+
+                // =================================================
+                // CONTRASEÑAS COINCIDEN
+                // =================================================
+
+                const contrasenasValidas =
+                    validarContrasenas();
+
+
+                if (!contrasenasValidas) {
+
+                    confirmarPasswordAgregar.focus();
+
+                    return;
+                }
+
+
+                // =================================================
+                // VALIDACIONES HTML
+                // =================================================
+
+                if (
+                    !formularioAgregar.checkValidity()
+                ) {
+
                     formularioAgregar.classList.add(
                         "was-validated"
                     );
- 
+
+                    formularioAgregar.reportValidity();
+
                     return;
                 }
- 
-                if (botonGuardarApicultor) {
- 
-                    botonGuardarApicultor.disabled = true;
- 
-                    botonGuardarApicultor.innerHTML = `
-                        <span
-                            class="spinner-border spinner-border-sm me-2"
-                            aria-hidden="true"
-                        ></span>
-                        Registrando...
-                    `;
- 
+
+
+                // =================================================
+                // VALIDACIÓN REAL DE DJANGO
+                // =================================================
+
+                const passwordSeguro =
+                    await validarSeguridadPasswordAgregar();
+
+
+                if (!passwordSeguro) {
+
+                    passwordAgregar.focus();
+
+                    passwordAgregar.reportValidity();
+
+                    return;
                 }
- 
+
+
+                // =================================================
+                // REVISAR DE NUEVO COINCIDENCIA
+                // =================================================
+
+                if (!validarContrasenas()) {
+
+                    confirmarPasswordAgregar.focus();
+
+                    return;
+                }
+
+
+                // =================================================
+                // TODO CORRECTO
+                // =================================================
+                //
+                // Disparamos nuevamente el submit. En esta segunda
+                // ejecución se permitirá continuar al servidor.
+                // =================================================
+
+                permitirSiguienteEnvioAgregar =
+                    true;
+
+
+                formularioAgregar.requestSubmit();
+
             }
         );
- 
+
     }
  
  
@@ -365,6 +874,39 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
  
                 }
+
+                if (passwordAgregar) {
+
+                    passwordAgregar.setCustomValidity("");
+
+                    passwordAgregar.classList.remove(
+                        "is-valid",
+                        "is-invalid"
+                    );
+
+                }
+
+
+                if (mensajePasswordSeguridadAgregar) {
+
+                    mensajePasswordSeguridadAgregar.textContent =
+                        "";
+
+                    mensajePasswordSeguridadAgregar.classList.add(
+                        "d-none"
+                    );
+
+                    mensajePasswordSeguridadAgregar.classList.remove(
+                        "text-danger",
+                        "text-success",
+                        "text-muted"
+                    );
+
+                }
+
+
+                permitirSiguienteEnvioAgregar =
+                    false;
  
                 if (confirmarPasswordAgregar) {
  

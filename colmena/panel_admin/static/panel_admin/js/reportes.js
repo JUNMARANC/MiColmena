@@ -462,6 +462,256 @@ document.addEventListener(
         );
 
         /* =====================================================
+        CAMBIAR CANTIDAD DE REPORTES SIN RECARGAR LA PÁGINA
+        ====================================================== */
+
+        document.addEventListener(
+            "change",
+            async function (evento) {
+
+                const selector =
+                    evento.target.closest(
+                        "#selectorReportesPorPagina"
+                    );
+
+
+                if (!selector) {
+
+                    return;
+
+                }
+
+
+                const cantidad =
+                    selector.value;
+
+
+                // =================================================
+                // SOLO VALORES PERMITIDOS
+                // =================================================
+
+                if (
+                    ![
+                        "3",
+                        "5",
+                        "10",
+                        "20"
+                    ].includes(
+                        cantidad
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const historialActual =
+                    document.getElementById(
+                        "historialReportes"
+                    );
+
+
+                if (!historialActual) {
+
+                    return;
+
+                }
+
+
+                // =================================================
+                // ESTADO VISUAL DE CARGA
+                // =================================================
+
+                historialActual.classList.add(
+                    "historial-reportes-cargando"
+                );
+
+
+                selector.disabled =
+                    true;
+
+
+                try {
+
+                    // =============================================
+                    // CONSTRUIR URL
+                    // =============================================
+
+                    const url =
+                        new URL(
+                            window.location.href
+                        );
+
+
+                    url.searchParams.set(
+                        "por_pagina",
+                        cantidad
+                    );
+
+
+                    // Al cambiar la cantidad siempre empezamos
+                    // desde la página 1.
+
+                    url.searchParams.set(
+                        "page_reportes",
+                        "1"
+                    );
+
+
+                    url.hash =
+                        "";
+
+
+                    // =============================================
+                    // SOLICITAR HTML A DJANGO
+                    // =============================================
+
+                    const respuesta =
+                        await fetch(
+                            url.toString(),
+                            {
+                                method:
+                                    "GET",
+
+                                cache:
+                                    "no-store",
+
+                                credentials:
+                                    "same-origin",
+
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            }
+                        );
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No fue posible actualizar el historial."
+                        );
+
+                    }
+
+
+                    const html =
+                        await respuesta.text();
+
+
+                    // =============================================
+                    // CONVERTIR RESPUESTA
+                    // =============================================
+
+                    const documento =
+                        new DOMParser()
+                        .parseFromString(
+                            html,
+                            "text/html"
+                        );
+
+
+                    const historialNuevo =
+                        documento.getElementById(
+                            "historialReportes"
+                        );
+
+
+                    if (!historialNuevo) {
+
+                        throw new Error(
+                            "No se encontró el historial actualizado."
+                        );
+
+                    }
+
+
+                    // =============================================
+                    // REEMPLAZAR SOLO HISTORIAL
+                    // =============================================
+
+                    historialActual.replaceWith(
+                        historialNuevo
+                    );
+
+
+                    // =============================================
+                    // ACTUALIZAR URL SIN RECARGAR
+                    // =============================================
+
+                    const urlActual =
+                        new URL(
+                            window.location.href
+                        );
+
+
+                    urlActual.searchParams.set(
+                        "por_pagina",
+                        cantidad
+                    );
+
+
+                    urlActual.searchParams.set(
+                        "page_reportes",
+                        "1"
+                    );
+
+
+                    urlActual.hash =
+                        "historialReportes";
+
+
+                    window.history.replaceState(
+                        {},
+                        "",
+                        urlActual.toString()
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Error cambiando cantidad de reportes:",
+                        error
+                    );
+
+
+                    // Si por algún motivo falla AJAX,
+                    // usamos como respaldo la navegación normal.
+
+                    const urlRespaldo =
+                        new URL(
+                            window.location.href
+                        );
+
+
+                    urlRespaldo.searchParams.set(
+                        "por_pagina",
+                        cantidad
+                    );
+
+
+                    urlRespaldo.searchParams.set(
+                        "page_reportes",
+                        "1"
+                    );
+
+
+                    urlRespaldo.hash =
+                        "historialReportes";
+
+
+                    window.location.href =
+                        urlRespaldo.toString();
+
+                }
+
+            }
+        );
+
+        /* =====================================================
            ACTUALIZACIÓN AUTOMÁTICA
            DEL HISTORIAL DE REPORTES
         ====================================================== */

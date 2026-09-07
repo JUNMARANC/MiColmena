@@ -1,24 +1,125 @@
-/*==================================================
-VARIABLES
-==================================================*/
+/* ==========================================================
+   MI COLMENA — PANEL ADMINISTRADOR
+   Hoja de estilos principal
+
+   ÍNDICE
+     1.  Tokens de diseño (:root)
+     2.  Reset y configuración general
+     3.  Foco visible (accesibilidad)
+     4.  Barra de desplazamiento
+     5.  Barra de carga
+     6.  Sidebar
+     7.  Contenido principal y topbar
+     8.  Dashboard
+     9.  Módulos (apiarios, apicultores, agenda, reportes…)
+     10. Componentes (botones, tablas, formularios, modales)
+   ========================================================== */
+
+
+/* ==========================================================
+   1. TOKENS DE DISEÑO
+
+   Fuente única de verdad. Antes había 966 colores distintos
+   escritos a mano en el CSS del proyecto; los más repetidos
+   ya están aquí. Al agregar un color nuevo, primero revisa
+   si alguno de estos sirve.
+   ========================================================== */
 
 :root {
-    --verde-claro: #C0F1CA;
-    --verde-medio: #5f9781;
-    --verde-oscuro: #214f3b;
-    --amarillo: #F6DE87;
-    --miel: #f0a000;
-    --blanco: #ffffff;
-    --fondo: #f7fbf8;
-    --texto: #163324;
-    --gris-texto: #5f6f66;
-    --rojo: #dc3545;
-    --sombra: 0 12px 30px rgba(0,0,0,.08);
+
+    /* ---------- VERDES ---------- */
+    --verde-claro:          #C0F1CA;
+    --verde-medio:          #5F9781;
+    --verde-oscuro:         #214F3B;
+    --verde-profundo:       #163324;
+    --verde-hoja:           #4F744B;
+    --verde-icono:          #2F7D4F;
+
+    /* ---------- MIEL / ÁMBAR ---------- */
+    --amarillo:             #F6DE87;
+    --miel:                 #F0A000;
+    --miel-oscura:          #896817;
+
+    /* ---------- NEUTROS ---------- */
+    --blanco:               #FFFFFF;
+    --fondo:                #F7FBF8;
+    --fondo-tarjeta:        #FBFDFC;
+    --fondo-suave:          #F3FBF6;
+
+    --borde:                #DCE3DE;
+    --borde-claro:          #E8EFEA;
+    --borde-tenue:          #EDF2EE;
+
+    --texto:                var(--verde-profundo);
+    --texto-secundario:     #5F6F66;
+    --texto-tenue:          #7C8A82;
+    --texto-apagado:        #909A95;
+
+    /* ---------- ESTADOS ---------- */
+    --rojo:                 #DC3545;
+    --rojo-incidencia:      #C44134;
+    --rojo-fondo:           #FFE8E5;
+
+    --exito-fondo:          #EAF6ED;
+    --exito-texto:          var(--verde-icono);
+
+    --info-fondo:           #E8F0F8;
+    --info-texto:           #3D6FA0;
+
+    --alerta-fondo:         #FFF4DB;
+    --alerta-texto:         var(--miel-oscura);
+
+    /* ---------- SOMBRAS ---------- */
+    --sombra:               0 12px 30px rgba(0, 0, 0, .08);
+    --sombra-suave:         0 5px 14px rgba(33, 79, 59, .05);
+    --sombra-media:         0 12px 22px rgba(33, 79, 59, .10);
+    --sombra-elevada:       0 18px 34px rgba(33, 79, 59, .14);
+
+    /* ---------- BORDES REDONDEADOS ---------- */
+    --radio-xs:             6px;
+    --radio-sm:             10px;
+    --radio-md:             16px;
+    --radio-lg:             22px;
+    --radio-pastilla:       999px;
+
+    /* ---------- ESPACIADO ---------- */
+    --esp-xs:               4px;
+    --esp-sm:               8px;
+    --esp-md:               16px;
+    --esp-lg:               24px;
+    --esp-xl:               40px;
+
+    /* ---------- LAYOUT ---------- */
+    --sidebar-ancho:        260px;
+    --sidebar-mini:         82px;
+
+    /* ---------- TIPOGRAFÍA ---------- */
+    --fuente-base:          "Montserrat Alternates", sans-serif;
+
+    /* ---------- MOVIMIENTO ---------- */
+    --tiempo-rapido:        .15s;
+    --tiempo-normal:        .25s;
+    --tiempo-lento:         .4s;
+    --curva-suave:          cubic-bezier(.4, 0, .2, 1);
+    --curva-rebote:         cubic-bezier(.34, 1.56, .64, 1);
+
+    /* ---------- COMPATIBILIDAD ----------
+       Alias que mantienen vivas las reglas que ya usaban
+       estos nombres. No los borres hasta migrar todos los usos. */
+    --gris-texto:           var(--texto-secundario);
+
+    /* ---------- DETALLES DEL SIDEBAR ---------- */
+    --sidebar-borde:        rgba(33, 79, 59, .25);
+    --sidebar-crema:        #FFF8D8;
+    --sidebar-texto-tenue:  #3D6652;
+    --sidebar-activo-texto: #10251A;
+    --scroll-pista:         #EAF3EC;
 }
 
-/*==================================================
-CONFIGURACIÓN GENERAL
-==================================================*/
+
+/* ==========================================================
+   2. RESET Y CONFIGURACIÓN GENERAL
+   ========================================================== */
 
 * {
     margin: 0;
@@ -27,7 +128,7 @@ CONFIGURACIÓN GENERAL
 }
 
 body {
-    font-family: "Montserrat Alternates", sans-serif;
+    font-family: var(--fuente-base);
     background: var(--fondo);
     color: var(--texto);
 }
@@ -36,13 +137,40 @@ a {
     text-decoration: none;
 }
 
-/*==================================================
-SCROLLBAR
-==================================================*/
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* ==========================================================
+   3. FOCO VISIBLE (accesibilidad de teclado)
+
+   El panel no tenía ninguna regla de foco, así que al navegar
+   con Tab no se veía dónde estabas parado. :focus-visible solo
+   se activa con teclado, nunca al hacer clic con el mouse.
+   ========================================================== */
+
+:focus-visible {
+    outline: 3px solid var(--miel);
+    outline-offset: 2px;
+    border-radius: var(--radio-xs);
+}
+
+.menu-link:focus-visible,
+.btn-collapse-sidebar:focus-visible,
+.tarjeta-dashboard:focus-visible {
+    outline-offset: -2px;
+}
+
+
+/* ==========================================================
+   4. BARRA DE DESPLAZAMIENTO
+   ========================================================== */
 
 html {
     scrollbar-width: thin;
-    scrollbar-color: var(--verde-medio) #eaf3ec;
+    scrollbar-color: var(--verde-medio) var(--scroll-pista);
 }
 
 ::-webkit-scrollbar {
@@ -51,27 +179,23 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-    background: #eaf3ec;
+    background: var(--scroll-pista);
 }
 
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, var(--verde-medio), var(--verde-oscuro));
-    border-radius: 999px;
-    border: 2px solid #eaf3ec;
+    border-radius: var(--radio-pastilla);
+    border: 2px solid var(--scroll-pista);
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--verde-oscuro);
 }
 
-.admin-layout {
-    display: flex;
-    min-height: 100vh;
-}
 
-/*==================================================
-BARRA DE CARGA
-==================================================*/
+/* ==========================================================
+   5. BARRA DE CARGA
+   ========================================================== */
 
 .barra-carga-admin {
     position: fixed;
@@ -85,27 +209,36 @@ BARRA DE CARGA
     opacity: 0;
 }
 
-/*==================================================
-SIDEBAR
-==================================================*/
+
+/* ==========================================================
+   6. SIDEBAR
+   ========================================================== */
 
 .sidebar-admin {
-    width: 260px;
+    width: var(--sidebar-ancho);
     height: 100vh;
+
     background:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(33,79,59,0.055)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(33,79,59,0.055)' stroke-width='1'/%3E%3C/svg%3E"),
         var(--verde-claro);
     background-repeat: repeat, no-repeat;
-    border-right: 1px solid rgba(33, 79, 59, .25);
+
+    border-right: 1px solid var(--sidebar-borde);
     padding: 18px 14px;
+
     position: fixed;
     left: 0;
     top: 0;
     z-index: 1000;
+
     transition: all .35s ease;
+
     display: flex;
     flex-direction: column;
 }
+
+
+/* ---------- ENCABEZADO Y LOGO ---------- */
 
 .sidebar-header {
     display: flex;
@@ -119,7 +252,7 @@ SIDEBAR
     width: 58px;
     height: 58px;
     border-radius: 50%;
-    background: #fff8d8;
+    background: var(--sidebar-crema);
     border: 2px solid var(--verde-oscuro);
     display: flex;
     align-items: center;
@@ -132,7 +265,6 @@ SIDEBAR
     color: var(--verde-oscuro);
     display: inline-block;
     animation: flotarLogoSidebar 3.2s ease-in-out infinite;
-    transition: animation-duration .3s ease;
 }
 
 .logo-circle.aleteo-rapido i {
@@ -154,8 +286,11 @@ SIDEBAR
 
 .brand-text span {
     font-size: 12px;
-    color: #3d6652;
+    color: var(--sidebar-texto-tenue);
 }
+
+
+/* ---------- BOTÓN DE COLAPSAR ---------- */
 
 .btn-collapse-sidebar {
     position: absolute;
@@ -164,23 +299,27 @@ SIDEBAR
     width: 34px;
     height: 34px;
     border: none;
+
     background: linear-gradient(155deg, var(--amarillo), var(--verde-medio));
     color: var(--verde-oscuro);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-    box-shadow: 0 8px 18px rgba(0,0,0,.18);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+
     transition:
-        transform .4s cubic-bezier(.34, 1.56, .64, 1),
-        background .3s ease,
-        box-shadow .25s ease;
+        transform var(--tiempo-lento) var(--curva-rebote),
+        background var(--tiempo-normal) ease,
+        box-shadow var(--tiempo-rapido) ease;
 }
 
 .btn-collapse-sidebar:hover {
     background: linear-gradient(155deg, var(--verde-oscuro), var(--verde-medio));
-    color: #fff8d8;
-    box-shadow: 0 10px 22px rgba(0,0,0,.26);
+    color: var(--sidebar-crema);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .26);
     transform: scale(1.14);
 }
 
@@ -189,7 +328,7 @@ SIDEBAR
 }
 
 .btn-collapse-sidebar i {
-    transition: transform .45s cubic-bezier(.34, 1.56, .64, 1);
+    transition: transform .45s var(--curva-rebote);
 }
 
 .btn-collapse-clic {
@@ -197,13 +336,12 @@ SIDEBAR
 }
 
 @keyframes golpeBtnCollapse {
-    0%   { box-shadow: 0 0 0 0 rgba(95, 151, 129, .55); }
+    0%   { box-shadow: 0 0 0 0    rgba(95, 151, 129, .55); }
     100% { box-shadow: 0 0 0 12px rgba(95, 151, 129, 0); }
 }
 
-/*==================================================
-MENÚ SIDEBAR
-==================================================*/
+
+/* ---------- MENÚ ---------- */
 
 .sidebar-menu-wrap {
     position: relative;
@@ -224,10 +362,107 @@ MENÚ SIDEBAR
     scrollbar-width: thin;
 }
 
-/* Aviso de que hay más íconos del menú por debajo:
-   una franja con degradado + una flecha que invita a bajar.
-   Solo se muestra cuando el menú realmente tiene contenido
-   oculto (lo controla JS agregando la clase .visible). */
+.menu-link {
+    min-height: 42px;
+    padding: 10px 13px;
+    border-radius: 13px;
+    color: var(--texto);
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    transition: all var(--tiempo-normal) ease;
+    position: relative;
+}
+
+.menu-link i {
+    font-size: 18px;
+    min-width: 22px;
+    text-align: center;
+    display: inline-block;
+    transition:
+        transform .35s var(--curva-rebote),
+        color var(--tiempo-normal) ease;
+}
+
+.menu-link:hover {
+    background: rgba(95, 151, 129, .28);
+    transform: translateX(3px);
+    color: var(--texto);
+}
+
+.menu-link:hover i {
+    transform: scale(1.22) rotate(-8deg);
+}
+
+.menu-link.active {
+    background: var(--verde-medio);
+    color: var(--sidebar-activo-texto);
+    font-weight: 600;
+}
+
+.menu-link.active i {
+    animation: iconoActivoSidebar .5s ease;
+}
+
+@keyframes iconoActivoSidebar {
+    0%   { transform: scale(1)    rotate(0); }
+    45%  { transform: scale(1.35) rotate(10deg); }
+    100% { transform: scale(1)    rotate(0); }
+}
+
+.menu-link.active::before {
+    content: "";
+    position: absolute;
+    left: -9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background: var(--amarillo);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+}
+
+
+/* ---------- ENTRADA ESCALONADA DEL MENÚ ----------
+   Antes solo llegaba hasta nth-child(10), que es justo la
+   cantidad de ítems actuales. Al agregar uno más quedaba en
+   terreno frágil, porque todos arrancan con opacity: 0. */
+
+.sidebar-menu .menu-link {
+    opacity: 0;
+    animation: entradaMenuLateral .5s ease forwards;
+}
+
+.sidebar-menu .menu-link:nth-child(1)  { animation-delay: .03s; }
+.sidebar-menu .menu-link:nth-child(2)  { animation-delay: .07s; }
+.sidebar-menu .menu-link:nth-child(3)  { animation-delay: .11s; }
+.sidebar-menu .menu-link:nth-child(4)  { animation-delay: .15s; }
+.sidebar-menu .menu-link:nth-child(5)  { animation-delay: .19s; }
+.sidebar-menu .menu-link:nth-child(6)  { animation-delay: .23s; }
+.sidebar-menu .menu-link:nth-child(7)  { animation-delay: .27s; }
+.sidebar-menu .menu-link:nth-child(8)  { animation-delay: .31s; }
+.sidebar-menu .menu-link:nth-child(9)  { animation-delay: .35s; }
+.sidebar-menu .menu-link:nth-child(10) { animation-delay: .39s; }
+.sidebar-menu .menu-link:nth-child(11) { animation-delay: .43s; }
+.sidebar-menu .menu-link:nth-child(12) { animation-delay: .47s; }
+.sidebar-menu .menu-link:nth-child(13) { animation-delay: .51s; }
+.sidebar-menu .menu-link:nth-child(14) { animation-delay: .55s; }
+.sidebar-menu .menu-link:nth-child(n+15) { animation-delay: .59s; }
+
+@keyframes entradaMenuLateral {
+    from { opacity: 0; transform: translateX(-14px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+
+/* ---------- AVISO DE SCROLL EN EL MENÚ ----------
+   Lo activa el JS agregando la clase .visible */
+
 .sidebar-menu-scroll-hint {
     position: absolute;
     left: 0;
@@ -256,7 +491,7 @@ MENÚ SIDEBAR
     visibility: hidden;
     pointer-events: none;
 
-    transition: opacity .25s ease;
+    transition: opacity var(--tiempo-normal) ease;
     z-index: 5;
 }
 
@@ -279,136 +514,17 @@ MENÚ SIDEBAR
     right: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .sidebar-menu-scroll-hint i {
-        animation: none;
-    }
-}
 
-.menu-link {
-    min-height: 42px;
-    padding: 10px 13px;
-    border-radius: 13px;
-    color: var(--texto);
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all .25s ease;
-    position: relative;
-}
-
-.menu-link i {
-    font-size: 18px;
-    min-width: 22px;
-    text-align: center;
-    display: inline-block;
-    transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), color .25s ease;
-}
-
-.menu-link:hover {
-    background: rgba(95, 151, 129, .28);
-    transform: translateX(3px);
-    color: var(--texto);
-}
-
-.menu-link:hover i {
-    transform: scale(1.22) rotate(-8deg);
-}
-
-.menu-link.active {
-    background: var(--verde-medio);
-    color: #10251a;
-    font-weight: 600;
-}
-
-.menu-link.active i {
-    animation: iconoActivoSidebar .5s ease;
-}
-
-@keyframes iconoActivoSidebar {
-    0%   { transform: scale(1) rotate(0); }
-    45%  { transform: scale(1.35) rotate(10deg); }
-    100% { transform: scale(1) rotate(0); }
-}
-
-.menu-link.active::before {
-    content: "";
-    position: absolute;
-    left: -9px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 14px;
-    height: 14px;
-    background: var(--amarillo);
-    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-}
-
-/* Entrada escalonada del menú al cargar la página */
-.sidebar-menu .menu-link {
-    opacity: 0;
-    animation: entradaMenuLateral .5s ease forwards;
-}
-
-.sidebar-menu .menu-link:nth-child(1)  { animation-delay: .03s; }
-.sidebar-menu .menu-link:nth-child(2)  { animation-delay: .07s; }
-.sidebar-menu .menu-link:nth-child(3)  { animation-delay: .11s; }
-.sidebar-menu .menu-link:nth-child(4)  { animation-delay: .15s; }
-.sidebar-menu .menu-link:nth-child(5)  { animation-delay: .19s; }
-.sidebar-menu .menu-link:nth-child(6)  { animation-delay: .23s; }
-.sidebar-menu .menu-link:nth-child(7)  { animation-delay: .27s; }
-.sidebar-menu .menu-link:nth-child(8)  { animation-delay: .31s; }
-.sidebar-menu .menu-link:nth-child(9)  { animation-delay: .35s; }
-.sidebar-menu .menu-link:nth-child(10) { animation-delay: .39s; }
-
-@keyframes entradaMenuLateral {
-    from { opacity: 0; transform: translateX(-14px); }
-    to   { opacity: 1; transform: translateX(0); }
-}
-
-/* Tooltip con el nombre de la sección cuando el menú está colapsado */
-.sidebar-admin.collapsed .menu-link {
-    position: relative;
-}
-
-.sidebar-admin.collapsed .menu-link::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: calc(100% + 14px);
-    top: 50%;
-    transform: translateY(-50%) translateX(-6px);
-    background: var(--verde-oscuro);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    box-shadow: 0 8px 18px rgba(0,0,0,.22);
-    transition: opacity .2s ease, transform .2s ease;
-    z-index: 1200;
-}
-
-.sidebar-admin.collapsed .menu-link:hover::after {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-}
-
-/*==================================================
-USUARIO SIDEBAR
-==================================================*/
+/* ---------- USUARIO ---------- */
 
 .sidebar-user {
     margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid rgba(33, 79, 59, .25);
+    padding-top: var(--esp-md);
+    border-top: 1px solid var(--sidebar-borde);
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: var(--esp-sm);
 }
 
 .user-avatar {
@@ -429,52 +545,14 @@ USUARIO SIDEBAR
 
 .user-info span {
     font-size: 11px;
-    color: #3d6652;
+    color: var(--sidebar-texto-tenue);
 }
 
-/*==================================================
-CONTENIDO PRINCIPAL
-==================================================*/
 
-.contenido-admin {
-    margin-left: 260px;
-    width: calc(100% - 260px);
-    min-height: 100vh;
-    transition: all .35s ease;
-}
-
-.topbar-admin {
-    background: var(--blanco);
-    padding: 24px 32px;
-    border-bottom: 1px solid rgba(33, 79, 59, .12);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.topbar-admin h1 {
-    margin: 0;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--verde-oscuro);
-}
-
-.topbar-admin p {
-    margin: 3px 0 0;
-    font-size: 14px;
-    color: var(--gris-texto);
-}
-
-.contenido-page {
-    padding: 30px;
-}
-
-/*==================================================
-SIDEBAR COLAPSADO
-==================================================*/
+/* ---------- ESTADO COLAPSADO ---------- */
 
 .sidebar-admin.collapsed {
-    width: 82px;
+    width: var(--sidebar-mini);
     padding: 18px 10px;
 }
 
@@ -495,6 +573,7 @@ SIDEBAR COLAPSADO
 .sidebar-admin.collapsed .menu-link {
     justify-content: center;
     padding: 11px;
+    position: relative;
 }
 
 .sidebar-admin.collapsed .menu-link:hover {
@@ -502,23 +581,60 @@ SIDEBAR COLAPSADO
 }
 
 .sidebar-admin.collapsed + .contenido-admin {
-    margin-left: 82px;
-    width: calc(100% - 82px);
+    margin-left: var(--sidebar-mini);
+    width: calc(100% - var(--sidebar-mini));
 }
 
 .sidebar-admin.collapsed .btn-collapse-sidebar i {
     transform: rotate(180deg);
 }
 
-/*==================================================
-SIDEBAR COLAPSADO: SE ASOMA AL ACERCAR EL MOUSE
-==================================================*/
+
+/* ---------- TOOLTIP EN ESTADO COLAPSADO ---------- */
+
+.sidebar-admin.collapsed .menu-link::after {
+    content: attr(data-tooltip);
+
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-6px);
+
+    background: var(--verde-oscuro);
+    color: var(--blanco);
+
+    padding: 6px 12px;
+    border-radius: var(--radio-sm);
+
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    opacity: 0;
+    pointer-events: none;
+
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .22);
+    transition:
+        opacity var(--tiempo-rapido) ease,
+        transform var(--tiempo-rapido) ease;
+
+    z-index: 1200;
+}
+
+.sidebar-admin.collapsed .menu-link:hover::after,
+.sidebar-admin.collapsed .menu-link:focus-visible::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+
+/* ---------- COLAPSADO: SE ASOMA AL PASAR EL MOUSE ---------- */
 
 .sidebar-admin.collapsed:hover {
-    width: 260px;
+    width: var(--sidebar-ancho);
     padding: 18px 14px;
     z-index: 1100;
-    box-shadow: 14px 0 34px rgba(0,0,0,.22);
+    box-shadow: 14px 0 34px rgba(0, 0, 0, .22);
 }
 
 .sidebar-admin.collapsed:hover .brand-text {
@@ -541,6 +657,8 @@ SIDEBAR COLAPSADO: SE ASOMA AL ACERCAR EL MOUSE
 
 .sidebar-admin.collapsed:hover .sidebar-user {
     align-items: stretch;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .sidebar-admin.collapsed:hover .menu-link {
@@ -554,12 +672,7 @@ SIDEBAR COLAPSADO: SE ASOMA AL ACERCAR EL MOUSE
 
 .sidebar-admin.collapsed:hover .sidebar-profile-link {
     justify-content: flex-start;
-    padding: 8px;
-}
-
-.sidebar-admin.collapsed:hover .sidebar-user {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: var(--esp-sm);
 }
 
 .sidebar-admin.collapsed:hover .sidebar-profile-logout {
@@ -568,20 +681,22 @@ SIDEBAR COLAPSADO: SE ASOMA AL ACERCAR EL MOUSE
     padding-right: 12px;
 }
 
-/* Mientras está expandido por el mouse ya se ve el texto, así que el tooltip sobra */
+/* Ya se ve el texto, el tooltip sobra */
 .sidebar-admin.collapsed:hover .menu-link::after {
     display: none;
 }
 
-/*==================================================
-REDUCIR MOVIMIENTO (accesibilidad)
-==================================================*/
+
+/* ---------- MOVIMIENTO REDUCIDO ----------
+   Unifica los dos bloques que antes estaban separados */
 
 @media (prefers-reduced-motion: reduce) {
+
     .logo-circle i,
     .btn-collapse-clic,
     .menu-link.active i,
-    .sidebar-menu .menu-link {
+    .sidebar-menu .menu-link,
+    .sidebar-menu-scroll-hint i {
         animation: none !important;
     }
 
@@ -603,15 +718,14 @@ REDUCIR MOVIMIENTO (accesibilidad)
     }
 }
 
-/*==================================================
-BOTÓN MOBILE
-==================================================*/
+
+/* ---------- BOTÓN MÓVIL Y OVERLAY ---------- */
 
 .btn-mobile-sidebar {
     display: none;
     border: none;
     background: var(--verde-medio);
-    color: white;
+    color: var(--blanco);
     width: 43px;
     height: 43px;
     border-radius: 13px;
@@ -622,13 +736,47 @@ BOTÓN MOBILE
     display: none;
 }
 
-/*==================================================
-CARDS GENERALES
-==================================================*/
+
+/* ==========================================================
+   7. CONTENIDO PRINCIPAL Y TOPBAR
+   ========================================================== */
+
+.contenido-admin {
+    margin-left: var(--sidebar-ancho);
+    width: calc(100% - var(--sidebar-ancho));
+    min-height: 100vh;
+    transition: all .35s ease;
+}
+
+.topbar-admin {
+    background: var(--blanco);
+    padding: var(--esp-lg) 32px;
+    border-bottom: 1px solid rgba(33, 79, 59, .12);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.topbar-admin h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--verde-oscuro);
+}
+
+.topbar-admin p {
+    margin: 3px 0 0;
+    font-size: 14px;
+    color: var(--texto-secundario);
+}
+
+.contenido-page {
+    padding: 30px;
+}
 
 .card-admin {
     background: var(--blanco);
-    border-radius: 22px;
+    border-radius: var(--radio-lg);
     padding: 25px;
     border: none;
     box-shadow: var(--sombra);
@@ -734,8 +882,8 @@ MÓDULO APIARIOS
     background:
         linear-gradient(
             155deg,
-            var(--amarillo, #f6de87),
-            var(--verde-medio, #5f9781)
+            var(--amarillo, var(--amarillo)),
+            var(--verde-medio, var(--verde-medio))
         );
 
     clip-path:
@@ -781,7 +929,7 @@ MÓDULO APIARIOS
     color:
         var(
             --verde-oscuro,
-            #214f3b
+            var(--verde-oscuro)
         );
 
     font-weight: 700;
@@ -791,7 +939,7 @@ MÓDULO APIARIOS
     color:
         var(
             --miel,
-            #f0a000
+            var(--miel)
         );
 }
 
@@ -837,56 +985,10 @@ MÓDULO APIARIOS
    5. BOTÓN AGREGAR INCIDENCIA
 ========================================================== */
 
-.btn-agregar-incidencia {
-    padding: 11px 20px;
-
-    border: none;
-    border-radius: 12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--verde-medio, #5f9781),
-            var(--verde-oscuro, #214f3b)
-        );
-
-    color: #ffffff;
-
-    font-weight: 600;
-
-    box-shadow:
-        0 4px 10px
-        rgba(33, 79, 59, 0.18);
-
-    transition:
-        transform 0.3s cubic-bezier(.34, 1.56, .64, 1),
-        box-shadow 0.25s ease,
-        background 0.3s ease;
-}
-
-.btn-agregar-incidencia:hover {
-    background:
-        linear-gradient(
-            135deg,
-            var(--verde-oscuro, #214f3b),
-            var(--verde-medio, #5f9781)
-        );
-
-    color: #ffffff;
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 9px 18px
-        rgba(33, 79, 59, 0.26);
-}
-
-.btn-agregar-incidencia:active {
-    transform:
-        translateY(0)
-        scale(0.97);
-}
+/* Las reglas de .btn-agregar-incidencia que estaban aquí se
+   movieron al componente compartido .btn-agregar de la sección
+   BOTONES. Eran 55 líneas que definían exactamente el mismo
+   degradado. */
 
 
 /* ==========================================================
@@ -911,7 +1013,7 @@ MÓDULO APIARIOS
 .incidencias-toolbar-campo label {
     margin-bottom: 0;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 0.85rem;
     font-weight: 600;
@@ -1178,7 +1280,7 @@ MÓDULO APIARIOS
     background:
         linear-gradient(
             135deg,
-            #214f3b,
+            var(--verde-oscuro),
             #3a6152
         );
 
@@ -1202,7 +1304,7 @@ MÓDULO APIARIOS
 .modal-body label {
     margin-bottom: 6px;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-weight: 600;
 }
@@ -1221,7 +1323,7 @@ MÓDULO APIARIOS
 
 .modal-body .form-control:focus,
 .modal-body .form-select:focus {
-    border-color: #5f9781;
+    border-color: var(--verde-medio);
 
     box-shadow:
         0 0 0 0.2rem
@@ -1268,7 +1370,7 @@ MÓDULO APIARIOS
     border: 1px solid rgba(33, 79, 59, 0.05);
     border-radius: 12px;
 
-    background: #f7fbf8;
+    background: var(--fondo);
 }
 
 .detalle-item small {
@@ -1280,7 +1382,7 @@ MÓDULO APIARIOS
 }
 
 .detalle-item strong {
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     overflow-wrap: anywhere;
 }
@@ -1373,7 +1475,7 @@ MÓDULO APIARIOS
 .admin-evidencias-header-info h6 {
     margin: 0;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 0.95rem;
     font-weight: 700;
@@ -1411,13 +1513,13 @@ MÓDULO APIARIOS
 }
 
 .admin-evidencias-icono.problema {
-    background: #fce2de;
+    background: var(--rojo-fondo);
     color: #a84d44;
 }
 
 .admin-evidencias-icono.solucion {
-    background: #e7f2e3;
-    color: #4f744b;
+    background: var(--exito-fondo);
+    color: var(--verde-hoja);
 }
 
 
@@ -1445,13 +1547,13 @@ MÓDULO APIARIOS
 }
 
 .admin-evidencias-contador.problema {
-    background: #fce2de;
+    background: var(--rojo-fondo);
     color: #a84d44;
 }
 
 .admin-evidencias-contador.solucion {
-    background: #e7f2e3;
-    color: #4f744b;
+    background: var(--exito-fondo);
+    color: var(--verde-hoja);
 }
 
 
@@ -1615,7 +1717,7 @@ MÓDULO APIARIOS
     background:
         rgba(231, 242, 227, 0.95);
 
-    color: #4f744b;
+    color: var(--verde-hoja);
 }
 
 
@@ -1644,7 +1746,7 @@ MÓDULO APIARIOS
 
     overflow: hidden;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 0.78rem;
     font-weight: 700;
@@ -1673,7 +1775,7 @@ MÓDULO APIARIOS
 
 .admin-evidencia-item.solucion
 .admin-evidencia-info > i {
-    color: #5f9781;
+    color: var(--verde-medio);
 }
 
 
@@ -1711,7 +1813,7 @@ MÓDULO APIARIOS
 .admin-evidencias-vacio strong {
     display: block;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 0.82rem;
 }
@@ -1733,7 +1835,7 @@ MÓDULO APIARIOS
 }
 
 .admin-evidencias-vacio.solucion > i {
-    color: #5f9781;
+    color: var(--verde-medio);
 }
 
 
@@ -1813,7 +1915,7 @@ MÓDULO APIARIOS
 .admin-editar-evidencias-header
 > div:first-child
 > i {
-    background: #fce2de;
+    background: var(--rojo-fondo);
     color: #a84d44;
 }
 
@@ -1821,14 +1923,14 @@ MÓDULO APIARIOS
 .admin-editar-evidencias-header
 > div:first-child
 > i {
-    background: #e7f2e3;
-    color: #4f744b;
+    background: var(--exito-fondo);
+    color: var(--verde-hoja);
 }
 
 .admin-editar-evidencias-header h6 {
     margin: 0;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 0.92rem;
     font-weight: 700;
@@ -1876,7 +1978,7 @@ MÓDULO APIARIOS
 
     margin-bottom: 7px;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 0.84rem;
     font-weight: 700;
@@ -1892,7 +1994,7 @@ MÓDULO APIARIOS
 }
 
 .admin-agregar-evidencias .form-control:focus {
-    border-color: #5f9781;
+    border-color: var(--verde-medio);
 
     box-shadow:
         0 0 0 0.2rem
@@ -1940,7 +2042,7 @@ MÓDULO APIARIOS
 
     border-radius: 9px;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     transition:
         background 0.2s ease,
@@ -1951,15 +2053,15 @@ MÓDULO APIARIOS
 .paginacion-incidencias .page-link:hover {
     background: #f1f8f3;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 }
 
 .paginacion-incidencias
 .page-item.active
 .page-link {
-    border-color: #214f3b;
+    border-color: var(--verde-oscuro);
 
-    background: #214f3b;
+    background: var(--verde-oscuro);
 
     color: #ffffff;
 }
@@ -2263,7 +2365,7 @@ MÓDULO APICULTORES
     padding: 15px 18px;
     border-top: 1px solid #e8eeee;
     border-bottom: 1px solid #e3eaea;
-    background: #f7fbf8;
+    background: var(--fondo);
     color: #4c6158;
     font-size: 0.76rem;
     font-weight: 700;
@@ -3249,7 +3351,7 @@ Esto permite que modal-body tenga un scroll independiente.
     padding: 10px 16px;
     border: none;
     border-radius: 12px;
-    background: #214f3b !important;
+    background: var(--verde-oscuro) !important;
     color: #ffffff !important;
     font-size: 0.8rem !important;
     font-weight: 700;
@@ -3293,7 +3395,7 @@ Esto permite que modal-body tenga un scroll independiente.
 }
 
 #modalAgregarApicultor .modal-body::-webkit-scrollbar-thumb:hover {
-    background: #5f9781;
+    background: var(--verde-medio);
 }
 
 
@@ -4155,7 +4257,7 @@ Esto permite que modal-body tenga un scroll independiente.
 }
 
 #modalEditarApicultor .modal-body::-webkit-scrollbar-thumb:hover {
-    background: #5f9781;
+    background: var(--verde-medio);
 }
 
 
@@ -4413,8 +4515,8 @@ Esto permite que modal-body tenga un scroll independiente.
     background:
         linear-gradient(
             135deg,
-            #214f3b 0%,
-            #5f9781 65%,
+            var(--verde-oscuro) 0%,
+            var(--verde-medio) 65%,
             #8abca7 100%
         );
 }
@@ -4711,7 +4813,7 @@ Esto permite que modal-body tenga un scroll independiente.
     padding: 14px;
     border: 1px solid #e1ebe5;
     border-radius: 15px;
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
@@ -4960,7 +5062,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     padding: 21px;
     border: 1px solid #e2ebe6;
     border-radius: 17px;
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
 }
 
 .titulo-control-laboral {
@@ -5024,7 +5126,7 @@ CONTROL LABORAL DEL APICULTOR PEFIL.HTML
     justify-content: center;
     min-height: 37px;
     padding: 7px;
-    border: 1px solid #dce6e0;
+    border: 1px solid var(--borde);
     border-radius: 10px;
     background: #ffffff;
     color: #68786f;
@@ -5308,7 +5410,7 @@ tr:hover .foto-apicultor-sin-imagen,
 
 .dato-contacto:hover .icono-contacto {
     transform: scale(1.15) rotate(-6deg);
-    background: var(--verde-medio, #5f9781);
+    background: var(--verde-medio, var(--verde-medio));
     color: #ffffff;
 }
 
@@ -5407,15 +5509,96 @@ BOTONES
     transition: .3s ease;
 }
 
-.btn-agregar {
-    background: var(--verde-medio);
-    color: white;
+/* ==========================================================
+   BOTÓN AGREGAR — compartido por todos los módulos
+
+   Antes cada módulo usaba .btn-success de Bootstrap (verde
+   #198754, que no existe en la paleta del proyecto), y encima
+   la mitad le agregaba "rounded-3 px-4" y la otra mitad no,
+   así que ni la forma coincidía. La Agenda tenía su propia
+   clase con otro tamaño.
+
+   Ahora los siete usan esta. Mismo degradado que .btn-filtrar,
+   para que en cada pantalla el par Agregar / Filtrar combine.
+   ========================================================== */
+
+.btn-agregar,
+.btn-agregar-incidencia,
+.btn-agregar-evento {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-sm);
+
+    height: 42px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro));
+    color: var(--blanco);
+
+    font-size: .85rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+    transition:
+        transform .3s var(--curva-rebote),
+        box-shadow var(--tiempo-normal) ease,
+        background .3s ease;
 }
 
-.btn-agregar:hover {
-    background: var(--verde-oscuro);
-    color: white;
+.btn-agregar:hover,
+.btn-agregar-incidencia:hover,
+.btn-agregar-evento:hover {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    color: var(--blanco);
     transform: translateY(-2px);
+    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+}
+
+.btn-agregar:active,
+.btn-agregar-incidencia:active,
+.btn-agregar-evento:active {
+    transform: translateY(0) scale(.97);
+}
+
+.btn-agregar i,
+.btn-agregar-incidencia i,
+.btn-agregar-evento i {
+    display: inline-block;
+    transition: transform .35s var(--curva-rebote);
+}
+
+/* El "+" gira al pasar el mouse. Antes solo lo hacía el de la
+   Agenda; ahora es el gesto de todos los botones de agregar. */
+.btn-agregar:hover i,
+.btn-agregar-incidencia:hover i,
+.btn-agregar-evento:hover i {
+    transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-agregar,
+    .btn-agregar i,
+    .btn-agregar-incidencia,
+    .btn-agregar-incidencia i,
+    .btn-agregar-evento,
+    .btn-agregar-evento i {
+        transition: none !important;
+    }
+
+    .btn-agregar:hover,
+    .btn-agregar:hover i,
+    .btn-agregar-incidencia:hover,
+    .btn-agregar-incidencia:hover i,
+    .btn-agregar-evento:hover,
+    .btn-agregar-evento:hover i {
+        transform: none;
+    }
 }
 
 .btn-guardar {
@@ -5447,6 +5630,114 @@ BOTONES
 .btn-eliminar:hover {
     background: #b02a37;
     color: white;
+}
+
+
+/* ==========================================================
+   BOTONES DE FILTRO — compartidos por todos los módulos
+
+   Antes cada módulo usaba clases sueltas de Bootstrap
+   (btn-success en Colmenas, Incidencias y Mantenimientos,
+   btn-outline-success en Apiarios, btn-buscar-agenda en la
+   Agenda), así que el botón "Filtrar" se veía distinto en cada
+   pantalla y ninguno usaba la paleta del proyecto.
+   ========================================================== */
+
+.btn-filtrar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-sm);
+
+    height: 42px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro));
+    color: var(--blanco);
+
+    font-size: .85rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
+    transition:
+        transform .3s var(--curva-rebote),
+        box-shadow var(--tiempo-normal) ease,
+        background .3s ease;
+}
+
+.btn-filtrar:hover {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    color: var(--blanco);
+    transform: translateY(-2px);
+    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+}
+
+.btn-filtrar:active {
+    transform: translateY(0) scale(.97);
+}
+
+.btn-filtrar i {
+    display: inline-block;
+    transition: transform .3s var(--curva-rebote);
+}
+
+.btn-filtrar:hover i {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+
+.btn-limpiar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-sm);
+
+    height: 42px;
+    padding: 0 18px;
+
+    border: 1px solid var(--verde-medio);
+    border-radius: 12px;
+
+    background: transparent;
+    color: var(--verde-oscuro);
+
+    font-size: .85rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    transition:
+        background var(--tiempo-normal) ease,
+        transform var(--tiempo-normal) ease;
+}
+
+.btn-limpiar:hover {
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+    transform: translateY(-2px);
+}
+
+.btn-limpiar:active {
+    transform: translateY(0) scale(.97);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-filtrar,
+    .btn-filtrar i,
+    .btn-limpiar {
+        transition: none !important;
+    }
+
+    .btn-filtrar:hover,
+    .btn-filtrar:hover i,
+    .btn-limpiar:hover {
+        transform: none;
+    }
 }
 
 /*==================================================
@@ -8342,18 +8633,8 @@ PAGINADOR
     }
 }
 
-.btn-agregar-evento {
-    border-radius: 50px;
-    background: var(--verde-medio);
-    color: #ffffff;
-    font-size: 0.77rem;
-    font-weight: 700;
-}
-
-.btn-agregar-evento:hover {
-    background: var(--verde-oscuro);
-    color: #ffffff;
-}
+/* .btn-agregar-evento usa el componente compartido .btn-agregar
+   de la sección BOTONES. */
 
 .filtros-agenda {
     display: grid;
@@ -8365,7 +8646,7 @@ PAGINADOR
 .filtros-agenda .form-select,
 .buscador-agenda {
     min-height: 42px;
-    border: 1px solid #dce6e0;
+    border: 1px solid var(--borde);
     border-radius: 12px;
     background: #ffffff;
     font-size: 0.75rem;
@@ -8385,15 +8666,29 @@ PAGINADOR
     font-size: 0.75rem;
 }
 
+/* Antes era verde sólido plano; ahora usa el mismo degradado
+   que el botón Filtrar del resto de módulos. */
 .btn-buscar-agenda {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-sm);
+
+    border: none;
     border-radius: 12px;
-    background: var(--verde-oscuro);
-    color: #ffffff;
+
+    background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro));
+    color: var(--blanco);
+
+    font-size: .85rem;
+    font-weight: 600;
+
+    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
 }
 
 .tarjeta-calendario {
     overflow: hidden;
-    border: 1px solid #e0e9e4;
+    border: 1px solid var(--borde-claro);
     border-radius: 19px;
     background: #ffffff;
     box-shadow: 0 8px 24px rgba(33, 79, 59, 0.07);
@@ -8423,7 +8718,7 @@ PAGINADOR
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: #e9f4ed;
+    background: var(--exito-fondo);
     color: var(--verde-oscuro);
     text-decoration: none;
 }
@@ -8435,8 +8730,8 @@ PAGINADOR
 
 .dia-semana {
     padding: 10px;
-    border-top: 1px solid #e5ece8;
-    border-right: 1px solid #e5ece8;
+    border-top: 1px solid var(--borde-claro);
+    border-right: 1px solid var(--borde-claro);
     background: #f3f8f5;
     color: #52675c;
     font-size: 0.7rem;
@@ -8447,8 +8742,8 @@ PAGINADOR
 .celda-calendario {
     min-height: 125px;
     padding: 8px;
-    border-top: 1px solid #e5ece8;
-    border-right: 1px solid #e5ece8;
+    border-top: 1px solid var(--borde-claro);
+    border-right: 1px solid var(--borde-claro);
     background: #ffffff;
 }
 
@@ -8615,28 +8910,32 @@ PAGINADOR
     font-weight: 700;
 }
 
+/* Estos tres usaban colores propios que no existían en ningún
+   otro módulo (#dff4e5/#267747, #ffe5e1/#a83e34, #edf2ef/#53635b).
+   Ahora salen de los tokens, así que combinan con los badges y
+   alertas del resto del panel. */
 .btn-editar-evento {
-    background: #dff4e5;
-    color: #267747;
+    background: var(--exito-fondo);
+    color: var(--verde-icono);
 }
 
 .btn-eliminar-evento {
-    background: #ffe5e1;
-    color: #a83e34;
+    background: var(--rojo-fondo);
+    color: var(--rojo-incidencia);
 }
 
 .btn-cerrar-evento {
-    background: #edf2ef;
-    color: #53635b;
+    background: var(--borde-tenue);
+    color: var(--texto-secundario);
 }
 
 .btn-guardar-evento {
     background: var(--verde-medio);
-    color: #ffffff;
+    color: var(--blanco);
 }
 
 .icono-eliminar-evento {
-    color: #e8a623;
+    color: var(--miel);
     font-size: 2.5rem;
 }
 
@@ -8686,7 +8985,7 @@ PAGINADOR
 }
  
 .celda-calendario:hover {
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
 }
  
 /* ---------- HOVER EN LOS EVENTOS ---------- */
@@ -8765,33 +9064,8 @@ PAGINADOR
 /* ---------- BOTÓN "AGREGAR EVENTO": mismo tratamiento que
    los botones de agregar de otros módulos (gradiente + relieve) ---------- */
 
-.btn-agregar-evento {
-    background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro));
-    box-shadow: 0 4px 10px rgba(33, 79, 59, .18);
-    transition:
-        transform .3s cubic-bezier(.34, 1.56, .64, 1),
-        box-shadow .25s ease,
-        background .3s ease;
-}
-
-.btn-agregar-evento:hover {
-    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
-    transform: translateY(-2px);
-    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
-}
-
-.btn-agregar-evento:active {
-    transform: translateY(0) scale(.97);
-}
-
-.btn-agregar-evento i {
-    display: inline-block;
-    transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
-}
-
-.btn-agregar-evento:hover i {
-    transform: rotate(90deg);
-}
+/* Animaciones de .btn-agregar-evento: ahora vienen del componente
+   compartido .btn-agregar. */
 
 /* ---------- FILTROS: foco más visible al usarlos con teclado/mouse ---------- */
 
@@ -8831,9 +9105,19 @@ PAGINADOR
 }
 
 .btn-buscar-agenda:hover {
-    background: var(--verde-medio);
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));
+    color: var(--blanco);
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(33, 79, 59, .2);
+    box-shadow: 0 9px 18px rgba(33, 79, 59, .26);
+}
+
+.btn-buscar-agenda i {
+    display: inline-block;
+    transition: transform .3s var(--curva-rebote);
+}
+
+.btn-buscar-agenda:hover i {
+    transform: scale(1.15) rotate(-8deg);
 }
 
 .btn-buscar-agenda:active {
@@ -8849,7 +9133,7 @@ PAGINADOR
 }
 
 .celda-calendario:hover {
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
     box-shadow: inset 0 0 0 1px rgba(95, 151, 129, .35);
     position: relative;
     z-index: 1;
@@ -9266,7 +9550,7 @@ PAGINADOR
 
 .historial-reportes {
     overflow: hidden;
-    border: 1px solid #e0e9e4;
+    border: 1px solid var(--borde-claro);
     border-radius: 19px;
     background: #ffffff;
     box-shadow: 0 8px 23px rgba(33, 79, 59, 0.06);
@@ -9292,13 +9576,281 @@ PAGINADOR
     font-size: 0.67rem;
 }
 
-.encabezado-historial-reportes > span {
-    padding: 6px 11px;
-    border-radius: 20px;
-    background: #e5f3e9;
-    color: #32724b;
-    font-size: 0.68rem;
-    font-weight: 700;
+/* =========================================================
+   CONTROLES DEL HISTORIAL
+========================================================= */
+
+.controles-historial-reportes {
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   CONTADOR TOTAL
+========================================================= */
+
+.contador-historial-reportes {
+
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        12px;
+
+    border:
+        1px solid
+        #d4e8da;
+
+    border-radius:
+        999px;
+
+    background:
+        #e8f5ec;
+
+    color:
+        #32724b;
+
+    font-size:
+        0.69rem;
+
+    font-weight:
+        650;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.contador-historial-reportes i {
+
+    color:
+        var(--verde-medio);
+
+    font-size:
+        0.82rem;
+
+}
+
+
+.contador-historial-reportes strong {
+
+    color:
+        var(--verde-oscuro);
+
+    font-size:
+        0.75rem;
+
+    font-weight:
+        800;
+
+}
+
+
+/* =========================================================
+   SELECTOR DE CANTIDAD
+========================================================= */
+
+.selector-cantidad-reportes {
+
+    min-height:
+        36px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        5px
+        8px
+        5px
+        11px;
+
+    border:
+        1px solid
+        #dfe9e3;
+
+    border-radius:
+        999px;
+
+    background:
+        #fafcfb;
+
+    box-shadow:
+        0 4px 12px
+        rgba(
+            33,
+            79,
+            59,
+            0.05
+        );
+
+}
+
+
+/* TEXTO */
+
+.selector-cantidad-texto {
+
+    color:
+        #7b8981;
+
+    font-size:
+        0.66rem;
+
+    font-weight:
+        650;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* CONTENEDOR DEL SELECT */
+
+.selector-cantidad-control {
+
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+}
+
+
+/* SELECT */
+
+.selector-cantidad-control select {
+
+    min-width:
+        58px;
+
+    height:
+        28px;
+
+    padding:
+        0
+        24px
+        0
+        10px;
+
+    border:
+        1px solid
+        #cfdfd5;
+
+    border-radius:
+        9px;
+
+    outline:
+        none;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--verde-oscuro);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.71rem;
+
+    font-weight:
+        750;
+
+    cursor:
+        pointer;
+
+    appearance:
+        none;
+
+    -webkit-appearance:
+        none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+
+}
+
+
+/* FOCUS */
+
+.selector-cantidad-control select:focus {
+
+    border-color:
+        var(--verde-medio);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            95,
+            151,
+            129,
+            0.14
+        );
+
+}
+
+
+/* HOVER */
+
+.selector-cantidad-control select:hover {
+
+    border-color:
+        var(--verde-medio);
+
+    background:
+        #f8fcf9;
+
+}
+
+
+/* FLECHA PERSONALIZADA */
+
+.selector-cantidad-control > i {
+
+    position:
+        absolute;
+
+    right:
+        8px;
+
+    pointer-events:
+        none;
+
+    color:
+        var(--verde-medio);
+
+    font-size:
+        0.62rem;
+
 }
 
 .tabla-reportes thead th {
@@ -9438,6 +9990,34 @@ PAGINADOR
     color: #65736c;
 }
 
+/* =========================================================
+   ACTUALIZANDO HISTORIAL
+========================================================= */
+
+.historial-reportes {
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+
+}
+
+
+.historial-reportes-cargando {
+
+    opacity:
+        0.55;
+
+    transform:
+        translateY(
+            2px
+        );
+
+    pointer-events:
+        none;
+
+}
+
 @media (max-width: 991px) {
 
     .grid-reportes {
@@ -9459,567 +10039,528 @@ PAGINADOR
 }
 
 /* =========================================================
-   DASHBOARD ADMIN (ESTO MODIFICO Y AGREGO JAIME HASTA 
-   LA LINEA 5244)
+   RESPONSIVE - CONTROLES DEL HISTORIAL
 ========================================================= */
 
-/* Fondo del contenido */
+@media (max-width: 767px) {
 
-.main-content{
+    .encabezado-historial-reportes {
 
-    background:#F6FAF8;
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        gap:
+            14px;
+
+    }
+
+
+    .controles-historial-reportes {
+
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+
+    }
 
 }
 
 
-/* =========================================================
+@media (max-width: 480px) {
+
+    .controles-historial-reportes {
+
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .contador-historial-reportes {
+
+        align-self:
+            flex-start;
+
+    }
+
+
+    .selector-cantidad-reportes {
+
+        width:
+            100%;
+
+        justify-content:
+            space-between;
+
+    }
+
+}
+
+/* ==========================================================
+   8. DASHBOARD
+
+   Cambios de esta versión:
+   · .main-content eliminado — esa clase no existe en ningún
+     template, era CSS muerto
+   · Los 4 iconos de las tarjetas tenían el MISMO verde; ahora
+     cada módulo tiene su color
+   · .dashboard-card.h-100 .dashboard-chart estaba definida dos
+     veces, idéntica; queda una
+   · .tarjeta-dashboard-link se trajo del <style> inline que
+     estaba en dashboard.html
+   · Estados de foco para las tarjetas (son enlaces)
+   · La grilla de actividad reciente se adapta sola en vez de
+     forzar 3 columnas fijas
+   ========================================================== */
+
+
+/* ==========================================================
    TARJETAS RESUMEN
-========================================================= */
+   ========================================================== */
 
-.tarjeta-dashboard{
-
-    position:relative;
-
-    overflow:hidden;
-
-    background:#FFFFFF;
-
-    border:1px solid #E6EEE9;
-
-    border-radius:16px;
-
-    padding:20px 18px;
-
-    min-height:130px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    text-align:center;
-
-    box-shadow:0 5px 14px rgba(33,79,59,.05);
-
-    transition:all .25s ease;
-
-}
-
-.tarjeta-dashboard::after{
-
-    content:"";
-
-    position:absolute;
-
-    top:-16px;
-
-    right:-16px;
-
-    width:48px;
-
-    height:48px;
-
-    background:linear-gradient(155deg, var(--amarillo), var(--verde-medio));
-
-    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-
-    opacity:0;
-
-    transform:scale(.55) rotate(-25deg);
-
-    transition:opacity .3s ease, transform .4s cubic-bezier(.34, 1.56, .64, 1);
-
-}
-
-.tarjeta-dashboard:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:0 12px 22px rgba(33,79,59,.10);
-
-    border-color:#D4E8DB;
-
-}
-
-.tarjeta-dashboard:hover::after{
-
-    opacity:.20;
-
-    transform:scale(1) rotate(0deg);
-
-}
-
-
-/* =========================================================
-   ICONO
-========================================================= */
-
-.icono-dashboard{
-
-    width:54px;
-
-    height:54px;
-
-    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    margin-bottom:12px;
-
-    transition:transform .35s cubic-bezier(.34, 1.56, .64, 1);
-
-}
-
-.tarjeta-dashboard:hover .icono-dashboard{
-
-    transform:scale(1.12) rotate(-6deg);
-
-}
-
-.icono-dashboard i{
-
-    font-size:1.25rem;
-
-}
-
-
-/* =========================================================
-   COLORES ICONOS
-========================================================= */
-
-.icono-apicultores{
-
-    background:#EAF6ED;
-
-    color:#2F7D4F;
-
-}
-
-.icono-apiarios{
-
-    background:#EAF6ED;
-
-    color:#2F7D4F;
-
-}
-
-.icono-colmenas{
-
-    background:#EDF8F1;
-
-    color:#2F7D4F;
-
-}
-
-.icono-incidencias{
-
-    background:#EAF6ED;
-
-    color:#2F7D4F;
-
-}
-
-
-/* =========================================================
-   TEXTO TARJETAS
-========================================================= */
-
-.tarjeta-dashboard h2{
-
-    margin:0;
-
-    font-size:2.7rem;
-
-    font-weight:700;
-
-    color:#214F3B;
-
-    line-height:1;
-
-}
-
-.tarjeta-dashboard h6{
-
-    margin-top:8px;
-
-    margin-bottom:0;
-
-    font-size:.95rem;
-
-    font-weight:600;
-
-    color:#505050;
-
-}
-
-
-/* =========================================================
-   DASHBOARD - TARJETAS GRANDES
-========================================================= */
-
-.dashboard-card{
-
-    position:relative;
-
-    overflow:hidden;
-
-    background:#FFFFFF;
-
-    border:1px solid #E8EFEA;
-
-    border-radius:18px;
-
-    padding:18px 20px;
-
-    box-shadow:0 5px 16px rgba(33,79,59,.05);
-
-}
-
-.dashboard-card::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    z-index:0;
-
-    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(33,79,59,0.03)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(33,79,59,0.03)' stroke-width='1'/%3E%3C/svg%3E");
-
-    pointer-events:none;
-
-}
-
-.dashboard-card::after{
-
-    content:"";
-
-    position:absolute;
-
-    bottom:-22px;
-
-    right:-22px;
-
-    width:64px;
-
-    height:64px;
-
-    z-index:0;
-
-    background:linear-gradient(155deg, var(--amarillo), var(--verde-medio));
-
-    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-
-    opacity:.10;
-
-    pointer-events:none;
-
-}
-
-.dashboard-card > *{
-
-    position:relative;
-
-    z-index:1;
-
-}
-
-
-/* =========================================================
-   DASHBOARD - TITULOS
-========================================================= */
-
-.dashboard-title{
-
-    color:#214F3B;
-
-    font-size:1.05rem;
-
-    font-weight:700;
-
-    margin:0;
-
-}
-
-.dashboard-subtitle{
-
-    color:#7C8A82;
-
-    font-size:.80rem;
-
-}
-
-
-/* =========================================================
-   DASHBOARD - ACTIVIDAD RECIENTE
-========================================================= */
-
-.dashboard-activity-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-}
-
-.dashboard-activity-item{
-
-    display:flex;
-
-    align-items:flex-start;
-
-    gap:16px;
-
-    padding:16px 0;
-
-    border-bottom:1px solid #EDF2EE;
-
-}
-
-.dashboard-activity-item:last-child{
-
-    border-bottom:none;
-
-    padding-bottom:0;
-
-}
-
-.dashboard-activity-icon{
-
-    width:48px;
-
-    height:48px;
-
-    min-width:48px;
-
-    clip-path:polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-}
-
-.dashboard-activity-icon i{
-
-    font-size:1.15rem;
-
-}
-
-
-/* ---------- Mantenimiento ---------- */
-
-.dashboard-activity-mantenimiento{
-
-    background:#EAF6ED;
-
-    color:#2F7D4F;
-
-}
-
-
-/* ---------- Incidencia ---------- */
-
-.dashboard-activity-incidencia{
-
-    background:#FFE8E5;
-
-    color:#C44134;
-
-}
-
-
-/* ---------- Contenido ---------- */
-
-.dashboard-activity-content{
-
-    flex:1;
-
-}
-
-.dashboard-activity-content h6{
-
-    margin:0;
-
-    font-size:.95rem;
-
-    font-weight:700;
-
-    color:#214F3B;
-
-}
-
-.dashboard-activity-content p{
-
-    margin:4px 0 8px;
-
-    color:#5F6662;
-
-    font-size:.88rem;
-
-    line-height:1.45;
-
-}
-
-.dashboard-activity-content span{
-
-    font-size:.78rem;
-
-    color:#909A95;
-
-}
-
-.dashboard-empty{
-
-    text-align:center;
-
-    padding:2rem 0;
-
-    color:#909A95;
-
-}
-
-
-/* =========================================================
-   DASHBOARD - CONTENEDOR DE LA GRÁFICA
-========================================================= */
-
-.dashboard-chart{
-
-    position:relative;
-
-    width:100%;
-
-    height:240px;
-
-}
-
-.dashboard-card.h-100 .dashboard-chart {
-    height: auto;
-    min-height: 240px;
-    flex: 1 1 auto;
+.tarjeta-dashboard {
     position: relative;
+    overflow: hidden;
+
+    background: var(--blanco);
+    border: 1px solid #E6EEE9;
+    border-radius: var(--radio-md);
+    padding: 20px 18px;
+    min-height: 130px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    box-shadow: var(--sombra-suave);
+    transition:
+        transform var(--tiempo-normal) ease,
+        box-shadow var(--tiempo-normal) ease,
+        border-color var(--tiempo-normal) ease;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:992px){
-
-    .tarjeta-dashboard{
-
-        min-height:120px;
-
-    }
-
+/* Antes estaba en un <style> suelto dentro de dashboard.html */
+.tarjeta-dashboard-link {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
-@media(max-width:768px){
+/* Hexágono decorativo que asoma al pasar el mouse */
+.tarjeta-dashboard::after {
+    content: "";
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 48px;
+    height: 48px;
 
-    .tarjeta-dashboard{
+    background: linear-gradient(155deg, var(--amarillo), var(--verde-medio));
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 
-        min-height:115px;
-
-        padding:18px 14px;
-
-    }
-
-    .icono-dashboard{
-
-        width:48px;
-
-        height:48px;
-
-    }
-
-    .icono-dashboard i{
-
-        font-size:1.1rem;
-
-    }
-
-    .tarjeta-dashboard h2{
-
-        font-size:1.7rem;
-
-    }
-
-    .tarjeta-dashboard h6{
-
-        font-size:.90rem;
-
-    }
-
-    .dashboard-chart{
-
-        height:220px;
-
-    }
-
+    opacity: 0;
+    transform: scale(.55) rotate(-25deg);
+    transition:
+        opacity var(--tiempo-normal) ease,
+        transform var(--tiempo-lento) var(--curva-rebote);
 }
 
-/* =========================================================
-   (ajuste de altura de la gráfica + animación de notificaciones nuevas)
-========================================================= */
+.tarjeta-dashboard:hover,
+.tarjeta-dashboard:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-media);
+    border-color: #D4E8DB;
+}
 
-/* Hace que el canvas de Chart.js llene la altura disponible
-   cuando la tarjeta usa flexbox (h-100 d-flex flex-column) */
-.dashboard-card.h-100 .dashboard-chart {
-    height: auto;
-    min-height: 240px;
-    flex: 1 1 auto;
+.tarjeta-dashboard:hover::after,
+.tarjeta-dashboard:focus-visible::after {
+    opacity: .20;
+    transform: scale(1) rotate(0deg);
+}
+
+.tarjeta-dashboard:active {
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   ICONO DE LA TARJETA
+   ========================================================== */
+
+.icono-dashboard {
+    width: 54px;
+    height: 54px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+
+    transition: transform .35s var(--curva-rebote);
+}
+
+.tarjeta-dashboard:hover .icono-dashboard,
+.tarjeta-dashboard:focus-visible .icono-dashboard {
+    transform: scale(1.12) rotate(-6deg);
+}
+
+.icono-dashboard i {
+    font-size: 1.25rem;
+}
+
+
+/* ---------- COLORES POR MÓDULO ----------
+   Los cuatro usaban el mismo verde (#2F7D4F sobre #EAF6ED),
+   así que de un vistazo no se distinguía una tarjeta de otra.
+   Ahora cada módulo tiene su color, y el de incidencias
+   destaca porque es el que pide atención. */
+
+.icono-apicultores {
+    background: var(--exito-fondo);
+    color: var(--verde-icono);
+}
+
+.icono-apiarios {
+    background: #E4F0FA;
+    color: var(--info-texto);
+}
+
+.icono-colmenas {
+    background: var(--alerta-fondo);
+    color: var(--miel-oscura);
+}
+
+.icono-incidencias {
+    background: var(--rojo-fondo);
+    color: var(--rojo-incidencia);
+}
+
+
+/* ==========================================================
+   TEXTO DE LAS TARJETAS
+   ========================================================== */
+
+/* Las cifras eran <h2> y las etiquetas <h6>. Cuatro <h2> sueltos
+   rompían la jerarquía de encabezados de la página (el lector de
+   pantalla los anunciaba como secciones). Ahora son <span> con
+   clase propia; el tamaño visual es idéntico. */
+
+.tarjeta-dashboard-cifra {
+    display: block;
+    margin: 0;
+    font-size: 2.7rem;
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    line-height: 1;
+
+    /* Evita que el conteo animado del JS ensanche la tarjeta
+       al pasar de 9 a 10 o de 99 a 100 */
+    font-variant-numeric: tabular-nums;
+}
+
+.tarjeta-dashboard-etiqueta {
+    display: block;
+    margin-top: var(--esp-sm);
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+}
+
+
+/* ==========================================================
+   TARJETAS GRANDES (gráficas y actividad)
+   ========================================================== */
+
+.dashboard-card {
     position: relative;
+    overflow: hidden;
+
+    background: var(--blanco);
+    border: 1px solid var(--borde-claro);
+    border-radius: 18px;
+    padding: 18px 20px;
+
+    box-shadow: 0 5px 16px rgba(33, 79, 59, .05);
 }
 
-/* Animación de entrada para la notificación más reciente
-   en la actualización en vivo (polling) */
-@keyframes entradaActividad {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Textura de panal de fondo */
+.dashboard-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(33,79,59,0.03)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(33,79,59,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+    pointer-events: none;
 }
 
-.dashboard-activity-nueva {
-    animation: entradaActividad .45s ease;
-    background: #F3FBF6;
-    border-radius: 12px;
+/* Hexágono decorativo de la esquina */
+.dashboard-card::after {
+    content: "";
+    position: absolute;
+    bottom: -22px;
+    right: -22px;
+    width: 64px;
+    height: 64px;
+    z-index: 0;
+
+    background: linear-gradient(155deg, var(--amarillo), var(--verde-medio));
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+
+    opacity: .10;
+    pointer-events: none;
 }
+
+.dashboard-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* ==========================================================
+   TÍTULOS
+   ========================================================== */
+
+.dashboard-title {
+    color: var(--verde-oscuro);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dashboard-subtitle {
+    color: var(--texto-tenue);
+    font-size: .80rem;
+}
+
+
+/* ==========================================================
+   ACTIVIDAD RECIENTE
+   ========================================================== */
+
+.dashboard-activity-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--esp-md);
+    padding: var(--esp-md) 0;
+    border-bottom: 1px solid var(--borde-tenue);
+}
+
+.dashboard-activity-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dashboard-activity-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-activity-icon i {
+    font-size: 1.15rem;
+}
+
+.dashboard-activity-mantenimiento {
+    background: var(--exito-fondo);
+    color: var(--verde-icono);
+}
+
+.dashboard-activity-incidencia {
+    background: var(--rojo-fondo);
+    color: var(--rojo-incidencia);
+}
+
+.dashboard-activity-content {
+    flex: 1;
+    min-width: 0;   /* permite que el texto largo se corte en vez de desbordar la tarjeta */
+}
+
+.dashboard-activity-content h6 {
+    margin: 0;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--verde-oscuro);
+}
+
+.dashboard-activity-content p {
+    margin: var(--esp-xs) 0 var(--esp-sm);
+    color: var(--texto-secundario);
+    font-size: .88rem;
+    line-height: 1.45;
+
+    /* Corta a 3 líneas para que todas las tarjetas de la fila
+       queden a la misma altura sin importar el largo del texto */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.dashboard-activity-content span {
+    font-size: .78rem;
+    color: var(--texto-apagado);
+}
+
+.dashboard-empty {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--texto-apagado);
+}
+
+
+/* ---------- DISTRIBUCIÓN HORIZONTAL ----------
+   Antes: grid-template-columns: repeat(3, 1fr) fijo, así que
+   con 1 o 2 registros las tarjetas quedaban estiradas y con 4+
+   se apretaban. auto-fill se adapta a la cantidad real. */
 
 .dashboard-activity-list-horizontal {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--esp-md);
 }
 
 .dashboard-activity-list-horizontal .dashboard-activity-item {
-    padding: 16px;
-    border: 1px solid #E8EFEA;
+    padding: var(--esp-md);
+    border: 1px solid var(--borde-claro);
     border-radius: 14px;
-    background: #FBFDFC;
-    border-bottom: 1px solid #E8EFEA; /* sobrescribe el border-bottom de separación vertical */
+    background: var(--fondo-tarjeta);
+    transition:
+        transform var(--tiempo-normal) ease,
+        box-shadow var(--tiempo-normal) ease;
 }
 
+.dashboard-activity-list-horizontal .dashboard-activity-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-suave);
+}
+
+/* Resalta la notificación que acaba de llegar por polling */
+.dashboard-activity-nueva {
+    animation: entradaActividad .45s ease;
+    background: var(--fondo-suave);
+    border-radius: 12px;
+}
+
+@keyframes entradaActividad {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ==========================================================
+   CONTENEDOR DE LAS GRÁFICAS
+   ========================================================== */
+
+.dashboard-chart {
+    position: relative;
+    width: 100%;
+    height: 240px;
+}
+
+/* Hace que el canvas de Chart.js llene la altura disponible
+   cuando la tarjeta usa flexbox (h-100 d-flex flex-column).
+   Esta regla estaba duplicada idéntica en el archivo original. */
+.dashboard-card.h-100 .dashboard-chart {
+    height: auto;
+    min-height: 240px;
+    flex: 1 1 auto;
+    position: relative;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
 @media (max-width: 992px) {
+
+    .tarjeta-dashboard {
+        min-height: 120px;
+    }
+
     .dashboard-activity-list-horizontal {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 768px) {
+
+    .tarjeta-dashboard {
+        min-height: 115px;
+        padding: 18px 14px;
+    }
+
+    .icono-dashboard {
+        width: 48px;
+        height: 48px;
+    }
+
+    .icono-dashboard i {
+        font-size: 1.1rem;
+    }
+
+    .tarjeta-dashboard-cifra {
+        font-size: 1.7rem;
+    }
+
+    .tarjeta-dashboard-etiqueta {
+        font-size: .90rem;
+    }
+
+    .dashboard-chart {
+        height: 220px;
+    }
+}
+
+
+/* ---------- MOVIMIENTO REDUCIDO ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tarjeta-dashboard,
+    .tarjeta-dashboard::after,
+    .icono-dashboard,
+    .dashboard-activity-list-horizontal .dashboard-activity-item {
+        transition: none !important;
+    }
+
+    .tarjeta-dashboard:hover,
+    .tarjeta-dashboard:focus-visible,
+    .dashboard-activity-list-horizontal .dashboard-activity-item:hover {
+        transform: none;
+    }
+
+    .tarjeta-dashboard:hover .icono-dashboard,
+    .tarjeta-dashboard:focus-visible .icono-dashboard {
+        transform: none;
+    }
+
+    .dashboard-activity-nueva {
+        animation: none;
+    }
+}
+
 
 /* =========================================================
    AGREGAR AL FINAL de estilos_admin.css
@@ -10135,7 +10676,7 @@ PAGINADOR
     align-items: center;
     justify-content: center;
     background: #eaf6ed;
-    color: #2f7d4f;
+    color: var(--verde-icono);
     font-size: 2rem;
 }
 
@@ -10266,7 +10807,7 @@ PAGINADOR
     align-items: center;
     justify-content: center;
     background: #eaf6ed;
-    color: #2f7d4f;
+    color: var(--verde-icono);
     font-size: 2rem;
 }
 
@@ -10610,7 +11151,7 @@ PAGINADOR
     color:
         var(
             --verde-oscuro,
-            #214f3b
+            var(--verde-oscuro)
         );
 
     font-size:
@@ -10668,7 +11209,7 @@ PAGINADOR
     color:
         var(
             --gris-texto,
-            #5f6f66
+            var(--texto-secundario)
         );
 
     font-size:
@@ -10683,7 +11224,7 @@ PAGINADOR
     color:
         var(
             --verde-medio,
-            #5f9781
+            var(--verde-medio)
         );
 }
 
@@ -10795,7 +11336,7 @@ PAGINADOR
         16px;
 
     background:
-        #fbfdfc;
+        var(--fondo-tarjeta);
 }
 
 
@@ -10858,7 +11399,7 @@ PAGINADOR
     color:
         var(
             --verde-oscuro,
-            #214f3b
+            var(--verde-oscuro)
         );
 
     font-size:
@@ -10932,7 +11473,7 @@ input[type="radio"] {
     accent-color:
         var(
             --verde-medio,
-            #5f9781
+            var(--verde-medio)
         );
 }
 
@@ -11022,7 +11563,7 @@ input[type="radio"] {
         0;
 
     color:
-        #214f3b;
+        var(--verde-oscuro);
 
     font-size:
         .86rem;
@@ -11101,7 +11642,7 @@ input[type="radio"] {
         #e2f1df;
 
     color:
-        #4f744b;
+        var(--verde-hoja);
 }
 
 
@@ -11132,7 +11673,7 @@ input[type="radio"] {
     border-color:
         var(
             --verde-medio,
-            #5f9781
+            var(--verde-medio)
         );
 
     box-shadow:
@@ -11263,7 +11804,7 @@ input[type="radio"] {
         0;
 
     color:
-        #214f3b;
+        var(--verde-oscuro);
 
     font-size:
         .91rem;
@@ -11351,7 +11892,7 @@ input[type="radio"] {
         #e2f1df;
 
     color:
-        #4f744b;
+        var(--verde-hoja);
 }
 
 
@@ -11609,7 +12150,7 @@ input[type="radio"] {
         rgba(226, 241, 223, .95);
 
     color:
-        #4f744b;
+        var(--verde-hoja);
 }
 
 
@@ -11649,7 +12190,7 @@ input[type="radio"] {
         hidden;
 
     color:
-        #214f3b;
+        var(--verde-oscuro);
 
     font-size:
         .75rem;
@@ -11685,7 +12226,7 @@ input[type="radio"] {
         0;
 
     color:
-        #5f9781;
+        var(--verde-medio);
 
     font-size:
         .95rem;
@@ -11768,7 +12309,7 @@ input[type="radio"] {
         16px;
 
     background:
-        #fbfdfc;
+        var(--fondo-tarjeta);
 }
 
 
@@ -11790,7 +12331,7 @@ input[type="radio"] {
         16px 0 10px;
 
     color:
-        #214f3b;
+        var(--verde-oscuro);
 
     font-size:
         .82rem;
@@ -11836,7 +12377,7 @@ input[type="radio"] {
     border-color:
         var(
             --verde-medio,
-            #5f9781
+            var(--verde-medio)
         );
 
     box-shadow:
@@ -11854,7 +12395,7 @@ input[type="radio"] {
         6px;
 
     color:
-        #214f3b;
+        var(--verde-oscuro);
 
     font-size:
         .80rem;
@@ -12418,7 +12959,7 @@ input[type="radio"] {
     background:
         var(
             --verde-medio,
-            #5f9781
+            var(--verde-medio)
         );
 }
 
@@ -12503,7 +13044,7 @@ input[type="radio"] {
     color:
         var(
             --verde-oscuro,
-            #214f3b
+            var(--verde-oscuro)
         );
 
     font-size: 1rem;
@@ -12871,7 +13412,7 @@ input[type="radio"] {
     padding: 14px 18px 18px;
     margin-top: auto;
     border-top: 1px solid #edf1ef;
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
 }
 
 .tarjeta-apicultor-card-footer .cantidad-apiarios,
@@ -13425,7 +13966,7 @@ input[type="radio"] {
 }
 
 .tabla-reportes tbody tr:hover {
-    background: #f7fbf8;
+    background: var(--fondo);
 }
 
 /* ---------- ENTRADA ESCALONADA DENTRO DEL MODAL DE REPORTE ---------- */
@@ -13530,7 +14071,7 @@ input[type="radio"] {
         0.20
     );
 
-    background: #c0f1ca;
+    background: var(--verde-claro);
 }
 
 
@@ -13558,7 +14099,7 @@ input[type="radio"] {
 
     text-decoration: none;
 
-    color: #163324;
+    color: var(--verde-profundo);
 
     transition:
         background-color 0.2s ease,
@@ -13574,7 +14115,7 @@ input[type="radio"] {
         0.20
     );
 
-    color: #163324;
+    color: var(--verde-profundo);
 }
 
 
@@ -13606,9 +14147,9 @@ input[type="radio"] {
 
     background: #ffffff;
 
-    border: 2px solid #5f9781;
+    border: 2px solid var(--verde-medio);
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 22px;
 }
@@ -13653,7 +14194,7 @@ input[type="radio"] {
 
     text-overflow: ellipsis;
 
-    color: #163324;
+    color: var(--verde-profundo);
 
     font-size: 14px;
     font-weight: 700;
@@ -13671,7 +14212,7 @@ input[type="radio"] {
 
     text-overflow: ellipsis;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 
     font-size: 12px;
     font-weight: 500;
@@ -13687,7 +14228,7 @@ input[type="radio"] {
     align-items: center;
     justify-content: center;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 
     font-size: 14px;
 
@@ -13863,7 +14404,7 @@ input[type="radio"] {
 
     background: #ffffff;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 19px;
 
@@ -14005,7 +14546,7 @@ input[type="radio"] {
 .notificaciones-dropdown-header h5 {
     margin: 0 0 3px;
 
-    color: #163324;
+    color: var(--verde-profundo);
 
     font-size: 15px;
     font-weight: 700;
@@ -14031,7 +14572,7 @@ input[type="radio"] {
 
     background: #edf7f0;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 }
 
 
@@ -14086,7 +14627,7 @@ input[type="radio"] {
 
 
 .notificacion-dropdown-item:hover {
-    background: #f7fbf8;
+    background: var(--fondo);
 }
 
 
@@ -14116,7 +14657,7 @@ input[type="radio"] {
 
     background: #edf7f0;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 
     font-size: 16px;
 }
@@ -14175,7 +14716,7 @@ input[type="radio"] {
 .notificacion-dropdown-titulo strong {
     overflow: hidden;
 
-    color: #163324;
+    color: var(--verde-profundo);
 
     font-size: 12px;
     font-weight: 700;
@@ -14193,7 +14734,7 @@ input[type="radio"] {
 
     border-radius: 50%;
 
-    background: #5f9781;
+    background: var(--verde-medio);
 }
 
 
@@ -14251,7 +14792,7 @@ input[type="radio"] {
 
     background: #edf7f0;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 
     font-size: 22px;
 }
@@ -14262,7 +14803,7 @@ input[type="radio"] {
 
     margin-bottom: 4px;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 12px;
 }
@@ -14353,7 +14894,7 @@ input[type="radio"] {
 
     border-bottom: 1px solid #e5eee8;
 
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
 }
 
 
@@ -14379,7 +14920,7 @@ input[type="radio"] {
 
     background: #edf7f0;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 
     font-size: 20px;
 }
@@ -14390,7 +14931,7 @@ input[type="radio"] {
 
     margin-bottom: 2px;
 
-    color: #5f9781;
+    color: var(--verde-medio);
 
     font-size: 9px;
     font-weight: 700;
@@ -14403,7 +14944,7 @@ input[type="radio"] {
 .modal-title {
     margin: 0;
 
-    color: #163324;
+    color: var(--verde-profundo);
 
     font-size: 17px;
     font-weight: 700;
@@ -14465,7 +15006,7 @@ input[type="radio"] {
 
     overflow: hidden;
 
-    color: #214f3b;
+    color: var(--verde-oscuro);
 
     font-size: 11px;
     font-weight: 700;
@@ -14532,7 +15073,7 @@ input[type="radio"] {
 
     border-top: 1px solid #e5eee8;
 
-    background: #fbfdfc;
+    background: var(--fondo-tarjeta);
 }
 
 
@@ -14581,7 +15122,7 @@ input[type="radio"] {
     align-items: center;
     gap: 7px;
     text-decoration: none;
-    color: var(--verde-oscuro, #214f3b);
+    color: var(--verde-oscuro, var(--verde-oscuro));
     font-size: 12.5px;
     font-weight: 700;
     padding: 8px;
@@ -14596,7 +15137,7 @@ input[type="radio"] {
 
 .notificaciones-ver-todas:hover {
     background: #eef8f1;
-    color: var(--verde-oscuro, #214f3b);
+    color: var(--verde-oscuro, var(--verde-oscuro));
 }
 
 /*Limite de colmeas segun lo definido en los apiarios*/
@@ -15507,7 +16048,7 @@ tr.fila-oculta-busqueda {
 
     border:
         1px solid
-        #e5ece8;
+        var(--borde-claro);
 
     border-radius: 12px;
 
@@ -16006,5 +16547,6 @@ tr.fila-oculta-busqueda {
         font-size: 0.69rem;
 
     }
+
 
 }
