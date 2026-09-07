@@ -4,382 +4,211 @@
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <!-- Le dice al cliente de correo que la plantilla ya maneja
+         modo claro y oscuro, para que no invente sus propios colores -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
 
-    <title>
-        {{ titulo }} | Mi Colmena
-    </title>
+    <title>{{ titulo }} | Mi Colmena</title>
+
+    <style>
+        /* Los <style> solo los leen algunos clientes (Gmail web, Apple
+           Mail, Thunderbird). Todo lo importante va inline más abajo;
+           esto es una mejora encima, nunca un requisito. */
+
+        /* Outlook de escritorio usa el motor de Word y a veces mete
+           espacios entre celdas de tabla */
+        table { border-collapse: collapse; }
+
+        /* Evita que iOS agrande el texto solo */
+        body { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+        /* iOS convierte números largos en enlaces telefónicos azules.
+           Esto evita que el código de 6 dígitos se vuelva un link. */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        @media only screen and (max-width: 480px) {
+
+            .contenido-correo {
+                padding: 28px 22px !important;
+            }
+
+            /* En pantallas angostas el código con letter-spacing 10px
+               se salía de la tarjeta */
+            .codigo-correo {
+                font-size: 26px !important;
+                letter-spacing: 6px !important;
+                padding: 16px 18px !important;
+            }
+
+            .titulo-correo {
+                font-size: 21px !important;
+            }
+        }
+    </style>
 
 </head>
 
 
-<body
-    style="
-        margin: 0;
-        padding: 0;
-        background-color: #f3f7f4;
-        font-family: Arial, Helvetica, sans-serif;
-        color: #263b31;
-    "
->
+<body style="margin:0; padding:0; width:100%; background-color:#f3f7f4; font-family:'Segoe UI', Roboto, Arial, Helvetica, sans-serif; color:#263b31;">
 
-    <table
-        role="presentation"
-        width="100%"
-        cellspacing="0"
-        cellpadding="0"
-        border="0"
-        style="
-            width: 100%;
-            background-color: #f3f7f4;
-        "
-    >
+
+    <!-- ==========================================================
+         PREHEADER
+         Es la línea de vista previa que se ve en la bandeja de
+         entrada, junto al asunto. Sin esto, Gmail mostraba
+         "Hola Juan," que no dice nada útil.
+         Va oculto: no se ve al abrir el correo.
+    =========================================================== -->
+
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#f3f7f4;">
+        Tu código de verificación vence en {{ duracion_minutos }} minutos.
+        &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+    </div>
+
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#f3f7f4;">
 
         <tr>
+            <td align="center" style="padding:40px 16px;">
 
-            <td
-                align="center"
-                style="
-                    padding: 40px 16px;
-                "
-            >
 
-                <!-- ==========================================
+                <!-- ==============================================
                      TARJETA
-                =========================================== -->
+                =============================================== -->
 
-                <table
-                    role="presentation"
-                    width="100%"
-                    cellspacing="0"
-                    cellpadding="0"
-                    border="0"
-                    style="
-                        width: 100%;
-                        max-width: 560px;
-                        background: #ffffff;
-                        border-radius: 20px;
-                        overflow: hidden;
-                        box-shadow:
-                            0 8px 30px
-                            rgba(33, 79, 59, 0.10);
-                    "
-                >
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:560px; background-color:#ffffff; border-radius:20px; overflow:hidden; box-shadow:0 8px 30px rgba(33,79,59,0.10);">
 
 
-                    <!-- ======================================
-                         ENCABEZADO
-                    ======================================= -->
+                    <!-- ==========================================
+                         ENCABEZADO CON LOGO
+                    =========================================== -->
 
                     <tr>
+                        <td align="center" style="padding:32px 30px 26px; background-color:#214f3b;">
 
-                        <td
-                            align="center"
-                            style="
-                                padding: 30px 30px 26px;
-                                background-color: #214f3b;
-                            "
-                        >
-
-                            <div
-                                style="
-                                    display: inline-block;
-                                    margin-bottom: 10px;
-                                    color: #f5bf45;
-                                    font-size: 34px;
-                                    line-height: 1;
-                                "
+                            <!-- El src cid:logo_micolmena lo resuelve Django
+                                 adjuntando la imagen al correo. Ver services.py.
+                                 width y height en el atributo (no solo en style)
+                                 porque Outlook ignora el CSS de tamaño. -->
+                            <img
+                                src="cid:logo_micolmena"
+                                alt="Mi Colmena"
+                                width="112"
+                                height="112"
+                                style="display:block; width:112px; height:112px; border:0; outline:none; text-decoration:none; margin:0 auto 14px;"
                             >
-                                ⬢
-                            </div>
 
-
-                            <div
-                                style="
-                                    color: #ffffff;
-                                    font-size: 21px;
-                                    font-weight: 700;
-                                    letter-spacing: 1px;
-                                "
-                            >
+                            <div style="color:#ffffff; font-size:21px; font-weight:700; letter-spacing:1px;">
                                 MI COLMENA
                             </div>
 
-
-                            <div
-                                style="
-                                    margin-top: 6px;
-                                    color: #cfe1d7;
-                                    font-size: 12px;
-                                "
-                            >
+                            <div style="margin-top:6px; color:#cfe1d7; font-size:12px;">
                                 Seguridad de tu cuenta
                             </div>
 
                         </td>
-
                     </tr>
 
 
-                    <!-- ======================================
+                    <!-- ==========================================
                          CONTENIDO
-                    ======================================= -->
+                    =========================================== -->
 
                     <tr>
+                        <td class="contenido-correo" style="padding:36px 38px;">
 
-                        <td
-                            style="
-                                padding: 36px 38px;
-                            "
-                        >
-
-                            <h1
-                                style="
-                                    margin: 0 0 16px;
-                                    color: {{ color_titulo }};
-                                    font-size: 24px;
-                                    line-height: 1.3;
-                                    text-align: center;
-                                "
-                            >
+                            <h1 class="titulo-correo" style="margin:0 0 16px; color:{{ color_titulo }}; font-size:24px; line-height:1.3; text-align:center; font-weight:700;">
                                 {{ titulo }}
                             </h1>
 
 
-                            <p
-                                style="
-                                    margin: 0 0 22px;
-                                    color: #53685d;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
-                                Hola
-                                <strong
-                                    style="
-                                        color: #214f3b;
-                                    "
-                                >
-                                    {{ nombre }}
-                                </strong>,
+                            <p style="margin:0 0 22px; color:#53685d; font-size:15px; line-height:1.7;">
+                                Hola <strong style="color:#214f3b;">{{ nombre }}</strong>,
                             </p>
 
 
-                            <p
-                                style="
-                                    margin: 0 0 25px;
-                                    color: #53685d;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
+                            <p style="margin:0 0 25px; color:#53685d; font-size:15px; line-height:1.7;">
                                 {{ descripcion }}
                             </p>
 
 
-                            <!-- ==============================
+                            <!-- ======================================
                                  CÓDIGO
-                            =============================== -->
+                            ======================================= -->
 
-                            <table
-                                role="presentation"
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                border="0"
-                            >
-
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
+                                    <td align="center" style="padding:8px 0 24px;">
 
-                                    <td
-                                        align="center"
-                                        style="
-                                            padding: 8px 0 24px;
-                                        "
-                                    >
-
-                                        <div
-                                            style="
-                                                display: inline-block;
-                                                padding: 18px 28px;
-
-                                                border:
-                                                    1px solid
-                                                    #d6e6dc;
-
-                                                border-radius:
-                                                    14px;
-
-                                                background:
-                                                    #f1f8f4;
-
-                                                color:
-                                                    #214f3b;
-
-                                                font-size:
-                                                    31px;
-
-                                                font-weight:
-                                                    700;
-
-                                                letter-spacing:
-                                                    10px;
-
-                                                line-height:
-                                                    1;
-                                            "
-                                        >
+                                        <!-- text-indent compensa el espacio que
+                                             letter-spacing agrega DESPUÉS del último
+                                             carácter. Sin esto el código se veía
+                                             corrido 10px a la derecha del centro. -->
+                                        <div class="codigo-correo" style="display:inline-block; padding:18px 28px; border:1px solid #d6e6dc; border-radius:14px; background-color:#f1f8f4; color:#214f3b; font-family:'Courier New', Courier, monospace; font-size:31px; font-weight:700; letter-spacing:10px; text-indent:10px; line-height:1;">
                                             {{ codigo }}
                                         </div>
 
                                     </td>
-
                                 </tr>
-
                             </table>
 
 
-                            <!-- ==============================
+                            <!-- ======================================
                                  DURACIÓN
-                            =============================== -->
+                            ======================================= -->
 
-                            <div
-                                style="
-                                    margin-bottom: 24px;
-                                    padding: 12px 16px;
-
-                                    border-radius: 10px;
-
-                                    background-color:
-                                        #fff8e8;
-
-                                    color:
-                                        #78601f;
-
-                                    font-size:
-                                        13px;
-
-                                    line-height:
-                                        1.6;
-
-                                    text-align:
-                                        center;
-                                "
-                            >
-                                ⏱ Este código vence en
-
-                                <strong>
-                                    {{ duracion_minutos }}
-                                    minutos
-                                </strong>.
+                            <div style="margin-bottom:24px; padding:12px 16px; border-radius:10px; background-color:#fff8e8; color:#78601f; font-size:13px; line-height:1.6; text-align:center;">
+                                Este código vence en <strong>{{ duracion_minutos }} minutos</strong>.
                             </div>
 
 
-                            <!-- ==============================
+                            <!-- ======================================
                                  ADVERTENCIA
-                            =============================== -->
+                            ======================================= -->
 
-                            <div
-                                style="
-                                    padding: 14px 16px;
-
-                                    border-left:
-                                        4px solid
-                                        {{ color_titulo }};
-
-                                    border-radius:
-                                        6px;
-
-                                    background:
-                                        #f7faf8;
-
-                                    color:
-                                        #65776d;
-
-                                    font-size:
-                                        13px;
-
-                                    line-height:
-                                        1.7;
-                                "
-                            >
+                            <div style="padding:14px 16px; border-left:4px solid {{ color_titulo }}; border-radius:6px; background-color:#f7faf8; color:#65776d; font-size:13px; line-height:1.7;">
                                 {{ advertencia }}
                             </div>
 
                         </td>
-
                     </tr>
 
 
-                    <!-- ======================================
+                    <!-- ==========================================
                          PIE
-                    ======================================= -->
+                    =========================================== -->
 
                     <tr>
-
-                        <td
-                            align="center"
-                            style="
-                                padding: 22px 30px;
-
-                                border-top:
-                                    1px solid
-                                    #e5ece8;
-
-                                background:
-                                    #fafcfb;
-
-                                color:
-                                    #89978f;
-
-                                font-size:
-                                    11px;
-
-                                line-height:
-                                    1.6;
-                            "
-                        >
+                        <td align="center" style="padding:22px 30px; border-top:1px solid #e5ece8; background-color:#fafcfb; color:#89978f; font-size:11px; line-height:1.6;">
 
                             Este es un mensaje automático de
-                            <strong
-                                style="
-                                    color: #5f7569;
-                                "
-                            >
-                                Mi Colmena
-                            </strong>.
+                            <strong style="color:#5f7569;">Mi Colmena</strong>.
 
                             <br>
 
-                            Por seguridad, nunca compartas
-                            tus códigos de verificación.
+                            Por seguridad, nunca compartas tus códigos de verificación.
 
                         </td>
-
                     </tr>
 
                 </table>
 
 
-                <div
-                    style="
-                        max-width: 560px;
-                        margin-top: 18px;
-                        color: #9aa69f;
-                        font-size: 10px;
-                        line-height: 1.5;
-                        text-align: center;
-                    "
-                >
-                    © Mi Colmena · Gestión apícola
+                <div style="max-width:560px; margin-top:18px; color:#9aa69f; font-size:10px; line-height:1.5; text-align:center;">
+                    &copy; Mi Colmena &middot; Gesti&oacute;n ap&iacute;cola
                 </div>
 
             </td>
-
         </tr>
 
     </table>

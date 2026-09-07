@@ -40,7 +40,7 @@
             </div>
 
             {% if "cg" in permisos_usuario %}
-            <button class="btn btn-success rounded-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
+            <button class="btn btn-agregar" data-bs-toggle="modal" data-bs-target="#modalAgregarColmena">
                 <i class="bi bi-plus-circle me-2"></i>
                 Agregar
             </button>
@@ -138,12 +138,12 @@
 
         <div class="colmenas-toolbar-acciones">
 
-            <button class="btn btn-success">
+            <button type="submit" class="btn btn-filtrar">
                 <i class="bi bi-search me-2"></i>
                 Filtrar
             </button>
 
-            <a href="{% url 'colmenas_admin' %}" class="btn btn-outline-secondary">
+            <a href="{% url 'colmenas_admin' %}" class="btn btn-limpiar">
                 Limpiar
             </a>
 

@@ -137,35 +137,6 @@ if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
 })();
 
 /* =========================================================
-   RASTRO DE POLEN AL MOVER EL CURSOR
-   (global: aplica en todo el panel, no solo en el logo)
-   ========================================================= */
-(function () {
-    var prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefiereMenosMovimiento) return;
-
-    var ultimoDisparo = 0;
-    var INTERVALO_MINIMO_MS = 45;
-
-    document.addEventListener("mousemove", function (evento) {
-        var ahora = Date.now();
-        if (ahora - ultimoDisparo < INTERVALO_MINIMO_MS) return;
-        ultimoDisparo = ahora;
-
-        var particula = document.createElement("span");
-        particula.className = "estela-polen";
-        particula.style.left = evento.clientX + "px";
-        particula.style.top = evento.clientY + "px";
-
-        document.body.appendChild(particula);
-
-        window.setTimeout(function () {
-            particula.remove();
-        }, 700);
-    });
-})();
-
-/* =========================================================
    TOOLTIPS DE LOS BADGES DE ESTADO
    (global: cualquier [data-bs-toggle="tooltip"] del panel)
    ========================================================= */

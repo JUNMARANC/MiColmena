@@ -44,15 +44,16 @@ TARJETAS
 
     <div class="col-md-6 col-xl-3">
 
-        <a href="{% url 'apicultores_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
+        <a href="{% url 'apicultores_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link"
+               aria-label="Apicultores registrados: {{ total_apicultores }}. Ir al módulo de apicultores">
 
             <div class="icono-dashboard icono-apicultores">
                 <i class="bi bi-people-fill"></i>
             </div>
 
-            <h2 data-stat="apicultores">{{ total_apicultores }}</h2>
+            <span class="tarjeta-dashboard-cifra" data-stat="apicultores">{{ total_apicultores }}</span>
 
-            <h6>Apicultores</h6>
+            <span class="tarjeta-dashboard-etiqueta">Apicultores</span>
 
         </a>
 
@@ -60,15 +61,16 @@ TARJETAS
 
     <div class="col-md-6 col-xl-3">
 
-        <a href="{% url 'apiarios_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
+        <a href="{% url 'apiarios_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link"
+               aria-label="Apiarios registrados: {{ total_apiarios }}. Ir al módulo de apiarios">
 
             <div class="icono-dashboard icono-apiarios">
                 <i class="bi bi-geo-alt-fill"></i>
             </div>
 
-            <h2 data-stat="apiarios">{{ total_apiarios }}</h2>
+            <span class="tarjeta-dashboard-cifra" data-stat="apiarios">{{ total_apiarios }}</span>
 
-            <h6>Apiarios</h6>
+            <span class="tarjeta-dashboard-etiqueta">Apiarios</span>
 
         </a>
 
@@ -76,15 +78,16 @@ TARJETAS
 
     <div class="col-md-6 col-xl-3">
 
-        <a href="{% url 'colmenas_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
+        <a href="{% url 'colmenas_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link"
+               aria-label="Colmenas registradas: {{ total_colmenas }}. Ir al módulo de colmenas">
 
             <div class="icono-dashboard icono-colmenas">
                 <i class="bi bi-hexagon-fill"></i>
             </div>
 
-            <h2 data-stat="colmenas">{{ total_colmenas }}</h2>
+            <span class="tarjeta-dashboard-cifra" data-stat="colmenas">{{ total_colmenas }}</span>
 
-            <h6>Colmenas</h6>
+            <span class="tarjeta-dashboard-etiqueta">Colmenas</span>
 
         </a>
 
@@ -92,15 +95,16 @@ TARJETAS
 
     <div class="col-md-6 col-xl-3">
 
-        <a href="{% url 'incidencias_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link">
+        <a href="{% url 'incidencias_admin' %}" class="tarjeta-dashboard tarjeta-dashboard-link"
+               aria-label="Incidencias activas: {{ total_incidencias_activas }}. Ir al módulo de incidencias">
 
             <div class="icono-dashboard icono-incidencias">
                 <i class="bi bi-exclamation-triangle-fill"></i>
             </div>
 
-            <h2 data-stat="incidencias">{{ total_incidencias_activas }}</h2>
+            <span class="tarjeta-dashboard-cifra" data-stat="incidencias">{{ total_incidencias_activas }}</span>
 
-            <h6>Incidencias activas</h6>
+            <span class="tarjeta-dashboard-etiqueta">Incidencias activas</span>
 
         </a>
 
@@ -220,15 +224,6 @@ ACTIVIDAD RECIENTE (distribuida horizontalmente)
 </div>
 
 </div>
-
-<style>
-    .tarjeta-dashboard-link {
-        display: block;
-        text-decoration: none;
-        color: inherit;
-        cursor: pointer;
-    }
-</style>
 
 {% endblock %}
 

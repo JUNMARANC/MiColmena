@@ -13,6 +13,7 @@ from django.conf import settings
 import secrets
 from django.utils.crypto import salted_hmac
 from django.core.mail import EmailMultiAlternatives
+from usuarios.correo_utils import CorreoConLogo
 from django.template.loader import render_to_string
 import math
 import hashlib
@@ -1385,7 +1386,9 @@ def enviar_codigo_2fa(
 
     try:
 
-        correo = EmailMultiAlternatives(
+        # CorreoConLogo = EmailMultiAlternatives + el logo de Mi Colmena
+        # incrustado como parte related del HTML (ver usuarios/correo_utils.py)
+        correo = CorreoConLogo(
 
             subject=
                 configuracion["asunto"],
@@ -2518,7 +2521,9 @@ def enviar_correo_recuperacion_password(
 
     try:
 
-        correo = EmailMultiAlternatives(
+        # CorreoConLogo = EmailMultiAlternatives + el logo de Mi Colmena
+        # incrustado como parte related del HTML (ver usuarios/correo_utils.py)
+        correo = CorreoConLogo(
 
             subject=
                 asunto,
