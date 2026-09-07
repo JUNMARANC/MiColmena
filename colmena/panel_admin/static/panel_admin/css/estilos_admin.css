@@ -9292,13 +9292,281 @@ PAGINADOR
     font-size: 0.67rem;
 }
 
-.encabezado-historial-reportes > span {
-    padding: 6px 11px;
-    border-radius: 20px;
-    background: #e5f3e9;
-    color: #32724b;
-    font-size: 0.68rem;
-    font-weight: 700;
+/* =========================================================
+   CONTROLES DEL HISTORIAL
+========================================================= */
+
+.controles-historial-reportes {
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   CONTADOR TOTAL
+========================================================= */
+
+.contador-historial-reportes {
+
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        12px;
+
+    border:
+        1px solid
+        #d4e8da;
+
+    border-radius:
+        999px;
+
+    background:
+        #e8f5ec;
+
+    color:
+        #32724b;
+
+    font-size:
+        0.69rem;
+
+    font-weight:
+        650;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.contador-historial-reportes i {
+
+    color:
+        var(--verde-medio);
+
+    font-size:
+        0.82rem;
+
+}
+
+
+.contador-historial-reportes strong {
+
+    color:
+        var(--verde-oscuro);
+
+    font-size:
+        0.75rem;
+
+    font-weight:
+        800;
+
+}
+
+
+/* =========================================================
+   SELECTOR DE CANTIDAD
+========================================================= */
+
+.selector-cantidad-reportes {
+
+    min-height:
+        36px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        5px
+        8px
+        5px
+        11px;
+
+    border:
+        1px solid
+        #dfe9e3;
+
+    border-radius:
+        999px;
+
+    background:
+        #fafcfb;
+
+    box-shadow:
+        0 4px 12px
+        rgba(
+            33,
+            79,
+            59,
+            0.05
+        );
+
+}
+
+
+/* TEXTO */
+
+.selector-cantidad-texto {
+
+    color:
+        #7b8981;
+
+    font-size:
+        0.66rem;
+
+    font-weight:
+        650;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* CONTENEDOR DEL SELECT */
+
+.selector-cantidad-control {
+
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+}
+
+
+/* SELECT */
+
+.selector-cantidad-control select {
+
+    min-width:
+        58px;
+
+    height:
+        28px;
+
+    padding:
+        0
+        24px
+        0
+        10px;
+
+    border:
+        1px solid
+        #cfdfd5;
+
+    border-radius:
+        9px;
+
+    outline:
+        none;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--verde-oscuro);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.71rem;
+
+    font-weight:
+        750;
+
+    cursor:
+        pointer;
+
+    appearance:
+        none;
+
+    -webkit-appearance:
+        none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+
+}
+
+
+/* FOCUS */
+
+.selector-cantidad-control select:focus {
+
+    border-color:
+        var(--verde-medio);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            95,
+            151,
+            129,
+            0.14
+        );
+
+}
+
+
+/* HOVER */
+
+.selector-cantidad-control select:hover {
+
+    border-color:
+        var(--verde-medio);
+
+    background:
+        #f8fcf9;
+
+}
+
+
+/* FLECHA PERSONALIZADA */
+
+.selector-cantidad-control > i {
+
+    position:
+        absolute;
+
+    right:
+        8px;
+
+    pointer-events:
+        none;
+
+    color:
+        var(--verde-medio);
+
+    font-size:
+        0.62rem;
+
 }
 
 .tabla-reportes thead th {
@@ -9438,6 +9706,34 @@ PAGINADOR
     color: #65736c;
 }
 
+/* =========================================================
+   ACTUALIZANDO HISTORIAL
+========================================================= */
+
+.historial-reportes {
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+
+}
+
+
+.historial-reportes-cargando {
+
+    opacity:
+        0.55;
+
+    transform:
+        translateY(
+            2px
+        );
+
+    pointer-events:
+        none;
+
+}
+
 @media (max-width: 991px) {
 
     .grid-reportes {
@@ -9454,6 +9750,72 @@ PAGINADOR
 
     .opciones-reporte {
         grid-template-columns: 1fr;
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVE - CONTROLES DEL HISTORIAL
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .encabezado-historial-reportes {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        gap:
+            14px;
+
+    }
+
+
+    .controles-historial-reportes {
+
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .controles-historial-reportes {
+
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .contador-historial-reportes {
+
+        align-self:
+            flex-start;
+
+    }
+
+
+    .selector-cantidad-reportes {
+
+        width:
+            100%;
+
+        justify-content:
+            space-between;
+
     }
 
 }

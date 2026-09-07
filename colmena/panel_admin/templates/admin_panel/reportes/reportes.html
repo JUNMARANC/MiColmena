@@ -116,13 +116,94 @@
                 </small>
             </div>
 
-            <span>
+            <div class="controles-historial-reportes">
 
-                {{ historial.paginator.count }}
+                <!-- =====================================================
+                    TOTAL DE REPORTES
+                ====================================================== -->
 
-                reporte{{ historial.paginator.count|pluralize:"s" }}
+                <span class="contador-historial-reportes">
 
-            </span>
+                    <i class="bi bi-files"></i>
+
+                    <strong>
+                        {{ historial.paginator.count }}
+                    </strong>
+
+                    reporte{{ historial.paginator.count|pluralize:"s" }}
+
+                </span>
+
+
+                <!-- =====================================================
+                    CANTIDAD POR PÁGINA
+                ====================================================== -->
+
+                <div class="selector-cantidad-reportes">
+
+                    <span class="selector-cantidad-texto">
+                        Mostrar
+                    </span>
+
+
+                    <div class="selector-cantidad-control">
+
+                        <select
+                            name="por_pagina"
+                            id="selectorReportesPorPagina"
+                            aria-label="Cantidad de reportes por página"
+                        >
+
+                            <option
+                                value="3"
+                                {% if reportes_por_pagina == 3 %}
+                                    selected
+                                {% endif %}
+                            >
+                                3
+                            </option>
+
+                            <option
+                                value="5"
+                                {% if reportes_por_pagina == 5 %}
+                                    selected
+                                {% endif %}
+                            >
+                                5
+                            </option>
+
+                            <option
+                                value="10"
+                                {% if reportes_por_pagina == 10 %}
+                                    selected
+                                {% endif %}
+                            >
+                                10
+                            </option>
+
+                            <option
+                                value="20"
+                                {% if reportes_por_pagina == 20 %}
+                                    selected
+                                {% endif %}
+                            >
+                                20
+                            </option>
+
+                        </select>
+
+                        <i class="bi bi-chevron-down"></i>
+
+                    </div>
+
+
+                    <span class="selector-cantidad-texto">
+                        por página
+                    </span>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -321,7 +402,7 @@
 
                                 <a
                                     class="page-link"
-                                    href="?page_reportes={{ historial.previous_page_number }}#historialReportes"
+                                    href="?por_pagina={{ reportes_por_pagina }}&page_reportes={{ historial.previous_page_number }}#historialReportes"
                                     aria-label="Página anterior"
                                 >
 
@@ -394,7 +475,7 @@
 
                                     <a
                                         class="page-link"
-                                        href="?page_reportes={{ numero }}#historialReportes"
+                                        href="?por_pagina={{ reportes_por_pagina }}&page_reportes={{ numero }}#historialReportes"
                                     >
 
                                         {{ numero }}
@@ -420,7 +501,7 @@
 
                                 <a
                                     class="page-link"
-                                    href="?page_reportes={{ historial.next_page_number }}#historialReportes"
+                                    href="?por_pagina={{ reportes_por_pagina }}&page_reportes={{ historial.next_page_number }}#historialReportes"
                                     aria-label="Página siguiente"
                                 >
 
@@ -473,6 +554,6 @@
 
 {% include "admin_panel/reportes/modal_configurar.html" %}
 
-<script src="{% static 'panel_admin/js/reportes.js' %}?v=22"></script>
+<script src="{% static 'panel_admin/js/reportes.js' %}?v=23"></script>
 
 {% endblock %}

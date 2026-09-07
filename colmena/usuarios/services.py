@@ -12,7 +12,8 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 import secrets
 from django.utils.crypto import salted_hmac
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 import math
 import hashlib
 from django.urls import reverse
@@ -1198,7 +1199,8 @@ def limpiar_desafio_2fa(request):
 
 def enviar_codigo_2fa(
     usuario,
-    codigo
+    codigo,
+    proposito="login"
 ):
 
     # ========================================================
@@ -1217,68 +1219,200 @@ def enviar_codigo_2fa(
 
 
     # ========================================================
-    # ASUNTO
-    # ========================================================
-
-    asunto = (
-        "Código de verificación - Mi Colmena"
-    )
-
-
-    # ========================================================
-    # MENSAJE
+    # NOMBRE DEL USUARIO
     # ========================================================
 
     nombre = (
-        usuario.first_name
+        usuario.get_full_name().strip()
         or
         usuario.username
     )
 
 
-    mensaje = f"""
-Hola {nombre},
+    # ========================================================
+    # CONFIGURACIÓN SEGÚN PROPÓSITO
+    # ========================================================
 
-Se solicitó un código de verificación para tu cuenta de Mi Colmena.
+    configuraciones = {
 
-Tu código de seguridad es:
+        "login": {
 
-{codigo}
+            "asunto":
+                "Código para iniciar sesión | Mi Colmena",
 
-Este código tiene una duración de 5 minutos.
+            "titulo":
+                "Verificación de seguridad",
 
-Si no solicitaste este código, puedes ignorar este mensaje.
+            "descripcion": (
+                "Recibimos un intento de inicio de sesión "
+                "en tu cuenta. Ingresa el siguiente código "
+                "para continuar."
+            ),
 
-Mi Colmena
-"""
+            "advertencia": (
+                "Si no intentaste iniciar sesión, "
+                "te recomendamos no compartir este código "
+                "con ninguna persona."
+            ),
+
+            "color_titulo":
+                "#326d56",
+
+        },
+
+
+        "activar": {
+
+            "asunto":
+                "Activa la verificación en dos pasos | Mi Colmena",
+
+            "titulo":
+                "Activa la autenticación en dos pasos",
+
+            "descripcion": (
+                "Solicitaste activar la autenticación "
+                "en dos pasos de tu cuenta. Usa el "
+                "siguiente código para confirmar."
+            ),
+
+            "advertencia": (
+                "Si no solicitaste activar esta función, "
+                "puedes ignorar este correo. "
+                "Tu configuración no cambiará."
+            ),
+
+            "color_titulo":
+                "#326d56",
+
+        },
+
+
+        "desactivar": {
+
+            "asunto":
+                "Confirma la desactivación de 2FA | Mi Colmena",
+
+            "titulo":
+                "Confirma la desactivación de 2FA",
+
+            "descripcion": (
+                "Recibimos una solicitud para desactivar "
+                "la autenticación en dos pasos de tu cuenta. "
+                "Usa este código únicamente si deseas "
+                "continuar con la desactivación."
+            ),
+
+            "advertencia": (
+                "Desactivar el 2FA reduce una capa adicional "
+                "de protección de tu cuenta. Si no realizaste "
+                "esta solicitud, ignora este mensaje."
+            ),
+
+            "color_titulo":
+                "#b9564e",
+
+        },
+
+    }
+
+
+    configuracion = (
+        configuraciones.get(
+            proposito,
+            configuraciones["login"]
+        )
+    )
 
 
     # ========================================================
-    # ENVIAR CORREO
+    # CONTEXTO DEL HTML
+    # ========================================================
+
+    contexto = {
+
+        "nombre":
+            nombre,
+
+        "codigo":
+            codigo,
+
+        "titulo":
+            configuracion["titulo"],
+
+        "descripcion":
+            configuracion["descripcion"],
+
+        "advertencia":
+            configuracion["advertencia"],
+
+        "color_titulo":
+            configuracion["color_titulo"],
+
+        "duracion_minutos":
+            DURACION_CODIGO_2FA_MINUTOS,
+
+    }
+
+
+    # ========================================================
+    # VERSIÓN HTML
+    # ========================================================
+
+    mensaje_html = render_to_string(
+        "usuarios/correos/codigo_2fa.html",
+        contexto
+    )
+
+
+    # ========================================================
+    # VERSIÓN TEXTO DE RESPALDO
+    # ========================================================
+
+    mensaje_texto = (
+        f"Hola {nombre},\n\n"
+        f"{configuracion['descripcion']}\n\n"
+        f"Código: {codigo}\n\n"
+        f"Este código vence en "
+        f"{DURACION_CODIGO_2FA_MINUTOS} minutos.\n\n"
+        f"{configuracion['advertencia']}\n\n"
+        "Mi Colmena"
+    )
+
+
+    # ========================================================
+    # ENVIAR
     # ========================================================
 
     try:
 
-        enviados = send_mail(
+        correo = EmailMultiAlternatives(
 
-            subject=asunto,
+            subject=
+                configuracion["asunto"],
 
-            message=mensaje,
+            body=
+                mensaje_texto,
 
             from_email=
                 settings.DEFAULT_FROM_EMAIL,
 
-            recipient_list=[
+            to=[
                 usuario.email
             ],
 
-            fail_silently=False,
         )
 
 
-        # ====================================================
-        # ENVÍO CORRECTO
-        # ====================================================
+        correo.attach_alternative(
+            mensaje_html,
+            "text/html"
+        )
+
+
+        enviados = correo.send(
+            fail_silently=False
+        )
+
 
         if enviados == 1:
 
@@ -1287,10 +1421,6 @@ Mi Colmena
                 "error": None,
             }
 
-
-        # ====================================================
-        # NO SE ENVIÓ
-        # ====================================================
 
         return {
             "enviado": False,
@@ -1345,7 +1475,8 @@ def crear_y_enviar_codigo_2fa(
 
     resultado = enviar_codigo_2fa(
         usuario,
-        codigo
+        codigo,
+        proposito=proposito
     )
 
 
@@ -2321,36 +2452,64 @@ def enviar_correo_recuperacion_password(
     # ========================================================
 
     nombre = (
-        usuario.first_name
+        usuario.get_full_name().strip()
         or
         usuario.username
     )
 
 
     asunto = (
-        "Recuperación de contraseña - Mi Colmena"
+        "Recupera tu contraseña | Mi Colmena"
     )
 
 
-    mensaje = f"""
-Hola {nombre},
+    # ========================================================
+    # HTML
+    # ========================================================
 
-Recibimos una solicitud para recuperar la contraseña de tu cuenta de Mi Colmena.
+    mensaje_html = render_to_string(
+        "usuarios/correos/recuperacion_password.html",
+        {
+            "nombre":
+                nombre,
 
-Tu código de recuperación es:
+            "codigo":
+                codigo,
 
-{codigo}
+            "enlace":
+                enlace,
 
-Para crear una nueva contraseña, abre el siguiente enlace:
+            "duracion_minutos":
+                DURACION_RECUPERACION_MINUTOS,
+        }
+    )
 
-{enlace}
 
-El código y el enlace tienen una duración de 10 minutos.
+    # ========================================================
+    # TEXTO DE RESPALDO
+    # ========================================================
 
-Si no solicitaste cambiar tu contraseña, ignora este correo.
+    mensaje_texto = (
+        f"Hola {nombre},\n\n"
 
-Mi Colmena
-"""
+        "Recibimos una solicitud para recuperar "
+        "la contraseña de tu cuenta de Mi Colmena.\n\n"
+
+        f"Código de recuperación: {codigo}\n\n"
+
+        "Para crear una nueva contraseña abre "
+        "el siguiente enlace:\n"
+
+        f"{enlace}\n\n"
+
+        f"El código y el enlace vencen en "
+        f"{DURACION_RECUPERACION_MINUTOS} minutos.\n\n"
+
+        "Si no solicitaste cambiar tu contraseña, "
+        "ignora este correo.\n\n"
+
+        "Mi Colmena"
+    )
 
 
     # ========================================================
@@ -2359,24 +2518,38 @@ Mi Colmena
 
     try:
 
-        enviados = send_mail(
+        correo = EmailMultiAlternatives(
 
-            subject=asunto,
+            subject=
+                asunto,
 
-            message=mensaje,
+            body=
+                mensaje_texto,
 
             from_email=
                 settings.DEFAULT_FROM_EMAIL,
 
-            recipient_list=[
+            to=[
                 usuario.email
             ],
 
-            fail_silently=False,
         )
 
 
-        return enviados == 1
+        correo.attach_alternative(
+            mensaje_html,
+            "text/html"
+        )
+
+
+        enviados = correo.send(
+            fail_silently=False
+        )
+
+
+        return (
+            enviados == 1
+        )
 
 
     except Exception as error:
@@ -2385,6 +2558,7 @@ Mi Colmena
             "ERROR RECUPERACIÓN PASSWORD:",
             error
         )
+
 
         return False
 

@@ -2671,10 +2671,16 @@
 {% block extra_js %}
 
 <script>
-    const URL_VERIFICAR_DATO_ADMINISTRADOR = "{% url 'verificar_dato_administrador' %}";
+
+    const URL_VERIFICAR_DATO_ADMINISTRADOR =
+        "{% url 'verificar_dato_administrador' %}";
+
+    const URL_VALIDAR_PASSWORD_ADMINISTRADOR =
+        "{% url 'validar_password_administrador' %}";
+
 </script>
 
-<script src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=18"></script>
+<script src="{% static 'panel_admin/js/usuarios_roles.js' %}?v=19"></script>
 <script src="{% static 'panel_admin/js/usuarios_roles_vista.js' %}"></script>
 
 {% endblock %}
