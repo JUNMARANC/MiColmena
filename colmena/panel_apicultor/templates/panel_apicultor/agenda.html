@@ -1246,7 +1246,15 @@
      MODALES DE EVENTOS
 ========================================================== -->
 
+<!-- =========================================================
+     =========================================================
+     MODALES DE EVENTOS
+     PANEL APICULTOR
+     =========================================================
+========================================================== -->
+
 {% for evento in eventos %}
+
 
     <div
         class="agenda-modal-overlay"
@@ -1254,19 +1262,23 @@
         aria-hidden="true"
     >
 
+
         <div
             class="agenda-modal"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="tituloModalEvento{{ evento.id_evento }}"
         >
 
 
             <!-- =================================================
-                 HEADER MODAL
+                 HEADER DEL MODAL
             ================================================== -->
 
             <div class="agenda-modal-header">
 
+
+                <!-- ICONO -->
 
                 <div
                     class="
@@ -1279,13 +1291,16 @@
 
                         <i class="bi bi-tools"></i>
 
+
                     {% elif evento.tipo_evento == "revision" %}
 
                         <i class="bi bi-search"></i>
 
+
                     {% elif evento.tipo_evento == "incidencia" %}
 
                         <i class="bi bi-exclamation-triangle-fill"></i>
+
 
                     {% else %}
 
@@ -1297,7 +1312,10 @@
 
 
 
+                <!-- TÍTULO -->
+
                 <div class="agenda-modal-header-info">
+
 
                     <span>
 
@@ -1307,13 +1325,21 @@
 
                     </span>
 
-                    <h2>
+
+                    <h2
+                        id="tituloModalEvento{{ evento.id_evento }}"
+                    >
+
                         {{ evento.titulo }}
+
                     </h2>
+
 
                 </div>
 
 
+
+                <!-- CERRAR -->
 
                 <button
                     type="button"
@@ -1332,11 +1358,13 @@
 
 
             <!-- =================================================
-                 DATOS
+                 DATOS DEL EVENTO
             ================================================== -->
 
             <div class="agenda-modal-body">
 
+
+                <!-- APIARIO -->
 
                 <div class="agenda-modal-dato">
 
@@ -1344,19 +1372,25 @@
                         Apiario
                     </span>
 
+
                     <strong>
+
                         {{ evento.id_apiario.nombreapiario }}
+
                     </strong>
 
                 </div>
 
 
 
+                <!-- UBICACIÓN -->
+
                 <div class="agenda-modal-dato">
 
                     <span>
                         Ubicación
                     </span>
+
 
                     <strong>
 
@@ -1378,19 +1412,26 @@
 
 
 
+                <!-- FECHA -->
+
                 <div class="agenda-modal-dato">
 
                     <span>
                         Fecha
                     </span>
 
+
                     <strong>
+
                         {{ evento.fecha|date:"d/m/Y" }}
+
                     </strong>
 
                 </div>
 
 
+
+                <!-- HORA -->
 
                 <div class="agenda-modal-dato">
 
@@ -1398,13 +1439,18 @@
                         Hora
                     </span>
 
+
                     <strong>
+
                         {{ evento.hora|time:"H:i" }}
+
                     </strong>
 
                 </div>
 
 
+
+                <!-- TIPO -->
 
                 <div class="agenda-modal-dato">
 
@@ -1412,13 +1458,20 @@
                         Tipo
                     </span>
 
+
                     <strong>
+
                         {{ evento.get_tipo_evento_display }}
+
                     </strong>
 
                 </div>
 
 
+
+                <!-- =================================================
+                     ESTADO
+                ================================================== -->
 
                 <div class="agenda-modal-dato">
 
@@ -1426,13 +1479,29 @@
                         Estado
                     </span>
 
-                    <strong>
-                        {{ evento.get_estado_display }}
-                    </strong>
+
+                    <div>
+
+                        <span
+                            class="
+                                agenda-estado
+                                {{ evento.estado }}
+                            "
+                        >
+
+                            <span></span>
+
+                            {{ evento.get_estado_display }}
+
+                        </span>
+
+                    </div>
 
                 </div>
 
 
+
+                <!-- RESPONSABLE -->
 
                 <div
                     class="
@@ -1445,9 +1514,11 @@
                         Responsable
                     </span>
 
+
                     <strong>
 
                         {% if evento.responsable %}
+
 
                             {% if evento.responsable.user.get_full_name %}
 
@@ -1458,6 +1529,7 @@
                                 {{ evento.responsable.user.username }}
 
                             {% endif %}
+
 
                         {% else %}
 
@@ -1480,6 +1552,7 @@
 
             <div class="agenda-modal-descripcion">
 
+
                 <h3>
                     Descripción
                 </h3>
@@ -1494,10 +1567,13 @@
                 {% else %}
 
                     <p class="sin-descripcion">
+
                         Este evento no tiene una descripción registrada.
+
                     </p>
 
                 {% endif %}
+
 
             </div>
 
@@ -1509,17 +1585,23 @@
 
             {% if evento.creado_por %}
 
+
                 <div class="agenda-modal-creador">
+
 
                     <i class="bi bi-person-badge-fill"></i>
 
+
                     <div>
+
 
                         <span>
                             Evento creado por
                         </span>
 
+
                         <strong>
+
 
                             {% if evento.creado_por.get_full_name %}
 
@@ -1531,11 +1613,368 @@
 
                             {% endif %}
 
+
                         </strong>
+
 
                     </div>
 
+
                 </div>
+
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 =================================================
+                 GESTIÓN DEL ESTADO
+                 =================================================
+
+                 REGLAS:
+
+                 EVENTO FUTURO
+                 → no se puede modificar.
+
+                 EVENTO DE HOY
+                 → puede completarse o cancelarse.
+
+                 EVENTO PASADO
+                 → puede completarse o cancelarse.
+
+                 COMPLETADO / CANCELADO
+                 → el apicultor ya no puede volver a cambiarlo.
+            ================================================== -->
+
+
+            {% if evento.estado == "programado" %}
+
+
+                <!-- =================================================
+                     EVENTO PROGRAMADO
+                ================================================== -->
+
+
+                {% if evento.fecha <= hoy %}
+
+
+                    <!-- =============================================
+                         YA LLEGÓ LA FECHA
+                    ============================================== -->
+
+                    <section
+                        class="
+                            agenda-gestion-estado
+                            agenda-gestion-estado-disponible
+                        "
+                    >
+
+
+                        <!-- HEADER -->
+
+                        <div class="agenda-gestion-estado-header">
+
+
+                            <div class="agenda-gestion-estado-icono">
+
+                                <i class="bi bi-check2-square"></i>
+
+                            </div>
+
+
+                            <div class="agenda-gestion-estado-contenido">
+
+
+                                <span class="agenda-gestion-estado-etiqueta">
+
+                                    Actualizar actividad
+
+                                </span>
+
+
+                                <strong>
+
+                                    ¿Cómo terminó este evento?
+
+                                </strong>
+
+
+                                <p>
+
+                                    La fecha programada ya llegó.
+
+                                    Registra si la actividad fue
+                                    completada o si tuvo que cancelarse.
+
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             ACCIONES
+                        ========================================== -->
+
+                        <div class="agenda-gestion-estado-acciones">
+
+
+                            <!-- =====================================
+                                 COMPLETAR
+                            ====================================== -->
+
+                            <button
+                                type="button"
+                                class="
+                                    btn-evento-estado
+                                    btn-evento-completado
+                                "
+
+                                data-cambiar-estado-evento
+
+                                data-evento-url="{% url 'actualizar_estado_evento_apicultor' evento.id_evento %}"
+
+                                data-evento-estado="completado"
+
+                                data-evento-titulo="{{ evento.titulo }}"
+                            >
+
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+
+                                <span>
+
+                                    Marcar completado
+
+                                </span>
+
+
+                            </button>
+
+
+
+                            <!-- =====================================
+                                 CANCELAR
+                            ====================================== -->
+
+                            <button
+                                type="button"
+                                class="
+                                    btn-evento-estado
+                                    btn-evento-cancelado
+                                "
+
+                                data-cambiar-estado-evento
+
+                                data-evento-url="{% url 'actualizar_estado_evento_apicultor' evento.id_evento %}"
+
+                                data-evento-estado="cancelado"
+
+                                data-evento-titulo="{{ evento.titulo }}"
+                            >
+
+
+                                <i class="bi bi-x-circle-fill"></i>
+
+
+                                <span>
+
+                                    Cancelar evento
+
+                                </span>
+
+
+                            </button>
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+                {% else %}
+
+
+                    <!-- =============================================
+                         EVENTO FUTURO
+                    ============================================== -->
+
+                    <section
+                        class="
+                            agenda-gestion-estado
+                            agenda-gestion-estado-bloqueado
+                        "
+                    >
+
+
+                        <div class="agenda-gestion-estado-icono">
+
+                            <i class="bi bi-lock-fill"></i>
+
+                        </div>
+
+
+                        <div class="agenda-gestion-estado-contenido">
+
+
+                            <span class="agenda-gestion-estado-etiqueta">
+
+                                Cambio de estado bloqueado
+
+                            </span>
+
+
+                            <strong>
+
+                                El evento todavía no ha llegado
+
+                            </strong>
+
+
+                            <p>
+
+                                Podrás cambiar el estado de esta
+                                actividad a partir del
+
+                                <b>
+                                    {{ evento.fecha|date:"d/m/Y" }}
+                                </b>.
+
+                            </p>
+
+
+                        </div>
+
+
+                    </section>
+
+
+                {% endif %}
+
+
+
+            {% elif evento.estado == "completado" %}
+
+
+                <!-- =================================================
+                     EVENTO COMPLETADO
+                ================================================== -->
+
+                <section
+                    class="
+                        agenda-gestion-estado
+                        agenda-gestion-estado-finalizado
+                        completado
+                    "
+                >
+
+
+                    <div class="agenda-gestion-estado-icono">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                    </div>
+
+
+                    <div class="agenda-gestion-estado-contenido">
+
+
+                        <span class="agenda-gestion-estado-etiqueta">
+
+                            Actividad finalizada
+
+                        </span>
+
+
+                        <strong>
+
+                            Evento completado
+
+                        </strong>
+
+
+                        <p>
+
+                            Esta actividad ya fue registrada
+                            como completada.
+
+                            El estado no puede volver a modificarse
+                            desde el panel del apicultor.
+
+                        </p>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+            {% elif evento.estado == "cancelado" %}
+
+
+                <!-- =================================================
+                     EVENTO CANCELADO
+                ================================================== -->
+
+                <section
+                    class="
+                        agenda-gestion-estado
+                        agenda-gestion-estado-finalizado
+                        cancelado
+                    "
+                >
+
+
+                    <div class="agenda-gestion-estado-icono">
+
+                        <i class="bi bi-x-circle-fill"></i>
+
+                    </div>
+
+
+                    <div class="agenda-gestion-estado-contenido">
+
+
+                        <span class="agenda-gestion-estado-etiqueta">
+
+                            Actividad cerrada
+
+                        </span>
+
+
+                        <strong>
+
+                            Evento cancelado
+
+                        </strong>
+
+
+                        <p>
+
+                            Esta actividad fue registrada
+                            como cancelada.
+
+                            El estado no puede volver a modificarse
+                            desde el panel del apicultor.
+
+                        </p>
+
+
+                    </div>
+
+
+                </section>
+
 
             {% endif %}
 
@@ -1548,23 +1987,35 @@
             <div class="agenda-modal-footer">
 
 
+                <!-- VER APIARIO -->
+
                 {% if evento.id_apiario %}
+
 
                     <a
                         href="{% url 'detalle_apiario_apicultor' evento.id_apiario.id_apiario %}"
                         class="btn-agenda-ver-apiario"
                     >
 
+
                         <i class="bi bi-flower1"></i>
 
+
                         <span>
+
                             Ver apiario
+
                         </span>
+
 
                     </a>
 
+
                 {% endif %}
 
+
+
+                <!-- CERRAR -->
 
                 <button
                     type="button"
@@ -1582,9 +2033,235 @@
 
         </div>
 
+
     </div>
 
+
 {% endfor %}
+
+
+
+
+
+<!-- =========================================================
+     =========================================================
+     MODAL CONFIRMAR CAMBIO DE ESTADO
+     =========================================================
+========================================================== -->
+
+<div
+    class="agenda-modal-overlay"
+    id="modalConfirmarEstadoEvento"
+    aria-hidden="true"
+>
+
+
+    <div
+        class="
+            agenda-modal
+            agenda-modal-confirmacion-estado
+        "
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloConfirmarEstadoEvento"
+    >
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <div class="agenda-confirmacion-header">
+
+
+            <!-- ICONO -->
+
+            <div
+                class="agenda-confirmacion-icono"
+                id="iconoConfirmarEstadoEvento"
+            >
+
+
+                <i
+                    class="bi bi-question-circle-fill"
+                    id="iconoConfirmarEstadoEventoI"
+                ></i>
+
+
+            </div>
+
+
+
+            <!-- INFORMACIÓN -->
+
+            <div class="agenda-confirmacion-header-info">
+
+
+                <span>
+
+                    Confirmar actualización
+
+                </span>
+
+
+                <h2 id="tituloConfirmarEstadoEvento">
+
+                    Cambiar estado
+
+                </h2>
+
+
+            </div>
+
+
+
+            <!-- CERRAR -->
+
+            <button
+                type="button"
+                class="agenda-modal-cerrar"
+                data-cerrar-confirmacion-estado
+                aria-label="Cerrar"
+            >
+
+                <i class="bi bi-x-lg"></i>
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             CONTENIDO
+        ================================================== -->
+
+        <div class="agenda-confirmacion-body">
+
+
+            <p id="mensajeConfirmarEstadoEvento">
+
+                ¿Deseas actualizar el estado de este evento?
+
+            </p>
+
+
+
+            <!-- EVENTO -->
+
+            <div class="agenda-confirmacion-evento">
+
+
+                <span>
+                    Evento
+                </span>
+
+
+                <strong id="nombreEventoConfirmarEstado">
+
+                    —
+
+                </strong>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             FORMULARIO QUE ENVÍA EL CAMBIO
+        ================================================== -->
+
+        <form
+            method="POST"
+            id="formCambiarEstadoEvento"
+        >
+
+
+            {% csrf_token %}
+
+
+
+            <!-- NUEVO ESTADO -->
+
+            <input
+                type="hidden"
+                name="estado"
+                id="nuevoEstadoEvento"
+                value=""
+            >
+
+
+
+            <!-- =================================================
+                 ACCIONES
+            ================================================== -->
+
+            <div class="agenda-confirmacion-footer">
+
+
+                <!-- VOLVER -->
+
+                <button
+                    type="button"
+                    class="btn-confirmacion-volver"
+                    data-cerrar-confirmacion-estado
+                >
+
+
+                    <i class="bi bi-arrow-left"></i>
+
+
+                    <span>
+
+                        Volver
+
+                    </span>
+
+
+                </button>
+
+
+
+                <!-- CONFIRMAR -->
+
+                <button
+                    type="submit"
+                    class="btn-confirmacion-estado"
+                    id="btnConfirmarEstadoEvento"
+                >
+
+
+                    <i
+                        class="bi bi-check-lg"
+                        id="iconoBtnConfirmarEstado"
+                    ></i>
+
+
+                    <span id="textoBtnConfirmarEstado">
+
+                        Confirmar
+
+                    </span>
+
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
 
 
 

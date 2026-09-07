@@ -2486,3 +2486,3176 @@
     }
 
 }
+
+
+/* ==========================================================
+   ==========================================================
+   EXTENSIONES NUEVAS - GESTION VISUAL DE COLMENAS
+   Fotografias / Edicion / Previsualizacion / Validaciones
+   ==========================================================
+   ========================================================== */
+
+/* ==========================================================
+   ==========================================================
+   ACTUALIZACIÓN MIS COLMENAS
+   PANEL APICULTOR
+
+   - Fotografías
+   - Gestionar colmena
+   - Editar estado
+   - Editar descripción
+   - Cambiar fotografía
+   - Previsualización
+   - Visor de imágenes
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   1. FOTOGRAFÍA EN LA TARJETA
+========================================================== */
+
+.colmena-card-imagen {
+
+    position: relative;
+
+    width: calc(100% + 34px);
+
+    height: 150px;
+
+    margin:
+        -17px
+        -17px
+        16px;
+
+    overflow: hidden;
+
+    border-radius:
+        17px
+        17px
+        0
+        0;
+
+    background:
+        #EEF2EF;
+
+}
+
+
+/* ==========================================================
+   BOTÓN DE LA IMAGEN
+========================================================== */
+
+.btn-imagen-colmena {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    padding: 0;
+
+    border: none;
+
+    background:
+        transparent;
+
+    cursor:
+        zoom-in;
+
+}
+
+
+.btn-imagen-colmena img {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform
+        0.28s
+        ease;
+
+}
+
+
+.btn-imagen-colmena:hover img {
+
+    transform:
+        scale(1.045);
+
+}
+
+
+/* ==========================================================
+   SIN IMAGEN
+========================================================== */
+
+.colmena-card-sin-imagen {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #F7F4E5,
+            #EFF4EF
+        );
+
+    color:
+        #869087;
+
+}
+
+
+.colmena-card-sin-imagen i {
+
+    font-size: 29px;
+
+    color:
+        #B6AB79;
+
+}
+
+
+.colmena-card-sin-imagen span {
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+}
+
+
+
+/* ==========================================================
+   2. BOTÓN GESTIONAR EN CARD
+========================================================== */
+
+.btn-gestionar-colmena {
+
+    min-height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        9px;
+
+    border:
+        1px solid
+        #CAE0C5;
+
+    border-radius:
+        9px;
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+    font-family:
+        inherit;
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-gestionar-colmena:hover {
+
+    border-color:
+        #B4D0AE;
+
+    background:
+        #DCEFD7;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 4px 11px
+        rgba(79, 116, 75, 0.10);
+
+}
+
+
+
+/* ==========================================================
+   3. MEJORA DEL MODAL DE DETALLE
+   HEADER Y FOOTER FIJOS
+========================================================== */
+
+.colmena-modal {
+
+    max-width:
+        760px;
+
+    height:
+        min(
+            90vh,
+            800px
+        );
+
+    height:
+        min(
+            90dvh,
+            800px
+        );
+
+    max-height:
+        none;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    overflow:
+        hidden;
+
+}
+
+
+.colmena-modal-header {
+
+    flex:
+        0 0 auto;
+
+}
+
+
+.colmena-modal-footer {
+
+    flex:
+        0 0 auto;
+
+    background:
+        #FFFFF7;
+
+}
+
+
+/* ==========================================================
+   CONTENIDO CON SCROLL
+========================================================== */
+
+.colmena-modal-contenido {
+
+    flex:
+        1 1 auto;
+
+    min-height:
+        0;
+
+    overflow-x:
+        hidden;
+
+    overflow-y:
+        auto;
+
+    overscroll-behavior:
+        contain;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #CAB34D
+        #F7F2DC;
+
+}
+
+
+.colmena-modal-contenido::-webkit-scrollbar {
+
+    width:
+        8px;
+
+}
+
+
+.colmena-modal-contenido::-webkit-scrollbar-track {
+
+    background:
+        #F7F2DC;
+
+}
+
+
+.colmena-modal-contenido::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #F7F2DC;
+
+    border-radius:
+        20px;
+
+    background:
+        #CAB34D;
+
+}
+
+
+.colmena-modal-contenido::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #A88E2D;
+
+}
+
+
+
+/* ==========================================================
+   4. FOTOGRAFÍA EN EL MODAL DE DETALLE
+========================================================== */
+
+.colmena-modal-fotografia {
+
+    margin:
+        20px
+        22px
+        0;
+
+    padding:
+        15px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255, 255, 255, 0.70);
+
+}
+
+
+/* ==========================================================
+   HEADER FOTOGRAFÍA
+========================================================== */
+
+.colmena-modal-fotografia-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    margin-bottom:
+        13px;
+
+}
+
+
+.colmena-modal-fotografia-header
+> div:first-child {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        10px;
+
+    background:
+        var(
+            --apicultor-activo
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        14px;
+
+}
+
+
+.colmena-modal-fotografia-header h3 {
+
+    margin:
+        0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+}
+
+
+.colmena-modal-fotografia-header p {
+
+    margin:
+        3px
+        0
+        0;
+
+    color:
+        #7C8780;
+
+    font-size:
+        7px;
+
+}
+
+
+
+/* ==========================================================
+   IMAGEN GRANDE
+========================================================== */
+
+.colmena-modal-imagen {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    height:
+        280px;
+
+    display:
+        block;
+
+    padding:
+        0;
+
+    overflow:
+        hidden;
+
+    border:
+        none;
+
+    border-radius:
+        12px;
+
+    background:
+        #EEF2EF;
+
+    cursor:
+        zoom-in;
+
+}
+
+
+.colmena-modal-imagen img {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    display:
+        block;
+
+    object-fit:
+        cover;
+
+    transition:
+        transform
+        0.28s
+        ease;
+
+}
+
+
+.colmena-modal-imagen:hover img {
+
+    transform:
+        scale(1.025);
+
+}
+
+
+/* ==========================================================
+   TEXTO AMPLIAR
+========================================================== */
+
+.colmena-modal-imagen > span {
+
+    position:
+        absolute;
+
+    right:
+        12px;
+
+    bottom:
+        12px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        7px
+        10px;
+
+    border-radius:
+        9px;
+
+    background:
+        rgba(22, 51, 36, 0.78);
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        7px;
+
+    font-weight:
+        800;
+
+    backdrop-filter:
+        blur(4px);
+
+}
+
+
+
+/* ==========================================================
+   SIN FOTO EN DETALLE
+========================================================== */
+
+.colmena-modal-sin-imagen {
+
+    min-height:
+        180px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        20px;
+
+    border:
+        1px dashed
+        #D8DDD9;
+
+    border-radius:
+        12px;
+
+    background:
+        #F7F9F7;
+
+    color:
+        #879189;
+
+    text-align:
+        center;
+
+}
+
+
+.colmena-modal-sin-imagen > i {
+
+    margin-bottom:
+        3px;
+
+    color:
+        #BAAD71;
+
+    font-size:
+        30px;
+
+}
+
+
+.colmena-modal-sin-imagen > strong {
+
+    color:
+        #65736B;
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+}
+
+
+.colmena-modal-sin-imagen > span {
+
+    max-width:
+        300px;
+
+    color:
+        #929A95;
+
+    font-size:
+        7px;
+
+    line-height:
+        1.5;
+
+}
+
+
+
+/* ==========================================================
+   5. BADGE DE ESTADO DENTRO DEL MODAL
+========================================================== */
+
+.colmena-modal-estado {
+
+    width:
+        fit-content;
+
+    display:
+        inline-flex;
+
+    flex-direction:
+        row;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        6px
+        9px;
+
+    border-radius:
+        20px;
+
+    font-size:
+        8px !important;
+
+    font-weight:
+        800 !important;
+
+}
+
+
+.colmena-modal-estado > span {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        50%;
+
+    background:
+        currentColor;
+
+}
+
+
+/* ACTIVA */
+
+.colmena-modal-estado.activa {
+
+    background:
+        #E5F4E3;
+
+    color:
+        #4F7B49 !important;
+
+}
+
+
+/* REVISIÓN */
+
+.colmena-modal-estado.revision {
+
+    background:
+        #FFF0BE;
+
+    color:
+        #886814 !important;
+
+}
+
+
+/* RIESGO */
+
+.colmena-modal-estado.riesgo {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44 !important;
+
+}
+
+
+/* INACTIVA */
+
+.colmena-modal-estado.inactiva {
+
+    background:
+        #EDF1EF;
+
+    color:
+        #647069 !important;
+
+}
+
+
+
+/* ==========================================================
+   SIN DESCRIPCIÓN
+========================================================== */
+
+.sin-descripcion-colmena {
+
+    color:
+        #969E99 !important;
+
+    font-style:
+        italic;
+
+}
+
+
+
+/* ==========================================================
+   6. BOTÓN GESTIONAR EN EL DETALLE
+========================================================== */
+
+.btn-modal-gestionar-colmena {
+
+    min-height:
+        44px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        9px
+        14px;
+
+    border:
+        1px solid
+        #DCC24D;
+
+    border-radius:
+        11px;
+
+    background:
+        var(
+            --apicultor-sidebar
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-family:
+        inherit;
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-modal-gestionar-colmena:hover {
+
+    background:
+        #F3CB51;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(153, 119, 15, 0.11);
+
+}
+
+
+/*
+ * Ahora hay 3 acciones principales:
+ *
+ * Gestionar
+ * Mantenimiento
+ * Incidencia
+ */
+
+.colmena-modal-acciones-principales {
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+}
+
+
+
+/* ==========================================================
+   ==========================================================
+   7. MODAL GESTIONAR COLMENA
+   ==========================================================
+   ========================================================== */
+
+.colmena-editar-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        11000;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        18px;
+
+    background:
+        rgba(17, 38, 27, 0.64);
+
+    backdrop-filter:
+        blur(5px);
+
+}
+
+
+.colmena-editar-overlay.activo {
+
+    display:
+        flex;
+
+}
+
+
+
+/* ==========================================================
+   CONTENEDOR
+========================================================== */
+
+.colmena-editar-modal {
+
+    width:
+        100%;
+
+    max-width:
+        760px;
+
+    height:
+        min(
+            92vh,
+            820px
+        );
+
+    height:
+        min(
+            92dvh,
+            820px
+        );
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius:
+        21px;
+
+    background:
+        #FFFFF7;
+
+    box-shadow:
+        0 26px 80px
+        rgba(17, 38, 27, 0.29);
+
+    animation:
+        aparecerEditarColmena
+        0.24s
+        ease;
+
+}
+
+
+@keyframes aparecerEditarColmena {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(16px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   FORMULARIO
+========================================================== */
+
+.form-editar-colmena {
+
+    min-height:
+        0;
+
+    height:
+        100%;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    overflow:
+        hidden;
+
+}
+
+
+
+/* ==========================================================
+   8. HEADER EDITAR
+========================================================== */
+
+.colmena-editar-header {
+
+    flex:
+        0 0 auto;
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap:
+        16px;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 237, 180, 0.65),
+            rgba(255, 255, 247, 0.96)
+        );
+
+}
+
+
+.colmena-editar-etiqueta {
+
+    display:
+        inline-flex;
+
+    margin-bottom:
+        6px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius:
+        20px;
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+    font-size:
+        7px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.3px;
+
+}
+
+
+.colmena-editar-header h2 {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin:
+        0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        20px;
+
+    font-weight:
+        800;
+
+}
+
+
+.colmena-editar-header h2 i {
+
+    color:
+        #9A781D;
+
+}
+
+
+.colmena-editar-header p {
+
+    margin:
+        6px
+        0
+        0;
+
+    color:
+        var(
+            --apicultor-texto-secundario
+        );
+
+    font-size:
+        8px;
+
+    line-height:
+        1.5;
+
+}
+
+
+
+/* ==========================================================
+   CERRAR
+========================================================== */
+
+.colmena-editar-cerrar {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    flex-shrink:
+        0;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        none;
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(255, 255, 255, 0.72);
+
+    color:
+        #68766D;
+
+    font-size:
+        15px;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+
+}
+
+
+.colmena-editar-cerrar:hover {
+
+    background:
+        var(
+            --apicultor-activo
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+}
+
+
+
+/* ==========================================================
+   9. BODY EDITAR CON SCROLL
+========================================================== */
+
+.colmena-editar-body {
+
+    flex:
+        1 1 auto;
+
+    min-height:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        16px;
+
+    padding:
+        20px
+        22px;
+
+    overflow-x:
+        hidden;
+
+    overflow-y:
+        auto;
+
+    overscroll-behavior:
+        contain;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #CAB34D
+        #F7F2DC;
+
+}
+
+
+.colmena-editar-body::-webkit-scrollbar {
+
+    width:
+        8px;
+
+}
+
+
+.colmena-editar-body::-webkit-scrollbar-track {
+
+    background:
+        #F7F2DC;
+
+}
+
+
+.colmena-editar-body::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #F7F2DC;
+
+    border-radius:
+        20px;
+
+    background:
+        #CAB34D;
+
+}
+
+
+.colmena-editar-body::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #A88E2D;
+
+}
+
+
+
+/* ==========================================================
+   10. SECCIONES EDITAR
+========================================================== */
+
+.colmena-editar-seccion {
+
+    padding:
+        16px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius:
+        14px;
+
+    background:
+        rgba(255, 255, 255, 0.70);
+
+}
+
+
+.colmena-editar-seccion-header {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    gap:
+        10px;
+
+    margin-bottom:
+        16px;
+
+}
+
+
+.colmena-editar-seccion-icono {
+
+    width:
+        39px;
+
+    height:
+        39px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        11px;
+
+    background:
+        var(
+            --apicultor-activo
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        14px;
+
+}
+
+
+.colmena-editar-seccion-header h3 {
+
+    margin:
+        0;
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+}
+
+
+.colmena-editar-seccion-header p {
+
+    margin:
+        4px
+        0
+        0;
+
+    color:
+        #7C8780;
+
+    font-size:
+        7px;
+
+    line-height:
+        1.5;
+
+}
+
+
+
+/* ==========================================================
+   11. INFORMACIÓN NO EDITABLE
+========================================================== */
+
+.colmena-editar-info-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap:
+        11px;
+
+}
+
+
+.colmena-info-bloque {
+
+    min-height:
+        67px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    justify-content:
+        center;
+
+    gap:
+        4px;
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px solid
+        #E4E8E5;
+
+    border-radius:
+        10px;
+
+    background:
+        #F7F9F7;
+
+}
+
+
+.colmena-info-bloque > span {
+
+    color:
+        #7D8981;
+
+    font-size:
+        7px;
+
+    font-weight:
+        600;
+
+}
+
+
+.colmena-info-bloque > strong {
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    overflow-wrap:
+        anywhere;
+
+}
+
+
+
+/* ==========================================================
+   12. CAMPOS
+========================================================== */
+
+.colmena-editar-campo {
+
+    margin-top:
+        13px;
+
+}
+
+
+.colmena-editar-campo:first-of-type {
+
+    margin-top:
+        0;
+
+}
+
+
+.colmena-editar-campo > label {
+
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+}
+
+
+.colmena-editar-campo > label span {
+
+    color:
+        #C15A50;
+
+}
+
+
+
+/* ==========================================================
+   SELECT / TEXTAREA
+========================================================== */
+
+.colmena-editar-campo select,
+.colmena-editar-campo textarea {
+
+    width:
+        100%;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius:
+        10px;
+
+    outline:
+        none;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(
+            --apicultor-texto
+        );
+
+    font-family:
+        inherit;
+
+    font-size:
+        9px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.colmena-editar-campo select {
+
+    height:
+        43px;
+
+    padding:
+        0
+        12px;
+
+    cursor:
+        pointer;
+
+}
+
+
+.colmena-editar-campo textarea {
+
+    min-height:
+        110px;
+
+    padding:
+        12px;
+
+    resize:
+        vertical;
+
+    line-height:
+        1.6;
+
+}
+
+
+.colmena-editar-campo select:focus,
+.colmena-editar-campo textarea:focus {
+
+    border-color:
+        #D7B94E;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.20);
+
+}
+
+
+
+/* ==========================================================
+   FILE
+========================================================== */
+
+.colmena-editar-campo
+input[type="file"] {
+
+    width:
+        100%;
+
+    padding:
+        8px;
+
+    border:
+        1px dashed
+        #CCD7CF;
+
+    border-radius:
+        10px;
+
+    background:
+        #FAFBFA;
+
+    color:
+        #65736B;
+
+    font-family:
+        inherit;
+
+    font-size:
+        7px;
+
+    cursor:
+        pointer;
+
+}
+
+
+.colmena-editar-campo
+input[type="file"]::file-selector-button {
+
+    margin-right:
+        9px;
+
+    padding:
+        8px
+        11px;
+
+    border:
+        none;
+
+    border-radius:
+        8px;
+
+    background:
+        var(
+            --apicultor-activo
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-family:
+        inherit;
+
+    font-size:
+        7px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+}
+
+
+.colmena-editar-campo small {
+
+    display:
+        block;
+
+    margin-top:
+        6px;
+
+    color:
+        #89938D;
+
+    font-size:
+        7px;
+
+    line-height:
+        1.5;
+
+}
+
+
+
+/* ==========================================================
+   CAMPO INVÁLIDO
+========================================================== */
+
+.form-editar-colmena
+.is-invalid {
+
+    border-color:
+        #D86C60 !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(216, 108, 96, 0.11) !important;
+
+}
+
+
+
+/* ==========================================================
+   13. PREVISUALIZACIÓN DE FOTO
+========================================================== */
+
+.colmena-preview-imagen {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    height:
+        260px;
+
+    margin-bottom:
+        15px;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        #DEE4DF;
+
+    border-radius:
+        13px;
+
+    background:
+        #EEF2EF;
+
+}
+
+
+.colmena-preview-imagen > img {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    display:
+        block;
+
+    object-fit:
+        cover;
+
+}
+
+
+.colmena-preview-overlay {
+
+    position:
+        absolute;
+
+    left:
+        11px;
+
+    bottom:
+        11px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        7px
+        10px;
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(22, 51, 36, 0.75);
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        7px;
+
+    font-weight:
+        800;
+
+    backdrop-filter:
+        blur(4px);
+
+}
+
+
+
+/* ==========================================================
+   PREVIEW VACÍO
+========================================================== */
+
+.colmena-preview-sin-imagen {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        20px;
+
+    color:
+        #8B958E;
+
+    text-align:
+        center;
+
+}
+
+
+.colmena-preview-sin-imagen i {
+
+    color:
+        #B7AB73;
+
+    font-size:
+        31px;
+
+}
+
+
+.colmena-preview-sin-imagen strong {
+
+    color:
+        #68766D;
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+}
+
+
+.colmena-preview-sin-imagen span {
+
+    font-size:
+        7px;
+
+}
+
+
+
+/* ==========================================================
+   14. FOOTER EDITAR
+========================================================== */
+
+.colmena-editar-footer {
+
+    flex:
+        0 0 auto;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        9px;
+
+    padding:
+        14px
+        22px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        #FFFFF7;
+
+}
+
+
+
+/* ==========================================================
+   CANCELAR
+========================================================== */
+
+.btn-cancelar-editar-colmena {
+
+    min-height:
+        41px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        8px
+        15px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius:
+        10px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #68766D;
+
+    font-family:
+        inherit;
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+}
+
+
+.btn-cancelar-editar-colmena:hover {
+
+    background:
+        #F3F6F4;
+
+}
+
+
+
+/* ==========================================================
+   GUARDAR
+========================================================== */
+
+.btn-guardar-colmena {
+
+    min-height:
+        41px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        8px
+        15px;
+
+    border:
+        1px solid
+        #DCC14B;
+
+    border-radius:
+        10px;
+
+    background:
+        var(
+            --apicultor-sidebar
+        );
+
+    color:
+        var(
+            --apicultor-verde-oscuro
+        );
+
+    font-family:
+        inherit;
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-guardar-colmena:hover {
+
+    background:
+        #F3CB51;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.btn-guardar-colmena:disabled {
+
+    opacity:
+        0.65;
+
+    cursor:
+        not-allowed;
+
+    transform:
+        none;
+
+}
+
+
+
+/* ==========================================================
+   ==========================================================
+   15. VISOR DE FOTOGRAFÍAS
+   ==========================================================
+   ========================================================== */
+
+.visor-colmena-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        15000;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        30px;
+
+    background:
+        rgba(7, 17, 11, 0.90);
+
+    backdrop-filter:
+        blur(6px);
+
+}
+
+
+.visor-colmena-overlay.activo {
+
+    display:
+        flex;
+
+}
+
+
+
+/* ==========================================================
+   CERRAR VISOR
+========================================================== */
+
+.visor-colmena-cerrar {
+
+    position:
+        fixed;
+
+    top:
+        20px;
+
+    right:
+        24px;
+
+    width:
+        44px;
+
+    height:
+        44px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.18);
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        18px;
+
+    cursor:
+        pointer;
+
+}
+
+
+.visor-colmena-cerrar:hover {
+
+    background:
+        rgba(255, 255, 255, 0.20);
+
+}
+
+
+
+/* ==========================================================
+   CONTENIDO VISOR
+========================================================== */
+
+.visor-colmena-contenido {
+
+    width:
+        min(
+            1100px,
+            94vw
+        );
+
+    max-height:
+        88vh;
+
+    max-height:
+        88dvh;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+}
+
+
+
+/* ==========================================================
+   HEADER VISOR
+========================================================== */
+
+.visor-colmena-header {
+
+    width:
+        100%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    color:
+        #FFFFFF;
+
+}
+
+
+.visor-colmena-header span {
+
+    color:
+        rgba(255, 255, 255, 0.68);
+
+    font-size:
+        8px;
+
+}
+
+
+.visor-colmena-header strong {
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+}
+
+
+
+/* ==========================================================
+   IMAGEN VISOR
+========================================================== */
+
+.visor-colmena-contenido img {
+
+    display:
+        block;
+
+    max-width:
+        100%;
+
+    max-height:
+        calc(88vh - 42px);
+
+    max-height:
+        calc(88dvh - 42px);
+
+    object-fit:
+        contain;
+
+    border-radius:
+        12px;
+
+    box-shadow:
+        0 22px 80px
+        rgba(0, 0, 0, 0.50);
+
+}
+
+
+
+/* ==========================================================
+   16. EVITAR SCROLL DEL FONDO
+========================================================== */
+
+body.modal-colmena-abierto {
+
+    overflow:
+        hidden;
+
+}
+
+
+
+/* ==========================================================
+   17. FOCO
+========================================================== */
+
+.btn-imagen-colmena:focus-visible,
+.btn-gestionar-colmena:focus-visible,
+.btn-modal-gestionar-colmena:focus-visible,
+.colmena-editar-cerrar:focus-visible,
+.btn-cancelar-editar-colmena:focus-visible,
+.btn-guardar-colmena:focus-visible,
+.colmena-modal-imagen:focus-visible,
+.visor-colmena-cerrar:focus-visible {
+
+    outline:
+        3px solid
+        rgba(215, 185, 78, 0.36);
+
+    outline-offset:
+        2px;
+
+}
+
+
+
+/* ==========================================================
+   ==========================================================
+   18. RESPONSIVE 1100px
+   ==========================================================
+   ========================================================== */
+
+@media (max-width: 1100px) {
+
+    .colmena-modal-acciones-principales {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+    }
+
+
+    .btn-modal-gestionar-colmena {
+
+        grid-column:
+            1 / -1;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   19. RESPONSIVE 820px
+========================================================== */
+
+@media (max-width: 820px) {
+
+    .colmena-card-imagen {
+
+        height:
+            190px;
+
+    }
+
+
+    .colmena-modal-imagen {
+
+        height:
+            250px;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   20. RESPONSIVE 600px
+========================================================== */
+
+@media (max-width: 600px) {
+
+
+    /* ======================================================
+       TARJETA
+    ====================================================== */
+
+    .colmena-card-imagen {
+
+        width:
+            calc(100% + 32px);
+
+        height:
+            210px;
+
+        margin:
+            -16px
+            -16px
+            15px;
+
+    }
+
+
+
+    /* ======================================================
+       DETALLE
+    ====================================================== */
+
+    .colmena-modal {
+
+        height:
+            calc(100vh - 20px);
+
+        height:
+            calc(100dvh - 20px);
+
+    }
+
+
+    .colmena-modal-fotografia {
+
+        margin:
+            16px
+            16px
+            0;
+
+        padding:
+            12px;
+
+    }
+
+
+    .colmena-modal-imagen {
+
+        height:
+            220px;
+
+    }
+
+
+    .colmena-modal-acciones-principales {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .btn-modal-gestionar-colmena {
+
+        grid-column:
+            auto;
+
+    }
+
+
+
+    /* ======================================================
+       EDITAR
+    ====================================================== */
+
+    .colmena-editar-overlay {
+
+        padding:
+            10px;
+
+    }
+
+
+    .colmena-editar-modal {
+
+        height:
+            calc(100vh - 20px);
+
+        height:
+            calc(100dvh - 20px);
+
+        border-radius:
+            16px;
+
+    }
+
+
+    .colmena-editar-header {
+
+        padding:
+            16px;
+
+    }
+
+
+    .colmena-editar-header h2 {
+
+        font-size:
+            17px;
+
+    }
+
+
+    .colmena-editar-body {
+
+        padding:
+            15px;
+
+    }
+
+
+    .colmena-editar-seccion {
+
+        padding:
+            13px;
+
+    }
+
+
+    .colmena-editar-info-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .colmena-preview-imagen {
+
+        height:
+            220px;
+
+    }
+
+
+
+    /* ======================================================
+       FOOTER EDITAR
+    ====================================================== */
+
+    .colmena-editar-footer {
+
+        flex-direction:
+            column-reverse;
+
+        align-items:
+            stretch;
+
+        padding:
+            12px
+            15px;
+
+    }
+
+
+    .btn-cancelar-editar-colmena,
+    .btn-guardar-colmena {
+
+        width:
+            100%;
+
+    }
+
+
+
+    /* ======================================================
+       VISOR
+    ====================================================== */
+
+    .visor-colmena-overlay {
+
+        padding:
+            12px;
+
+    }
+
+
+    .visor-colmena-cerrar {
+
+        top:
+            12px;
+
+        right:
+            12px;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   21. RESPONSIVE 430px
+========================================================== */
+
+@media (max-width: 430px) {
+
+    .colmena-card-imagen {
+
+        height:
+            180px;
+
+    }
+
+
+    .colmena-modal-imagen {
+
+        height:
+            190px;
+
+    }
+
+
+    .colmena-preview-imagen {
+
+        height:
+            190px;
+
+    }
+
+
+    .colmena-editar-header p {
+
+        display:
+            none;
+
+    }
+
+
+    .visor-colmena-header {
+
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
+        gap:
+            3px;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   22. MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-imagen-colmena img,
+    .btn-gestionar-colmena,
+    .btn-modal-gestionar-colmena,
+    .btn-guardar-colmena,
+    .colmena-editar-modal {
+
+        animation:
+            none;
+
+        transition:
+            none;
+
+    }
+
+}
+
+
+/* ==========================================================
+   FIN ACTUALIZACIÓN MIS COLMENAS
+========================================================== */
+
+
+
+/* ==========================================================
+   ==========================================================
+   VALIDACIONES - MIS COLMENAS
+   PANEL APICULTOR
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   OVERLAY
+========================================================== */
+
+.colmena-validacion-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 16000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(17, 38, 27, 0.62);
+
+    backdrop-filter:
+        blur(5px);
+
+}
+
+
+/* ==========================================================
+   ACTIVO
+========================================================== */
+
+.colmena-validacion-overlay.activo {
+
+    display: flex;
+
+}
+
+
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.colmena-validacion-modal {
+
+    width: 100%;
+
+    max-width: 470px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 18px;
+
+    background:
+        #FFFFF7;
+
+    box-shadow:
+        0 24px 70px
+        rgba(17, 38, 27, 0.30);
+
+    animation:
+        aparecerValidacionColmena
+        0.22s
+        ease;
+
+}
+
+
+@keyframes aparecerValidacionColmena {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(14px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   ICONO
+========================================================== */
+
+.colmena-validacion-icono {
+
+    width: 52px;
+
+    height: 52px;
+
+    margin:
+        20px
+        auto
+        0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        #FFF0BE;
+
+    color:
+        #9A7514;
+
+    font-size: 21px;
+
+}
+
+
+
+/* ==========================================================
+   CONTENIDO
+========================================================== */
+
+.colmena-validacion-contenido {
+
+    padding:
+        16px
+        22px
+        18px;
+
+    text-align: center;
+
+}
+
+
+.colmena-validacion-contenido > span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        #9A7514;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+}
+
+
+.colmena-validacion-contenido h2 {
+
+    margin:
+        0
+        0
+        8px;
+
+    color:
+        #214F3B;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    line-height: 1.35;
+
+}
+
+
+.colmena-validacion-contenido p {
+
+    margin: 0;
+
+    color:
+        #68766D;
+
+    font-size: 8px;
+
+    line-height: 1.65;
+
+}
+
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.colmena-validacion-footer {
+
+    display: flex;
+
+    justify-content: center;
+
+    padding:
+        0
+        22px
+        20px;
+
+}
+
+
+
+/* ==========================================================
+   BOTÓN
+========================================================== */
+
+.btn-cerrar-validacion-colmena {
+
+    min-width: 130px;
+
+    min-height: 41px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        16px;
+
+    border:
+        1px solid
+        #D8B844;
+
+    border-radius: 10px;
+
+    background:
+        #FFDD71;
+
+    color:
+        #214F3B;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-cerrar-validacion-colmena:hover {
+
+    background:
+        #F3CB51;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(153, 119, 15, 0.12);
+
+}
+
+
+
+/* ==========================================================
+   FOCO
+========================================================== */
+
+.btn-cerrar-validacion-colmena:focus-visible {
+
+    outline:
+        3px solid
+        rgba(215, 185, 78, 0.38);
+
+    outline-offset:
+        2px;
+
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 520px) {
+
+    .colmena-validacion-overlay {
+
+        padding: 12px;
+
+    }
+
+
+    .colmena-validacion-modal {
+
+        max-width: 100%;
+
+        border-radius: 15px;
+
+    }
+
+
+    .colmena-validacion-contenido {
+
+        padding:
+            14px
+            16px
+            17px;
+
+    }
+
+
+    .colmena-validacion-contenido h2 {
+
+        font-size: 15px;
+
+    }
+
+
+    .colmena-validacion-footer {
+
+        padding:
+            0
+            16px
+            16px;
+
+    }
+
+
+    .btn-cerrar-validacion-colmena {
+
+        width: 100%;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .colmena-validacion-modal,
+    .btn-cerrar-validacion-colmena {
+
+        animation: none;
+
+        transition: none;
+
+    }
+
+}
+
+
+/* ==========================================================
+   FIN VALIDACIONES MIS COLMENAS
+========================================================== */

@@ -13,7 +13,7 @@
 
 
 {% block page_subtitle %}
-    Consulta los apiarios que tienes asignados
+    Consulta y gestiona los apiarios que tienes asignados
 {% endblock %}
 
 
@@ -21,10 +21,11 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/apiarios.css' %}?v=1"
+    href="{% static 'panel_apicultor/css/apiarios.css' %}?v=2"
 >
 
 {% endblock %}
+
 
 
 {% block content %}
@@ -34,7 +35,7 @@
 
 
     <!-- =====================================================
-        ENCABEZADO
+         ENCABEZADO
     ====================================================== -->
 
     <section class="apiarios-encabezado">
@@ -43,6 +44,7 @@
         <div class="apiarios-total">
 
             <i class="bi bi-flower1"></i>
+
 
             <div>
 
@@ -56,14 +58,16 @@
 
             </div>
 
+
         </div>
+
 
     </section>
 
 
 
     <!-- =====================================================
-        FILTROS
+         FILTROS
     ====================================================== -->
 
     <section class="apiarios-filtros">
@@ -80,7 +84,6 @@
             <div class="apiarios-buscador">
 
                 <i class="bi bi-search"></i>
-
 
                 <input
                     type="text"
@@ -108,47 +111,39 @@
 
                 <option
                     value="Bueno"
-
                     {% if estado_seleccionado == "Bueno" %}
                         selected
                     {% endif %}
                 >
-
                     Bueno
-
                 </option>
 
 
                 <option
                     value="Precaución"
-
                     {% if estado_seleccionado == "Precaución" %}
                         selected
                     {% endif %}
                 >
-
                     Precaución
-
                 </option>
 
 
                 <option
                     value="Deficiente"
-
                     {% if estado_seleccionado == "Deficiente" %}
                         selected
                     {% endif %}
                 >
-
                     Deficiente
-
                 </option>
+
 
             </select>
 
 
 
-            <!-- BOTÓN -->
+            <!-- BOTÓN FILTRAR -->
 
             <button
                 type="submit"
@@ -162,6 +157,8 @@
             </button>
 
 
+
+            <!-- LIMPIAR -->
 
             {% if busqueda or estado_seleccionado %}
 
@@ -199,36 +196,68 @@
             {% for apiario in apiarios %}
 
 
+                <!-- =================================================
+                     TARJETA APIARIO
+                ================================================== -->
+
                 <article class="apiario-card">
 
 
-                    <!-- =====================================
-                         IMAGEN
-                    ====================================== -->
+                    <!-- =============================================
+                         FOTOGRAFÍA
+                    ============================================== -->
 
                     <div class="apiario-imagen">
 
 
                         {% if apiario.imagen %}
 
-                            <img
-                                src="{{ apiario.imagen.url }}"
-                                alt="{{ apiario.nombreapiario }}"
+
+                            <button
+                                type="button"
+                                class="btn-imagen-apiario"
+                                data-imagen-apiario="{{ apiario.imagen.url }}"
+                                data-imagen-titulo="{{ apiario.nombreapiario }}"
+                                aria-label="Ver fotografía de {{ apiario.nombreapiario }}"
                             >
 
+                                <img
+                                    src="{{ apiario.imagen.url }}"
+                                    alt="Fotografía de {{ apiario.nombreapiario }}"
+                                >
+
+                                <span class="apiario-imagen-overlay">
+
+                                    <i class="bi bi-arrows-fullscreen"></i>
+
+                                    Ver fotografía
+
+                                </span>
+
+                            </button>
+
+
                         {% else %}
+
 
                             <div class="apiario-imagen-vacia">
 
                                 <i class="bi bi-flower1"></i>
 
+                                <span>
+                                    Sin fotografía
+                                </span>
+
                             </div>
+
 
                         {% endif %}
 
 
 
-                        <!-- ESTADO -->
+                        <!-- =========================================
+                             ESTADO
+                        ========================================== -->
 
                         <span
                             class="
@@ -256,20 +285,20 @@
 
 
 
-                    <!-- =====================================
+                    <!-- =============================================
                          INFORMACIÓN
-                    ====================================== -->
+                    ============================================== -->
 
                     <div class="apiario-card-body">
 
 
                         <h2>
-
                             {{ apiario.nombreapiario }}
-
                         </h2>
 
 
+
+                        <!-- UBICACIÓN -->
 
                         <div class="apiario-dato">
 
@@ -293,6 +322,8 @@
 
 
 
+                        <!-- CANTIDAD COLMENAS -->
+
                         <div class="apiario-dato">
 
                             <i class="bi bi-hexagon"></i>
@@ -309,39 +340,85 @@
 
 
 
-                        {% if apiario.descripcion %}
+                        <!-- OBSERVACIONES -->
 
-                            <p class="apiario-descripcion">
+                        <div class="apiario-observaciones-card">
 
-                                {{ apiario.descripcion|truncatechars:130 }}
+                            <div class="apiario-observaciones-titulo">
 
-                            </p>
+                                <i class="bi bi-card-text"></i>
 
-                        {% else %}
+                                <span>
+                                    Observaciones
+                                </span>
 
-                            <p class="apiario-descripcion sin-descripcion">
+                            </div>
 
-                                Este apiario no tiene
-                                una descripción registrada.
 
-                            </p>
+                            {% if apiario.descripcion %}
 
-                        {% endif %}
+                                <p class="apiario-descripcion">
+
+                                    {{ apiario.descripcion|truncatechars:130 }}
+
+                                </p>
+
+                            {% else %}
+
+                                <p class="apiario-descripcion sin-descripcion">
+
+                                    Este apiario no tiene observaciones
+                                    registradas.
+
+                                </p>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+
+                        <!-- =========================================
+                             ACCIONES
+                        ========================================== -->
 
                         <div class="apiario-card-footer">
+
+
+                            <!-- VER DETALLE -->
 
                             <a
                                 href="{% url 'detalle_apiario_apicultor' apiario.id_apiario %}"
                                 class="btn-detalle-apiario"
                             >
 
+                                <i class="bi bi-eye"></i>
+
                                 <span>
                                     Ver detalle
                                 </span>
 
-                                <i class="bi bi-arrow-right"></i>
-
                             </a>
+
+
+
+                            <!-- GESTIONAR -->
+
+                            <button
+                                type="button"
+                                class="btn-gestionar-apiario"
+                                data-editar-apiario-modal="modalEditarApiario{{ apiario.id_apiario }}"
+                            >
+
+                                <i class="bi bi-pencil-square"></i>
+
+                                <span>
+                                    Gestionar
+                                </span>
+
+                            </button>
+
 
                         </div>
 
@@ -350,6 +427,577 @@
 
 
                 </article>
+
+
+
+                <!-- =================================================
+                     MODAL GESTIONAR APIARIO
+                ================================================== -->
+
+                <div
+                    class="apiario-editar-overlay modal-editar-apiario"
+                    id="modalEditarApiario{{ apiario.id_apiario }}"
+                    aria-hidden="true"
+                >
+
+
+                    <div
+                        class="apiario-editar-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="tituloEditarApiario{{ apiario.id_apiario }}"
+                    >
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'editar_apiario_apicultor' apiario.id_apiario %}"
+                            enctype="multipart/form-data"
+                            class="form-editar-apiario"
+                            data-id-apiario="{{ apiario.id_apiario }}"
+                        >
+
+                            {% csrf_token %}
+
+
+
+                            <!-- =====================================
+                                 HEADER
+                            ====================================== -->
+
+                            <div class="apiario-editar-header">
+
+
+                                <div class="apiario-editar-header-texto">
+
+                                    <span class="apiario-editar-header-icono">
+
+                                        <i class="bi bi-pencil-square"></i>
+
+                                    </span>
+
+
+                                    <div>
+
+                                        <span>
+                                            Gestión del apiario
+                                        </span>
+
+                                        <h2
+                                            id="tituloEditarApiario{{ apiario.id_apiario }}"
+                                        >
+                                            {{ apiario.nombreapiario }}
+                                        </h2>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <button
+                                    type="button"
+                                    class="btn-cerrar-editar-apiario"
+                                    data-cerrar-editar-apiario
+                                    aria-label="Cerrar"
+                                >
+
+                                    <i class="bi bi-x-lg"></i>
+
+                                </button>
+
+
+                            </div>
+
+
+
+                            <!-- =====================================
+                                 BODY
+                            ====================================== -->
+
+                            <div class="apiario-editar-body">
+
+
+                                <!-- =================================
+                                     INFORMACIÓN NO EDITABLE
+                                ================================== -->
+
+                                <section class="apiario-editar-seccion">
+
+
+                                    <div class="apiario-editar-seccion-titulo">
+
+                                        <i class="bi bi-info-circle"></i>
+
+                                        <div>
+
+                                            <strong>
+                                                Información general
+                                            </strong>
+
+                                            <span>
+                                                Estos datos son administrados
+                                                por el administrador.
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="apiario-editar-info-grid">
+
+
+                                        <!-- NOMBRE -->
+
+                                        <div class="apiario-info-bloque">
+
+                                            <span>
+                                                Nombre
+                                            </span>
+
+                                            <strong>
+                                                {{ apiario.nombreapiario }}
+                                            </strong>
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </div>
+
+
+
+                                        <!-- UBICACIÓN -->
+
+                                        <div class="apiario-info-bloque">
+
+                                            <span>
+                                                Ubicación
+                                            </span>
+
+                                            <strong>
+
+                                                {% if apiario.ubicacion %}
+
+                                                    {{ apiario.ubicacion }}
+
+                                                {% else %}
+
+                                                    Sin ubicación
+
+                                                {% endif %}
+
+                                            </strong>
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </div>
+
+
+
+                                        <!-- COLMENAS -->
+
+                                        <div class="apiario-info-bloque">
+
+                                            <span>
+                                                Colmenas registradas
+                                            </span>
+
+                                            <strong>
+
+                                                {{ apiario.cantidadcolmenas|default:0 }}
+
+                                            </strong>
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </section>
+
+
+
+                                <!-- =================================
+                                     ESTADO
+                                ================================== -->
+
+                                <section class="apiario-editar-seccion">
+
+
+                                    <div class="apiario-editar-seccion-titulo">
+
+                                        <i class="bi bi-activity"></i>
+
+                                        <div>
+
+                                            <strong>
+                                                Estado del apiario
+                                            </strong>
+
+                                            <span>
+                                                Actualiza el estado de acuerdo
+                                                con las condiciones observadas.
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="apiario-form-grupo">
+
+
+                                        <label
+                                            for="estadoApiario{{ apiario.id_apiario }}"
+                                        >
+
+                                            Estado
+
+                                            <span class="campo-obligatorio">
+                                                *
+                                            </span>
+
+                                        </label>
+
+
+                                        <select
+                                            name="estado"
+                                            id="estadoApiario{{ apiario.id_apiario }}"
+                                            class="apiario-input apiario-select-estado"
+                                            required
+                                        >
+
+
+                                            <option
+                                                value="Bueno"
+                                                {% if apiario.estadoapiario == "Bueno" %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                Bueno
+                                            </option>
+
+
+                                            <option
+                                                value="Precaución"
+                                                {% if apiario.estadoapiario == "Precaución" %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                Precaución
+                                            </option>
+
+
+                                            <option
+                                                value="Deficiente"
+                                                {% if apiario.estadoapiario == "Deficiente" %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                Deficiente
+                                            </option>
+
+
+                                        </select>
+
+
+                                        <small>
+
+                                            <i class="bi bi-info-circle"></i>
+
+                                            Selecciona el estado actual
+                                            del apiario.
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </section>
+
+
+
+                                <!-- =================================
+                                     OBSERVACIONES
+                                ================================== -->
+
+                                <section class="apiario-editar-seccion">
+
+
+                                    <div class="apiario-editar-seccion-titulo">
+
+                                        <i class="bi bi-card-text"></i>
+
+                                        <div>
+
+                                            <strong>
+                                                Observaciones
+                                            </strong>
+
+                                            <span>
+                                                Registra información importante
+                                                sobre el estado general del apiario.
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="apiario-form-grupo">
+
+
+                                        <label
+                                            for="descripcionApiario{{ apiario.id_apiario }}"
+                                        >
+                                            Observaciones
+                                        </label>
+
+
+                                        <textarea
+                                            name="descripcion"
+                                            id="descripcionApiario{{ apiario.id_apiario }}"
+                                            class="apiario-input apiario-textarea"
+                                            rows="5"
+                                            placeholder="Ejemplo: El apiario se encuentra en buenas condiciones generales..."
+                                        >{{ apiario.descripcion|default_if_none:"" }}</textarea>
+
+
+                                        <small>
+
+                                            <i class="bi bi-info-circle"></i>
+
+                                            Puedes actualizar estas observaciones
+                                            cuando cambien las condiciones del apiario.
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </section>
+
+
+
+                                <!-- =================================
+                                     FOTOGRAFÍA
+                                ================================== -->
+
+                                <section class="apiario-editar-seccion">
+
+
+                                    <div class="apiario-editar-seccion-titulo">
+
+                                        <i class="bi bi-image"></i>
+
+                                        <div>
+
+                                            <strong>
+                                                Fotografía del apiario
+                                            </strong>
+
+                                            <span>
+                                                Puedes conservar la fotografía
+                                                actual o seleccionar una nueva.
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <!-- VISTA PREVIA -->
+
+                                    <div
+                                        class="apiario-preview-imagen"
+                                        id="previewApiario{{ apiario.id_apiario }}"
+                                    >
+
+
+                                        {% if apiario.imagen %}
+
+
+                                            <img
+                                                src="{{ apiario.imagen.url }}"
+                                                alt="Fotografía actual de {{ apiario.nombreapiario }}"
+                                                data-imagen-original="{{ apiario.imagen.url }}"
+                                            >
+
+
+                                            <div class="apiario-preview-overlay">
+
+                                                <i class="bi bi-image"></i>
+
+                                                <span>
+                                                    Fotografía actual
+                                                </span>
+
+                                            </div>
+
+
+                                        {% else %}
+
+
+                                            <div
+                                                class="apiario-preview-sin-imagen"
+                                                data-preview-vacio
+                                            >
+
+                                                <i class="bi bi-image"></i>
+
+                                                <strong>
+                                                    Sin fotografía
+                                                </strong>
+
+                                                <span>
+                                                    Puedes agregar una fotografía
+                                                    del apiario.
+                                                </span>
+
+                                            </div>
+
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                    <!-- INPUT -->
+
+                                    <div class="apiario-form-grupo">
+
+
+                                        <label
+                                            for="imagenApiario{{ apiario.id_apiario }}"
+                                        >
+                                            Cambiar fotografía
+                                        </label>
+
+
+
+                                        <label
+                                            for="imagenApiario{{ apiario.id_apiario }}"
+                                            class="apiario-selector-imagen"
+                                        >
+
+
+                                            <div class="apiario-selector-imagen-icono">
+
+                                                <i class="bi bi-cloud-arrow-up"></i>
+
+                                            </div>
+
+
+                                            <div class="apiario-selector-imagen-texto">
+
+                                                <strong>
+                                                    Seleccionar nueva fotografía
+                                                </strong>
+
+                                                <span>
+                                                    JPG, PNG o WEBP · Máximo 5 MB
+                                                </span>
+
+                                            </div>
+
+
+                                            <span class="apiario-selector-imagen-boton">
+
+                                                Examinar
+
+                                            </span>
+
+
+                                        </label>
+
+
+
+                                        <input
+                                            type="file"
+                                            name="imagen"
+                                            id="imagenApiario{{ apiario.id_apiario }}"
+                                            class="input-imagen-apiario"
+                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                            data-preview="previewApiario{{ apiario.id_apiario }}"
+                                            hidden
+                                        >
+
+
+
+                                        <small>
+
+                                            <i class="bi bi-shield-check"></i>
+
+                                            Si no seleccionas una nueva fotografía,
+                                            se conservará la actual.
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </section>
+
+
+                            </div>
+
+
+
+                            <!-- =====================================
+                                 FOOTER
+                            ====================================== -->
+
+                            <div class="apiario-editar-footer">
+
+
+                                <button
+                                    type="button"
+                                    class="btn-cancelar-editar-apiario"
+                                    data-cerrar-editar-apiario
+                                >
+
+                                    <i class="bi bi-x-circle"></i>
+
+                                    Cancelar
+
+                                </button>
+
+
+
+                                <button
+                                    type="submit"
+                                    class="btn-guardar-apiario"
+                                >
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    Guardar cambios
+
+                                </button>
+
+
+                            </div>
+
+
+                        </form>
+
+
+                    </div>
+
+
+                </div>
 
 
             {% endfor %}
@@ -369,11 +1017,14 @@
             <nav class="apiarios-paginacion">
 
 
+                <!-- ANTERIOR -->
+
                 {% if apiarios.has_previous %}
 
                     <a
                         href="?page={{ apiarios.previous_page_number }}&q={{ busqueda }}&estado={{ estado_seleccionado }}"
                         class="paginacion-btn"
+                        aria-label="Página anterior"
                     >
 
                         <i class="bi bi-chevron-left"></i>
@@ -384,21 +1035,19 @@
 
 
 
+                <!-- PÁGINAS -->
+
                 {% for numero in apiarios.paginator.page_range %}
 
 
                     {% if numero == apiarios.number %}
 
                         <span
-                            class="
-                                paginacion-btn
-                                active
-                            "
+                            class="paginacion-btn active"
                         >
-
                             {{ numero }}
-
                         </span>
+
 
                     {% else %}
 
@@ -406,9 +1055,7 @@
                             href="?page={{ numero }}&q={{ busqueda }}&estado={{ estado_seleccionado }}"
                             class="paginacion-btn"
                         >
-
                             {{ numero }}
-
                         </a>
 
                     {% endif %}
@@ -418,11 +1065,14 @@
 
 
 
+                <!-- SIGUIENTE -->
+
                 {% if apiarios.has_next %}
 
                     <a
                         href="?page={{ apiarios.next_page_number }}&q={{ busqueda }}&estado={{ estado_seleccionado }}"
                         class="paginacion-btn"
+                        aria-label="Página siguiente"
                     >
 
                         <i class="bi bi-chevron-right"></i>
@@ -436,6 +1086,7 @@
 
 
         {% endif %}
+
 
 
     {% else %}
@@ -455,6 +1106,7 @@
             </div>
 
 
+
             <h2>
 
                 {% if busqueda or estado_seleccionado %}
@@ -468,6 +1120,7 @@
                 {% endif %}
 
             </h2>
+
 
 
             <p>
@@ -485,6 +1138,7 @@
                 {% endif %}
 
             </p>
+
 
 
             {% if busqueda or estado_seleccionado %}
@@ -507,7 +1161,72 @@
     {% endif %}
 
 
+
+    <!-- =====================================================
+         VISOR GLOBAL DE FOTOGRAFÍAS
+    ====================================================== -->
+
+    <div
+        class="visor-apiario-overlay"
+        id="visorImagenApiario"
+        aria-hidden="true"
+    >
+
+
+        <button
+            type="button"
+            class="btn-cerrar-visor-apiario"
+            id="btnCerrarVisorApiario"
+            aria-label="Cerrar fotografía"
+        >
+
+            <i class="bi bi-x-lg"></i>
+
+        </button>
+
+
+
+        <div class="visor-apiario-contenido">
+
+
+            <div class="visor-apiario-header">
+
+                <span>
+                    Fotografía del apiario
+                </span>
+
+                <strong id="tituloVisorApiario">
+                    —
+                </strong>
+
+            </div>
+
+
+
+            <img
+                src=""
+                alt="Fotografía ampliada del apiario"
+                id="imagenVisorApiario"
+            >
+
+
+        </div>
+
+
+    </div>
+
+
 </div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    src="{% static 'panel_apicultor/js/apiarios.js' %}?v=2"
+></script>
 
 
 {% endblock %}

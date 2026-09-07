@@ -1912,3 +1912,2918 @@
     }
 
 }
+
+
+
+/* ==========================================================
+   ==========================================================
+   ACTUALIZACIÓN DETALLE APIARIO
+   FOTO + GESTIÓN + RESUMEN
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   HERO DEL APIARIO
+========================================================== */
+
+.apiario-hero {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 320px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(300px, 0.9fr)
+        minmax(0, 1.1fr);
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 20px;
+
+    background: #FFFFFF;
+
+    box-shadow:
+        0 6px 20px
+        rgba(33, 79, 59, 0.08);
+}
+
+
+/* ==========================================================
+   FOTO PRINCIPAL
+========================================================== */
+
+.apiario-hero-imagen {
+
+    position: relative;
+
+    min-height: 320px;
+
+    overflow: hidden;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.apiario-hero-imagen img {
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.35s ease,
+        filter 0.35s ease;
+}
+
+
+.apiario-hero-imagen:hover img {
+
+    transform:
+        scale(1.035);
+
+    filter:
+        brightness(0.94);
+}
+
+
+/* ==========================================================
+   SIN FOTO
+========================================================== */
+
+.apiario-hero-sin-imagen {
+
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    background:
+        linear-gradient(
+            135deg,
+            #FFF8D8,
+            #FFFFF4
+        );
+}
+
+
+.apiario-hero-sin-imagen i {
+
+    font-size: 48px;
+
+    opacity: 0.55;
+}
+
+
+.apiario-hero-sin-imagen strong {
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+.apiario-hero-sin-imagen span {
+
+    font-size: 9px;
+
+    color:
+        var(--apicultor-texto-secundario);
+}
+
+
+/* ==========================================================
+   BOTÓN VER FOTO
+========================================================== */
+
+.btn-ver-foto-apiario {
+
+    position: absolute;
+
+    left: 16px;
+    bottom: 16px;
+
+    z-index: 3;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 38px;
+
+    padding:
+        8px
+        13px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.22);
+
+    border-radius: 20px;
+
+    background:
+        rgba(24, 51, 38, 0.78);
+
+    color: #FFFFFF;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+/* ==========================================================
+   CONTENIDO HERO
+========================================================== */
+
+.apiario-hero-contenido {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 28px;
+}
+
+
+.apiario-hero-superior {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    margin-bottom: 17px;
+}
+
+
+.apiario-hero-etiqueta {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-bottom: 7px;
+
+    color:
+        #A17D13;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+
+.apiario-hero-contenido h1 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+
+/* ==========================================================
+   ESTADO HERO
+========================================================== */
+
+.apiario-hero-estado {
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        11px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+
+.apiario-hero-estado::before {
+
+    content: "";
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background:
+        currentColor;
+}
+
+
+.apiario-hero-estado.bueno {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+.apiario-hero-estado.precaucion {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+.apiario-hero-estado.deficiente {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+/* ==========================================================
+   DATOS HERO
+========================================================== */
+
+.apiario-hero-datos {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    margin-bottom: 17px;
+}
+
+
+.apiario-hero-dato {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+
+    padding:
+        10px
+        11px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 11px;
+
+    background:
+        #FAFBF8;
+}
+
+
+.apiario-hero-dato i {
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 12px;
+}
+
+
+.apiario-hero-dato > div {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.apiario-hero-dato span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 7px;
+
+    font-weight: 700;
+}
+
+
+.apiario-hero-dato strong {
+
+    overflow: hidden;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   OBSERVACIONES HERO
+========================================================== */
+
+.apiario-hero-observaciones {
+
+    padding:
+        13px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 237, 180, 0.20);
+}
+
+
+.apiario-hero-observaciones-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-bottom: 6px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+
+.apiario-hero-observaciones-header i {
+
+    color: #B8921E;
+
+    font-size: 11px;
+}
+
+
+.apiario-hero-observaciones p {
+
+    margin: 0;
+
+    color:
+        #647269;
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+
+.apiario-hero-observaciones.sin-observaciones p {
+
+    color:
+        #909B94;
+
+    font-style: italic;
+}
+
+
+/* ==========================================================
+   ACCIONES HERO
+========================================================== */
+
+.apiario-hero-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 17px;
+}
+
+
+/* ==========================================================
+   GESTIONAR APIARIO
+========================================================== */
+
+.btn-gestionar-detalle-apiario {
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        9px
+        15px;
+
+    border:
+        1px solid
+        #DABC43;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.btn-gestionar-detalle-apiario:hover {
+
+    background: #F3CA4C;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(196, 157, 34, 0.15);
+}
+
+
+/* ==========================================================
+   RESUMEN NUMÉRICO
+========================================================== */
+
+.detalle-estadisticas {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            5,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+.detalle-estadistica {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        14px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, 0.87);
+
+    box-shadow:
+        0 3px 12px
+        rgba(33, 79, 59, 0.05);
+}
+
+
+.detalle-estadistica-icono {
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    font-size: 15px;
+}
+
+
+.detalle-estadistica-info {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.detalle-estadistica-info strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.detalle-estadistica-info span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   TOTAL
+========================================================== */
+
+.detalle-estadistica.total
+.detalle-estadistica-icono {
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+/* ==========================================================
+   ACTIVAS
+========================================================== */
+
+.detalle-estadistica.activas
+.detalle-estadistica-icono {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+/* ==========================================================
+   RIESGO
+========================================================== */
+
+.detalle-estadistica.riesgo
+.detalle-estadistica-icono {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+/* ==========================================================
+   REVISIÓN
+========================================================== */
+
+.detalle-estadistica.revision
+.detalle-estadistica-icono {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+/* ==========================================================
+   INACTIVAS
+========================================================== */
+
+.detalle-estadistica.inactivas
+.detalle-estadistica-icono {
+
+    background: #EDF1EF;
+
+    color: #647069;
+}
+
+
+/* ==========================================================
+   COLMENA INACTIVA
+========================================================== */
+
+.tabla-colmenas-apiario
+tr.colmena-inactiva {
+
+    background:
+        rgba(238, 242, 239, 0.45);
+}
+
+
+.tabla-colmenas-apiario
+tr.colmena-inactiva:hover {
+
+    background:
+        rgba(228, 234, 230, 0.65);
+}
+
+
+/* ==========================================================
+   AVISO COLMENA INACTIVA
+========================================================== */
+
+.colmena-inactiva-aviso {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 5px;
+
+    padding:
+        4px
+        7px;
+
+    border-radius: 7px;
+
+    background:
+        #F1F3F2;
+
+    color:
+        #727D76;
+
+    font-size: 7px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   ACCIONES DE COLMENA
+========================================================== */
+
+.detalle-colmena-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+}
+
+
+.btn-accion-colmena-detalle {
+
+    min-height: 32px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    padding:
+        6px
+        8px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 8px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.btn-accion-colmena-detalle:hover {
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+/* ==========================================================
+   VISOR FOTO APIARIO
+========================================================== */
+
+.visor-detalle-apiario {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 15000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 28px;
+
+    background:
+        rgba(11, 27, 20, 0.88);
+
+    backdrop-filter:
+        blur(7px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.22s ease,
+        visibility 0.22s ease;
+}
+
+
+.visor-detalle-apiario.activo {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+.visor-detalle-apiario-contenido {
+
+    width: auto;
+
+    max-width:
+        min(
+            1000px,
+            calc(100vw - 70px)
+        );
+
+    max-height:
+        calc(100vh - 70px);
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.14);
+
+    border-radius: 18px;
+
+    background:
+        #15271F;
+
+    box-shadow:
+        0 25px 80px
+        rgba(0, 0, 0, 0.38);
+}
+
+
+.visor-detalle-apiario-contenido img {
+
+    display: block;
+
+    max-width: 100%;
+
+    max-height:
+        calc(100vh - 100px);
+
+    object-fit: contain;
+}
+
+
+.btn-cerrar-visor-detalle-apiario {
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    z-index: 15010;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.11);
+
+    color: #FFFFFF;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   RESPONSIVE 1100
+========================================================== */
+
+@media (max-width: 1100px) {
+
+    .detalle-estadisticas {
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE 900
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .apiario-hero {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .apiario-hero-imagen {
+
+        min-height: 280px;
+
+    }
+
+
+    .apiario-hero-sin-imagen {
+
+        min-height: 280px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE 700
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .detalle-estadisticas {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+
+    .apiario-hero-contenido {
+
+        padding: 20px;
+
+    }
+
+
+    .apiario-hero-datos {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE 520
+========================================================== */
+
+@media (max-width: 520px) {
+
+    .apiario-hero {
+
+        border-radius: 15px;
+
+    }
+
+
+    .apiario-hero-imagen {
+
+        min-height: 220px;
+
+    }
+
+
+    .apiario-hero-sin-imagen {
+
+        min-height: 220px;
+
+    }
+
+
+    .apiario-hero-contenido {
+
+        padding: 16px;
+
+    }
+
+
+    .apiario-hero-superior {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+
+    .apiario-hero-contenido h1 {
+
+        font-size: 22px;
+
+    }
+
+
+    .detalle-estadisticas {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .apiario-hero-acciones {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .btn-gestionar-detalle-apiario {
+
+        width: 100%;
+
+    }
+
+
+    .visor-detalle-apiario {
+
+        padding: 12px;
+
+    }
+
+
+    .visor-detalle-apiario-contenido {
+
+        max-width:
+            calc(100vw - 24px);
+
+    }
+
+
+    .btn-cerrar-visor-detalle-apiario {
+
+        top: 12px;
+        right: 12px;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   HERO PRINCIPAL DEL APIARIO
+========================================================== */
+
+.detalle-apiario-hero {
+
+    width: 100%;
+
+    min-height: 330px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(320px, 0.9fr)
+        minmax(0, 1.1fr);
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 20px;
+
+    background: #FFFFFF;
+
+    box-shadow:
+        0 6px 20px
+        rgba(33, 79, 59, 0.08);
+}
+
+
+/* ==========================================================
+   FOTOGRAFÍA
+========================================================== */
+
+.detalle-apiario-hero-imagen {
+
+    position: relative;
+
+    min-height: 330px;
+
+    overflow: hidden;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.detalle-apiario-foto-btn {
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+}
+
+
+.detalle-apiario-foto-btn img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.35s ease,
+        filter 0.35s ease;
+}
+
+
+.detalle-apiario-foto-btn:hover img {
+
+    transform:
+        scale(1.04);
+
+    filter:
+        brightness(0.90);
+}
+
+
+/* ==========================================================
+   SIN FOTOGRAFÍA
+========================================================== */
+
+.detalle-apiario-sin-foto {
+
+    width: 100%;
+    height: 100%;
+    min-height: 330px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #FFF8D8,
+            #FFFFF3
+        );
+}
+
+
+.detalle-apiario-sin-foto > div {
+
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 27px;
+}
+
+
+.detalle-apiario-sin-foto strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+.detalle-apiario-sin-foto span {
+
+    max-width: 260px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   ESTADO SOBRE LA FOTO
+========================================================== */
+
+.detalle-hero-estado {
+
+    position: absolute;
+
+    top: 15px;
+    right: 15px;
+
+    z-index: 5;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        11px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 4px 14px
+        rgba(17, 37, 28, 0.14);
+}
+
+
+.detalle-hero-estado.bueno {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+.detalle-hero-estado.precaucion {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+.detalle-hero-estado.deficiente {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+/* ==========================================================
+   INFORMACIÓN DEL HERO
+========================================================== */
+
+.detalle-apiario-hero-info {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 27px;
+}
+
+
+/* ==========================================================
+   CABECERA HERO
+========================================================== */
+
+.detalle-hero-superior {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 16px;
+}
+
+
+.detalle-hero-etiqueta {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #A17D13;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+
+.detalle-hero-superior h2 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 23px;
+
+    font-weight: 800;
+
+    line-height: 1.25;
+}
+
+
+/* ==========================================================
+   BOTÓN GESTIONAR DEL HERO
+========================================================== */
+
+.detalle-btn-gestionar {
+
+    width: auto;
+
+    flex-shrink: 0;
+
+    padding:
+        9px
+        14px;
+}
+
+
+/* ==========================================================
+   DATOS HERO
+========================================================== */
+
+.detalle-hero-dato {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        10px
+        0;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+}
+
+
+.detalle-hero-dato-icono {
+
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 13px;
+}
+
+
+.detalle-hero-dato > div:last-child {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.detalle-hero-dato span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.detalle-hero-dato strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   OBSERVACIONES HERO
+========================================================== */
+
+.detalle-hero-observaciones {
+
+    margin-top: 15px;
+
+    padding: 13px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 237, 180, 0.20);
+}
+
+
+.detalle-hero-observaciones-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-bottom: 6px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+.detalle-hero-observaciones-titulo i {
+
+    color: #B8921E;
+
+    font-size: 12px;
+}
+
+
+.detalle-hero-observaciones-titulo strong {
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+.detalle-hero-observaciones p {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+
+.detalle-hero-observaciones
+.sin-observaciones {
+
+    color: #929B96;
+
+    font-style: italic;
+}
+
+
+/* ==========================================================
+   ACCIONES DEL HERO
+========================================================== */
+
+.detalle-hero-acciones {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+
+.detalle-hero-accion {
+
+    min-height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        11px;
+
+    border-radius: 10px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.detalle-hero-accion:hover {
+
+    transform:
+        translateY(-1px);
+}
+
+
+.detalle-hero-accion.mantenimiento {
+
+    background: #E7F2E3;
+
+    color: #4F744B;
+}
+
+
+.detalle-hero-accion.incidencia {
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+/* ==========================================================
+   ESTADO DEL ENCABEZADO
+========================================================== */
+
+.detalle-estado-apiario {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-shrink: 0;
+
+    padding:
+        7px
+        11px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.detalle-estado-apiario.bueno {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+.detalle-estado-apiario.precaucion {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+.detalle-estado-apiario.deficiente {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+
+
+/* ==========================================================
+   ESTADÍSTICAS
+========================================================== */
+
+.detalle-estadisticas {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 11px;
+}
+
+
+.detalle-estadistica {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 14px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 14px;
+
+    background: #FFFFFF;
+
+    box-shadow:
+        0 3px 12px
+        rgba(33, 79, 59, 0.05);
+}
+
+
+.detalle-estadistica-icono {
+
+    width: 39px;
+    height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    font-size: 15px;
+}
+
+
+.detalle-estadistica > div:last-child {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.detalle-estadistica span {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+.detalle-estadistica strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.detalle-estadistica small {
+
+    color: #929C96;
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+.detalle-estadistica.total
+.detalle-estadistica-icono {
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+.detalle-estadistica.activa
+.detalle-estadistica-icono {
+
+    background: #E5F4E3;
+
+    color: #4F7B49;
+}
+
+
+.detalle-estadistica.revision
+.detalle-estadistica-icono {
+
+    background: #FFF0BE;
+
+    color: #886814;
+}
+
+
+.detalle-estadistica.riesgo
+.detalle-estadistica-icono {
+
+    background: #FCE2DE;
+
+    color: #A84D44;
+}
+
+
+.detalle-estadistica.inactiva
+.detalle-estadistica-icono {
+
+    background: #EDF1EF;
+
+    color: #647069;
+}
+
+
+/* ==========================================================
+   FOTO MINIATURA DE COLMENA
+========================================================== */
+
+.tabla-colmena-fotografia {
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.tabla-colmena-fotografia img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.tabla-colmena-fotografia
+.tabla-colmena-icono {
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 0;
+}
+
+
+/* ==========================================================
+   COLMENA INACTIVA
+========================================================== */
+
+.fila-colmena-inactiva {
+
+    background:
+        rgba(239, 242, 240, 0.48);
+}
+
+
+.fila-colmena-inactiva:hover {
+
+    background:
+        rgba(230, 235, 232, 0.68) !important;
+}
+
+
+.colmena-bloqueada-mini {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    width: fit-content;
+
+    margin-top: 5px;
+
+    padding:
+        4px
+        6px;
+
+    border-radius: 7px;
+
+    background: #EEF1EF;
+
+    color: #707B74;
+
+    font-size: 6px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   FOTOGRAFÍA EN MODAL DE COLMENA
+========================================================== */
+
+.modal-colmena-fotografia-detalle {
+
+    height: 250px;
+
+    margin:
+        18px
+        22px
+        0;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 14px;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.modal-colmena-fotografia-detalle img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.modal-colmena-sin-foto {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+.modal-colmena-sin-foto i {
+
+    font-size: 30px;
+
+    opacity: 0.55;
+}
+
+
+.modal-colmena-sin-foto span {
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    opacity: 0.75;
+}
+
+
+/* ==========================================================
+   ALERTA COLMENA INACTIVA
+========================================================== */
+
+.alerta-colmena-inactiva-detalle {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-top: 12px;
+
+    padding: 11px;
+
+    border-radius: 10px;
+
+    background: #EEF1EF;
+
+    color: #667169;
+}
+
+
+.alerta-colmena-inactiva-detalle > i {
+
+    margin-top: 2px;
+
+    font-size: 13px;
+}
+
+
+.alerta-colmena-inactiva-detalle > div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.alerta-colmena-inactiva-detalle strong {
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+.alerta-colmena-inactiva-detalle span {
+
+    font-size: 7px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   OBSERVACIONES MODAL
+========================================================== */
+
+.modal-observaciones-colmena {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+
+.modal-observaciones-colmena.sin-observaciones {
+
+    color: #949D97;
+
+    font-style: italic;
+}
+
+
+/* ==========================================================
+   BOTONES FOOTER DEL MODAL
+========================================================== */
+
+.modal-colmena-footer {
+
+    gap: 8px;
+}
+
+
+.btn-modal-accion {
+
+    min-height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        8px
+        13px;
+
+    border-radius: 10px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.btn-modal-accion:hover {
+
+    transform:
+        translateY(-1px);
+}
+
+
+.btn-modal-accion.mantenimiento {
+
+    background: #E5F4E3;
+
+    color: #4F744B;
+}
+
+
+.btn-modal-accion.incidencia {
+
+    background: #FFF0BE;
+
+    color: #806312;
+}
+
+
+/* ==========================================================
+   GESTIONAR APIARIO EN ACCIONES INFERIORES
+========================================================== */
+
+.btn-accion-apiario.gestionar {
+
+    border: none;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   BOTÓN BLOQUEADO
+========================================================== */
+
+.btn-accion-colmena-detalle.bloqueado {
+
+    background: #EEF1EF;
+
+    color: #8A948E;
+
+    cursor: not-allowed;
+
+    opacity: 0.75;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 560px) {
+
+    .modal-colmena-fotografia-detalle {
+
+        height: 210px;
+
+        margin:
+            14px
+            16px
+            0;
+
+    }
+
+
+    .modal-colmena-footer {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .btn-modal-cerrar,
+    .btn-modal-accion {
+
+        flex: 1;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   EDICIÓN DE COLMENA DESDE DETALLE DEL APIARIO
+========================================================== */
+
+.detalle-edicion-colmena {
+
+    margin:
+        0
+        22px
+        20px;
+
+    padding: 18px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 14px;
+
+    background: #FFFDF3;
+}
+
+
+.detalle-edicion-colmena[hidden] {
+
+    display: none !important;
+}
+
+
+.detalle-edicion-colmena-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 17px;
+}
+
+
+.detalle-edicion-colmena-header span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.detalle-edicion-colmena-header h3 {
+
+    margin: 0;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+
+.btn-cerrar-edicion-colmena {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    cursor: pointer;
+}
+
+
+.form-editar-colmena-detalle {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+.detalle-edicion-grupo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.detalle-edicion-grupo label {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+.detalle-edicion-grupo select,
+.detalle-edicion-grupo textarea,
+.detalle-edicion-grupo input[type="file"] {
+
+    width: 100%;
+
+    padding:
+        10px
+        11px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color:
+        var(--apicultor-texto);
+
+    font-family: inherit;
+
+    font-size: 9px;
+}
+
+
+.detalle-edicion-grupo select:focus,
+.detalle-edicion-grupo textarea:focus {
+
+    border-color: #D4B640;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.20);
+}
+
+
+.detalle-edicion-grupo textarea {
+
+    resize: vertical;
+
+    min-height: 100px;
+
+    line-height: 1.6;
+}
+
+
+.detalle-edicion-grupo small {
+
+    color:
+        var(--apicultor-texto-secundario);
+
+    font-size: 7px;
+}
+
+
+.detalle-edicion-acciones {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    padding-top: 5px;
+}
+
+
+.btn-cancelar-edicion-colmena,
+.btn-guardar-edicion-colmena {
+
+    min-height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        8px
+        13px;
+
+    border-radius: 9px;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.btn-cancelar-edicion-colmena {
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    background: #FFFFFF;
+
+    color: #66736B;
+}
+
+
+.btn-guardar-edicion-colmena {
+
+    border:
+        1px solid
+        #D8B93D;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+}
+
+
+.btn-modal-accion.gestionar {
+
+    border:
+        1px solid
+        #D8B93D;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+@media (max-width: 560px) {
+
+    .detalle-edicion-colmena {
+
+        margin:
+            0
+            16px
+            16px;
+
+        padding: 14px;
+
+    }
+
+
+    .detalle-edicion-acciones {
+
+        display: grid;
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+    }
+
+
+    .btn-cancelar-edicion-colmena,
+    .btn-guardar-edicion-colmena {
+
+        width: 100%;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   MODO GESTIONAR COLMENA
+========================================================== */
+
+.detalle-edicion-colmena {
+
+    margin: 20px;
+
+    padding: 20px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 16px;
+
+    background: #FFFFF7;
+
+    animation:
+        aparecerGestionColmena
+        0.22s
+        ease;
+}
+
+
+.detalle-edicion-colmena[hidden] {
+
+    display: none !important;
+
+}
+
+
+.detalle-edicion-colmena.activo {
+
+    display: block;
+
+}
+
+
+@keyframes aparecerGestionColmena {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* ==========================================================
+   FORMULARIO
+========================================================== */
+
+.detalle-edicion-colmena
+.apiario-form-grupo {
+
+    margin-bottom: 16px;
+
+}
+
+
+.detalle-edicion-colmena
+.apiario-form-grupo label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+}
+
+
+.detalle-edicion-colmena
+.apiario-input {
+
+    width: 100%;
+
+    min-height: 42px;
+
+    padding:
+        10px
+        12px;
+
+    border:
+        1px solid
+        #D8E0DA;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+}
+
+
+.detalle-edicion-colmena
+textarea.apiario-input {
+
+    min-height: 110px;
+
+    resize: vertical;
+
+}
+
+
+.detalle-edicion-colmena
+.apiario-input:focus {
+
+    border-color:
+        #D2B23B;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.22);
+
+}
+
+
+/* ==========================================================
+   CABECERA VISUAL
+========================================================== */
+
+.detalle-edicion-colmena > h3 {
+
+    margin:
+        0
+        0
+        20px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+}
+
+
+.detalle-edicion-colmena > h3::before {
+
+    content: "\F4CA";
+
+    margin-right: 8px;
+
+    font-family:
+        "bootstrap-icons";
+
+    color: #B38C15;
+
+}
+
+
+/* ==========================================================
+   FOOTER FORMULARIO
+========================================================== */
+
+.detalle-edicion-colmena
+.apiario-editar-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    margin-top: 20px;
+
+    padding-top: 16px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+}
+
+
+/* ==========================================================
+   MODO EDICIÓN DEL MODAL
+========================================================== */
+
+.modal-colmena.modo-edicion-colmena {
+
+    background:
+        #FFFFF7;
+
+}
+
+
+.modal-colmena.modo-edicion-colmena
+.modal-colmena-header {
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+}
+
+
+/* ==========================================================
+   BOTÓN GESTIONAR
+========================================================== */
+
+.btn-modal-accion.gestionar {
+
+    border:
+        1px solid
+        #D8B93D;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 560px) {
+
+    .detalle-edicion-colmena {
+
+        margin: 12px;
+
+        padding: 15px;
+
+    }
+
+
+    .detalle-edicion-colmena
+    .apiario-editar-footer {
+
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+
+    }
+
+
+    .detalle-edicion-colmena
+    .btn-cancelar-editar-apiario,
+    .detalle-edicion-colmena
+    .btn-guardar-apiario {
+
+        width: 100%;
+
+    }
+
+}

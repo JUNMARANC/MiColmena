@@ -3750,3 +3750,1321 @@
     }
 
 }
+
+
+
+/* ==========================================================
+   ==========================================================
+   ACTUALIZACIÓN AGENDA - PANEL APICULTOR
+   CAMBIO DE ESTADO DE EVENTOS
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   74. CONTENEDOR GENERAL
+   GESTIÓN DEL ESTADO
+========================================================== */
+
+.agenda-gestion-estado {
+
+    margin:
+        0
+        20px
+        20px;
+
+    padding: 15px;
+
+    border-radius: 13px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    background:
+        #FFFFFF;
+
+}
+
+
+/* ==========================================================
+   75. HEADER DE GESTIÓN
+========================================================== */
+
+.agenda-gestion-estado-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+}
+
+
+/* ==========================================================
+   76. ICONO
+========================================================== */
+
+.agenda-gestion-estado-icono {
+
+    width: 42px;
+
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    font-size: 16px;
+
+}
+
+
+/* ==========================================================
+   77. CONTENIDO
+========================================================== */
+
+.agenda-gestion-estado-contenido {
+
+    min-width: 0;
+
+    flex: 1;
+
+}
+
+
+.agenda-gestion-estado-etiqueta {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 6.5px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.35px;
+
+}
+
+
+.agenda-gestion-estado-contenido > strong {
+
+    display: block;
+
+    color: #214F3B;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+}
+
+
+.agenda-gestion-estado-contenido > p {
+
+    margin:
+        5px
+        0
+        0;
+
+    color: #66746C;
+
+    font-size: 7.5px;
+
+    line-height: 1.65;
+
+}
+
+
+.agenda-gestion-estado-contenido > p b {
+
+    color: #214F3B;
+
+    font-weight: 800;
+
+}
+
+
+
+/* ==========================================================
+   78. EVENTO DISPONIBLE PARA ACTUALIZAR
+========================================================== */
+
+.agenda-gestion-estado-disponible {
+
+    border-color:
+        #CFE2CB;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(231, 242, 227, 0.65),
+            rgba(255, 255, 255, 0.92)
+        );
+
+}
+
+
+.agenda-gestion-estado-disponible
+.agenda-gestion-estado-icono {
+
+    background:
+        #DCEFD7;
+
+    color:
+        #4F744B;
+
+}
+
+
+.agenda-gestion-estado-disponible
+.agenda-gestion-estado-etiqueta {
+
+    color:
+        #5A8653;
+
+}
+
+
+
+/* ==========================================================
+   79. BOTONES CAMBIO DE ESTADO
+========================================================== */
+
+.agenda-gestion-estado-acciones {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 9px;
+
+    margin-top: 14px;
+
+}
+
+
+.btn-evento-estado {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        13px;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+
+    font-size: 7.5px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-evento-estado i {
+
+    font-size: 12px;
+
+}
+
+
+
+/* ==========================================================
+   COMPLETAR
+========================================================== */
+
+.btn-evento-completado {
+
+    border:
+        1px solid
+        #BFD9BA;
+
+    background:
+        #E7F2E3;
+
+    color:
+        #4F744B;
+
+}
+
+
+.btn-evento-completado:hover {
+
+    border-color:
+        #91BC88;
+
+    background:
+        #DCEFD7;
+
+    color:
+        #315B2D;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 4px 11px
+        rgba(79, 116, 75, 0.12);
+
+}
+
+
+
+/* ==========================================================
+   CANCELAR
+========================================================== */
+
+.btn-evento-cancelado {
+
+    border:
+        1px solid
+        #E6C1BC;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+.btn-evento-cancelado:hover {
+
+    border-color:
+        #D99A92;
+
+    background:
+        #F7D3CE;
+
+    color:
+        #8E3932;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 4px 11px
+        rgba(168, 77, 68, 0.11);
+
+}
+
+
+
+/* ==========================================================
+   80. EVENTO FUTURO BLOQUEADO
+========================================================== */
+
+.agenda-gestion-estado-bloqueado {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    border-color:
+        #E6DAA7;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 240, 190, 0.55),
+            rgba(255, 253, 245, 0.95)
+        );
+
+}
+
+
+.agenda-gestion-estado-bloqueado
+.agenda-gestion-estado-icono {
+
+    background:
+        #FFF0BE;
+
+    color:
+        #896817;
+
+}
+
+
+.agenda-gestion-estado-bloqueado
+.agenda-gestion-estado-etiqueta {
+
+    color:
+        #A17D18;
+
+}
+
+
+
+/* ==========================================================
+   81. EVENTO FINALIZADO
+========================================================== */
+
+.agenda-gestion-estado-finalizado {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+}
+
+
+
+/* ==========================================================
+   FINALIZADO - COMPLETADO
+========================================================== */
+
+.agenda-gestion-estado-finalizado.completado {
+
+    border-color:
+        #C9DEC5;
+
+    background:
+        rgba(231, 242, 227, 0.60);
+
+}
+
+
+.agenda-gestion-estado-finalizado.completado
+.agenda-gestion-estado-icono {
+
+    background:
+        #DCEFD7;
+
+    color:
+        #4F744B;
+
+}
+
+
+.agenda-gestion-estado-finalizado.completado
+.agenda-gestion-estado-etiqueta {
+
+    color:
+        #5A8653;
+
+}
+
+
+
+/* ==========================================================
+   FINALIZADO - CANCELADO
+========================================================== */
+
+.agenda-gestion-estado-finalizado.cancelado {
+
+    border-color:
+        #E7C4BF;
+
+    background:
+        rgba(252, 226, 222, 0.58);
+
+}
+
+
+.agenda-gestion-estado-finalizado.cancelado
+.agenda-gestion-estado-icono {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+.agenda-gestion-estado-finalizado.cancelado
+.agenda-gestion-estado-etiqueta {
+
+    color:
+        #A84D44;
+
+}
+
+
+
+/* ==========================================================
+   ==========================================================
+   82. MODAL CONFIRMACIÓN DE ESTADO
+   ==========================================================
+   ========================================================== */
+
+.agenda-modal-confirmacion-estado {
+
+    width: 100%;
+
+    max-width: 520px;
+
+    max-height:
+        calc(100vh - 32px);
+
+    max-height:
+        calc(100dvh - 32px);
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+}
+
+
+
+/* ==========================================================
+   83. HEADER CONFIRMACIÓN
+========================================================== */
+
+.agenda-confirmacion-header {
+
+    display: grid;
+
+    grid-template-columns:
+        auto
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        19px
+        20px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 237, 180, 0.45),
+            rgba(255, 255, 247, 0.95)
+        );
+
+}
+
+
+
+/* ==========================================================
+   84. ICONO CONFIRMACIÓN
+========================================================== */
+
+.agenda-confirmacion-icono {
+
+    width: 45px;
+
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        #FFF0BE;
+
+    color:
+        #896817;
+
+    font-size: 18px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+
+}
+
+
+/* COMPLETADO */
+
+.agenda-confirmacion-icono.completado {
+
+    background:
+        #DCEFD7;
+
+    color:
+        #4F744B;
+
+}
+
+
+/* CANCELADO */
+
+.agenda-confirmacion-icono.cancelado {
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+
+/* ==========================================================
+   85. INFORMACIÓN HEADER
+========================================================== */
+
+.agenda-confirmacion-header-info {
+
+    min-width: 0;
+
+}
+
+
+.agenda-confirmacion-header-info > span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        #8B731E;
+
+    font-size: 6.5px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.35px;
+
+}
+
+
+.agenda-confirmacion-header-info h2 {
+
+    margin: 0;
+
+    color:
+        #214F3B;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    line-height: 1.3;
+
+}
+
+
+
+/* ==========================================================
+   86. BODY CONFIRMACIÓN
+========================================================== */
+
+.agenda-confirmacion-body {
+
+    padding:
+        22px
+        20px;
+
+    background:
+        #FFFFF7;
+
+}
+
+
+.agenda-confirmacion-body > p {
+
+    margin:
+        0
+        0
+        15px;
+
+    color:
+        #66746C;
+
+    font-size: 8px;
+
+    line-height: 1.7;
+
+}
+
+
+
+/* ==========================================================
+   EVENTO A MODIFICAR
+========================================================== */
+
+.agenda-confirmacion-evento {
+
+    padding:
+        13px
+        14px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 237, 180, 0.20);
+
+}
+
+
+.agenda-confirmacion-evento > span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        #7B877F;
+
+    font-size: 6.5px;
+
+    font-weight: 700;
+
+}
+
+
+.agenda-confirmacion-evento > strong {
+
+    display: block;
+
+    color:
+        #214F3B;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+
+/* ==========================================================
+   87. FOOTER CONFIRMACIÓN
+========================================================== */
+
+.agenda-confirmacion-footer {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 9px;
+
+    padding:
+        14px
+        20px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        #FFFFF7;
+
+}
+
+
+
+/* ==========================================================
+   BOTÓN VOLVER
+========================================================== */
+
+.btn-confirmacion-volver {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius:
+        10px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #66746C;
+
+    font-family: inherit;
+
+    font-size:
+        7.5px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-confirmacion-volver:hover {
+
+    border-color:
+        #CBD5CE;
+
+    background:
+        #F4F7F5;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+
+/* ==========================================================
+   BOTÓN CONFIRMAR
+========================================================== */
+
+.btn-confirmacion-estado {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #DDBA3F;
+
+    border-radius:
+        10px;
+
+    background:
+        #FFDD71;
+
+    color:
+        #214F3B;
+
+    font-family:
+        inherit;
+
+    font-size:
+        7.5px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+
+/* ==========================================================
+   CONFIRMAR COMPLETADO
+========================================================== */
+
+.btn-confirmacion-estado.completado {
+
+    border-color:
+        #AFCDAA;
+
+    background:
+        #DCEFD7;
+
+    color:
+        #3F6E39;
+
+}
+
+
+.btn-confirmacion-estado.completado:hover {
+
+    border-color:
+        #8CB784;
+
+    background:
+        #CDE7C7;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 13px
+        rgba(79, 116, 75, 0.13);
+
+}
+
+
+
+/* ==========================================================
+   CONFIRMAR CANCELADO
+========================================================== */
+
+.btn-confirmacion-estado.cancelado {
+
+    border-color:
+        #E0AAA3;
+
+    background:
+        #FCE2DE;
+
+    color:
+        #A84D44;
+
+}
+
+
+.btn-confirmacion-estado.cancelado:hover {
+
+    border-color:
+        #D38D84;
+
+    background:
+        #F7D2CD;
+
+    color:
+        #8E3932;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 13px
+        rgba(168, 77, 68, 0.12);
+
+}
+
+
+
+/* ==========================================================
+   BOTÓN DESHABILITADO
+========================================================== */
+
+.btn-confirmacion-estado:disabled {
+
+    opacity:
+        0.65;
+
+    cursor:
+        not-allowed;
+
+    transform:
+        none !important;
+
+    box-shadow:
+        none !important;
+
+}
+
+
+
+/* ==========================================================
+   88. SCROLL MEJORADO DEL MODAL DEL EVENTO
+========================================================== */
+
+.agenda-modal {
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #D8C26A
+        #F5F2E5;
+
+}
+
+
+.agenda-modal::-webkit-scrollbar {
+
+    width:
+        8px;
+
+}
+
+
+.agenda-modal::-webkit-scrollbar-track {
+
+    background:
+        #F5F2E5;
+
+    border-radius:
+        20px;
+
+}
+
+
+.agenda-modal::-webkit-scrollbar-thumb {
+
+    border:
+        2px solid
+        #F5F2E5;
+
+    border-radius:
+        20px;
+
+    background:
+        #CBB44F;
+
+}
+
+
+.agenda-modal::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #A99032;
+
+}
+
+
+
+/* ==========================================================
+   89. FOCO / ACCESIBILIDAD
+========================================================== */
+
+.btn-evento-estado:focus-visible,
+.btn-confirmacion-volver:focus-visible,
+.btn-confirmacion-estado:focus-visible {
+
+    outline:
+        3px solid
+        rgba(215, 184, 73, 0.35);
+
+    outline-offset:
+        2px;
+
+}
+
+
+
+/* ==========================================================
+   ==========================================================
+   90. RESPONSIVE CAMBIO DE ESTADO
+   ==========================================================
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+
+    /* ======================================================
+       GESTIÓN DE ESTADO
+    ====================================================== */
+
+    .agenda-gestion-estado {
+
+        margin:
+            0
+            16px
+            16px;
+
+        padding:
+            13px;
+
+    }
+
+
+    .agenda-gestion-estado-acciones {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .btn-evento-estado {
+
+        width:
+            100%;
+
+    }
+
+
+
+    /* ======================================================
+       CONFIRMACIÓN
+    ====================================================== */
+
+    .agenda-modal-confirmacion-estado {
+
+        max-width:
+            500px;
+
+    }
+
+
+    .agenda-confirmacion-header {
+
+        padding:
+            16px;
+
+    }
+
+
+    .agenda-confirmacion-body {
+
+        padding:
+            18px
+            16px;
+
+    }
+
+
+    .agenda-confirmacion-footer {
+
+        padding:
+            13px
+            16px;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   91. RESPONSIVE 520px
+========================================================== */
+
+@media (max-width: 520px) {
+
+
+    .agenda-gestion-estado {
+
+        margin:
+            0
+            12px
+            14px;
+
+    }
+
+
+    .agenda-gestion-estado-header,
+    .agenda-gestion-estado-bloqueado,
+    .agenda-gestion-estado-finalizado {
+
+        gap:
+            9px;
+
+    }
+
+
+    .agenda-gestion-estado-icono {
+
+        width:
+            38px;
+
+        height:
+            38px;
+
+        border-radius:
+            10px;
+
+        font-size:
+            14px;
+
+    }
+
+
+    .agenda-confirmacion-header {
+
+        grid-template-columns:
+            40px
+            minmax(0, 1fr)
+            auto;
+
+        gap:
+            9px;
+
+    }
+
+
+    .agenda-confirmacion-icono {
+
+        width:
+            40px;
+
+        height:
+            40px;
+
+        border-radius:
+            11px;
+
+        font-size:
+            16px;
+
+    }
+
+
+    .agenda-confirmacion-header-info h2 {
+
+        font-size:
+            15px;
+
+    }
+
+
+    .agenda-confirmacion-footer {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .btn-confirmacion-volver,
+    .btn-confirmacion-estado {
+
+        width:
+            100%;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   92. RESPONSIVE 390px
+========================================================== */
+
+@media (max-width: 390px) {
+
+
+    .agenda-gestion-estado-contenido > strong {
+
+        font-size:
+            9px;
+
+    }
+
+
+    .agenda-gestion-estado-contenido > p {
+
+        font-size:
+            7px;
+
+    }
+
+
+    .agenda-confirmacion-body {
+
+        padding:
+            16px
+            13px;
+
+    }
+
+
+    .agenda-confirmacion-footer {
+
+        padding:
+            12px
+            13px;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   93. MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-evento-estado,
+    .btn-confirmacion-volver,
+    .btn-confirmacion-estado,
+    .agenda-confirmacion-icono {
+
+        transition:
+            none;
+
+    }
+
+}
+
+
+/* ==========================================================
+   FIN CAMBIO DE ESTADO - AGENDA APICULTOR
+========================================================== */
