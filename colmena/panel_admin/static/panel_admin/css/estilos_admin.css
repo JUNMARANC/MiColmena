@@ -893,47 +893,64 @@ MÓDULO APIARIOS
    6. FILTROS
 ========================================================== */
 
-.filtros-incidencias {
-    margin-bottom: 25px;
-
-    padding: 20px;
-
-    border: 1px solid #dcebe1;
-    border-radius: 18px;
-
-    background: #f7fbf8;
+.incidencias-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
 }
 
-.filtros-incidencias label {
-    margin-bottom: 6px;
+.incidencias-toolbar-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    flex: 1 1 170px;
+}
+
+.incidencias-toolbar-campo label {
+    margin-bottom: 0;
 
     color: #214f3b;
 
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
 }
 
-.filtros-incidencias .form-select,
-.filtros-incidencias .form-control {
-    min-height: 42px;
-
-    border: 1px solid #ceddd3;
-    border-radius: 10px;
-
-    box-shadow: none;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+.incidencias-toolbar-campo .form-select,
+.incidencias-toolbar-campo .form-control {
+    height: 42px;
 }
 
-.filtros-incidencias .form-select:focus,
-.filtros-incidencias .form-control:focus {
-    border-color: #5f9781;
+.incidencias-toolbar-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 10px;
+}
 
-    box-shadow:
-        0 0 0 0.2rem
-        rgba(95, 151, 129, 0.12);
+.incidencias-toolbar-acciones .btn {
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+
+    .incidencias-toolbar-campo {
+        flex: 1 1 100%;
+    }
+
+    .incidencias-toolbar-acciones {
+        width: 100%;
+    }
+
+    .incidencias-toolbar-acciones .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
 }
 
 
@@ -945,8 +962,6 @@ MÓDULO APIARIOS
     width: 100%;
 
     overflow-x: auto;
-
-    border-radius: 14px;
 }
 
 .tabla-incidencias table {
@@ -956,47 +971,10 @@ MÓDULO APIARIOS
 }
 
 
-/* ==========================================================
-   8. CABECERA DE TABLA
-========================================================== */
-
-.tabla-incidencias thead th {
-    padding: 15px;
-
-    border-bottom: none;
-
-    background: #f1f8f3;
-
-    color: #214f3b;
-
-    font-size: 0.88rem;
-    font-weight: 700;
-
-    white-space: nowrap;
-}
-
-
-/* ==========================================================
-   9. FILAS DE TABLA
-========================================================== */
-
-.tabla-incidencias tbody td {
-    padding: 15px;
-
-    color: #34473e;
-
-    vertical-align: middle;
-}
-
-.tabla-incidencias tbody tr {
-    transition:
-        background 0.2s ease;
-}
-
-.tabla-incidencias tbody tr:hover {
-    background:
-        rgba(247, 251, 248, 0.72);
-}
+/* Nota: el encabezado y las filas de esta tabla ya no tienen
+   colores propios — heredan el estilo global de .table (el
+   mismo que usan Apiarios, Colmenas y Mantenimientos), para
+   que las 4 tablas se vean idénticas. */
 
 
 /* ==========================================================
