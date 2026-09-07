@@ -9,72 +9,69 @@
 
 <div class="container-fluid py-4">
 
-    <div class="incidencias-container">
+    <div class="dashboard-fondo-panal incidencias-header-panal mb-4">
 
-        <div class="dashboard-fondo-panal incidencias-header-panal">
+    <div class="particulas-flotantes" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
 
-            <div class="particulas-flotantes" aria-hidden="true">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span><span></span><span></span>
+    <div class="dashboard-fondo-panal-contenido">
+
+        <div class="incidencias-header">
+            <div>
+                <h2>
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Gestión de Incidencias
+                </h2>
+
+                <p>
+                    Registra, consulta y realiza seguimiento a las incidencias.
+                </p>
             </div>
 
-            <div class="dashboard-fondo-panal-contenido">
+    <div class="d-flex align-items-center gap-3">
 
-                <div class="incidencias-header">
-                    <div>
-                        <h2>
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            Gestión de Incidencias
-                        </h2>
+        <div class="selector-vista" role="group" aria-label="Modo de visualización">
+            <button type="button"
+                    id="btnVistaTabla"
+                    class="selector-vista-btn activo"
+                    title="Ver en tabla">
+                <i class="bi bi-table"></i>
+            </button>
 
-                        <p>
-                            Registra, consulta y realiza seguimiento a las incidencias.
-                        </p>
-                    </div>
-
-            <div class="d-flex align-items-center gap-3">
-
-                <div class="selector-vista" role="group" aria-label="Modo de visualización">
-                    <button type="button"
-                            id="btnVistaTabla"
-                            class="selector-vista-btn activo"
-                            title="Ver en tabla">
-                        <i class="bi bi-table"></i>
-                    </button>
-
-                    <button type="button"
-                            id="btnVistaTarjetas"
-                            class="selector-vista-btn"
-                            title="Ver en tarjetas">
-                        <i class="bi bi-grid-3x3-gap-fill"></i>
-                    </button>
-                </div>
-
-                {% if "ir" in permisos_usuario %}
-                    <button
-                        type="button"
-                        class="btn btn-agregar-incidencia"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalAgregarIncidencia">
-
-                        <i class="bi bi-plus-lg me-1"></i>
-                        Agregar incidencia
-                    </button>
-                {% endif %}
-            </div>
-                </div>
-
-            </div>
-
+            <button type="button"
+                    id="btnVistaTarjetas"
+                    class="selector-vista-btn"
+                    title="Ver en tarjetas">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </button>
         </div>
 
+        {% if "ir" in permisos_usuario %}
+            <button
+                type="button"
+                class="btn btn-success rounded-3 px-4"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAgregarIncidencia">
+
+                <i class="bi bi-plus-circle me-2"></i>
+                Agregar
+            </button>
+        {% endif %}
+    </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card-admin mb-4">
+
         <!-- FILTROS -->
-        <form method="GET" class="filtros-incidencias">
+        <form method="GET" class="incidencias-toolbar">
 
-            <div class="row g-3 align-items-end">
-
-                <div class="col-md-3">
+                <div class="incidencias-toolbar-campo">
                     <label for="filtroEntidad">Entidad</label>
 
                     <select
@@ -106,7 +103,7 @@
 
                 <!-- Filtro dinámico de apicultor -->
                 <div
-                    class="col-md-3 filtro-entidad filtro-apicultor"
+                    class="incidencias-toolbar-campo filtro-entidad filtro-apicultor"
                     {% if filtro_entidad != "Apicultor" %}style="display:none;"{% endif %}>
 
                     <label for="filtroApicultor">Apicultor</label>
@@ -135,7 +132,7 @@
 
                 <!-- Filtro dinámico de apiario -->
                 <div
-                    class="col-md-3 filtro-entidad filtro-apiario"
+                    class="incidencias-toolbar-campo filtro-entidad filtro-apiario"
                     {% if filtro_entidad != "Apiario" and filtro_entidad != "Colmena" %}style="display:none;"{% endif %}>
 
                     <label for="filtroApiario">Apiario</label>
@@ -159,7 +156,7 @@
 
                 <!-- Filtro dinámico de colmena -->
                 <div
-                    class="col-md-3 filtro-entidad filtro-colmena"
+                    class="incidencias-toolbar-campo filtro-entidad filtro-colmena"
                     {% if filtro_entidad != "Colmena" %}style="display:none;"{% endif %}>
 
                     <label for="filtroColmena">Colmena</label>
@@ -184,7 +181,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="incidencias-toolbar-campo">
                     <label for="filtroPrioridad">Prioridad</label>
 
                     <select
@@ -216,7 +213,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="incidencias-toolbar-campo">
                     <label for="filtroEstado">Estado</label>
 
                     <select
@@ -243,27 +240,28 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-success w-100">
+                <div class="incidencias-toolbar-acciones">
+
+                    <button type="submit" class="btn btn-success">
                         <i class="bi bi-funnel me-1"></i>
                         Filtrar
                     </button>
-                </div>
 
-                <div class="col-md-2">
                     <a
                         href="{% url 'incidencias_admin' %}"
-                        class="btn btn-outline-secondary w-100">
+                        class="btn btn-outline-secondary">
 
                         <i class="bi bi-arrow-counterclockwise me-1"></i>
                         Limpiar
                     </a>
+
                 </div>
-            </div>
         </form>
 
+    </div>
+
         <!-- TABLA -->
-        <div class="tabla-incidencias" id="vistaTablaIncidencias">
+        <div class="card-admin tabla-incidencias" id="vistaTablaIncidencias">
 
             <table class="table table-hover align-middle mb-0">
 
@@ -328,22 +326,30 @@
 
                             <td>
                                 {% if incidencia.prioridad == "Baja" %}
-                                    <span class="badge-prioridad prioridad-baja">
+                                    <span class="badge-prioridad prioridad-baja"
+                                          data-bs-toggle="tooltip"
+                                          title="Puede atenderse sin urgencia.">
                                         Baja
                                     </span>
 
                                 {% elif incidencia.prioridad == "Media" %}
-                                    <span class="badge-prioridad prioridad-media">
+                                    <span class="badge-prioridad prioridad-media"
+                                          data-bs-toggle="tooltip"
+                                          title="Conviene atenderla pronto.">
                                         Media
                                     </span>
 
                                 {% elif incidencia.prioridad == "Alta" %}
-                                    <span class="badge-prioridad prioridad-alta">
+                                    <span class="badge-prioridad prioridad-alta"
+                                          data-bs-toggle="tooltip"
+                                          title="Requiere atención prioritaria.">
                                         Alta
                                     </span>
 
                                 {% else %}
-                                    <span class="badge-prioridad prioridad-critica">
+                                    <span class="badge-prioridad prioridad-critica"
+                                          data-bs-toggle="tooltip"
+                                          title="Atender de inmediato.">
                                         Crítica
                                     </span>
                                 {% endif %}
@@ -351,17 +357,23 @@
 
                             <td>
                                 {% if incidencia.estado == "Pendiente" %}
-                                    <span class="badge-estado estado-pendiente">
+                                    <span class="badge-estado estado-pendiente"
+                                          data-bs-toggle="tooltip"
+                                          title="Aún no se ha atendido.">
                                         Pendiente
                                     </span>
 
                                 {% elif incidencia.estado == "En proceso" %}
-                                    <span class="badge-estado estado-proceso">
+                                    <span class="badge-estado estado-proceso"
+                                          data-bs-toggle="tooltip"
+                                          title="Se está trabajando en ella.">
                                         En proceso
                                     </span>
 
                                 {% else %}
-                                    <span class="badge-estado estado-resuelta">
+                                    <span class="badge-estado estado-resuelta"
+                                          data-bs-toggle="tooltip"
+                                          title="Ya fue resuelta.">
                                         Resuelta
                                     </span>
                                 {% endif %}
@@ -388,6 +400,7 @@
                                         <i class="bi bi-eye"></i>
                                     </button>
 
+                                    {% if "ig" in permisos_usuario %}
                                     <button
                                         type="button"
                                         class="btn-accion btn-editar"
@@ -407,6 +420,7 @@
 
                                         <i class="bi bi-trash"></i>
                                     </button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -462,11 +476,17 @@
                     {% endif %}
 
                     {% if incidencia.estado == "Pendiente" %}
-                        <span class="badge-estado estado-pendiente">Pendiente</span>
+                        <span class="badge-estado estado-pendiente"
+                              data-bs-toggle="tooltip"
+                              title="Aún no se ha atendido.">Pendiente</span>
                     {% elif incidencia.estado == "En proceso" %}
-                        <span class="badge-estado estado-proceso">En proceso</span>
+                        <span class="badge-estado estado-proceso"
+                              data-bs-toggle="tooltip"
+                              title="Se está trabajando en ella.">En proceso</span>
                     {% else %}
-                        <span class="badge-estado estado-resuelta">Resuelta</span>
+                        <span class="badge-estado estado-resuelta"
+                              data-bs-toggle="tooltip"
+                              title="Ya fue resuelta.">Resuelta</span>
                     {% endif %}
                 </div>
 
@@ -500,13 +520,21 @@
                 </div>
 
                 {% if incidencia.prioridad == "Baja" %}
-                    <span class="badge-prioridad prioridad-baja">Prioridad Baja</span>
+                    <span class="badge-prioridad prioridad-baja"
+                          data-bs-toggle="tooltip"
+                          title="Puede atenderse sin urgencia.">Prioridad Baja</span>
                 {% elif incidencia.prioridad == "Media" %}
-                    <span class="badge-prioridad prioridad-media">Prioridad Media</span>
+                    <span class="badge-prioridad prioridad-media"
+                          data-bs-toggle="tooltip"
+                          title="Conviene atenderla pronto.">Prioridad Media</span>
                 {% elif incidencia.prioridad == "Alta" %}
-                    <span class="badge-prioridad prioridad-alta">Prioridad Alta</span>
+                    <span class="badge-prioridad prioridad-alta"
+                          data-bs-toggle="tooltip"
+                          title="Requiere atención prioritaria.">Prioridad Alta</span>
                 {% else %}
-                    <span class="badge-prioridad prioridad-critica">Prioridad Crítica</span>
+                    <span class="badge-prioridad prioridad-critica"
+                          data-bs-toggle="tooltip"
+                          title="Atender de inmediato.">Prioridad Crítica</span>
                 {% endif %}
 
                 <div class="acciones-incidencia mt-3">
@@ -575,7 +603,6 @@
                 </ul>
             </nav>
         {% endif %}
-    </div>
 </div>
 
 <!-- MODAL AGREGAR -->
@@ -2722,7 +2749,5 @@
     </div>
 
 {% endfor %}
-
-<script src="{% static 'panel_admin/js/funciones_admin.js' %}"></script>
 
 {% endblock %}
