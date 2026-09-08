@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.template.loader import render_to_string
+from panel_admin.reportes.marca import contexto_marca
 from django.utils import timezone
 
 from dbmicolmena.models import (
@@ -1341,7 +1342,10 @@ def renderizar_pdf(
             "admin_panel/reportes/pdf/"
             "actividad_apicultores.html"
         ),
-        contexto
+        {
+            **contexto,
+            **contexto_marca(),
+        }
     )
 
     from weasyprint import HTML

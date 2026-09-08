@@ -91,6 +91,16 @@
             width: 56px;
         }
 
+        /* Logo de Mi Colmena en el encabezado.
+           El tamaño se fija en CSS aunque el PNG sea de 200px:
+           así el PDF conserva resolución al hacer zoom o imprimir. */
+        .logo-marca {
+            width: 46px;
+            height: 46px;
+            display: block;
+        }
+
+
         .icono-reporte {
             width: 44px;
             height: 44px;
@@ -390,9 +400,15 @@
 
                 <td class="columna-icono">
 
-                    <div class="icono-reporte">
-                        AM
-                    </div>
+                    {% if logo_reporte %}
+                        <img
+                            src="{{ logo_reporte }}"
+                            alt="Mi Colmena"
+                            class="logo-marca"
+                        >
+                    {% else %}
+                        <div class="icono-reporte">AM</div>
+                    {% endif %}
 
                 </td>
 

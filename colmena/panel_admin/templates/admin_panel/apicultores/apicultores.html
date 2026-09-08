@@ -44,112 +44,150 @@
 
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <!-- ==========================================================
+         BUSCADOR
+    =========================================================== -->
 
-        <div class="card-body">
+    <div class="card-admin buscador-apicultores mb-4">
 
-            <form method="GET">
+        <form method="GET" id="formBuscarApicultores">
 
-                <div class="row g-3 align-items-end">
+            <div class="buscador-apicultores-fila">
 
-                    <div class="col-md-3">
+                <!-- ----- CAMPO DE BÚSQUEDA ----- -->
 
-                        <label
-                            for="tipoFiltro"
-                            class="form-label fw-semibold"
-                        >
-                            Filtrar por
-                        </label>
+                <div class="buscador-apicultores-campo">
 
-                        <select
-                            class="form-select"
-                            id="tipoFiltro"
-                            name="tipo_filtro"
-                        >
-                            <option value="">
-                                Todos los campos
-                            </option>
+                    <label for="busqueda" class="buscador-apicultores-label">
+                        Buscar
+                    </label>
 
-                            <option
-                                value="nombre"
-                                {% if tipo_filtro == "nombre" %}selected{% endif %}
-                            >
-                                Nombre
-                            </option>
+                    <div class="buscador-apicultores-input">
 
-                            <option
-                                value="identificacion"
-                                {% if tipo_filtro == "identificacion" %}selected{% endif %}
-                            >
-                                Identificación
-                            </option>
-
-                            <option
-                                value="telefono"
-                                {% if tipo_filtro == "telefono" %}selected{% endif %}
-                            >
-                                Teléfono
-                            </option>
-
-                            <option
-                                value="correo"
-                                {% if tipo_filtro == "correo" %}selected{% endif %}
-                            >
-                                Correo
-                            </option>
-                        </select>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <label
-                            for="busqueda"
-                            class="form-label fw-semibold"
-                        >
-                            Buscar
-                        </label>
+                        <i class="bi bi-search" aria-hidden="true"></i>
 
                         <input
-                            type="text"
-                            class="form-control"
+                            type="search"
                             id="busqueda"
                             name="busqueda"
                             value="{{ busqueda }}"
-                            placeholder="Escribe el dato que deseas buscar"
+                            placeholder="Nombre, identificación, teléfono o correo"
+                            autocomplete="off"
                         >
 
-                    </div>
-
-                    <div class="col-md-3">
-
-                        <div class="d-flex gap-2">
-
-                            <button
-                                type="submit"
-                                class="btn btn-success flex-grow-1"
-                            >
-                                <i class="bi bi-search me-1"></i>
-                                Buscar
-                            </button>
-
-                            <a
-                                href="{% url 'apicultores_admin' %}"
-                                class="btn btn-outline-secondary"
-                                title="Limpiar filtros"
-                            >
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </a>
-
-                        </div>
+                        <!-- Aparece solo cuando el campo tiene texto -->
+                        <button
+                            type="button"
+                            class="buscador-apicultores-limpiar-campo"
+                            id="btnLimpiarCampoApicultores"
+                            title="Borrar lo escrito"
+                            aria-label="Borrar lo escrito"
+                            hidden
+                        >
+                            <i class="bi bi-x-lg"></i>
+                        </button>
 
                     </div>
 
                 </div>
 
-            </form>
 
-        </div>
+                <!-- ----- SELECTOR DE CAMPO ----- -->
+
+                <div class="buscador-apicultores-tipo">
+
+                    <label for="tipoFiltro" class="buscador-apicultores-label">
+                        Filtrar por
+                    </label>
+
+                    <select class="form-select" id="tipoFiltro" name="tipo_filtro">
+
+                        <option value="">
+                            Todos los campos
+                        </option>
+
+                        <option value="nombre" {% if tipo_filtro == "nombre" %}selected{% endif %}>
+                            Nombre
+                        </option>
+
+                        <option value="identificacion" {% if tipo_filtro == "identificacion" %}selected{% endif %}>
+                            Identificación
+                        </option>
+
+                        <option value="telefono" {% if tipo_filtro == "telefono" %}selected{% endif %}>
+                            Teléfono
+                        </option>
+
+                        <option value="correo" {% if tipo_filtro == "correo" %}selected{% endif %}>
+                            Correo
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ----- ACCIONES ----- -->
+
+                <div class="buscador-apicultores-acciones">
+
+                    <button type="submit" class="btn btn-filtrar">
+                        <i class="bi bi-search"></i>
+                        Buscar
+                    </button>
+
+                    {% if busqueda or tipo_filtro %}
+                        <a
+                            href="{% url 'apicultores_admin' %}"
+                            class="btn btn-limpiar"
+                            title="Quitar el filtro y ver todos"
+                        >
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            Limpiar
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- ----- RESUMEN DEL FILTRO ACTIVO -----
+                 Antes no había forma de saber que había un filtro puesto:
+                 la tabla simplemente mostraba menos filas. -->
+
+            {% if busqueda or tipo_filtro %}
+
+                <div class="buscador-apicultores-resumen">
+
+                    <span class="buscador-apicultores-chip">
+                        <i class="bi bi-funnel-fill"></i>
+
+                        {% if tipo_filtro %}
+                            {{ tipo_filtro|capfirst }}
+                        {% else %}
+                            Todos los campos
+                        {% endif %}
+
+                        {% if busqueda %}
+                            &middot; &ldquo;{{ busqueda }}&rdquo;
+                        {% endif %}
+                    </span>
+
+                    <span class="buscador-apicultores-conteo">
+                        {{ apicultores.paginator.count }}
+                        {% if apicultores.paginator.count == 1 %}
+                            apicultor encontrado
+                        {% else %}
+                            apicultores encontrados
+                        {% endif %}
+                    </span>
+
+                </div>
+
+            {% endif %}
+
+        </form>
 
     </div>
 
