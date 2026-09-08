@@ -198,3 +198,37 @@ document.addEventListener("DOMContentLoaded", function () {
         });
  
 });
+
+
+/* =========================================================
+   BUSCADOR: BOTÓN DE BORRAR LO ESCRITO
+
+   La X dentro del campo solo aparece cuando hay texto.
+   Al pulsarla borra el campo y devuelve el foco ahí mismo,
+   para poder escribir de nuevo sin volver a hacer clic.
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const campo = document.getElementById("busqueda");
+    const boton = document.getElementById("btnLimpiarCampoApicultores");
+
+    if (!campo || !boton) {
+        return;
+    }
+
+    function actualizarBoton() {
+        boton.hidden = campo.value.trim() === "";
+    }
+
+    actualizarBoton();
+
+    campo.addEventListener("input", actualizarBoton);
+
+    boton.addEventListener("click", function () {
+        campo.value = "";
+        actualizarBoton();
+        campo.focus();
+    });
+
+});

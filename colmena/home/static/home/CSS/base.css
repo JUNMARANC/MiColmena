@@ -16,6 +16,7 @@ body{
 
 body{
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     font-family: "Montserrat Alternates", sans-serif;
@@ -126,6 +127,7 @@ HERO INICIO
 .hero-inicio{
     width: 100%;
     min-height: calc(100vh - 90px);
+    min-height: calc(100dvh - 90px);
     margin: 0;
     padding-left: 70px;
     position: relative;
@@ -160,6 +162,152 @@ HERO INICIO
 .hero-slide.activa{
     opacity: 1;
     z-index: 1;
+}
+
+
+/* =========================
+ANIMACIONES DEL HERO
+========================= */
+
+/* Ken Burns: la imagen del slide activo hace un zoom lentísimo.
+   Es lo que hace que un carrusel de fotos fijas se sienta vivo
+   sin distraer del texto. 18s para que el movimiento sea casi
+   imperceptible: si se nota, molesta. */
+
+.hero-slide[data-tipo="imagen"]{
+    transform: scale(1);
+    transition: opacity .6s ease;
+}
+
+.hero-slide[data-tipo="imagen"].activa{
+    animation: acercarHero 18s ease-out forwards;
+}
+
+@keyframes acercarHero{
+    from { transform: scale(1); }
+    to   { transform: scale(1.08); }
+}
+
+
+/* Velo oscuro sobre las fotos.
+   El texto del hero es blanco; sobre una foto clara se pierde.
+   El degradado carga más en el lado del texto y deja limpio el
+   resto de la imagen. */
+
+.hero-slide[data-tipo="imagen"]::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        100deg,
+        rgba(15, 38, 27, .72) 0%,
+        rgba(15, 38, 27, .45) 45%,
+        rgba(15, 38, 27, .15) 100%
+    );
+}
+
+
+/* Las flechas y los puntos aparecen al acercar el mouse al hero.
+   Mientras tanto no estorban la foto. */
+
+/* El fundido solo aplica donde hay mouse. En pantallas táctiles
+   no existe :hover, así que las flechas se quedarían al 35% para
+   siempre y serían casi invisibles. */
+
+@media (hover: hover) and (pointer: fine){
+
+    .hero-flecha,
+    .hero-puntos{
+        opacity: .35;
+        transition: opacity .3s ease;
+    }
+
+    .hero-carrusel:hover .hero-flecha,
+    .hero-carrusel:hover .hero-puntos,
+    .hero-flecha:focus-visible,
+    .hero-puntos button:focus-visible{
+        opacity: 1;
+    }
+}
+
+
+/* El punto activo se estira en vez de solo cambiar de color:
+   se ve de un vistazo en cuál slide vas. */
+
+.hero-punto{
+    position: relative;
+    transition:
+        width .35s cubic-bezier(.34,1.56,.64,1),
+        background-color .3s ease;
+}
+
+/* El punto se ve de 10px pero se toca en 44px. Es el mínimo
+   recomendado para objetivos táctiles; con 10px el dedo falla
+   casi siempre. */
+.hero-punto::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+}
+
+.hero-punto.activo{
+    width: 26px;
+    border-radius: 999px;
+}
+
+
+/* Barra de progreso del slide actual, pegada al borde inferior
+   del hero. Avisa cuándo va a cambiar solo. */
+
+.hero-progreso{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(255,255,255,.18);
+    z-index: 3;
+    overflow: hidden;
+}
+
+.hero-progreso span{
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #f6de87, #f0a000);
+}
+
+.hero-progreso.corriendo span{
+    animation: avanzarProgresoHero var(--hero-duracion, 6s) linear forwards;
+}
+
+@keyframes avanzarProgresoHero{
+    from { width: 0; }
+    to   { width: 100%; }
+}
+
+
+@media (prefers-reduced-motion: reduce){
+
+    .hero-slide[data-tipo="imagen"].activa{
+        animation: none;
+        transform: none;
+    }
+
+    .hero-flecha,
+    .hero-puntos,
+    .hero-punto{
+        transition: none;
+        opacity: 1;
+    }
+
+    .hero-progreso{
+        display: none;
+    }
 }
 
 .hero-video{
@@ -228,7 +376,10 @@ HERO INICIO
 }
 
 @media (max-width: 768px){
-    .hero-flecha{ width: 36px; height: 36px; font-size: 15px; }
+    /* Antes encogían a 36px en móvil. Es al revés: el dedo es
+       menos preciso que el cursor, así que aquí es donde más
+       falta hace el tamaño. 44px es el mínimo recomendado. */
+    .hero-flecha{ width: 44px; height: 44px; font-size: 17px; }
     .hero-flecha-izq{ left: 10px; }
     .hero-flecha-der{ right: 10px; }
     .hero-puntos{ bottom: 78px; }
@@ -787,6 +938,7 @@ MÓVIL
 
     .hero-inicio{
         min-height: calc(100vh - 140px);
+        min-height: calc(100dvh - 140px);
         padding: 0 25px;
         justify-content: center;
         background-position: center;
@@ -833,6 +985,7 @@ CELULARES PEQUEÑOS
 
     .hero-inicio{
         min-height: calc(100vh - 160px);
+        min-height: calc(100dvh - 160px);
         padding: 0 18px;
     }
 
@@ -928,10 +1081,100 @@ CELULARES PEQUEÑOS
     }
 }
 
+
+/* =========================
+HERO EN CELULAR: ESPACIO
+
+En un celular de 390x844 las cuentas daban así:
+
+    pantalla visible      744px
+    header fijo          -160px
+    hero disponible       584px
+
+    padding-top del hero   100px
+    alto de la tarjeta     439px
+                          ------
+    espacio libre           45px
+
+Y los puntos del carrusel están en `bottom: 112px`, o sea
+que caían DENTRO de la tarjeta. Por eso se veían pegados al
+borde de abajo, como si no pertenecieran a nada.
+
+Además la foto del apiario quedaba reducida a una franja de
+45px: no se alcanzaba a ver nada de lo que la foto muestra.
+========================= */
+
+@media (max-width: 768px){
+
+    /* La tarjeta arranca más arriba: el header ya separa
+       bastante y no hace falta hundirla tanto. */
+    .hero-inicio{
+        padding-top: 40px;
+        padding-bottom: 108px;   /* deja sitio a los puntos, sin taparlos */
+    }
+
+    /* Menos aire interno: son ~50px recuperados, que se ven
+       como foto en vez de como amarillo vacío. */
+    .hero-texto{
+        padding: 34px 24px 30px;
+    }
+
+    .hero-texto h1{
+        margin-bottom: 16px;
+    }
+
+    .hero-texto p{
+        margin-bottom: 24px;
+    }
+
+    /* Los puntos, ahora sí, debajo de la tarjeta y con aire. */
+    .hero-puntos{
+        bottom: 58px;
+    }
+
+    /* La flecha de "desliza" y los puntos se peleaban por los
+       mismos 45px. Los puntos son los que se usan; el indicador
+       sobra, porque en celular ya se ve que la página sigue. */
+    .indicador-scroll{
+        display: none;
+    }
+
+    /* Las flechas laterales quedaban a la altura del centro de
+       la tarjeta, o sea encima del texto. Se bajan al área de
+       la foto, donde no estorban. */
+    .hero-flecha{
+        top: auto;
+        bottom: 46px;
+        transform: none;
+    }
+}
+
+
+@media (max-width: 480px){
+
+    .hero-inicio{
+        padding-top: 28px;
+        padding-bottom: 100px;
+    }
+
+    .hero-texto{
+        padding: 30px 20px 26px;
+    }
+
+    .hero-puntos{
+        bottom: 52px;
+    }
+
+    .hero-flecha{
+        bottom: 40px;
+    }
+}
+
 /* QUIENES SOMOS */
 
 .quienes-section{
     min-height: 100vh;
+    min-height: 100dvh;
     background: radial-gradient(
         circle at center,
         #FEFEFE 0%,
@@ -1115,11 +1358,8 @@ CELULARES PEQUEÑOS
         padding-top: 30px;
     }
 
-    .abeja-larga{
-        top: -18px;
-        right: -10px;
-        width: 130px;
-    }
+    /* .abeja-larga: en celular va centrada sobre la foto,
+       ver el bloque "LA ABEJA LARGA EN CELULAR" más abajo */
 
     .foto-apicultores{
         max-width: 360px;
@@ -1153,11 +1393,8 @@ CELULARES PEQUEÑOS
         padding-top: 22px;
     }
 
-    .abeja-larga{
-        top: -12px;
-        right: -6px;
-        width: 100px;
-    }
+    /* .abeja-larga: en celular va centrada sobre la foto,
+       ver el bloque "LA ABEJA LARGA EN CELULAR" más abajo */
 
     .foto-apicultores{
         max-width: 330px;
@@ -1185,6 +1422,7 @@ SERVICIOS - CONTENEDOR
 
 .servicios-section{
     min-height: 100vh;
+    min-height: 100dvh;
     background: linear-gradient(
         to bottom,
         #F6DE87 0%,
@@ -2056,6 +2294,7 @@ MENSAJE ENVIADO
 
 .enviado-section{
     min-height: 100vh;
+    min-height: 100dvh;
     padding: 140px 15px 80px;
     display: flex;
     align-items: center;
@@ -2473,6 +2712,75 @@ MENSAJE ENVIADO
     100%{ transform: rotate(-10deg) translateY(0); }
 }
 
+/* =========================
+LA ABEJA LARGA EN CELULAR
+
+En escritorio la foto va en una columna de la izquierda
+(col-lg-5), así que la abeja, puesta en el borde superior
+derecho de esa columna, cae en mitad de la sección: lejos
+del panal decorativo, que está pegado al borde derecho.
+
+En celular la columna pasa a ancho completo (col-12). Su
+"esquina superior derecha" ya es la esquina de la sección
+entera, o sea justo debajo del panal. Las dos piezas se
+amontonaban en el mismo rincón y la abeja quedaba medio
+cortada por el overflow.
+
+abeja_larga.png es un adorno horizontal y simétrico (una
+abeja con ramas a los lados), no una calcomanía de esquina.
+Así que en celular la ponemos centrada sobre la foto, sin
+rotar, que es para lo que está dibujada.
+========================= */
+
+@media (max-width: 768px){
+
+    .abeja-larga{
+        position: static;
+        display: block;
+        width: 190px;
+        max-width: 60%;
+        margin: 0 auto 14px;
+        transform: none;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,.12));
+    }
+
+    .contenedor-foto{
+        padding-top: 10px;
+    }
+
+    /* El panal se queda solo en su esquina, con algo más de aire */
+    .panal-derecha{
+        width: 90px;
+        top: -6px;
+        right: -4px;
+        opacity: .85;
+    }
+}
+
+
+@media (max-width: 480px){
+
+    .abeja-larga{
+        width: 160px;
+        max-width: 65%;
+    }
+
+    .panal-derecha{
+        width: 74px;
+    }
+}
+
+
+/* La animación de esquina ya no aplica cuando está centrada:
+   rotaba -10deg y ahí se ve chueca. */
+@media (max-width: 768px){
+
+    .abeja-larga{
+        animation: flotarSuave 4.5s ease-in-out infinite;
+    }
+}
+
+
 .panal-contacto{
     animation: moverRama 6s ease-in-out infinite;
     transform-origin: center;
@@ -2606,6 +2914,7 @@ MENSAJE ENVIADO
          recalcular cada posición absoluta a mano --- */
     .servicios-section{
         min-height: min(100vh, 900px);
+        min-height: min(100dvh, 900px);
     }
 
     .servicios-contenido{

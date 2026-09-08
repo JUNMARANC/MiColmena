@@ -1498,6 +1498,99 @@ body {
 
 
 /* ==========================================================
+   CAMPO DE CONTRASEÑA CON OJITO
+
+   El formulario de nueva contraseña usa .modal-campo, que no
+   tiene el contenedor flex de .input-icon del login. Esto le da
+   el mismo comportamiento sin tocar el resto de los campos.
+========================================================== */
+
+.modal-campo-password {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+
+.modal-campo-password input {
+    /* Espacio a la derecha para que el texto no pase por debajo
+       del botón cuando la contraseña es larga */
+    padding-right: 46px;
+}
+
+
+.modal-campo-password .btn-eye {
+    position: absolute;
+    right: 6px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    font-size: 17px;
+}
+
+
+/* ==========================================================
+   AVISO DE COINCIDENCIA
+========================================================== */
+
+.modal-campo-aviso {
+    margin: 7px 0 0;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.modal-campo-aviso[hidden] {
+    display: none;
+}
+
+
+.modal-campo-aviso.es-valido {
+    color: #2f7d4f;
+}
+
+
+.modal-campo-aviso.es-invalido {
+    color: #c44134;
+}
+
+
+.modal-campo-aviso::before {
+    margin-right: 5px;
+
+    font-family: "bootstrap-icons";
+}
+
+
+.modal-campo-aviso.es-valido::before {
+    content: "\F26E";
+}
+
+
+.modal-campo-aviso.es-invalido::before {
+    content: "\F62A";
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-eye {
+        transition: none !important;
+    }
+
+    .btn-eye:hover {
+        transform: none;
+    }
+}
+
+
+/* ==========================================================
    BOTÓN
 ========================================================== */
 

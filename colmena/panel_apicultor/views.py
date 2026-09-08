@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect,get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q, Prefetch
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.urls import reverse
@@ -25,10 +26,192 @@ from dbmicolmena.models import (
     EventoAgenda,
     EvidenciaIncidencia,
     EvidenciaMantenimiento,
+    Seguimientoapicola,
 )
 
 
+# ============================================================
+# DATOS DE ACTIVIDAD DEL DASHBOARD
+# ============================================================
 
+def obtener_actividad_dashboard_apicultor(
+    apicultor,
+    apiarios
+):
+
+    # ========================================================
+    # FECHA ACTUAL
+    # ========================================================
+
+    hoy = timezone.localdate()
+
+
+    # ========================================================
+    # INICIO DE LA SEMANA ACTUAL
+    # LUNES
+    # ========================================================
+
+    inicio_semana_actual = (
+        hoy
+        -
+        timedelta(
+            days=hoy.weekday()
+        )
+    )
+
+
+    # ========================================================
+    # SERIES
+    # ========================================================
+
+    labels = []
+
+    revisiones = []
+
+    mantenimientos = []
+
+    incidencias = []
+
+
+    # ========================================================
+    # ÚLTIMAS 4 SEMANAS
+    # ========================================================
+
+    for semanas_atras in range(
+        3,
+        -1,
+        -1
+    ):
+
+        inicio = (
+            inicio_semana_actual
+            -
+            timedelta(
+                weeks=semanas_atras
+            )
+        )
+
+
+        fin = (
+            inicio
+            +
+            timedelta(
+                days=6
+            )
+        )
+
+
+        # ====================================================
+        # ETIQUETA
+        # ====================================================
+
+        labels.append(
+            (
+                f"{inicio.strftime('%d/%m')}"
+                f" - "
+                f"{fin.strftime('%d/%m')}"
+            )
+        )
+
+
+        # ====================================================
+        # REVISIONES
+        # ====================================================
+
+        total_revisiones = (
+            Seguimientoapicola.objects
+            .filter(
+                Q(
+                    id_apicultor=
+                        apicultor
+                )
+                |
+                Q(
+                    id_apiario__in=
+                        apiarios
+                ),
+                fecharegistro__range=(
+                    inicio,
+                    fin
+                )
+            )
+            .distinct()
+            .count()
+        )
+
+
+        revisiones.append(
+            total_revisiones
+        )
+
+
+        # ====================================================
+        # MANTENIMIENTOS
+        # ====================================================
+
+        total_mantenimientos = (
+            Mantenimiento.objects
+            .filter(
+                id_apiario__in=
+                    apiarios,
+
+                fechaejecucion__range=(
+                    inicio,
+                    fin
+                )
+            )
+            .count()
+        )
+
+
+        mantenimientos.append(
+            total_mantenimientos
+        )
+
+
+        # ====================================================
+        # INCIDENCIAS REPORTADAS POR EL APICULTOR
+        # ====================================================
+
+        total_incidencias = (
+            Incidencia.objects
+            .filter(
+                id_apicultor=
+                    apicultor,
+
+                fechadeteccion__range=(
+                    inicio,
+                    fin
+                )
+            )
+            .count()
+        )
+
+
+        incidencias.append(
+            total_incidencias
+        )
+
+
+    # ========================================================
+    # RESULTADO
+    # ========================================================
+
+    return {
+
+        "labels":
+            labels,
+
+        "revisiones":
+            revisiones,
+
+        "mantenimientos":
+            mantenimientos,
+
+        "incidencias":
+            incidencias,
+
+    }
 
 # ============================================================
 # DASHBOARD APICULTOR
@@ -90,6 +273,45 @@ def dashboard_apicultor(request):
         )
     )
 
+    # ========================================================
+    # COLMENAS POR ESTADO
+    # ========================================================
+
+    colmenas_activas = (
+        colmenas
+        .filter(
+            estadocolmena__iexact="Activa"
+        )
+        .count()
+    )
+
+
+    colmenas_riesgo = (
+        colmenas
+        .filter(
+            estadocolmena__iexact="Riesgo"
+        )
+        .count()
+    )
+
+
+    colmenas_revision = (
+        colmenas
+        .filter(
+            estadocolmena__iexact="Revisión"
+        )
+        .count()
+    )
+
+
+    colmenas_inactivas = (
+        colmenas
+        .filter(
+            estadocolmena__iexact="Inactiva"
+        )
+        .count()
+    )
+
 
     # ========================================================
     # MANTENIMIENTOS
@@ -114,10 +336,36 @@ def dashboard_apicultor(request):
         .filter(
             id_apiario__in=apiarios
         )
-        .exclude(
-            estado__iexact="Cerrada"
+        .filter(
+            Q(
+                estado__iexact="Pendiente"
+            )
+            |
+            Q(
+                estado__iexact="En proceso"
+            )
         )
         .count()
+    )
+
+    # ========================================================
+    # ÚLTIMAS 3 INCIDENCIAS REPORTADAS
+    # ========================================================
+
+    ultimas_incidencias = (
+        Incidencia.objects
+        .filter(
+            id_apicultor=
+                apicultor
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena"
+        )
+        .order_by(
+            "-fechadeteccion",
+            "-id_incidencia"
+        )[:3]
     )
 
 
@@ -128,13 +376,59 @@ def dashboard_apicultor(request):
     proximos_eventos = (
         EventoAgenda.objects
         .filter(
-            responsable=apicultor,
-            estado="programado"
+            responsable=
+                apicultor,
+
+            estado=
+                "programado",
+
+            fecha__gte=
+                timezone.localdate()
         )
         .order_by(
             "fecha",
             "hora"
         )[:5]
+    )
+
+    # ========================================================
+    # ACTIVIDAD DE LAS ÚLTIMAS 4 SEMANAS
+    # ========================================================
+
+    actividad = (
+        obtener_actividad_dashboard_apicultor(
+            apicultor,
+            apiarios
+        )
+    )
+
+
+    # ========================================================
+    # REVISIONES DEL MES
+    # ========================================================
+
+    hoy = timezone.localdate()
+
+
+    revisiones_mes = (
+        Seguimientoapicola.objects
+        .filter(
+            Q(
+                id_apicultor=
+                    apicultor
+            )
+            |
+            Q(
+                id_apiario__in=
+                    apiarios
+            ),
+            fecharegistro__year=
+                hoy.year,
+            fecharegistro__month=
+                hoy.month
+        )
+        .distinct()
+        .count()
     )
 
 
@@ -153,6 +447,18 @@ def dashboard_apicultor(request):
         "total_colmenas":
             colmenas.count(),
 
+        "colmenas_activas":
+            colmenas_activas,
+
+        "colmenas_riesgo":
+            colmenas_riesgo,
+
+        "colmenas_revision":
+            colmenas_revision,
+
+        "colmenas_inactivas":
+            colmenas_inactivas,
+
         "mantenimientos_pendientes":
             mantenimientos_pendientes,
 
@@ -161,12 +467,369 @@ def dashboard_apicultor(request):
 
         "proximos_eventos":
             proximos_eventos,
+
+        "ultimas_incidencias":
+            ultimas_incidencias,
+
+        "actividad_labels":
+            actividad["labels"],
+
+        "actividad_revisiones":
+            actividad["revisiones"],
+
+        "actividad_mantenimientos":
+            actividad["mantenimientos"],
+
+        "actividad_incidencias":
+            actividad["incidencias"],
+
+        "revisiones_mes":
+            revisiones_mes,
     }
 
 
     return render(request,"panel_apicultor/dashboard.html",contexto)
 
 
+# ============================================================
+# DATOS DINÁMICOS DEL DASHBOARD
+# ============================================================
+
+@login_required
+def datos_dashboard_apicultor(
+    request
+):
+
+    # ========================================================
+    # APICULTOR
+    # ========================================================
+
+    apicultor = (
+        Apicultor.objects
+        .filter(
+            user=request.user
+        )
+        .first()
+    )
+
+
+    if not apicultor:
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": (
+                    "El usuario no tiene un "
+                    "perfil de apicultor."
+                ),
+            },
+            status=403
+        )
+
+
+    # ========================================================
+    # APIARIOS
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+        .filter(
+            id_apicultor=
+                apicultor
+        )
+    )
+
+    # ========================================================
+    # COLMENAS
+    # ========================================================
+
+    colmenas = (
+        Colmena.objects
+        .filter(
+            id_apiario__in=
+                apiarios
+        )
+    )
+
+
+    # ========================================================
+    # TARJETAS DEL DASHBOARD
+    # ========================================================
+
+    total_apiarios = (
+        apiarios.count()
+    )
+
+
+    colmenas_activas = (
+        colmenas
+        .filter(
+            estadocolmena__iexact=
+                "Activa"
+        )
+        .count()
+    )
+
+
+    mantenimientos_pendientes = (
+        Mantenimiento.objects
+        .filter(
+            id_apiario__in=
+                apiarios,
+            estado__iexact=
+                "Pendiente"
+        )
+        .count()
+    )
+
+
+    incidencias_abiertas = (
+        Incidencia.objects
+        .filter(
+            id_apiario__in=
+                apiarios
+        )
+        .filter(
+            Q(
+                estado__iexact=
+                    "Pendiente"
+            )
+            |
+            Q(
+                estado__iexact=
+                    "En proceso"
+            )
+        )
+        .count()
+    )
+
+
+    hoy = (
+        timezone.localdate()
+    )
+
+
+    revisiones_mes = (
+        Seguimientoapicola.objects
+        .filter(
+            Q(
+                id_apicultor=
+                    apicultor
+            )
+            |
+            Q(
+                id_apiario__in=
+                    apiarios
+            ),
+            fecharegistro__year=
+                hoy.year,
+            fecharegistro__month=
+                hoy.month
+        )
+        .distinct()
+        .count()
+    )
+
+    # ========================================================
+    # PRÓXIMAS 5 ACTIVIDADES
+    # ========================================================
+
+    proximos_eventos = (
+        EventoAgenda.objects
+        .filter(
+            responsable=
+                apicultor,
+
+            estado=
+                "programado",
+
+            fecha__gte=
+                hoy
+        )
+        .select_related(
+            "id_apiario"
+        )
+        .order_by(
+            "fecha",
+            "hora"
+        )[:5]
+    )
+
+
+    proximos_eventos_json = []
+
+
+    for evento in proximos_eventos:
+
+        proximos_eventos_json.append(
+            {
+
+                "id":
+                    evento.pk,
+
+                "titulo":
+                    evento.titulo
+                    or "",
+
+                "fecha":
+                    (
+                        evento.fecha.isoformat()
+                        if evento.fecha
+                        else ""
+                    ),
+
+                "hora":
+                    (
+                        evento.hora.strftime(
+                            "%I:%M %p"
+                        )
+                        if evento.hora
+                        else ""
+                    ),
+
+                "apiario":
+                    (
+                        evento
+                        .id_apiario
+                        .nombreapiario
+
+                        if evento.id_apiario
+
+                        else ""
+                    ),
+
+            }
+        )
+
+
+    # ========================================================
+    # ACTIVIDAD
+    # ========================================================
+
+    actividad = (
+        obtener_actividad_dashboard_apicultor(
+            apicultor,
+            apiarios
+        )
+    )
+
+
+    # ========================================================
+    # ÚLTIMAS 3 INCIDENCIAS
+    # ========================================================
+
+    incidencias = (
+        Incidencia.objects
+        .filter(
+            id_apicultor=
+                apicultor
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena"
+        )
+        .order_by(
+            "-fechadeteccion",
+            "-id_incidencia"
+        )[:3]
+    )
+
+
+    incidencias_json = []
+
+
+    for incidencia in incidencias:
+
+        incidencias_json.append(
+            {
+
+                "id":
+                    incidencia.id_incidencia,
+
+                "titulo":
+                    incidencia.titulo or "",
+
+                "apiario":
+                    (
+                        incidencia
+                        .id_apiario
+                        .nombreapiario
+                        if incidencia.id_apiario
+                        else "—"
+                    ),
+
+                "colmena":
+                    (
+                        incidencia
+                        .id_colmena
+                        .codigocolmena
+                        if incidencia.id_colmena
+                        else "—"
+                    ),
+
+                "fecha":
+                    (
+                        incidencia
+                        .fechadeteccion
+                        .strftime(
+                            "%d/%m/%Y"
+                        )
+                        if incidencia.fechadeteccion
+                        else "—"
+                    ),
+
+                "prioridad":
+                    incidencia.prioridad
+                    or "Sin definir",
+
+                "estado":
+                    incidencia.estado
+                    or "Sin definir",
+
+            }
+        )
+
+
+    # ========================================================
+    # RESPUESTA
+    # ========================================================
+
+    return JsonResponse(
+        {
+
+            "ok":
+                True,
+
+            "resumen": {
+
+                "total_apiarios":
+                    total_apiarios,
+
+                "colmenas_activas":
+                    colmenas_activas,
+
+                "mantenimientos_pendientes":
+                    mantenimientos_pendientes,
+
+                "incidencias_abiertas":
+                    incidencias_abiertas,
+
+                "revisiones_mes":
+                    revisiones_mes,
+
+            },
+
+            "actividad":
+                actividad,
+
+            "proximos_eventos":
+                proximos_eventos_json,
+
+            "incidencias":
+                incidencias_json,
+
+        }
+    )
 
 
 # ============================================================

@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{% static 'panel_admin/css/estilos_admin.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'panel_admin/css/estilos_admin.css' %}?v=8">
 
     {% block extra_css %}
     
@@ -19,6 +19,13 @@
 </head>
 
 <body>
+
+<!-- Enlace para saltar el menú. Está oculto hasta que se enfoca
+     con Tab: sin él, para llegar a la tabla de cualquier página hay
+     que pasar por los diez ítems del menú. -->
+<a href="#contenidoPrincipal" class="salto-contenido">
+    Saltar al contenido
+</a>
 
 <div class="barra-carga-admin" id="barraCargaAdmin" aria-hidden="true"></div>
 
@@ -43,7 +50,11 @@
 
         <div class="sidebar-header">
             <div class="logo-circle">
-                <i class="bi bi-bug-fill"></i>
+                <img
+                    src="{% static 'panel_admin/img/abeja_sidebar.png' %}"
+                    alt=""
+                    class="logo-circle-img"
+                >
             </div>
 
             <div class="brand-text">
@@ -59,78 +70,94 @@
             </div>
         </div>
 
-        <button class="btn-collapse-sidebar" id="btnCollapseSidebar">
-            <i class="bi bi-chevron-left"></i>
+        <button
+            type="button"
+            class="btn-collapse-sidebar"
+            id="btnCollapseSidebar"
+            aria-label="Contraer o expandir el menú"
+            aria-controls="sidebarMenu"
+        >
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
         </button>
 
         <div class="sidebar-menu-wrap" id="sidebarMenuWrap">
 
-        <nav class="sidebar-menu" id="sidebarMenu">
+        <nav class="sidebar-menu" id="sidebarMenu" aria-label="Menú principal">
 
-            <a href="{% url 'dashboard_admin' %}" data-tooltip="Inicio" class="menu-link {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
-                <i class="bi bi-house-door"></i>
+            <a href="{% url 'dashboard_admin' %}" data-tooltip="Inicio" class="menu-link {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'dashboard_admin' %}aria-current="page"{% endif %}>
+                <i class="bi bi-house-door" aria-hidden="true"></i>
                 <span>Inicio</span>
             </a>
 
             {% if "av" in permisos_usuario %}
-                <a href="{% url 'apiarios_admin' %}" data-tooltip="Apiarios" class="menu-link {% if request.resolver_match.url_name == 'apiarios_admin' %}active{% endif %}">
-                    <i class="bi bi-geo-alt"></i>
+                <a href="{% url 'apiarios_admin' %}" data-tooltip="Apiarios" class="menu-link {% if request.resolver_match.url_name == 'apiarios_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'apiarios_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
                     <span>Apiarios</span>
                 </a>
             {% endif %}
 
             {% if "cv" in permisos_usuario %}
-                <a href="{% url 'colmenas_admin' %}" data-tooltip="Colmenas" class="menu-link {% if request.resolver_match.url_name == 'colmenas_admin' %}active{% endif %}">
-                    <i class="bi bi-hexagon"></i>
+                <a href="{% url 'colmenas_admin' %}" data-tooltip="Colmenas" class="menu-link {% if request.resolver_match.url_name == 'colmenas_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'colmenas_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-hexagon" aria-hidden="true"></i>
                     <span>Colmenas</span>
                 </a>
             {% endif %}
 
             {% if "mg" in permisos_usuario or "mr" in permisos_usuario %}
-                <a href="{% url 'mantenimientos_admin' %}" data-tooltip="Mantenimientos" class="menu-link {% if request.resolver_match.url_name == 'mantenimientos_admin' %}active{% endif %}">
-                    <i class="bi bi-tools"></i>
+                <a href="{% url 'mantenimientos_admin' %}" data-tooltip="Mantenimientos" class="menu-link {% if request.resolver_match.url_name == 'mantenimientos_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'mantenimientos_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-tools" aria-hidden="true"></i>
                     <span>Mantenimientos</span>
                 </a>
             {% endif %}
 
             {% if "ig" in permisos_usuario or "ir" in permisos_usuario %}
-                <a href="{% url 'incidencias_admin' %}" data-tooltip="Incidencias" class="menu-link {% if request.resolver_match.url_name == 'incidencias_admin' %}active{% endif %}">
-                    <i class="bi bi-exclamation-triangle"></i>
+                <a href="{% url 'incidencias_admin' %}" data-tooltip="Incidencias" class="menu-link {% if request.resolver_match.url_name == 'incidencias_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'incidencias_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
                     <span>Incidencias</span>
                 </a>
             {% endif %}
 
 
-            <a href="{% url 'apicultores_admin' %}" data-tooltip="Apicultores" class="menu-link {% if request.resolver_match.url_name == 'apicultores_admin' %}active{% endif %}">
-                <i class="bi bi-person-badge"></i>
+            <a href="{% url 'apicultores_admin' %}" data-tooltip="Apicultores" class="menu-link {% if request.resolver_match.url_name == 'apicultores_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'apicultores_admin' %}aria-current="page"{% endif %}>
+                <i class="bi bi-person-badge" aria-hidden="true"></i>
                 <span>Apicultores</span>
             </a>
             
 
             {% if "agenda" in permisos_usuario %}
-                <a href="{% url 'agenda_admin' %}" data-tooltip="Agenda" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}">
-                    <i class="bi bi-calendar-event"></i>
+                <a href="{% url 'agenda_admin' %}" data-tooltip="Agenda" class="menu-link {% if request.resolver_match.url_name == 'agenda_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'agenda_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-calendar-event" aria-hidden="true"></i>
                     <span>Agenda</span>
                 </a>
             {% endif %}
 
             {% if "rv" in permisos_usuario %}
-                <a href="{% url 'reportes_admin' %}" data-tooltip="Reportes" class="menu-link {% if request.resolver_match.url_name == 'reportes_admin' %}active{% endif %}">
-                    <i class="bi bi-file-earmark-bar-graph"></i>
+                <a href="{% url 'reportes_admin' %}" data-tooltip="Reportes" class="menu-link {% if request.resolver_match.url_name == 'reportes_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'reportes_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i>
                     <span>Reportes</span>
                 </a>
             {% endif %}
 
             {% if "ug" in permisos_usuario or "roles" in permisos_usuario %}
-                <a href="{% url 'usuarios_roles_admin' %}" data-tooltip="Usuarios y Roles" class="menu-link {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}active{% endif %}">
-                    <i class="bi bi-people"></i>
+                <a href="{% url 'usuarios_roles_admin' %}" data-tooltip="Usuarios y Roles" class="menu-link {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'usuarios_roles_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-people" aria-hidden="true"></i>
                     <span>Usuarios y Roles</span>
                 </a>
             {% endif %}
 
             {% if "cfg" in permisos_usuario %}
-                <a href="{% url 'configuracion_admin' %}" data-tooltip="Configuración" class="menu-link {% if request.resolver_match.url_name == 'configuracion_admin' %}active{% endif %}">
-                    <i class="bi bi-gear"></i>
+                <a href="{% url 'configuracion_admin' %}" data-tooltip="Configuración" class="menu-link {% if request.resolver_match.url_name == 'configuracion_admin' %}active{% endif %}"
+               {% if request.resolver_match.url_name == 'configuracion_admin' %}aria-current="page"{% endif %}>
+                    <i class="bi bi-gear" aria-hidden="true"></i>
                     <span>Configuración</span>
                 </a>
             {% endif %}
@@ -226,7 +253,7 @@
                     class="sidebar-profile-logout"
                 >
 
-                    <i class="bi bi-box-arrow-right"></i>
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
 
                     <span>
                         Cerrar sesión
@@ -242,6 +269,8 @@
 
     <main class="contenido-admin" id="contenidoAdmin">
 
+        <span id="contenidoPrincipal" tabindex="-1"></span>
+
         <header class="topbar-admin">
 
 
@@ -252,11 +281,15 @@
             <div class="topbar-admin-info">
 
                 <button
+                    type="button"
                     class="btn-mobile-sidebar"
                     id="btnMobileSidebar"
+                    aria-label="Abrir el menú"
+                    aria-controls="sidebarAdmin"
+                    aria-expanded="false"
                 >
 
-                    <i class="bi bi-list"></i>
+                    <i class="bi bi-list" aria-hidden="true"></i>
 
                 </button>
 
@@ -845,7 +878,7 @@
 
 <script src="{% static 'panel_admin/js/notificaciones.js' %}?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'panel_admin/js/funciones_admin.js' %}"></script>
+<script src="{% static 'panel_admin/js/funciones_admin.js' %}?v=2"></script>
 
 {% block extra_js %}
 

@@ -1411,8 +1411,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-
-
     botonesCerrarCrear.forEach(
         function (boton) {
 
@@ -4459,6 +4457,74 @@ document.addEventListener("DOMContentLoaded", function () {
                 "modal-mantenimiento-abierto"
             );
 
+            /* ==============================================
+                ABRIR DESDE ACCIÓN RÁPIDA DEL DASHBOARD
+            ============================================== */
+
+            const parametrosPagina =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const abrirCrearDesdeDashboard =
+                parametrosPagina.get(
+                    "abrir"
+                );
+
+
+            if (
+                abrirCrearDesdeDashboard
+                ===
+                "crear"
+                &&
+                modalCrear
+            ) {
+
+                // ==========================================
+                // ABRIR EL MODAL DESPUÉS DE LA LIMPIEZA
+                // ==========================================
+
+                abrirModalCrear();
+
+
+                // ==========================================
+                // LIMPIAR PARÁMETRO
+                // ==========================================
+
+                const urlLimpia =
+                    new URL(
+                        window.location.href
+                    );
+
+
+                urlLimpia.searchParams.delete(
+                    "abrir"
+                );
+
+
+                window.history.replaceState(
+                    {},
+                    "",
+                    (
+                        urlLimpia.pathname
+                        +
+                        urlLimpia.search
+                        +
+                        urlLimpia.hash
+                    )
+                );
+
+            }
+
+
+            /* ==============================================
+               ABRIR DESDE APIARIOS / COLMENAS
+            ============================================== */
+
+            prepararMantenimientoDesdeColmena();
+
+
         }
     );
 
@@ -4582,15 +4648,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // ==================================================
-        // DETERMINAR ALCANCE
-        //
-        // Si viene colmena:
-        //     Colmena
-        //
-        // Si solo viene apiario:
-        //     Apiario
-        // ==================================================
+
+        /* ==================================================
+        SELECCIONAR ALCANCE
+        ================================================== */
+
+        const radioApiario =
+            formularioCrear.querySelector(
+                '.alcance-mantenimiento-radio-apicultor[value="Apiario"]'
+            );
+
 
         const alcanceDeseado =
             idColmena
@@ -4610,9 +4677,16 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (radioAlcance) {
+        if (radioColmena) {
 
             radioAlcance.checked =
+                true;
+
+        } else if (
+            radioApiario
+        ) {
+
+            radioApiario.checked =
                 true;
 
         }

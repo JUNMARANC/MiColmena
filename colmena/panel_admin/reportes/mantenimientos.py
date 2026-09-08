@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 from django.db.models import Q
 from django.template.loader import render_to_string
+from panel_admin.reportes.marca import contexto_marca
 from django.utils import timezone
 
 from dbmicolmena.models import Mantenimiento
@@ -748,7 +749,10 @@ def generar_reporte_mantenimientos_pdf(
 
     html = render_to_string(
         "admin_panel/reportes/pdf/mantenimientos.html",
-        contexto
+        {
+            **contexto,
+            **contexto_marca(),
+        }
     )
 
     from weasyprint import HTML

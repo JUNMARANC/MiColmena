@@ -61,6 +61,22 @@
 
         .encabezado td {
             border: 0;
+            vertical-align: middle;
+        }
+
+        /* Logo de Mi Colmena en el encabezado.
+           El tamaño se fija en CSS aunque el PNG sea de 200px:
+           así el PDF conserva resolución al hacer zoom o imprimir. */
+        .logo-marca {
+            width: 46px;
+            height: 46px;
+            display: block;
+        }
+
+
+        .columna-logo {
+            width: 58px;
+            padding-right: 14px;
         }
 
         .encabezado h1 {
@@ -217,6 +233,16 @@
 
         <table>
             <tr>
+
+                {% if logo_reporte %}
+                    <td class="columna-logo">
+                        <img
+                            src="{{ logo_reporte }}"
+                            alt="Mi Colmena"
+                            class="logo-marca"
+                        >
+                    </td>
+                {% endif %}
 
                 <td>
                     <h1>

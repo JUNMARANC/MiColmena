@@ -29,13 +29,8 @@ from panel_apicultor.views import (
     # Agenda
     agenda_apicultor,
     crear_evento_apicultor,
-    actualizar_estado_evento_apicultor,
-
-
-    #perfil
-    perfil_apicultor,
-    cambiar_password_apicultor,
 )
+
 
 
 urlpatterns = [
@@ -44,12 +39,7 @@ urlpatterns = [
     # DASHBOARD
     # ============================================================
 
-    path(
-        "",
-        dashboard_apicultor,
-        name="dashboard_apicultor",
-    ),
-
+    path("",dashboard_apicultor,name="dashboard_apicultor"),
 
     # ============================================================
     # MIS APIARIOS

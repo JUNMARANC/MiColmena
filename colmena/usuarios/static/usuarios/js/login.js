@@ -9,72 +9,66 @@ document.addEventListener("DOMContentLoaded", function () {
        MOSTRAR / OCULTAR CONTRASEÑA DEL LOGIN
     ====================================================== */
 
-    const btnPassword = document.getElementById("btnPassword");
-    const passwordInput = document.getElementById("passwordInput");
+    /* Una sola función para todos los ojitos de la página: el del
+       login y los dos del formulario de nueva contraseña.
 
+       El del login se identifica por id (btnPassword / passwordInput);
+       los demás con data-ver-password="idDelCampo". */
 
-    if (btnPassword && passwordInput) {
+    function alternarVerPassword(boton, campo) {
 
-        btnPassword.addEventListener("click", function () {
+        if (!boton || !campo) {
+            return;
+        }
 
-            const icon = this.querySelector("i");
+        boton.addEventListener("click", function () {
 
-            const mostrando = (
-                passwordInput.type === "text"
+            const icono = boton.querySelector("i");
+            const mostrando = campo.type === "text";
+
+            campo.type = mostrando ? "password" : "text";
+
+            icono.classList.toggle("bi-eye", mostrando);
+            icono.classList.toggle("bi-eye-slash", !mostrando);
+
+            boton.setAttribute(
+                "aria-label",
+                mostrando ? "Mostrar contraseña" : "Ocultar contraseña"
             );
 
+            boton.setAttribute(
+                "aria-pressed",
+                mostrando ? "false" : "true"
+            );
 
-            if (!mostrando) {
-
-                passwordInput.type = "text";
-
-                icon.classList.remove(
-                    "bi-eye"
-                );
-
-                icon.classList.add(
-                    "bi-eye-slash"
-                );
-
-
-                btnPassword.setAttribute(
-                    "aria-label",
-                    "Ocultar contraseña"
-                );
-
-                btnPassword.setAttribute(
-                    "aria-pressed",
-                    "true"
-                );
-
-            } else {
-
-                passwordInput.type = "password";
-
-                icon.classList.remove(
-                    "bi-eye-slash"
-                );
-
-                icon.classList.add(
-                    "bi-eye"
-                );
-
-
-                btnPassword.setAttribute(
-                    "aria-label",
-                    "Mostrar contraseña"
-                );
-
-                btnPassword.setAttribute(
-                    "aria-pressed",
-                    "false"
-                );
-
-            }
-
+            // Devuelve el cursor al final del texto: al cambiar el
+            // type, el navegador lo manda al inicio y se escribe
+            // en medio de lo ya digitado.
+            const posicion = campo.value.length;
+            campo.focus();
+            campo.setSelectionRange(posicion, posicion);
         });
-
     }
+
+
+    // Ojito del login
+    alternarVerPassword(
+        document.getElementById("btnPassword"),
+        document.getElementById("passwordInput")
+    );
+
+
+    // Ojitos del formulario de nueva contraseña
+    document
+        .querySelectorAll("[data-ver-password]")
+        .forEach(function (boton) {
+            alternarVerPassword(
+                boton,
+                document.getElementById(
+                    boton.getAttribute("data-ver-password")
+                )
+            );
+        });
 
 
 
@@ -430,16 +424,44 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        passwordConfirmacion.addEventListener(
-            "input",
-            function () {
+        /* Aviso en vivo de si coinciden.
 
-                this.setCustomValidity(
-                    ""
-                );
+           Antes solo te enterabas al pulsar "Restablecer contraseña":
+           escribías las dos, mandabas, y ahí salía el error. Con el
+           campo oculto por puntos es fácil equivocarse sin notarlo. */
 
-            }
+        const avisoCoinciden = document.getElementById(
+            "avisoCoincidenPasswords"
         );
+
+        function revisarCoincidencia() {
+
+            passwordConfirmacion.setCustomValidity("");
+
+            if (!avisoCoinciden) {
+                return;
+            }
+
+            if (passwordConfirmacion.value === "") {
+                avisoCoinciden.hidden = true;
+                return;
+            }
+
+            const coinciden =
+                passwordNueva.value === passwordConfirmacion.value;
+
+            avisoCoinciden.hidden = false;
+
+            avisoCoinciden.textContent = coinciden
+                ? "Las contraseñas coinciden"
+                : "Las contraseñas no coinciden";
+
+            avisoCoinciden.classList.toggle("es-valido", coinciden);
+            avisoCoinciden.classList.toggle("es-invalido", !coinciden);
+        }
+
+        passwordConfirmacion.addEventListener("input", revisarCoincidencia);
+        passwordNueva.addEventListener("input", revisarCoincidencia);
 
     }
 

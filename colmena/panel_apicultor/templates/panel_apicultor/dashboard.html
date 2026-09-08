@@ -87,7 +87,10 @@
 
             <div class="resumen-card-contenido">
 
-                <strong class="resumen-numero">
+                <strong
+                    class="resumen-numero"
+                    id="contadorApiariosAsignados"
+                >
 
                     {{ total_apiarios|default:0 }}
 
@@ -119,7 +122,10 @@
 
             <div class="resumen-card-contenido">
 
-                <strong class="resumen-numero">
+                <strong
+                    class="resumen-numero"
+                    id="contadorColmenasActivas"
+                >
 
                     {{ colmenas_activas|default:0 }}
 
@@ -151,7 +157,10 @@
 
             <div class="resumen-card-contenido">
 
-                <strong class="resumen-numero">
+                <strong
+                    class="resumen-numero"
+                    id="contadorMantenimientosPendientes"
+                >
 
                     {{ mantenimientos_pendientes|default:0 }}
 
@@ -183,7 +192,10 @@
 
             <div class="resumen-card-contenido">
 
-                <strong class="resumen-numero">
+                <strong
+                    class="resumen-numero"
+                    id="contadorIncidenciasActivas"
+                >
 
                     {{ incidencias_abiertas|default:0 }}
 
@@ -215,7 +227,10 @@
 
             <div class="resumen-card-contenido">
 
-                <strong class="resumen-numero">
+                <strong
+                    class="resumen-numero"
+                    id="contadorRevisionesMes"
+                >
 
                     {{ revisiones_mes|default:0 }}
 
@@ -429,7 +444,10 @@
 
 
 
-            <div class="proximas-lista">
+            <div
+                class="proximas-lista"
+                id="listaProximasActividades"
+            >
 
 
                 {% for evento in proximos_eventos %}
@@ -583,7 +601,7 @@
                 ========================================== -->
 
                 <a
-                    href="#"
+                    href="{% url 'mantenimientos_apicultor' %}?abrir=crear"
                     class="accion-rapida"
                 >
 
@@ -622,7 +640,7 @@
                 ========================================== -->
 
                 <a
-                    href="#"
+                    href="{% url 'crear_incidencia_apicultor' %}"
                     class="accion-rapida"
                 >
 
@@ -661,7 +679,7 @@
                 ========================================== -->
 
                 <a
-                    href="#"
+                    href="{% url 'agenda_apicultor' %}"
                     class="accion-rapida"
                 >
 
@@ -777,7 +795,7 @@
 
 
 
-                <tbody>
+                <tbody id="cuerpoUltimasIncidencias">
 
 
                     {% for incidencia in ultimas_incidencias %}
@@ -1042,14 +1060,19 @@
     src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
 ></script>
 
+<script>
 
+    const URL_DATOS_DASHBOARD_APICULTOR =
+        "{% url 'datos_dashboard_apicultor' %}";
+
+</script>
 
 <!-- =========================================================
      JS DASHBOARD APICULTOR
 ========================================================== -->
 
 <script
-    src="{% static 'panel_apicultor/js/dashboard_apicultor.js' %}?v=6"
+    src="{% static 'panel_apicultor/js/dashboard_apicultor.js' %}?v=7"
 ></script>
 
 
