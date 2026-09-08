@@ -495,6 +495,53 @@
     display: flex;
 
     flex-direction: column;
+
+    max-height: 320px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 6px;
+
+    scrollbar-width: thin;
+}
+
+.proximas-lista::-webkit-scrollbar {
+
+    width: 6px;
+}
+
+
+.proximas-lista::-webkit-scrollbar-track {
+
+    background: transparent;
+}
+
+
+.proximas-lista::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background:
+        rgba(
+            33,
+            79,
+            59,
+            0.18
+        );
+}
+
+
+.proximas-lista::-webkit-scrollbar-thumb:hover {
+
+    background:
+        rgba(
+            33,
+            79,
+            59,
+            0.30
+        );
 }
 
 

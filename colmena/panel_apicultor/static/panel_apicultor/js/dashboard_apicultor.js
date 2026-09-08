@@ -275,10 +275,13 @@ document.addEventListener(
             )
         );
 
+        let graficaActividad =
+            null;
+
 
         if (canvasActividad) {
 
-            new Chart(
+            graficaActividad = new Chart(
                 canvasActividad,
                 {
 
@@ -985,5 +988,774 @@ document.addEventListener(
 
         }
 
+
+        /* ==========================================================
+           ACTUALIZACIÓN DINÁMICA DEL DASHBOARD
+        ========================================================== */
+
+        let actualizandoDashboard =
+            false;
+
+
+        /* ==========================================================
+           ESCAPAR TEXTO
+        ========================================================== */
+
+        function escaparHtml(
+            valor
+        ) {
+
+            const elemento =
+                document.createElement(
+                    "div"
+                );
+
+
+            elemento.textContent =
+                valor ?? "";
+
+
+            return elemento.innerHTML;
+
+        }
+
+        /* ==========================================================
+        ACTUALIZAR TARJETAS DE RESUMEN
+        ========================================================== */
+
+        function actualizarTarjetasResumen(
+            resumen
+        ) {
+
+            if (!resumen) {
+
+                return;
+
+            }
+
+
+            const tarjetas = {
+
+                contadorApiariosAsignados:
+                    resumen.total_apiarios,
+
+                contadorColmenasActivas:
+                    resumen.colmenas_activas,
+
+                contadorMantenimientosPendientes:
+                    resumen.mantenimientos_pendientes,
+
+                contadorIncidenciasActivas:
+                    resumen.incidencias_abiertas,
+
+                contadorRevisionesMes:
+                    resumen.revisiones_mes,
+
+            };
+
+
+            Object.entries(
+                tarjetas
+            ).forEach(
+                function (
+                    [
+                        id,
+                        valor
+                    ]
+                ) {
+
+                    const elemento =
+                        document.getElementById(
+                            id
+                        );
+
+
+                    if (!elemento) {
+
+                        return;
+
+                    }
+
+
+                    elemento.textContent =
+                        normalizarNumero(
+                            valor
+                        );
+
+                }
+            );
+
+        }
+
+        /* ==========================================================
+        ACTUALIZAR PRÓXIMAS ACTIVIDADES
+        ========================================================== */
+
+        function actualizarProximasActividades(
+            eventos
+        ) {
+
+            const lista =
+                document.getElementById(
+                    "listaProximasActividades"
+                );
+
+
+            if (!lista) {
+
+                return;
+
+            }
+
+
+            if (
+                !Array.isArray(
+                    eventos
+                )
+                ||
+                eventos.length === 0
+            ) {
+
+                lista.innerHTML = `
+
+                    <div class="estado-vacio">
+
+                        <i class="bi bi-calendar-check"></i>
+
+                        <strong>
+                            No tienes actividades próximas
+                        </strong>
+
+                        <span>
+                            Las actividades programadas
+                            aparecerán aquí.
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            const meses = [
+                "ENE",
+                "FEB",
+                "MAR",
+                "ABR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AGO",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DIC"
+            ];
+
+
+            lista.innerHTML =
+                eventos
+                .map(
+                    function (
+                        evento
+                    ) {
+
+                        const titulo =
+                            escaparHtml(
+                                evento.titulo
+                            );
+
+
+                        const apiario =
+                            escaparHtml(
+                                evento.apiario
+                            );
+
+
+                        const hora =
+                            escaparHtml(
+                                evento.hora
+                            );
+
+
+                        let dia =
+                            "—";
+
+
+                        let mes =
+                            "";
+
+
+                        if (
+                            evento.fecha
+                        ) {
+
+                            const partes =
+                                String(
+                                    evento.fecha
+                                )
+                                .split("-");
+
+
+                            if (
+                                partes.length === 3
+                            ) {
+
+                                dia =
+                                    partes[2];
+
+
+                                const numeroMes =
+                                    Number(
+                                        partes[1]
+                                    );
+
+
+                                if (
+                                    numeroMes >= 1
+                                    &&
+                                    numeroMes <= 12
+                                ) {
+
+                                    mes =
+                                        meses[
+                                            numeroMes - 1
+                                        ];
+
+                                }
+
+                            }
+
+                        }
+
+
+                        return `
+
+                            <div class="proxima-actividad">
+
+                                <div class="proxima-fecha">
+
+                                    <strong>
+                                        ${dia}
+                                    </strong>
+
+                                    <span>
+                                        ${mes}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="proxima-info">
+
+                                    <strong>
+                                        ${titulo}
+                                    </strong>
+
+
+                                    ${
+                                        apiario
+
+                                        ?
+
+                                        `
+                                            <span>
+
+                                                <i class="bi bi-geo-alt"></i>
+
+                                                ${apiario}
+
+                                            </span>
+                                        `
+
+                                        :
+
+                                        ""
+                                    }
+
+
+                                    ${
+                                        hora
+
+                                        ?
+
+                                        `
+                                            <small>
+
+                                                <i class="bi bi-clock"></i>
+
+                                                ${hora}
+
+                                            </small>
+                                        `
+
+                                        :
+
+                                        ""
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+        }
+
+        /* ==========================================================
+           ACTUALIZAR GRÁFICA DE ACTIVIDAD
+        ========================================================== */
+
+        function actualizarGraficaActividad(
+            actividad
+        ) {
+
+            if (
+                !graficaActividad
+                ||
+                !actividad
+            ) {
+
+                return;
+
+            }
+
+
+            graficaActividad.data.labels =
+                Array.isArray(
+                    actividad.labels
+                )
+                    ?
+                    actividad.labels
+                    :
+                    [];
+
+
+            graficaActividad
+                .data
+                .datasets[0]
+                .data =
+                    Array.isArray(
+                        actividad.revisiones
+                    )
+                        ?
+                        actividad.revisiones
+                        :
+                        [];
+
+
+            graficaActividad
+                .data
+                .datasets[1]
+                .data =
+                    Array.isArray(
+                        actividad.mantenimientos
+                    )
+                        ?
+                        actividad.mantenimientos
+                        :
+                        [];
+
+
+            graficaActividad
+                .data
+                .datasets[2]
+                .data =
+                    Array.isArray(
+                        actividad.incidencias
+                    )
+                        ?
+                        actividad.incidencias
+                        :
+                        [];
+
+
+            graficaActividad.update();
+
+        }
+
+
+        /* ==========================================================
+           CLASE DE PRIORIDAD
+        ========================================================== */
+
+        function obtenerClasePrioridad(
+            prioridad
+        ) {
+
+            const valor =
+                String(
+                    prioridad || ""
+                )
+                .toLowerCase();
+
+
+            if (
+                valor === "alta"
+                ||
+                valor === "crítica"
+                ||
+                valor === "critica"
+            ) {
+
+                return "alta";
+
+            }
+
+
+            if (
+                valor === "media"
+            ) {
+
+                return "media";
+
+            }
+
+
+            return "baja";
+
+        }
+
+
+        /* ==========================================================
+           ACTUALIZAR ÚLTIMAS INCIDENCIAS
+        ========================================================== */
+
+        function actualizarUltimasIncidencias(
+            incidencias
+        ) {
+
+            const cuerpo =
+                document.getElementById(
+                    "cuerpoUltimasIncidencias"
+                );
+
+
+            if (!cuerpo) {
+
+                return;
+
+            }
+
+
+            if (
+                !Array.isArray(
+                    incidencias
+                )
+                ||
+                incidencias.length === 0
+            ) {
+
+                cuerpo.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="tabla-vacia"
+                        >
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            <strong>
+                                No tienes incidencias recientes
+                            </strong>
+
+                            <span>
+                                Las incidencias que reportes
+                                aparecerán aquí.
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            cuerpo.innerHTML =
+                incidencias
+                .map(
+                    function (
+                        incidencia
+                    ) {
+
+                        const titulo =
+                            escaparHtml(
+                                incidencia.titulo
+                            );
+
+
+                        const apiario =
+                            escaparHtml(
+                                incidencia.apiario
+                            );
+
+
+                        const colmena =
+                            escaparHtml(
+                                incidencia.colmena
+                            );
+
+
+                        const fecha =
+                            escaparHtml(
+                                incidencia.fecha
+                            );
+
+
+                        const prioridad =
+                            escaparHtml(
+                                incidencia.prioridad
+                            );
+
+
+                        const estado =
+                            escaparHtml(
+                                incidencia.estado
+                            );
+
+
+                        const clasePrioridad =
+                            obtenerClasePrioridad(
+                                incidencia.prioridad
+                            );
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="incidencia-titulo">
+
+                                        <i
+                                            class="
+                                                bi
+                                                bi-exclamation-triangle
+                                            "
+                                        ></i>
+
+                                        <span>
+                                            ${titulo}
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    ${apiario}
+                                </td>
+
+
+                                <td>
+                                    ${colmena}
+                                </td>
+
+
+                                <td>
+                                    ${fecha}
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            badge-prioridad
+                                            ${clasePrioridad}
+                                        "
+                                    >
+                                        ${prioridad}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="badge-estado-incidencia"
+                                    >
+                                        ${estado}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+        }
+
+
+        /* ==========================================================
+           CONSULTAR DATOS ACTUALIZADOS
+        ========================================================== */
+
+        async function actualizarDatosDashboard() {
+
+            if (
+                actualizandoDashboard
+                ||
+                document.hidden
+            ) {
+
+                return;
+
+            }
+
+
+            actualizandoDashboard =
+                true;
+
+
+            try {
+
+                const respuesta =
+                    await fetch(
+                        URL_DATOS_DASHBOARD_APICULTOR,
+                        {
+
+                            method:
+                                "GET",
+
+                            credentials:
+                                "same-origin",
+
+                            cache:
+                                "no-store",
+
+                            headers: {
+
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+
+                            }
+
+                        }
+                    );
+
+
+                if (!respuesta.ok) {
+
+                    throw new Error(
+                        "No fue posible actualizar el dashboard."
+                    );
+
+                }
+
+
+                const datos =
+                    await respuesta.json();
+
+
+                if (!datos.ok) {
+
+                    return;
+
+                }
+
+
+                /* ==================================================
+                TARJETAS
+                ================================================== */
+
+                actualizarTarjetasResumen(
+                    datos.resumen
+                );
+
+
+                /* ==================================================
+                GRÁFICA DE ACTIVIDAD
+                ================================================== */
+
+                actualizarGraficaActividad(
+                    datos.actividad
+                );
+
+                /* ==================================================
+                PRÓXIMAS ACTIVIDADES
+                ================================================== */
+
+                actualizarProximasActividades(
+                    datos.proximos_eventos
+                );
+
+                /* ==================================================
+                ÚLTIMAS INCIDENCIAS
+                ================================================== */
+
+                actualizarUltimasIncidencias(
+                    datos.incidencias
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "[dashboard_apicultor] Error actualizando datos:",
+                    error
+                );
+
+            } finally {
+
+                actualizandoDashboard =
+                    false;
+
+            }
+
+        }
+
+
+        /* ==========================================================
+           ACTUALIZAR CADA 10 SEGUNDOS
+        ========================================================== */
+
+        setInterval(
+            actualizarDatosDashboard,
+            10000
+        );
+
+
+        /* ==========================================================
+           ACTUALIZAR AL REGRESAR A LA PESTAÑA
+        ========================================================== */
+
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+
+                if (!document.hidden) {
+
+                    actualizarDatosDashboard();
+
+                }
+
+            }
+        );
+
+
     }
+
 );

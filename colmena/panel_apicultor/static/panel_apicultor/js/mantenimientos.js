@@ -1411,8 +1411,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-
-
     botonesCerrarCrear.forEach(
         function (boton) {
 
@@ -4458,6 +4456,66 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.classList.remove(
                 "modal-mantenimiento-abierto"
             );
+
+            /* ==============================================
+                ABRIR DESDE ACCIÓN RÁPIDA DEL DASHBOARD
+            ============================================== */
+
+            const parametrosPagina =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const abrirCrearDesdeDashboard =
+                parametrosPagina.get(
+                    "abrir"
+                );
+
+
+            if (
+                abrirCrearDesdeDashboard
+                ===
+                "crear"
+                &&
+                modalCrear
+            ) {
+
+                // ==========================================
+                // ABRIR EL MODAL DESPUÉS DE LA LIMPIEZA
+                // ==========================================
+
+                abrirModalCrear();
+
+
+                // ==========================================
+                // LIMPIAR PARÁMETRO
+                // ==========================================
+
+                const urlLimpia =
+                    new URL(
+                        window.location.href
+                    );
+
+
+                urlLimpia.searchParams.delete(
+                    "abrir"
+                );
+
+
+                window.history.replaceState(
+                    {},
+                    "",
+                    (
+                        urlLimpia.pathname
+                        +
+                        urlLimpia.search
+                        +
+                        urlLimpia.hash
+                    )
+                );
+
+            }
 
         }
     );

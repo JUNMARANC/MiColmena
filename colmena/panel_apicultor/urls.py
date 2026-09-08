@@ -18,6 +18,7 @@ from panel_apicultor.views import (
     reportar_incidencia_apicultor,
     agenda_apicultor,
     crear_evento_apicultor,
+    datos_dashboard_apicultor,
 )
 
 
@@ -29,6 +30,7 @@ urlpatterns = [
     # ========================================================
 
     path("",dashboard_apicultor,name="dashboard_apicultor"),
+    path("dashboard/datos/",datos_dashboard_apicultor,name="datos_dashboard_apicultor"),
 
     # ========================================================
     # MIS APIARIOS
