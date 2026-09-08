@@ -29,6 +29,11 @@ from panel_apicultor.views import (
     # Agenda
     agenda_apicultor,
     crear_evento_apicultor,
+
+    #perfil
+    actualizar_estado_evento_apicultor,
+    perfil_apicultor,
+    cambiar_password_apicultor,
 )
 
 
