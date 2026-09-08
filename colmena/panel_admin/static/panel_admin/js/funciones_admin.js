@@ -74,15 +74,97 @@ if (sidebarMenu && sidebarMenuScrollHint) {
     });
 }
 
+/* MENÚ EN PANTALLAS PEQUEÑAS
+
+   Antes solo se podía cerrar haciendo clic en el overlay, que es un
+   <div> sin foco. Con teclado quedabas atrapado: no había Escape, el
+   foco no entraba al menú al abrirlo, y el fondo seguía haciendo
+   scroll detrás. */
+
 if (btnMobileSidebar && sidebarAdmin && overlaySidebar) {
-    btnMobileSidebar.addEventListener("click", () => {
+
+    // Dónde estaba el foco antes de abrir, para devolverlo al cerrar
+    let elementoQueAbrio = null;
+
+    const menuMovilAbierto = () =>
+        sidebarAdmin.classList.contains("mobile-active");
+
+    const abrirMenuMovil = () => {
+        elementoQueAbrio = document.activeElement;
+
         sidebarAdmin.classList.add("mobile-active");
         overlaySidebar.classList.add("active");
-    });
- 
-    overlaySidebar.addEventListener("click", () => {
+
+        btnMobileSidebar.setAttribute("aria-expanded", "true");
+
+        // Evita que el contenido de atrás siga scrolleando
+        document.body.classList.add("sidebar-movil-abierto");
+
+        // Lleva el foco al primer enlace del menú
+        const primerEnlace = sidebarAdmin.querySelector(".menu-link");
+        if (primerEnlace) {
+            primerEnlace.focus();
+        }
+    };
+
+    const cerrarMenuMovil = ({ devolverFoco = true } = {}) => {
         sidebarAdmin.classList.remove("mobile-active");
         overlaySidebar.classList.remove("active");
+
+        btnMobileSidebar.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("sidebar-movil-abierto");
+
+        if (devolverFoco && elementoQueAbrio) {
+            elementoQueAbrio.focus();
+            elementoQueAbrio = null;
+        }
+    };
+
+    btnMobileSidebar.addEventListener("click", abrirMenuMovil);
+
+    overlaySidebar.addEventListener("click", () => cerrarMenuMovil());
+
+    // Escape cierra
+    document.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape" && menuMovilAbierto()) {
+            cerrarMenuMovil();
+        }
+    });
+
+    // El foco no se sale del menú mientras está abierto
+    sidebarAdmin.addEventListener("keydown", (evento) => {
+
+        if (evento.key !== "Tab" || !menuMovilAbierto()) {
+            return;
+        }
+
+        const enfocables = sidebarAdmin.querySelectorAll(
+            'a[href], button:not([disabled]):not([tabindex="-1"]), input, select'
+        );
+
+        if (enfocables.length === 0) {
+            return;
+        }
+
+        const primero = enfocables[0];
+        const ultimo = enfocables[enfocables.length - 1];
+
+        if (evento.shiftKey && document.activeElement === primero) {
+            evento.preventDefault();
+            ultimo.focus();
+
+        } else if (!evento.shiftKey && document.activeElement === ultimo) {
+            evento.preventDefault();
+            primero.focus();
+        }
+    });
+
+    // Si la ventana se agranda con el menú abierto, el sidebar vuelve a
+    // ser fijo y el overlay quedaría flotando sobre el contenido
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 992 && menuMovilAbierto()) {
+            cerrarMenuMovil({ devolverFoco: false });
+        }
     });
 }
 

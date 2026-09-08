@@ -1,12 +1,32 @@
-window.onscroll = function() {
-    let header = document.getElementById("header");
+/* Header que se encoge al bajar.
 
-    if (document.documentElement.scrollTop > 80 || document.body.scrollTop > 80) {
-            header.classList.add("scrolled");
-        } else {
-            header.classList.remove("scrolled");
-        }
-    };
+   Antes esto era `window.onscroll = ...`, una asignación directa:
+   cualquier otro script que asigne window.onscroll lo borra sin
+   avisar. Además corría en cada píxel de scroll, tocando el DOM
+   decenas de veces por segundo.
+
+   Ahora usa addEventListener (convive con los demás listeners) y
+   requestAnimationFrame, que lo limita a una vez por cuadro. */
+
+(function () {
+    var header = document.getElementById("header");
+    if (!header) return;
+
+    var pendiente = false;
+
+    function revisar() {
+        pendiente = false;
+        header.classList.toggle("scrolled", window.scrollY > 80);
+    }
+
+    window.addEventListener("scroll", function () {
+        if (pendiente) return;
+        pendiente = true;
+        window.requestAnimationFrame(revisar);
+    }, { passive: true });
+
+    revisar();
+})();
 
 /* =========================================================
    SISTEMA "REVELAR AL HACER SCROLL"
@@ -182,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
         puntos.forEach(function (p, i) { p.classList.toggle('activo', i === indice); });
 
         var vActual = obtenerVideo(actual);
-        if (vActual) {
+        if (vActual && vActual.src) {
             vActual.currentTime = 0;
             vActual.play().catch(function () {});
         }
@@ -199,11 +219,112 @@ document.addEventListener('DOMContentLoaded', function () {
     var prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var esMovil = window.innerWidth < 768;
 
+
+    /* -----------------------------------------------------
+       VIDEO SOLO EN ESCRITORIO
+
+       El <video> viene con data-src en vez de <source>. Aquí
+       se le pone el src de verdad, y solo si NO es celular ni
+       hay ahorro de datos activado. Así en móvil no se
+       descargan los megas del video, que además ni se ve
+       porque el carrusel arranca en el slide 2.
+       ----------------------------------------------------- */
+
+    function conexionLimitada() {
+        var c = navigator.connection;
+        if (!c) return false;
+        // "Ahorro de datos" del sistema, o red 2G/3G
+        return c.saveData === true || /(^|-)(2g|slow-2g|3g)$/.test(c.effectiveType || '');
+    }
+
+    var usarVideo = !esMovil && !prefiereMenosMovimiento && !conexionLimitada();
+
+    slides.forEach(function (slide) {
+        var video = slide.querySelector('video[data-src]');
+        if (!video) return;
+
+        if (usarVideo) {
+            video.src = video.getAttribute('data-src');
+            video.load();
+        } else {
+            // Se queda con el póster: la foto 1.jpg que ya está
+            // optimizada. El slide sigue existiendo y sirve igual.
+            video.removeAttribute('data-src');
+        }
+    });
+
+
+    /* -----------------------------------------------------
+       AUTO-AVANCE + BARRA DE PROGRESO
+
+       El carrusel no avanzaba solo, así que la mayoría de
+       visitantes solo veía el primer slide: había que notar
+       las flechas y hacer clic. Ahora rota solo, con una
+       barra abajo que avisa cuándo cambia.
+
+       Se pausa al pasar el mouse, al enfocar con teclado y
+       cuando la pestaña no está visible.
+       ----------------------------------------------------- */
+
+    var DURACION_SLIDE = 6500;
+    var temporizador = null;
+
+    var progreso = document.createElement('div');
+    progreso.className = 'hero-progreso';
+    progreso.setAttribute('aria-hidden', 'true');
+    progreso.innerHTML = '<span></span>';
+    progreso.style.setProperty('--hero-duracion', (DURACION_SLIDE / 1000) + 's');
+    carrusel.appendChild(progreso);
+
+    function reiniciarProgreso() {
+        progreso.classList.remove('corriendo');
+        void progreso.offsetWidth;   // fuerza el reinicio de la animación
+        progreso.classList.add('corriendo');
+    }
+
+    function detener() {
+        window.clearTimeout(temporizador);
+        temporizador = null;
+        progreso.classList.remove('corriendo');
+    }
+
+    function arrancar() {
+        if (prefiereMenosMovimiento || slides.length < 2) return;
+        detener();
+        reiniciarProgreso();
+        temporizador = window.setTimeout(function () {
+            irA(indice + 1);
+        }, DURACION_SLIDE);
+    }
+
+    // Cada cambio de slide (manual o automático) reinicia el conteo
+    var irAOriginal = irA;
+    irA = function (nuevoIndice) {
+        irAOriginal(nuevoIndice);
+        arrancar();
+    };
+
+    carrusel.addEventListener('mouseenter', detener);
+    carrusel.addEventListener('mouseleave', arrancar);
+    carrusel.addEventListener('focusin', detener);
+    carrusel.addEventListener('focusout', arrancar);
+
+    // No sirve de nada rotar en una pestaña que nadie está viendo
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            detener();
+        } else {
+            arrancar();
+        }
+    });
+
+
     if ((prefiereMenosMovimiento || esMovil) && slides.length > 1) {
         irA(1);
     } else {
         var vInicial = obtenerVideo(slides[indice]);
-        if (vInicial) vInicial.play().catch(function () {});
+        if (vInicial && usarVideo) vInicial.play().catch(function () {});
+        arrancar();
     }
 });
 

@@ -6,6 +6,7 @@ from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
 from django.db.models import Q
 from django.template.loader import render_to_string
+from panel_admin.reportes.marca import contexto_marca
 from django.utils import timezone
 
 from dbmicolmena.models import Incidencia
@@ -812,7 +813,10 @@ def generar_reporte_incidencias_pdf(
 
     html = render_to_string(
         "admin_panel/reportes/pdf/incidencias.html",
-        contexto,
+        {
+            **contexto,
+            **contexto_marca(),
+        },
     )
 
     from weasyprint import HTML

@@ -18,31 +18,43 @@
                  data-texto="Servicios de manejo, traslado, evaluación y fortalecimiento apícola."
                  data-cta-texto="Contáctanos"
                  data-cta-href="{% url 'Contactanos' %}">
+                <!-- El src va en data-src, no en <source>.
+
+                     Con el <source> puesto, el navegador empieza a
+                     descargar el video apenas parsea el HTML —
+                     también en celular, donde este slide ni se
+                     muestra. Eran varios MB de datos móviles
+                     gastados en algo que nadie iba a ver.
+
+                     Ahora el JS solo le pone el src si la pantalla
+                     es de escritorio. En celular el <video> se
+                     queda con el póster y punto. -->
                 <video class="hero-video" muted loop playsinline
+                       preload="none"
                        poster="{% static 'home/img/1.jpg' %}"
+                       data-src="https://videos.pexels.com/video-files/18358802/18358802-hd_1920_1080_30fps.mp4"
                        style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;"
                        aria-hidden="true">
-                    <source src="https://videos.pexels.com/video-files/18358802/18358802-hd_1920_1080_30fps.mp4" type="video/mp4">
                 </video>
             </div>
 
             <div class="hero-slide" data-tipo="imagen"
-                 data-titulo-prefijo="Cuidamos la"
-                 data-titulo-acento="salud"
-                 data-titulo-sufijo="de cada colmena"
+                 data-titulo-prefijo="Revisamos cada"
+                 data-titulo-acento="colmena"
+                 data-titulo-sufijo="en campo"
                  data-texto="Diagnóstico, monitoreo y acompañamiento técnico para que tus abejas prosperen."
                  data-cta-texto="Ver servicios"
                  data-cta-href="{% url 'Servicios' %}"
-                 style="background-image:url('https://images.pexels.com/photos/5247965/pexels-photo-5247965.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600');"></div>
+                 style="background-image:url('{% static 'home/img/hero-apicultor-colombia.jpg' %}');"></div>
 
             <div class="hero-slide" data-tipo="imagen"
-                 data-titulo-prefijo="Cosechamos con"
-                 data-titulo-acento="cuidado"
-                 data-titulo-sufijo="cada colmena"
+                 data-titulo-prefijo="Un equipo que"
+                 data-titulo-acento="acompaña"
+                 data-titulo-sufijo="tu apiario"
                  data-texto="Manejo responsable en cada cosecha, protegiendo a las abejas y maximizando tu producción."
                  data-cta-texto="Conócenos"
                  data-cta-href="{% url 'Quienes' %}"
-                 style="background-image:url('https://images.pexels.com/photos/5247943/pexels-photo-5247943.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600');"></div>
+                 style="background-image:url('{% static 'home/img/hero-equipo-apiario.jpg' %}');"></div>
 
             <button type="button" class="hero-flecha hero-flecha-izq" aria-label="Imagen anterior">
                 <i class="bi bi-chevron-left"></i>
@@ -71,10 +83,10 @@
                 <span class="colmena-entrada" aria-hidden="true"></span>
 
                 <span class="abeja-orbita abeja-orbita-1" aria-hidden="true">
-                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="">
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="" loading="lazy" decoding="async">
                 </span>
                 <span class="abeja-orbita abeja-orbita-2" aria-hidden="true">
-                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="">
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="" loading="lazy" decoding="async">
                 </span>
 
                 <div class="hero-texto-contenido">
@@ -106,7 +118,7 @@
         <!-- Panal derecho -->
         <img src="{% static 'home/img/pana_derechal.png' %}" 
             class="panal-derecha" 
-            alt="Panal">
+            alt="" loading="lazy" decoding="async">
 
         <div class="container py-5">
 
@@ -117,11 +129,11 @@
 
                     <img src="{% static 'home/img/abeja_larga.png' %}" 
                         class="abeja-larga" 
-                        alt="Decoración abeja">
+                        alt="" loading="lazy" decoding="async">
 
-                    <img src="{% static 'home/img/hermanos.png' %}" 
+                    <img src="{% static 'home/img/hermanos.webp' %}" 
                         class="img-fluid foto-apicultores" 
-                        alt="Apicultores">
+                        alt="Apicultores" loading="lazy" decoding="async">
 
                     <div class="nombres-apicultores">
                         <span>Camilo Herrera</span>
@@ -143,7 +155,7 @@
 
                     <div class="separador-abeja">
                         <span></span>
-                        <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja">
+                        <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="" loading="lazy" decoding="async">
                         <span></span>
                     </div>
 
@@ -167,7 +179,7 @@
                 <div class="col-12 col-md-4" data-reveal="abajo" data-reveal-demora="0">
                     <div class="item-info">
                         <div class="icono-circulo">
-                            <img src="{% static 'home/img/icono_izquierda.png' %}" alt="Icono">
+                            <img src="{% static 'home/img/icono_izquierda.png' %}" alt="" loading="lazy" decoding="async">
                         </div>
                         <p>
                             Creemos firmemente que la apicultura es una labor que transforma
@@ -180,7 +192,7 @@
                 <div class="col-12 col-md-4" data-reveal="abajo" data-reveal-demora="150">
                     <div class="item-info">
                         <div class="icono-circulo">
-                            <img src="{% static 'home/img/icono_centro.png' %}" alt="Icono">
+                            <img src="{% static 'home/img/icono_centro.png' %}" alt="" loading="lazy" decoding="async">
                         </div>
                         <p>Protección de la biodiversidad</p>
                     </div>
@@ -189,7 +201,7 @@
                 <div class="col-12 col-md-4" data-reveal="abajo" data-reveal-demora="300">
                     <div class="item-info">
                         <div class="icono-circulo">
-                            <img src="{% static 'home/img/icono_derecha.png' %}" alt="Icono">
+                            <img src="{% static 'home/img/icono_derecha.png' %}" alt="" loading="lazy" decoding="async">
                         </div>
                         <p>Monitoreo de colmenas</p>
                     </div>
@@ -205,11 +217,11 @@
 
         <img src="{% static 'home/img/rama_izquierda.png' %}" 
             class="rama-izquierda" 
-            alt="Rama izquierda">
+            alt="" loading="lazy" decoding="async">
 
         <img src="{% static 'home/img/rama_derecha.png' %}" 
             class="rama-derecha" 
-            alt="Rama derecha">
+            alt="" loading="lazy" decoding="async">
 
         <div class="container">
 
@@ -220,7 +232,7 @@
 
                 <div class="separador-abeja separador-servicios">
                     <span></span>
-                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="Abeja">
+                    <img src="{% static 'home/img/abeja_amarilla_centro.png' %}" alt="" loading="lazy" decoding="async">
                     <span></span>
                 </div>
 
@@ -240,7 +252,7 @@
                             <div class="cara cara-frente">
                                 <img src="{% static 'home/img/casita_de_abeja_targeta.png' %}" 
                                     class="servicio-icono" 
-                                    alt="Icono">
+                                    alt="" loading="lazy" decoding="async">
                                 <h3>Manejo y fortalecimiento de colmenas</h3>
                                 <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
                             </div>
@@ -262,7 +274,7 @@
                             <div class="cara cara-frente">
                                 <img src="{% static 'home/img/icono_targeta2.png' %}" 
                                     class="servicio-icono" 
-                                    alt="Icono">
+                                    alt="" loading="lazy" decoding="async">
                                 <h3>Traslado seguro de colmenas</h3>
                                 <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
                             </div>
@@ -284,7 +296,7 @@
                             <div class="cara cara-frente">
                                 <img src="{% static 'home/img/cono_targeta3.png' %}" 
                                     class="servicio-icono" 
-                                    alt="Icono">
+                                    alt="" loading="lazy" decoding="async">
                                 <h3>Instalación de apiarios y asesoría técnica</h3>
                                 <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
                             </div>
@@ -306,7 +318,7 @@
                             <div class="cara cara-frente">
                                 <img src="{% static 'home/img/icono_targeta4.png' %}" 
                                     class="servicio-icono" 
-                                    alt="Icono">
+                                    alt="" loading="lazy" decoding="async">
                                 <h3>Evaluación sanitaria apícola</h3>
                                 <span class="pista-voltear"><i class="bi bi-arrow-repeat"></i> pasa el mouse</span>
                             </div>
@@ -324,9 +336,9 @@
 
                 </div>
 
-                <img src="{% static 'home/img/Abejas con apíarios.png' %}" 
+                <img src="{% static 'home/img/Abejas con apíarios.webp' %}" 
                     class="apiarios-img" 
-                    alt="Abejas con apiarios">
+                    alt="Abejas con apiarios" loading="lazy" decoding="async">
 
             </div>
 
@@ -452,13 +464,13 @@
 
         <!-- Decoraciones -->
 
-        <img src="{% static 'home/img/ramas_izquierda_contactanos.png' %}" class="rama-contacto-izquierda" alt="rama">
+        <img src="{% static 'home/img/ramas_izquierda_contactanos.png' %}" class="rama-contacto-izquierda" alt="" loading="lazy" decoding="async">
 
-        <img src="{% static 'home/img/ramas_derecha_contactanos.png' %}" class="rama-contacto-derecha" alt="rama">
+        <img src="{% static 'home/img/ramas_derecha_contactanos.png' %}" class="rama-contacto-derecha" alt="" loading="lazy" decoding="async">
 
-        <img src="{% static 'home/img/abejita_contanos.png' %}" class="abeja-contacto" alt="abeja">
+        <img src="{% static 'home/img/abejita_contanos.png' %}" class="abeja-contacto" alt="" loading="lazy" decoding="async">
 
-        <img src="{% static 'home/img/panal_contactanos.png' %}" class="panal-contacto" alt="panal">
+        <img src="{% static 'home/img/panal_contactanos.png' %}" class="panal-contacto" alt="" loading="lazy" decoding="async">
 
         <div class="container contacto-contenedor">
 
@@ -470,7 +482,7 @@
 
                     <div class="contenido-contacto">
 
-                        <img src="{% static 'home/img/cartel_contactanos.png' %}" class="cartel-contacto" alt="contactanos">
+                        <img src="{% static 'home/img/cartel_contactanos.png' %}" class="cartel-contacto" alt="" loading="lazy" decoding="async">
 
                         <div class="texto-contacto" data-reveal="abajo">
                             <h2>
@@ -484,7 +496,7 @@
                             </p>
                         </div>
 
-                        <img src="{% static 'home/img/Apicultor_Contactanos.png' %}" class="apicultor-contacto" alt="apicultor">
+                        <img src="{% static 'home/img/Apicultor_Contactanos.webp' %}" class="apicultor-contacto" alt="apicultor" loading="lazy" decoding="async">
 
                     </div>
 

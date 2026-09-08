@@ -101,6 +101,22 @@
             border-collapse: collapse;
         }
 
+        /* Logo de Mi Colmena en el encabezado.
+           El tamaño se fija en CSS aunque el PNG sea de 200px:
+           así el PDF conserva resolución al hacer zoom o imprimir. */
+        .logo-marca {
+            width: 58px;
+            height: 58px;
+            display: block;
+        }
+
+
+        .columna-logo {
+            width: 74px;
+            padding-right: 16px;
+            vertical-align: middle;
+        }
+
         .tabla-encabezado td {
             vertical-align: middle;
             border: none;
@@ -648,6 +664,16 @@
         <table class="tabla-encabezado">
 
             <tr>
+
+                {% if logo_reporte %}
+                    <td class="columna-logo">
+                        <img
+                            src="{{ logo_reporte }}"
+                            alt="Mi Colmena"
+                            class="logo-marca"
+                        >
+                    </td>
+                {% endif %}
 
                 <td class="marca-empresa">
 
