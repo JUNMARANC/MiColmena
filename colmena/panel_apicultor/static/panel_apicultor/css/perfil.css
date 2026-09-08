@@ -1,0 +1,4267 @@
+/* ==========================================================
+   ==========================================================
+   PERFIL DEL APICULTOR
+   MI COLMENA
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   1. VARIABLES
+========================================================== */
+
+.pagina-mi-perfil {
+
+    --perfil-verde-oscuro: #214F3B;
+    --perfil-verde-texto: #163324;
+    --perfil-verde-medio: #5F9781;
+
+    --perfil-amarillo: #FFDD71;
+    --perfil-amarillo-claro: #FFEDB4;
+    --perfil-crema: #FFFFE8;
+
+    --perfil-blanco: #FFFFFF;
+
+    --perfil-texto-secundario: #718078;
+    --perfil-texto-suave: #98A39D;
+
+    --perfil-borde: rgba(33, 79, 59, 0.10);
+
+    --perfil-verde-suave: #EAF4EE;
+    --perfil-rojo-suave: #FCE5E1;
+    --perfil-rojo: #A94D44;
+
+    --perfil-sombra:
+        0 6px 22px
+        rgba(33, 79, 59, 0.07);
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+
+    padding-bottom: 35px;
+
+    font-family: inherit;
+
+}
+
+
+/* ==========================================================
+   2. ENCABEZADO
+========================================================== */
+
+.perfil-encabezado {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    overflow: hidden;
+
+    padding:
+        23px
+        26px;
+
+    border:
+        1px solid
+        var(--perfil-borde);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #FFFFFF 0%,
+            #FFFFF4 62%,
+            #FFF5C8 100%
+        );
+
+    box-shadow:
+        var(--perfil-sombra);
+
+}
+
+
+.perfil-encabezado::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    right: -35px;
+    bottom: -75px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 221, 113, 0.20);
+
+    pointer-events: none;
+
+}
+
+
+.perfil-etiqueta {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 7px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    background:
+        var(--perfil-amarillo-claro);
+
+    color:
+        #876916;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    text-transform: uppercase;
+
+}
+
+
+.perfil-etiqueta i {
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 11px;
+
+}
+
+
+.perfil-encabezado h2 {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin: 0;
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+}
+
+
+.perfil-encabezado p {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 650px;
+
+    margin:
+        7px
+        0
+        0;
+
+    color:
+        var(--perfil-texto-secundario);
+
+    font-size: 10px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   3. GRID PRINCIPAL
+========================================================== */
+
+.perfil-grid {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(270px, 330px)
+        minmax(0, 1fr);
+
+    align-items: start;
+
+    gap: 18px;
+
+}
+
+
+/* ==========================================================
+   4. COLUMNA IZQUIERDA
+========================================================== */
+
+.perfil-columna-lateral {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+}
+
+
+/* ==========================================================
+   5. TARJETAS
+========================================================== */
+
+.perfil-card {
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--perfil-borde);
+
+    border-radius: 17px;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    box-shadow:
+        var(--perfil-sombra);
+
+}
+
+
+.perfil-card:hover {
+
+    border-color:
+        rgba(33, 79, 59, 0.15);
+
+}
+
+
+/* ==========================================================
+   6. TARJETA DE IDENTIDAD
+========================================================== */
+
+.perfil-card-identidad {
+
+    position: relative;
+
+    padding:
+        25px
+        20px
+        20px;
+
+    text-align: center;
+
+}
+
+
+.perfil-card-identidad::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 75px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #214F3B,
+            #5F9781
+        );
+
+}
+
+
+/* ==========================================================
+   7. AVATAR PRINCIPAL
+========================================================== */
+
+.perfil-avatar-principal {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 112px;
+    height: 112px;
+
+    margin:
+        22px
+        auto
+        14px;
+
+    overflow: hidden;
+
+    border:
+        5px solid
+        #FFFFFF;
+
+    border-radius: 50%;
+
+    background:
+        var(--perfil-verde-suave);
+
+    box-shadow:
+        0 8px 22px
+        rgba(22, 51, 36, 0.18);
+
+}
+
+
+.perfil-avatar-principal img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+}
+
+
+.perfil-avatar-sin-foto {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color:
+        var(--perfil-verde-medio);
+
+    font-size: 43px;
+
+    background:
+        #EAF4EE;
+
+}
+
+
+/* ==========================================================
+   8. IDENTIDAD
+========================================================== */
+
+.perfil-identidad {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-bottom: 18px;
+
+}
+
+
+.perfil-identidad h3 {
+
+    margin:
+        0
+        0
+        8px;
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+.perfil-badge-rol {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        6px
+        10px;
+
+    border-radius: 30px;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+}
+
+
+.perfil-badge-apicultor {
+
+    background:
+        var(--perfil-amarillo-claro);
+
+    color:
+        #765B0E;
+
+}
+
+
+.perfil-badge-apicultor i {
+
+    color:
+        var(--perfil-verde-oscuro);
+
+}
+
+
+.perfil-badge-admin {
+
+    background:
+        #E9EFF8;
+
+    color:
+        #42678E;
+
+}
+
+
+/* ==========================================================
+   9. RESUMEN DE LA CUENTA
+========================================================== */
+
+.perfil-resumen-cuenta {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding-top: 16px;
+
+    border-top:
+        1px solid
+        var(--perfil-borde);
+
+    text-align: left;
+
+}
+
+
+.perfil-resumen-item {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        9px
+        10px;
+
+    border-radius: 10px;
+
+    transition:
+        background 0.18s ease;
+
+}
+
+
+.perfil-resumen-item:hover {
+
+    background:
+        #FAFBF8;
+
+}
+
+
+.perfil-resumen-icono {
+
+    width: 31px;
+    height: 31px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        var(--perfil-amarillo-claro);
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 11px;
+
+}
+
+
+.perfil-resumen-item > div:last-child {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+}
+
+
+.perfil-resumen-item span {
+
+    color:
+        var(--perfil-texto-suave);
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+}
+
+
+.perfil-resumen-item strong {
+
+    max-width: 200px;
+
+    overflow: hidden;
+
+    color:
+        var(--perfil-verde-texto);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   10. ESTADO DE LA CUENTA
+========================================================== */
+
+.perfil-estado-activo {
+
+    color:
+        #3E7959 !important;
+
+}
+
+
+.perfil-estado-inactivo {
+
+    color:
+        #A84D44 !important;
+
+}
+
+
+/* ==========================================================
+   11. INFORMACIÓN DEL ROL
+========================================================== */
+
+.perfil-card-rol {
+
+    padding: 18px;
+
+}
+
+
+.perfil-card-titulo {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+}
+
+
+.perfil-card-icono {
+
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        var(--perfil-amarillo-claro);
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 14px;
+
+}
+
+
+.perfil-card-titulo > div:last-child {
+
+    min-width: 0;
+
+}
+
+
+.perfil-card-titulo h4,
+.perfil-card-titulo h5 {
+
+    margin: 0;
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-card-titulo p {
+
+    margin:
+        4px
+        0
+        0;
+
+    color:
+        var(--perfil-texto-secundario);
+
+    font-size: 8px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   12. DATOS DEL ROL
+========================================================== */
+
+.perfil-dato-rol {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        11px
+        3px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+
+}
+
+
+.perfil-dato-rol:first-of-type {
+
+    margin-top: 13px;
+
+}
+
+
+.perfil-dato-rol:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.perfil-dato-rol span {
+
+    color:
+        var(--perfil-texto-secundario);
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+}
+
+
+.perfil-dato-rol strong {
+
+    max-width: 160px;
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* ==========================================================
+   13. CONTENIDO DERECHO
+========================================================== */
+
+.perfil-contenido-principal {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 17px;
+
+}
+
+
+/* ==========================================================
+   14. CABECERA DE TARJETAS
+========================================================== */
+
+.perfil-card-header {
+
+    padding:
+        17px
+        20px;
+
+    border-bottom:
+        1px solid
+        var(--perfil-borde);
+
+    background:
+        linear-gradient(
+            90deg,
+            #FFFFFF,
+            #FFFFF4
+        );
+
+}
+
+
+/* ==========================================================
+   15. FORMULARIOS
+========================================================== */
+
+.perfil-card-formulario,
+.perfil-card-seguridad {
+
+    padding-bottom: 20px;
+
+}
+
+
+.perfil-card-formulario form,
+.perfil-card-seguridad form {
+
+    padding:
+        20px;
+
+}
+
+
+/* ==========================================================
+   16. FOTO DE PERFIL - EDICIÓN
+========================================================== */
+
+.perfil-foto-edicion {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding:
+        15px;
+
+    border:
+        1px solid
+        var(--perfil-borde);
+
+    border-radius: 14px;
+
+    background:
+        #FAFBF8;
+
+}
+
+
+.perfil-foto-preview {
+
+    width: 92px;
+    height: 92px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border:
+        4px solid
+        #FFFFFF;
+
+    border-radius: 50%;
+
+    background:
+        var(--perfil-verde-suave);
+
+    box-shadow:
+        0 5px 15px
+        rgba(33, 79, 59, 0.12);
+
+}
+
+
+.perfil-foto-preview img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+}
+
+
+.perfil-preview-icono {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color:
+        var(--perfil-verde-medio);
+
+    font-size: 32px;
+
+}
+
+
+.perfil-foto-controles {
+
+    min-width: 0;
+
+    flex: 1;
+
+}
+
+
+.perfil-foto-controles h6 {
+
+    margin:
+        0
+        0
+        4px;
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-foto-controles p {
+
+    margin:
+        0
+        0
+        10px;
+
+    color:
+        var(--perfil-texto-secundario);
+
+    font-size: 8px;
+
+    line-height: 1.5;
+
+}
+
+
+.perfil-foto-botones {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+}
+
+
+/* ==========================================================
+   17. BOTONES DE FOTO
+========================================================== */
+
+.perfil-foto-botones
+.btn-outline-success {
+
+    border-color:
+        var(--perfil-verde-medio);
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    background:
+        #FFFFFF;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-foto-botones
+.btn-outline-success:hover {
+
+    border-color:
+        var(--perfil-verde-oscuro);
+
+    background:
+        var(--perfil-verde-oscuro);
+
+    color:
+        #FFFFFF;
+
+}
+
+
+.perfil-foto-botones
+.btn-outline-danger {
+
+    border-color:
+        #E4B4AD;
+
+    color:
+        var(--perfil-rojo);
+
+    background:
+        #FFFFFF;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-foto-botones
+.btn-outline-danger:hover {
+
+    border-color:
+        var(--perfil-rojo);
+
+    background:
+        var(--perfil-rojo);
+
+    color:
+        #FFFFFF;
+
+}
+
+
+/* ==========================================================
+   18. SEPARADOR
+========================================================== */
+
+.perfil-separador {
+
+    margin:
+        21px
+        0;
+
+    border: none;
+
+    border-top:
+        1px solid
+        var(--perfil-borde);
+
+    opacity: 1;
+
+}
+
+
+/* ==========================================================
+   19. LABELS
+========================================================== */
+
+.pagina-mi-perfil
+.form-label {
+
+    margin-bottom: 6px;
+
+    color:
+        var(--perfil-verde-texto);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   20. INPUTS
+========================================================== */
+
+.pagina-mi-perfil
+.form-control,
+.pagina-mi-perfil
+.form-select {
+
+    min-height: 42px;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-radius: 10px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--perfil-verde-texto);
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+
+}
+
+
+.pagina-mi-perfil
+.form-control:focus,
+.pagina-mi-perfil
+.form-select:focus {
+
+    border-color:
+        #D2B23D;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.22);
+
+}
+
+
+/* ==========================================================
+   21. CAMPOS DESHABILITADOS
+========================================================== */
+
+.pagina-mi-perfil
+.form-control:disabled,
+.pagina-mi-perfil
+.form-control[readonly] {
+
+    border-color:
+        #E1E6E3;
+
+    background:
+        #F4F6F5;
+
+    color:
+        #7E8983;
+
+    cursor:
+        not-allowed;
+
+    opacity: 1;
+
+}
+
+
+/* ==========================================================
+   22. INPUT GROUP
+========================================================== */
+
+.pagina-mi-perfil
+.input-group {
+
+    flex-wrap: nowrap;
+
+}
+
+
+.pagina-mi-perfil
+.input-group-text {
+
+    min-width: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-right: none;
+
+    border-radius:
+        10px
+        0
+        0
+        10px;
+
+    background:
+        var(--perfil-amarillo-claro);
+
+    color:
+        var(--perfil-verde-oscuro);
+
+    font-size: 11px;
+
+}
+
+
+.pagina-mi-perfil
+.input-group
+.form-control {
+
+    border-radius:
+        0
+        10px
+        10px
+        0;
+
+}
+
+
+.pagina-mi-perfil
+.input-group
+.form-control:not(:last-child) {
+
+    border-radius: 0;
+
+}
+
+
+/* ==========================================================
+   23. TEXTO DE AYUDA
+========================================================== */
+
+.perfil-ayuda {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color:
+        var(--perfil-texto-suave);
+
+    font-size: 7px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   24. VALIDACIONES
+========================================================== */
+
+.pagina-mi-perfil
+.form-control.is-invalid,
+.pagina-mi-perfil
+.form-select.is-invalid {
+
+    border-color:
+        #C95F55;
+
+    background-image: none;
+
+}
+
+
+.pagina-mi-perfil
+.form-control.is-valid,
+.pagina-mi-perfil
+.form-select.is-valid {
+
+    border-color:
+        #62906F;
+
+    background-image: none;
+
+}
+
+
+.pagina-mi-perfil
+.invalid-feedback {
+
+    margin-top: 5px;
+
+    color:
+        #B04E45;
+
+    font-size: 7px;
+
+    font-weight: 600;
+
+}
+
+
+/* ==========================================================
+   25. FOOTER DE FORMULARIO
+========================================================== */
+
+.perfil-form-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: 22px;
+
+    padding-top: 17px;
+
+    border-top:
+        1px solid
+        var(--perfil-borde);
+
+}
+
+
+/* ==========================================================
+   26. BOTÓN GUARDAR
+========================================================== */
+
+.pagina-mi-perfil
+.btn-success {
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        8px
+        15px;
+
+    border:
+        1px solid
+        var(--perfil-verde-oscuro);
+
+    border-radius: 10px;
+
+    background:
+        var(--perfil-verde-oscuro);
+
+    color:
+        #FFFFFF;
+
+    font-family: inherit;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 4px 11px
+        rgba(33, 79, 59, 0.12);
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+.pagina-mi-perfil
+.btn-success:hover {
+
+    border-color:
+        #173D2D;
+
+    background:
+        #173D2D;
+
+    color:
+        #FFFFFF;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 6px 15px
+        rgba(33, 79, 59, 0.18);
+
+}
+
+
+.pagina-mi-perfil
+.btn-success:disabled {
+
+    border-color:
+        #A9B5AE;
+
+    background:
+        #A9B5AE;
+
+    transform: none;
+
+    box-shadow: none;
+
+    cursor:
+        not-allowed;
+
+}
+
+
+/* ==========================================================
+   27. INFORMACIÓN LABORAL
+========================================================== */
+
+.perfil-informacion-laboral {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 14px;
+
+    margin-top: 18px;
+
+}
+
+
+/* ==========================================================
+   28. AVISO DE SEGURIDAD
+========================================================== */
+
+.perfil-aviso-seguridad {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin:
+        18px
+        20px
+        0;
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px solid
+        rgba(180, 142, 23, 0.14);
+
+    border-radius: 11px;
+
+    background:
+        rgba(255, 237, 180, 0.28);
+
+    color:
+        #746324;
+
+}
+
+
+.perfil-aviso-seguridad > i {
+
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color:
+        #A98317;
+
+    font-size: 12px;
+
+}
+
+
+.perfil-aviso-seguridad p {
+
+    margin: 0;
+
+    font-size: 8px;
+
+    line-height: 1.55;
+
+}
+
+
+/* ==========================================================
+   29. BOTÓN MOSTRAR CONTRASEÑA
+========================================================== */
+
+.btn-password-perfil {
+
+    min-width: 42px;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-left: none;
+
+    border-radius:
+        0
+        10px
+        10px
+        0;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--perfil-verde-medio);
+
+    font-size: 11px;
+
+}
+
+
+.btn-password-perfil:hover {
+
+    border-color:
+        #D9E1DC;
+
+    background:
+        var(--perfil-amarillo-claro);
+
+    color:
+        var(--perfil-verde-oscuro);
+
+}
+
+
+/* ==========================================================
+   30. ERROR CONTRASEÑA
+========================================================== */
+
+.perfil-password-error {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 6px;
+
+    color:
+        var(--perfil-rojo);
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   31. VALIDACIÓN DE CONTRASEÑA
+========================================================== */
+
+.perfil-password-validacion {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    margin-top: 16px;
+
+    padding:
+        11px
+        13px;
+
+    border-radius: 11px;
+
+    background:
+        #F6F8F6;
+
+}
+
+
+.perfil-password-regla {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color:
+        var(--perfil-texto-secundario);
+
+    font-size: 7px;
+
+    font-weight: 600;
+
+}
+
+
+.perfil-password-regla i {
+
+    font-size: 9px;
+
+}
+
+
+.perfil-password-regla.valida {
+
+    color:
+        #4F805F;
+
+}
+
+
+.perfil-password-regla.valida i {
+
+    color:
+        #4F805F;
+
+}
+
+
+.perfil-password-regla.invalida {
+
+    color:
+        #A84D44;
+
+}
+
+
+/* ==========================================================
+   32. INFORMACIÓN NO DISPONIBLE
+========================================================== */
+
+.perfil-sin-informacion {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 14px;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background:
+        #F4F6F5;
+
+    color:
+        var(--perfil-texto-secundario);
+
+    font-size: 8px;
+
+}
+
+
+/* ==========================================================
+   33. MENSAJES DE DJANGO
+========================================================== */
+
+.pagina-mi-perfil
+.alert {
+
+    border: none;
+
+    border-radius: 11px;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+}
+
+
+.pagina-mi-perfil
+.alert-success {
+
+    background:
+        #E6F3E8;
+
+    color:
+        #3D704C;
+
+}
+
+
+.pagina-mi-perfil
+.alert-danger {
+
+    background:
+        #FCE5E1;
+
+    color:
+        #A84D44;
+
+}
+
+
+/* ==========================================================
+   34. HIDDEN
+========================================================== */
+
+.pagina-mi-perfil
+.d-none {
+
+    display: none !important;
+
+}
+
+
+/* ==========================================================
+   35. SCROLLBAR
+========================================================== */
+
+.pagina-mi-perfil
+::-webkit-scrollbar {
+
+    width: 7px;
+    height: 7px;
+
+}
+
+
+.pagina-mi-perfil
+::-webkit-scrollbar-thumb {
+
+    border-radius: 20px;
+
+    background:
+        rgba(95, 151, 129, 0.38);
+
+}
+
+
+/* ==========================================================
+   36. RESPONSIVE - 1100 PX
+========================================================== */
+
+@media (max-width: 1100px) {
+
+    .perfil-grid {
+
+        grid-template-columns:
+            290px
+            minmax(0, 1fr);
+
+    }
+
+
+    .perfil-card-formulario form,
+    .perfil-card-seguridad form {
+
+        padding: 18px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   37. RESPONSIVE - 900 PX
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .perfil-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .perfil-columna-lateral {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+
+    .perfil-card-identidad {
+
+        height: 100%;
+
+    }
+
+
+    .perfil-card-rol {
+
+        height: 100%;
+
+    }
+
+}
+
+
+/* ==========================================================
+   38. RESPONSIVE - 700 PX
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .perfil-encabezado {
+
+        padding:
+            19px
+            20px;
+
+    }
+
+
+    .perfil-encabezado h2 {
+
+        font-size: 21px;
+
+    }
+
+
+    .perfil-columna-lateral {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .perfil-foto-edicion {
+
+        align-items: flex-start;
+
+    }
+
+
+    .perfil-informacion-laboral {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+/* ==========================================================
+   39. RESPONSIVE - 560 PX
+========================================================== */
+
+@media (max-width: 560px) {
+
+    .pagina-mi-perfil {
+
+        gap: 14px;
+
+    }
+
+
+    .perfil-encabezado {
+
+        border-radius: 14px;
+
+    }
+
+
+    .perfil-card {
+
+        border-radius: 14px;
+
+    }
+
+
+    .perfil-card-header {
+
+        padding:
+            15px
+            16px;
+
+    }
+
+
+    .perfil-card-formulario form,
+    .perfil-card-seguridad form {
+
+        padding: 16px;
+
+    }
+
+
+    .perfil-foto-edicion {
+
+        flex-direction: column;
+
+        align-items: center;
+
+        text-align: center;
+
+    }
+
+
+    .perfil-foto-controles {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-foto-botones {
+
+        justify-content: center;
+
+    }
+
+
+    .perfil-form-footer {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .perfil-form-footer
+    .btn {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-dato-rol {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 4px;
+
+    }
+
+
+    .perfil-dato-rol strong {
+
+        max-width: 100%;
+
+        text-align: left;
+
+    }
+
+
+    .perfil-resumen-item strong {
+
+        max-width:
+            calc(100vw - 150px);
+
+    }
+
+
+    .perfil-password-validacion {
+
+        flex-direction: column;
+
+    }
+
+}
+
+
+/* ==========================================================
+   40. RESPONSIVE - 400 PX
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .perfil-encabezado {
+
+        padding: 16px;
+
+    }
+
+
+    .perfil-encabezado h2 {
+
+        font-size: 19px;
+
+    }
+
+
+    .perfil-avatar-principal {
+
+        width: 100px;
+        height: 100px;
+
+    }
+
+
+    .perfil-foto-preview {
+
+        width: 82px;
+        height: 82px;
+
+    }
+
+
+    .perfil-foto-botones {
+
+        flex-direction: column;
+
+    }
+
+
+    .perfil-foto-botones
+    .btn,
+    .perfil-foto-botones
+    label {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* ==========================================================
+   41. ACCESIBILIDAD - REDUCIR ANIMACIONES
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .pagina-mi-perfil *,
+    .pagina-mi-perfil *::before,
+    .pagina-mi-perfil *::after {
+
+        transition: none !important;
+
+        animation: none !important;
+
+        scroll-behavior: auto !important;
+
+    }
+
+}
+
+
+/* ==========================================================
+   CORRECCIÓN BOTONES DE FOTOGRAFÍA
+========================================================== */
+
+.btn-cambiar-foto,
+.btn-quitar-foto {
+    min-height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 8px 13px;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 8px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* CAMBIAR FOTO */
+
+.btn-cambiar-foto {
+    border: 1px solid #5F9781;
+
+    background: #FFFFFF;
+    color: #214F3B;
+
+    text-decoration: none;
+}
+
+.btn-cambiar-foto:hover {
+    border-color: #214F3B;
+
+    background: #214F3B;
+    color: #FFFFFF;
+
+    transform: translateY(-1px);
+}
+
+
+/* QUITAR FOTO */
+
+.btn-quitar-foto {
+    border: 1px solid #E4B4AD;
+
+    background: #FFFFFF;
+    color: #A84D44;
+}
+
+.btn-quitar-foto:hover {
+    border-color: #A84D44;
+
+    background: #A84D44;
+    color: #FFFFFF;
+
+    transform: translateY(-1px);
+}
+
+
+
+/* ==========================================================
+   ==========================================================
+   CORRECCIÓN DEFINITIVA
+   PERFIL APICULTOR - HTML ACTUAL
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   1. OCULTAR ELEMENTOS
+========================================================== */
+
+.perfil-apicultor-page .d-none {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   2. TÍTULOS QUE USA EL HTML ACTUAL
+========================================================== */
+
+.perfil-encabezado h1 {
+    position: relative;
+    z-index: 2;
+
+    margin: 0;
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+
+.perfil-identidad h2 {
+    margin: 0 0 8px;
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.25;
+
+    overflow-wrap: anywhere;
+}
+
+
+.perfil-card-titulo h3 {
+    margin: 0;
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+
+.perfil-seccion-titulo h4 {
+    margin: 0;
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+.perfil-seccion-titulo p {
+    margin: 4px 0 0;
+
+    color: var(--perfil-texto-secundario);
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+
+.perfil-foto-controles h5 {
+    margin: 0 0 4px;
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   3. BADGE APICULTOR
+========================================================== */
+
+.perfil-badge-rol {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 6px 10px;
+
+    border-radius: 30px;
+
+    background: var(--perfil-amarillo-claro);
+    color: #765B0E;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+
+.perfil-zona {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    margin: 9px 0 0;
+
+    color: var(--perfil-texto-secundario);
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   4. RESUMEN TARJETA IZQUIERDA
+========================================================== */
+
+.perfil-resumen {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid var(--perfil-borde);
+
+    text-align: left;
+}
+
+
+.perfil-resumen-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 9px 10px;
+
+    border-radius: 10px;
+}
+
+
+.perfil-resumen-item:hover {
+    background: #FAFBF8;
+}
+
+
+.perfil-resumen-icono {
+    width: 32px;
+    height: 32px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: var(--perfil-amarillo-claro);
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 12px;
+}
+
+
+.perfil-resumen-item > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.perfil-resumen-item span {
+    color: var(--perfil-texto-suave);
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+
+.perfil-resumen-item strong {
+    display: block;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    color: var(--perfil-verde-texto);
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   5. TARJETAS INFORMACIÓN APICULTOR
+========================================================== */
+
+.perfil-card-apicultor,
+.perfil-card-seguridad {
+    padding: 18px;
+}
+
+
+.perfil-datos-apicultor {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 13px;
+}
+
+
+.perfil-dato {
+    min-height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 10px 3px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+}
+
+
+.perfil-dato:last-child {
+    border-bottom: none;
+}
+
+
+.perfil-dato span {
+    color: var(--perfil-texto-secundario);
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+.perfil-dato strong {
+    max-width: 180px;
+
+    color: var(--perfil-verde-oscuro);
+
+    font-size: 8px;
+    font-weight: 800;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ==========================================================
+   6. SECCIONES DEL FORMULARIO
+========================================================== */
+
+.perfil-seccion-formulario {
+    width: 100%;
+}
+
+
+.perfil-seccion-titulo {
+    margin-bottom: 15px;
+}
+
+
+/* ==========================================================
+   7. REEMPLAZO DEL GRID BOOTSTRAP
+   ASÍ NO DEPENDEMOS DE row / col-md
+========================================================== */
+
+.perfil-seccion-formulario .row {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            12,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+
+    margin: 0;
+}
+
+
+.perfil-seccion-formulario .col-md-5 {
+    grid-column: span 5;
+
+    min-width: 0;
+}
+
+
+.perfil-seccion-formulario .col-md-6 {
+    grid-column: span 6;
+
+    min-width: 0;
+}
+
+
+.perfil-seccion-formulario .col-md-7 {
+    grid-column: span 7;
+
+    min-width: 0;
+}
+
+
+/* ==========================================================
+   8. LABELS
+========================================================== */
+
+.perfil-apicultor-page .form-label {
+    display: block;
+
+    margin: 0 0 6px;
+
+    color: var(--perfil-verde-texto);
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+
+.campo-obligatorio {
+    color: #C65A51;
+}
+
+
+/* ==========================================================
+   9. CONTENEDOR DE INPUT
+========================================================== */
+
+.perfil-input-contenedor {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+}
+
+
+/* ==========================================================
+   10. ICONO INPUT
+========================================================== */
+
+.perfil-input-icono {
+    position: absolute;
+
+    left: 13px;
+    top: 50%;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #63816F;
+
+    font-size: 13px;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   11. INPUTS
+========================================================== */
+
+.perfil-apicultor-page .form-control {
+    width: 100%;
+
+    min-width: 0;
+    min-height: 42px;
+
+    display: block;
+
+    box-sizing: border-box;
+
+    padding:
+        9px
+        13px
+        9px
+        38px;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #FFFFFF;
+
+    color: var(--perfil-verde-texto);
+
+    font-family: inherit;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+}
+
+
+.perfil-apicultor-page .form-control:focus {
+    border-color: #D2B23D;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.22);
+}
+
+
+/* ==========================================================
+   12. INPUT BLOQUEADO
+========================================================== */
+
+.perfil-input-bloqueado .form-control {
+    padding-right: 38px;
+
+    border-color: #E1E6E3;
+
+    background: #F4F6F5;
+
+    color: #7E8983;
+
+    cursor: not-allowed;
+}
+
+
+.perfil-input-candado {
+    position: absolute;
+
+    right: 13px;
+    top: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #8C9891;
+
+    font-size: 11px;
+
+    transform: translateY(-50%);
+}
+
+
+/* ==========================================================
+   13. TEXTO DE AYUDA
+========================================================== */
+
+.perfil-ayuda {
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--perfil-texto-suave);
+
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   14. VALIDACIONES
+========================================================== */
+
+.perfil-apicultor-page
+.form-control.is-invalid {
+    border-color: #C95F55;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(201, 95, 85, 0.10);
+}
+
+
+.perfil-apicultor-page
+.form-control.is-valid {
+    border-color: #62906F;
+}
+
+
+.invalid-feedback {
+    display: none;
+
+    margin-top: 5px;
+
+    color: #B04E45;
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+.col-md-5:has(.is-invalid)
+> .invalid-feedback,
+
+.col-md-6:has(.is-invalid)
+> .invalid-feedback,
+
+.col-md-7:has(.is-invalid)
+> .invalid-feedback {
+    display: block;
+}
+
+
+/* ==========================================================
+   15. FOTO
+========================================================== */
+
+.perfil-foto-edicion {
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+.perfil-foto-botones {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+
+/* EL INPUT REAL NUNCA SE VE */
+
+#fotoperfil {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   16. ERROR FOTO
+========================================================== */
+
+.perfil-error-foto {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #B04E45;
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+
+.perfil-error-foto.d-none {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   17. FOOTER DEL FORMULARIO
+========================================================== */
+
+.perfil-formulario-footer {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 22px;
+
+    padding-top: 18px;
+
+    border-top:
+        1px solid
+        var(--perfil-borde);
+}
+
+
+.perfil-formulario-aviso {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: var(--perfil-texto-secundario);
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+.perfil-formulario-aviso i {
+    color: #A98317;
+
+    font-size: 12px;
+}
+
+
+/* ==========================================================
+   18. BOTÓN GUARDAR
+========================================================== */
+
+.btn-guardar-perfil {
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        9px
+        16px;
+
+    border:
+        1px solid
+        #214F3B;
+
+    border-radius: 10px;
+
+    background: #214F3B;
+
+    color: #FFFFFF;
+
+    font-family: inherit;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 11px
+        rgba(33, 79, 59, 0.12);
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+
+.btn-guardar-perfil:hover {
+    background: #173D2D;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 15px
+        rgba(33, 79, 59, 0.18);
+}
+
+
+.btn-guardar-perfil:disabled {
+    border-color: #A9B5AE;
+
+    background: #A9B5AE;
+
+    transform: none;
+
+    box-shadow: none;
+
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================
+   19. RESPONSIVE
+========================================================== */
+
+@media (max-width: 767px) {
+
+    .perfil-seccion-formulario .col-md-5,
+    .perfil-seccion-formulario .col-md-6,
+    .perfil-seccion-formulario .col-md-7 {
+        grid-column: span 12;
+    }
+
+
+    .perfil-formulario-footer {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .btn-guardar-perfil {
+        width: 100%;
+    }
+
+
+    .perfil-foto-edicion {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   SEGURIDAD DEL PERFIL
+   PANEL APICULTOR
+   ==========================================================
+   IMPORTANTE:
+   Todo está limitado a .perfil-contenido-principal
+   para NO modificar la tarjeta de seguridad lateral.
+   ==========================================================
+========================================================== */
+
+
+/* ==========================================================
+   1. TARJETA PRINCIPAL DE SEGURIDAD
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-card-seguridad {
+
+    width: 100%;
+
+    overflow: hidden;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 17px;
+
+    background:
+        rgba(255, 255, 255, 0.96);
+
+    box-shadow:
+        0 6px 22px
+        rgba(33, 79, 59, 0.07);
+
+}
+
+
+/* ==========================================================
+   2. HEADER
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-card-seguridad
+.perfil-card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+        18px
+        20px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    background:
+        linear-gradient(
+            90deg,
+            #FFFFFF 0%,
+            #FFFFF5 100%
+        );
+
+}
+
+
+/* ==========================================================
+   3. ICONO DEL HEADER
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-card-seguridad
+.perfil-card-icono {
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        #EAF4EE;
+
+    color:
+        #214F3B;
+
+    font-size: 15px;
+
+}
+
+
+/* ==========================================================
+   4. TÍTULO
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-card-seguridad
+.perfil-card-titulo h3 {
+
+    margin: 0;
+
+    color:
+        #163324;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    line-height: 1.3;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-card-seguridad
+.perfil-card-titulo p {
+
+    margin:
+        4px
+        0
+        0;
+
+    color:
+        #718078;
+
+    font-size: 9px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   5. AVISO DE SEGURIDAD
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-aviso-seguridad {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin:
+        18px
+        20px
+        0;
+
+    padding:
+        13px
+        14px;
+
+    border:
+        1px solid
+        rgba(95, 151, 129, 0.20);
+
+    border-radius: 12px;
+
+    background:
+        #F3F8F5;
+
+    color:
+        #617269;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-aviso-seguridad > i {
+
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color:
+        #5F9781;
+
+    font-size: 13px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-aviso-seguridad p {
+
+    margin: 0;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   6. FORMULARIO DE CONTRASEÑA
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil {
+
+    padding:
+        20px;
+
+}
+
+
+/* ==========================================================
+   7. LABELS
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.form-label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color:
+        #214F3B;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   8. OBLIGATORIO
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.campo-obligatorio {
+
+    margin-left: 2px;
+
+    color:
+        #C75A50;
+
+}
+
+
+/* ==========================================================
+   9. INPUT GROUP
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group {
+
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: stretch;
+
+}
+
+
+/* ==========================================================
+   10. ICONO IZQUIERDO
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group-text {
+
+    width: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-right: none;
+
+    border-radius:
+        10px
+        0
+        0
+        10px;
+
+    background:
+        #F4F8F5;
+
+    color:
+        #5F9781;
+
+    font-size: 12px;
+
+}
+
+
+/* ==========================================================
+   11. INPUT PASSWORD
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group
+.form-control {
+
+    min-width: 0;
+
+    min-height: 43px;
+
+    flex: 1;
+
+    padding:
+        9px
+        12px;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-radius: 0;
+
+    outline: none;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #163324;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+/* ==========================================================
+   12. FOCUS
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group:focus-within
+.input-group-text {
+
+    border-color:
+        #5F9781;
+
+}
+
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group:focus-within
+.form-control {
+
+    border-color:
+        #5F9781;
+
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(95, 151, 129, 0.05);
+
+}
+
+
+/* ==========================================================
+   13. BOTÓN VER / OCULTAR CONTRASEÑA
+========================================================== */
+
+.perfil-contenido-principal
+.btn-password-perfil {
+
+    width: 44px;
+
+    min-width: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        #D9E1DC;
+
+    border-left: none;
+
+    border-radius:
+        0
+        10px
+        10px
+        0;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #67766E;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease;
+
+}
+
+
+.perfil-contenido-principal
+.btn-password-perfil:hover {
+
+    background:
+        #FFEDB4;
+
+    color:
+        #214F3B;
+
+}
+
+
+.perfil-contenido-principal
+.input-group:focus-within
+.btn-password-perfil {
+
+    border-color:
+        #5F9781;
+
+}
+
+
+/* ==========================================================
+   14. TEXTO DE AYUDA
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.perfil-ayuda {
+
+    display: block;
+
+    margin-top: 6px;
+
+    color:
+        #8C9891;
+
+    font-size: 8px;
+
+    font-weight: 500;
+
+    line-height: 1.45;
+
+}
+
+
+/* ==========================================================
+   15. FILA NUEVA / CONFIRMACIÓN
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.row {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 17px;
+
+    margin:
+        0;
+
+}
+
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.col-md-6 {
+
+    width: 100%;
+
+    min-width: 0;
+
+    padding: 0;
+
+}
+
+
+/* ==========================================================
+   16. ESPACIADO DE CONTRASEÑA ACTUAL
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.mb-4 {
+
+    margin-bottom: 19px !important;
+
+}
+
+
+/* ==========================================================
+   17. ERROR DE CONTRASEÑAS
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-password-error {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 13px;
+
+    padding:
+        9px
+        11px;
+
+    border:
+        1px solid
+        rgba(169, 77, 68, 0.16);
+
+    border-radius: 9px;
+
+    background:
+        #FCE5E1;
+
+    color:
+        #A94D44;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-password-error i {
+
+    font-size: 11px;
+
+}
+
+
+/* ==========================================================
+   18. PANEL VALIDACIÓN CONTRASEÑA
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-password-validacion {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap:
+        9px
+        18px;
+
+    margin-top: 14px;
+
+    padding:
+        11px
+        13px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.07);
+
+    border-radius: 10px;
+
+    background:
+        #F6F8F6;
+
+}
+
+
+/* ==========================================================
+   19. REGLA CONTRASEÑA
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-password-regla {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color:
+        #718078;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-password-regla i {
+
+    font-size: 10px;
+
+}
+
+
+/* ==========================================================
+   20. REGLA VÁLIDA
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-password-regla.valida {
+
+    color:
+        #4F805F;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-password-regla.valida i {
+
+    color:
+        #4F805F;
+
+}
+
+
+/* ==========================================================
+   21. REGLA INVÁLIDA
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-password-regla.invalida {
+
+    color:
+        #A84D44;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-password-regla.invalida i {
+
+    color:
+        #A84D44;
+
+}
+
+
+/* ==========================================================
+   22. VALIDACIÓN INPUT CORRECTO
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.form-control.is-valid {
+
+    border-color:
+        #5F9781;
+
+    background-image: none;
+
+}
+
+
+/* ==========================================================
+   23. VALIDACIÓN INPUT INCORRECTO
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.form-control.is-invalid {
+
+    border-color:
+        #C95F55;
+
+    background-image: none;
+
+}
+
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group:has(.is-invalid)
+.input-group-text {
+
+    border-color:
+        #C95F55;
+
+    color:
+        #A94D44;
+
+}
+
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.input-group:has(.is-invalid)
+.btn-password-perfil {
+
+    border-color:
+        #C95F55;
+
+}
+
+
+/* ==========================================================
+   24. FOOTER SEGURIDAD
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.perfil-formulario-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+}
+
+
+/* ==========================================================
+   25. AVISO DEL FOOTER
+========================================================== */
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.perfil-formulario-aviso {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    max-width: 450px;
+
+    color:
+        #718078;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    line-height: 1.5;
+
+}
+
+
+.perfil-contenido-principal
+#formCambiarPasswordPerfil
+.perfil-formulario-aviso i {
+
+    flex-shrink: 0;
+
+    color:
+        #5F9781;
+
+    font-size: 12px;
+
+}
+
+
+/* ==========================================================
+   26. BOTÓN ACTUALIZAR CONTRASEÑA
+========================================================== */
+
+.perfil-contenido-principal
+#btnCambiarPasswordPerfil {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        9px
+        16px;
+
+    border:
+        1px solid
+        #214F3B;
+
+    border-radius: 10px;
+
+    background:
+        #214F3B;
+
+    color:
+        #FFFFFF;
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 13px
+        rgba(33, 79, 59, 0.15);
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+.perfil-contenido-principal
+#btnCambiarPasswordPerfil:hover {
+
+    background:
+        #173D2D;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 7px 17px
+        rgba(33, 79, 59, 0.20);
+
+}
+
+
+.perfil-contenido-principal
+#btnCambiarPasswordPerfil:active {
+
+    transform:
+        translateY(0);
+
+}
+
+
+.perfil-contenido-principal
+#btnCambiarPasswordPerfil:disabled {
+
+    border-color:
+        #A9B5AE;
+
+    background:
+        #A9B5AE;
+
+    transform:
+        none;
+
+    box-shadow:
+        none;
+
+    cursor:
+        not-allowed;
+
+}
+
+
+/* ==========================================================
+   27. HIDDEN
+========================================================== */
+
+.perfil-contenido-principal
+.d-none {
+
+    display:
+        none !important;
+
+}
+
+
+/* ==========================================================
+   28. RESPONSIVE 900 PX
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .perfil-contenido-principal
+    #formCambiarPasswordPerfil
+    .row {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+/* ==========================================================
+   29. RESPONSIVE 650 PX
+========================================================== */
+
+@media (max-width: 650px) {
+
+    .perfil-contenido-principal
+    .perfil-card-seguridad
+    .perfil-card-header {
+
+        padding:
+            16px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-aviso-seguridad {
+
+        margin:
+            15px
+            16px
+            0;
+
+    }
+
+
+    .perfil-contenido-principal
+    #formCambiarPasswordPerfil {
+
+        padding:
+            16px;
+
+    }
+
+
+    .perfil-contenido-principal
+    #formCambiarPasswordPerfil
+    .perfil-formulario-footer {
+
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .perfil-contenido-principal
+    #btnCambiarPasswordPerfil {
+
+        width:
+            100%;
+
+    }
+
+}
+
+
+/* ==========================================================
+   30. RESPONSIVE 420 PX
+========================================================== */
+
+@media (max-width: 420px) {
+
+    .perfil-contenido-principal
+    .perfil-card-seguridad {
+
+        border-radius:
+            14px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-aviso-seguridad {
+
+        padding:
+            11px;
+
+    }
+
+
+    .perfil-contenido-principal
+    #formCambiarPasswordPerfil
+    .input-group-text {
+
+        width:
+            39px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .btn-password-perfil {
+
+        width:
+            40px;
+
+        min-width:
+            40px;
+
+    }
+
+}
+
+/* ============================================================
+   VERIFICACIÓN EN DOS PASOS
+============================================================ */
+
+.perfil-card-2fa {
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   CONTENIDO
+============================================================ */
+
+.perfil-2fa-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+/* ============================================================
+   ESTADO
+============================================================ */
+
+.perfil-2fa-estado {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+
+.perfil-2fa-estado > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #e4ebe7;
+    border-radius: 14px;
+
+    background: #fbfdfc;
+}
+
+
+.perfil-2fa-etiqueta {
+    color: #718078;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+
+.perfil-2fa-estado strong {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #263c32;
+    font-size: 0.93rem;
+}
+
+
+/* ============================================================
+   BADGE
+============================================================ */
+
+.perfil-2fa-badge {
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 11px;
+
+    border-radius: 999px;
+
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+
+.perfil-2fa-badge.activo {
+    color: #23664d;
+    background: #e8f5ee;
+}
+
+
+.perfil-2fa-badge.inactivo {
+    color: #727d77;
+    background: #f0f2f1;
+}
+
+
+/* ============================================================
+   EXPLICACIÓN
+============================================================ */
+
+.perfil-2fa-explicacion,
+.perfil-2fa-obligatorio,
+.perfil-2fa-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    padding: 16px 18px;
+
+    border-radius: 14px;
+}
+
+
+.perfil-2fa-explicacion {
+    background: #f3f8f5;
+    border: 1px solid #dcebe3;
+}
+
+
+.perfil-2fa-explicacion > i {
+    margin-top: 2px;
+
+    color: #377b60;
+    font-size: 1.25rem;
+}
+
+
+.perfil-2fa-explicacion strong,
+.perfil-2fa-obligatorio strong,
+.perfil-2fa-aviso strong {
+    display: block;
+    margin-bottom: 4px;
+
+    color: #294238;
+}
+
+
+.perfil-2fa-explicacion p,
+.perfil-2fa-obligatorio p,
+.perfil-2fa-aviso p {
+    margin: 0;
+
+    color: #66756e;
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+
+/* ============================================================
+   OBLIGATORIO
+============================================================ */
+
+.perfil-2fa-obligatorio {
+    background: #fff8e7;
+    border: 1px solid #f1dfa6;
+}
+
+
+.perfil-2fa-obligatorio > i {
+    color: #a77819;
+    font-size: 1.2rem;
+}
+
+
+/* ============================================================
+   DESHABILITADO GLOBALMENTE
+============================================================ */
+
+.perfil-2fa-aviso.bloqueado {
+    background: #f8f8f8;
+    border: 1px solid #e3e3e3;
+}
+
+
+.perfil-2fa-aviso-icono {
+    color: #7e8883;
+    font-size: 1.3rem;
+}
+
+
+/* ============================================================
+   ACCIONES
+============================================================ */
+
+.perfil-2fa-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+
+.perfil-2fa-acciones form {
+    margin: 0;
+}
+
+
+.btn-perfil-2fa {
+    min-height: 43px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 10px 17px;
+
+    border-radius: 12px;
+
+    font-size: 0.88rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+}
+
+
+.btn-perfil-2fa.activar {
+    color: #ffffff;
+    border: 1px solid #39795f;
+    background: #39795f;
+}
+
+
+.btn-perfil-2fa.activar:hover:not(:disabled) {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 16px
+        rgba(57, 121, 95, 0.18);
+}
+
+
+.btn-perfil-2fa.desactivar {
+    color: #a84d4d;
+    border: 1px solid #e7bcbc;
+    background: #fff6f6;
+}
+
+
+.btn-perfil-2fa.desactivar:hover {
+    background: #fceaea;
+}
+
+
+.btn-perfil-2fa:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+.perfil-2fa-sin-correo {
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+
+    color: #9c5c35;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .perfil-2fa-estado {
+        grid-template-columns: 1fr;
+    }
+
+
+    .perfil-2fa-acciones {
+        justify-content: stretch;
+    }
+
+
+    .perfil-2fa-acciones form {
+        width: 100%;
+    }
+
+
+    .btn-perfil-2fa {
+        width: 100%;
+    }
+
+
+    .perfil-2fa-sin-correo {
+        justify-content: flex-start;
+    }
+
+}

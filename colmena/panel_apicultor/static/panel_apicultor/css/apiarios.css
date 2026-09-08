@@ -937,3 +937,1984 @@
     transform:
         translateX(3px);
 }
+
+
+/* ==========================================================
+   ACTUALIZACIÓN MIS APIARIOS
+   GESTIÓN DE ESTADO, OBSERVACIONES Y FOTOGRAFÍA
+========================================================== */
+
+
+/* ==========================================================
+   BOTÓN / FOTOGRAFÍA DE LA TARJETA
+========================================================== */
+
+.btn-imagen-apiario {
+
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    display: block;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    overflow: hidden;
+}
+
+
+.btn-imagen-apiario img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.35s ease,
+        filter 0.35s ease;
+}
+
+
+.apiario-imagen-overlay {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 14px;
+
+    transform:
+        translate(-50%, 8px);
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        12px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.28);
+
+    border-radius: 20px;
+
+    background:
+        rgba(24, 51, 38, 0.78);
+
+    color: #FFFFFF;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    backdrop-filter:
+        blur(5px);
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.btn-imagen-apiario:hover img {
+
+    transform:
+        scale(1.045);
+
+    filter:
+        brightness(0.87);
+}
+
+
+.btn-imagen-apiario:hover
+.apiario-imagen-overlay {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translate(-50%, 0);
+}
+
+
+/* ==========================================================
+   SIN FOTOGRAFÍA
+========================================================== */
+
+.apiario-imagen-vacia {
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.apiario-imagen-vacia span {
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    opacity: 0.7;
+}
+
+
+/* ==========================================================
+   OBSERVACIONES EN LA TARJETA
+========================================================== */
+
+.apiario-observaciones-card {
+
+    margin-top: 14px;
+
+    padding-top: 11px;
+
+    border-top:
+        1px dashed
+        rgba(33, 79, 59, 0.10);
+}
+
+
+.apiario-observaciones-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.3px;
+}
+
+
+.apiario-observaciones-titulo i {
+
+    color:
+        #B8921E;
+
+    font-size: 11px;
+}
+
+
+.apiario-observaciones-card
+.apiario-descripcion {
+
+    min-height: 42px;
+
+    margin-top: 7px;
+}
+
+
+/* ==========================================================
+   FOOTER TARJETA
+========================================================== */
+
+.apiario-card-footer {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+}
+
+
+/* ==========================================================
+   BOTÓN VER DETALLE
+========================================================== */
+
+.btn-detalle-apiario {
+
+    width: 100%;
+
+    justify-content: center;
+
+    gap: 7px;
+}
+
+
+.btn-detalle-apiario:hover i {
+
+    transform: none;
+}
+
+
+/* ==========================================================
+   BOTÓN GESTIONAR
+========================================================== */
+
+.btn-gestionar-apiario {
+
+    width: 100%;
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        9px
+        12px;
+
+    border:
+        1px solid
+        #E1C14E;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.btn-gestionar-apiario:hover {
+
+    background:
+        #F4CC53;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(196, 157, 34, 0.16);
+}
+
+
+.btn-gestionar-apiario:active {
+
+    transform:
+        translateY(0);
+}
+
+
+/* ==========================================================
+   OVERLAY MODAL GESTIONAR APIARIO
+========================================================== */
+
+.apiario-editar-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1500;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 24px;
+
+    background:
+        rgba(17, 37, 28, 0.56);
+
+    backdrop-filter:
+        blur(4px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.22s ease,
+        visibility 0.22s ease;
+}
+
+
+.apiario-editar-overlay.activo {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.apiario-editar-modal {
+
+    width: 100%;
+
+    max-width: 760px;
+
+    max-height:
+        calc(100vh - 48px);
+
+    overflow: hidden;
+
+    display: flex;
+
+    flex-direction: column;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.12);
+
+    border-radius: 22px;
+
+    background:
+        #FFFFFF;
+
+    box-shadow:
+        0 25px 70px
+        rgba(17, 37, 28, 0.22);
+
+    transform:
+        translateY(18px)
+        scale(0.98);
+
+    transition:
+        transform 0.24s ease;
+}
+
+
+.apiario-editar-overlay.activo
+.apiario-editar-modal {
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* ==========================================================
+   FORMULARIO DEL MODAL
+========================================================== */
+
+.form-editar-apiario {
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    flex: 1;
+}
+
+
+/* ==========================================================
+   HEADER MODAL
+========================================================== */
+
+.apiario-editar-header {
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding:
+        18px
+        20px;
+
+    border-bottom:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    background:
+        linear-gradient(
+            135deg,
+            #FFF8D8 0%,
+            #FFFDF2 100%
+        );
+}
+
+
+.apiario-editar-header-texto {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.apiario-editar-header-icono {
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #E8D06D;
+
+    border-radius: 13px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 17px;
+}
+
+
+.apiario-editar-header-texto > div {
+
+    min-width: 0;
+}
+
+
+.apiario-editar-header-texto
+div > span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        #7B897F;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+
+.apiario-editar-header h2 {
+
+    margin: 0;
+
+    overflow: hidden;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   CERRAR MODAL
+========================================================== */
+
+.btn-cerrar-editar-apiario {
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 11px;
+
+    background:
+        rgba(255, 255, 255, 0.70);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-cerrar-editar-apiario:hover {
+
+    background:
+        #FFFFFF;
+
+    transform:
+        rotate(4deg);
+}
+
+
+/* ==========================================================
+   BODY MODAL
+========================================================== */
+
+.apiario-editar-body {
+
+    min-height: 0;
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding:
+        20px;
+
+    background:
+        #FFFEF7;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #D8C777
+        transparent;
+}
+
+
+.apiario-editar-body::-webkit-scrollbar {
+
+    width: 7px;
+}
+
+
+.apiario-editar-body::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+}
+
+
+.apiario-editar-body::-webkit-scrollbar-thumb {
+
+    border-radius: 20px;
+
+    background:
+        #D8C777;
+}
+
+
+/* ==========================================================
+   SECCIONES
+========================================================== */
+
+.apiario-editar-seccion {
+
+    padding:
+        17px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    border-radius: 16px;
+
+    background:
+        #FFFFFF;
+}
+
+
+.apiario-editar-seccion
++
+.apiario-editar-seccion {
+
+    margin-top: 14px;
+}
+
+
+.apiario-editar-seccion-titulo {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+}
+
+
+.apiario-editar-seccion-titulo
+> i {
+
+    width: 33px;
+    height: 33px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-activo);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 13px;
+}
+
+
+.apiario-editar-seccion-titulo
+> div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.apiario-editar-seccion-titulo
+strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+.apiario-editar-seccion-titulo
+span {
+
+    color:
+        #77847D;
+
+    font-size: 8px;
+
+    line-height: 1.45;
+}
+
+
+/* ==========================================================
+   DATOS BLOQUEADOS
+========================================================== */
+
+.apiario-editar-info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+}
+
+
+.apiario-info-bloque {
+
+    position: relative;
+
+    min-width: 0;
+
+    padding:
+        12px
+        35px
+        12px
+        12px;
+
+    border:
+        1px solid
+        #E5E9E6;
+
+    border-radius: 11px;
+
+    background:
+        #F8FAF8;
+}
+
+
+.apiario-info-bloque > span {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color:
+        #869189;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.apiario-info-bloque strong {
+
+    display: block;
+
+    overflow: hidden;
+
+    color:
+        #3D5147;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.apiario-info-bloque > i {
+
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform:
+        translateY(-50%);
+
+    color:
+        #A4AEA8;
+
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   GRUPOS DE FORMULARIO
+========================================================== */
+
+.apiario-form-grupo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.apiario-form-grupo > label:first-child {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+.campo-obligatorio {
+
+    color:
+        #C45C50;
+}
+
+
+/* ==========================================================
+   INPUTS
+========================================================== */
+
+.apiario-input {
+
+    width: 100%;
+
+    border:
+        1px solid
+        #DCE3DE;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-texto);
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.apiario-input:focus {
+
+    border-color:
+        #D4B640;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 221, 113, 0.22);
+}
+
+
+.apiario-input.is-invalid {
+
+    border-color:
+        #C85C51;
+
+    background:
+        #FFF9F8;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(200, 92, 81, 0.10);
+}
+
+
+/* ==========================================================
+   SELECT ESTADO
+========================================================== */
+
+.apiario-select-estado {
+
+    min-height: 43px;
+
+    padding:
+        0
+        12px;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   TEXTAREA
+========================================================== */
+
+.apiario-textarea {
+
+    min-height: 110px;
+
+    padding:
+        12px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+}
+
+
+.apiario-form-grupo small {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 5px;
+
+    color:
+        #818D86;
+
+    font-size: 7px;
+
+    line-height: 1.5;
+}
+
+
+.apiario-form-grupo small i {
+
+    margin-top: 1px;
+
+    color:
+        #B8921E;
+}
+
+
+/* ==========================================================
+   PREVIEW FOTOGRAFÍA
+========================================================== */
+
+.apiario-preview-imagen {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 230px;
+
+    margin-bottom: 14px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        #DDE5DF;
+
+    border-radius: 14px;
+
+    background:
+        var(--apicultor-activo);
+}
+
+
+.apiario-preview-imagen > img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.apiario-preview-overlay {
+
+    position: absolute;
+
+    left: 12px;
+    bottom: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        7px
+        10px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(26, 53, 40, 0.80);
+
+    color:
+        #FFFFFF;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+/* ==========================================================
+   PREVIEW SIN FOTOGRAFÍA
+========================================================== */
+
+.apiario-preview-sin-imagen {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 20px;
+
+    text-align: center;
+}
+
+
+.apiario-preview-sin-imagen i {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 35px;
+
+    opacity: 0.55;
+}
+
+
+.apiario-preview-sin-imagen strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 10px;
+}
+
+
+.apiario-preview-sin-imagen span {
+
+    max-width: 260px;
+
+    color:
+        #7A877F;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   SELECTOR DE FOTOGRAFÍA
+========================================================== */
+
+.apiario-selector-imagen {
+
+    width: 100%;
+
+    min-height: 67px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px dashed
+        #CFB64E;
+
+    border-radius: 13px;
+
+    background:
+        #FFFBE8;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.apiario-selector-imagen:hover {
+
+    border-color:
+        #B9941F;
+
+    background:
+        #FFF5C7;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.apiario-selector-imagen-icono {
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 18px;
+}
+
+
+.apiario-selector-imagen-texto {
+
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.apiario-selector-imagen-texto
+strong {
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+.apiario-selector-imagen-texto
+span {
+
+    color:
+        #78857D;
+
+    font-size: 7px;
+}
+
+
+.apiario-selector-imagen-boton {
+
+    flex-shrink: 0;
+
+    padding:
+        7px
+        10px;
+
+    border:
+        1px solid
+        #DFC24E;
+
+    border-radius: 9px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   FOOTER MODAL
+========================================================== */
+
+.apiario-editar-footer {
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    padding:
+        14px
+        20px;
+
+    border-top:
+        1px solid
+        rgba(33, 79, 59, 0.09);
+
+    background:
+        #FFFFFF;
+}
+
+
+/* ==========================================================
+   CANCELAR
+========================================================== */
+
+.btn-cancelar-editar-apiario {
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        15px;
+
+    border:
+        1px solid
+        #D9E0DB;
+
+    border-radius: 10px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #68766D;
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.btn-cancelar-editar-apiario:hover {
+
+    background:
+        #F6F8F6;
+}
+
+
+/* ==========================================================
+   GUARDAR
+========================================================== */
+
+.btn-guardar-apiario {
+
+    min-height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        16px;
+
+    border:
+        1px solid
+        #DABC43;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-guardar-apiario:hover {
+
+    background:
+        #F3CA4C;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.btn-guardar-apiario:disabled {
+
+    opacity: 0.65;
+
+    cursor: wait;
+
+    transform: none;
+}
+
+
+/* ==========================================================
+   VISOR DE FOTOGRAFÍA
+========================================================== */
+
+.visor-apiario-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1700;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 28px;
+
+    background:
+        rgba(11, 27, 20, 0.88);
+
+    backdrop-filter:
+        blur(7px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.22s ease,
+        visibility 0.22s ease;
+}
+
+
+.visor-apiario-overlay.activo {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+.visor-apiario-contenido {
+
+    width: auto;
+
+    max-width:
+        min(
+            1000px,
+            calc(100vw - 70px)
+        );
+
+    max-height:
+        calc(100vh - 70px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.14);
+
+    border-radius: 18px;
+
+    background:
+        #172A21;
+
+    box-shadow:
+        0 25px 80px
+        rgba(0, 0, 0, 0.38);
+}
+
+
+.visor-apiario-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding:
+        11px
+        15px;
+
+    color:
+        #FFFFFF;
+}
+
+
+.visor-apiario-header span {
+
+    color:
+        rgba(255, 255, 255, 0.62);
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.visor-apiario-header strong {
+
+    overflow: hidden;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.visor-apiario-contenido > img {
+
+    display: block;
+
+    max-width: 100%;
+
+    max-height:
+        calc(100vh - 130px);
+
+    object-fit: contain;
+
+    background:
+        #0E1F17;
+}
+
+
+/* ==========================================================
+   CERRAR VISOR
+========================================================== */
+
+.btn-cerrar-visor-apiario {
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    z-index: 1710;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.11);
+
+    color:
+        #FFFFFF;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    backdrop-filter:
+        blur(5px);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-cerrar-visor-apiario:hover {
+
+    background:
+        rgba(255, 255, 255, 0.20);
+
+    transform:
+        rotate(5deg);
+}
+
+
+/* ==========================================================
+   BLOQUEO DE SCROLL
+========================================================== */
+
+body.modal-apiario-abierto {
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   FOCUS ACCESIBLE
+========================================================== */
+
+.btn-imagen-apiario:focus-visible,
+.btn-gestionar-apiario:focus-visible,
+.btn-cerrar-editar-apiario:focus-visible,
+.btn-cancelar-editar-apiario:focus-visible,
+.btn-guardar-apiario:focus-visible,
+.btn-cerrar-visor-apiario:focus-visible,
+.apiario-selector-imagen:focus-visible {
+
+    outline:
+        3px solid
+        rgba(215, 185, 78, 0.35);
+
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================
+   MENSAJE DE VALIDACIÓN PERSONALIZADO
+========================================================== */
+
+.apiario-validacion-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1900;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(17, 37, 28, 0.47);
+
+    backdrop-filter:
+        blur(3px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+
+.apiario-validacion-overlay.activo {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+.apiario-validacion-modal {
+
+    width: 100%;
+
+    max-width: 390px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 18px;
+
+    background:
+        #FFFFFF;
+
+    box-shadow:
+        0 20px 55px
+        rgba(17, 37, 28, 0.20);
+
+    transform:
+        translateY(12px)
+        scale(0.98);
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.apiario-validacion-overlay.activo
+.apiario-validacion-modal {
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+.apiario-validacion-contenido {
+
+    padding:
+        22px;
+
+    text-align: center;
+}
+
+
+.apiario-validacion-icono {
+
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin:
+        0
+        auto
+        13px;
+
+    border-radius: 50%;
+
+    background:
+        #FFF0BE;
+
+    color:
+        #8A6913;
+
+    font-size: 21px;
+}
+
+
+.apiario-validacion-contenido h3 {
+
+    margin:
+        0
+        0
+        7px;
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+
+.apiario-validacion-contenido p {
+
+    margin: 0;
+
+    color:
+        #6F7D75;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+}
+
+
+.apiario-validacion-footer {
+
+    display: flex;
+
+    justify-content: center;
+
+    padding:
+        0
+        20px
+        20px;
+}
+
+
+.btn-cerrar-validacion-apiario {
+
+    min-width: 110px;
+
+    min-height: 39px;
+
+    border:
+        1px solid
+        #DABC43;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-sidebar);
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   RESPONSIVE MODAL
+========================================================== */
+
+@media (max-width: 760px) {
+
+    .apiario-editar-overlay {
+
+        align-items:
+            flex-end;
+
+        padding: 12px;
+    }
+
+
+    .apiario-editar-modal {
+
+        max-height:
+            calc(100vh - 24px);
+
+        border-radius:
+            20px
+            20px
+            14px
+            14px;
+    }
+
+
+    .apiario-editar-info-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .apiario-preview-imagen {
+
+        height: 200px;
+    }
+
+
+    .apiario-selector-imagen-boton {
+
+        display: none;
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE TARJETAS
+========================================================== */
+
+@media (max-width: 560px) {
+
+    .apiario-card-footer {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .apiario-editar-header {
+
+        padding:
+            14px
+            15px;
+    }
+
+
+    .apiario-editar-body {
+
+        padding:
+            14px;
+    }
+
+
+    .apiario-editar-seccion {
+
+        padding:
+            14px;
+    }
+
+
+    .apiario-editar-footer {
+
+        display: grid;
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+        padding:
+            12px
+            14px;
+    }
+
+
+    .btn-cancelar-editar-apiario,
+    .btn-guardar-apiario {
+
+        width: 100%;
+
+        padding:
+            0
+            10px;
+    }
+
+
+    .apiario-preview-imagen {
+
+        height: 180px;
+    }
+
+
+    .visor-apiario-overlay {
+
+        padding: 12px;
+    }
+
+
+    .visor-apiario-contenido {
+
+        max-width:
+            calc(100vw - 24px);
+
+        max-height:
+            calc(100vh - 80px);
+    }
+
+
+    .btn-cerrar-visor-apiario {
+
+        top: 12px;
+        right: 12px;
+    }
+
+}
+
+
+/* ==========================================================
+   REDUCIR MOVIMIENTO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .apiario-editar-overlay,
+    .apiario-editar-modal,
+    .visor-apiario-overlay,
+    .btn-imagen-apiario img,
+    .apiario-imagen-overlay,
+    .apiario-validacion-overlay,
+    .apiario-validacion-modal {
+
+        transition: none;
+    }
+
+}

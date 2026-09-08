@@ -4517,6 +4517,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+
+            /* ==============================================
+               ABRIR DESDE APIARIOS / COLMENAS
+            ============================================== */
+
+            prepararMantenimientoDesdeColmena();
+
+
         }
     );
 
@@ -4534,16 +4542,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ======================================================
     ======================================================
-    26. ABRIR REGISTRO DESDE MIS COLMENAS
+    ABRIR REGISTRO DE MANTENIMIENTO DESDE OTRA VISTA
+
+    Permite recibir:
+
+    APIARIO:
+    ?nuevo=1&apiario_nuevo=5
+
+    COLMENA:
+    ?nuevo=1&apiario_nuevo=5&colmena_nueva=12
     ======================================================
     ====================================================== */
 
-    function prepararMantenimientoDesdeColmena() {
+    function prepararMantenimientoDesdeOrigen() {
 
 
-        /* ==================================================
-        PARÁMETROS DE LA URL
-        ================================================== */
+        // ==================================================
+        // PARÁMETROS
+        // ==================================================
 
         const parametros =
             new URLSearchParams(
@@ -4569,10 +4585,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-
-        /* ==================================================
-        SOLO CONTINUAR SI VIENE DE REGISTRAR
-        ================================================== */
+        // ==================================================
+        // SOLO ABRIR SI nuevo=1
+        // ==================================================
 
         if (
             abrirNuevo
@@ -4596,10 +4611,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-
-        /* ==================================================
-        SELECCIONAR APIARIO
-        ================================================== */
+        // ==================================================
+        // SELECCIONAR APIARIO
+        // ==================================================
 
         if (
             apiarioCrear
@@ -4610,7 +4624,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const opcionApiario =
                 Array.from(
                     apiarioCrear.options
-                ).find(
+                )
+                .find(
                     function (opcion) {
 
                         return (
@@ -4635,37 +4650,63 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /* ==================================================
-        SELECCIONAR ALCANCE COLMENA
+        SELECCIONAR ALCANCE
         ================================================== */
 
-        const radioColmena =
+        const radioApiario =
             formularioCrear.querySelector(
-                '.alcance-mantenimiento-radio-apicultor[value="Colmena"]'
+                '.alcance-mantenimiento-radio-apicultor[value="Apiario"]'
+            );
+
+
+        const alcanceDeseado =
+            idColmena
+                ?
+                "Colmena"
+                :
+                "Apiario";
+
+
+        const radioAlcance =
+            formularioCrear.querySelector(
+                '.alcance-mantenimiento-radio-apicultor[value="'
+                +
+                alcanceDeseado
+                +
+                '"]'
             );
 
 
         if (radioColmena) {
 
-            radioColmena.checked =
+            radioAlcance.checked =
+                true;
+
+        } else if (
+            radioApiario
+        ) {
+
+            radioApiario.checked =
                 true;
 
         }
 
 
-
-        /* ==================================================
-        MOSTRAR Y FILTRAR COLMENAS
-        ================================================== */
+        // ==================================================
+        // FILTRAR COLMENAS
+        // ==================================================
 
         filtrarColmenasCrear();
 
 
-
-        /* ==================================================
-        SELECCIONAR COLMENA
-        ================================================== */
+        // ==================================================
+        // SI VIENE DESDE COLMENA
+        // SELECCIONAR AUTOMÁTICAMENTE
+        // ==================================================
 
         if (
+            alcanceDeseado === "Colmena"
+            &&
             colmenaCrear
             &&
             idColmena
@@ -4674,7 +4715,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const opcionColmena =
                 Array.from(
                     colmenaCrear.options
-                ).find(
+                )
+                .find(
                     function (opcion) {
 
                         return (
@@ -4699,19 +4741,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-
-        /* ==================================================
-        ABRIR MODAL
-        ================================================== */
+        // ==================================================
+        // ABRIR MODAL
+        // ==================================================
 
         abrirModalCrear();
 
 
-
-        /* ==================================================
-        LIMPIAR URL
-        Evitamos que al refrescar vuelva a abrirse.
-        ================================================== */
+        // ==================================================
+        // LIMPIAR URL
+        //
+        // Así al refrescar no vuelve a abrir automáticamente.
+        // ==================================================
 
         const urlLimpia =
             window.location.pathname;
@@ -4724,6 +4765,14 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
+
+
+
+/* ======================================================
+   EJECUTAR PRESELECCIÓN
+====================================================== */
+
+prepararMantenimientoDesdeOrigen();
 
 
 });

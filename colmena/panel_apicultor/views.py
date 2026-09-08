@@ -1,5 +1,8 @@
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect,get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q, Prefetch
@@ -10,6 +13,8 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse
 from PIL import Image, UnidentifiedImageError
 from django.db import transaction
+from usuarios.models import Configuracion2FA
+from usuarios.services import (obtener_politica_2fa,)
 
 
 from dbmicolmena.models import (
@@ -983,6 +988,404 @@ def mis_apiarios(request):
         contexto
     )
 
+
+# ============================================================
+# VALIDAR FOTOGRAFÍA DE APIARIO
+# PANEL APICULTOR
+# ============================================================
+
+def validar_imagen_apiario(archivo):
+    """
+    Valida una fotografía nueva del apiario.
+
+    Reglas:
+    - Archivo no vacío.
+    - Máximo 5 MB.
+    - Debe ser una imagen real.
+    - Formatos permitidos: JPG/JPEG, PNG y WEBP.
+    """
+
+    LIMITE_MB = 5
+
+    LIMITE_BYTES = (
+        LIMITE_MB
+        * 1024
+        * 1024
+    )
+
+    FORMATOS_VALIDOS = {
+        "JPEG",
+        "PNG",
+        "WEBP",
+    }
+
+
+    # ========================================================
+    # ARCHIVO
+    # ========================================================
+
+    if not archivo:
+
+        return (
+            "No se pudo leer la fotografía seleccionada."
+        )
+
+
+    if archivo.size <= 0:
+
+        return (
+            f'La imagen "{archivo.name}" está vacía.'
+        )
+
+
+    # ========================================================
+    # TAMAÑO
+    # ========================================================
+
+    if archivo.size > LIMITE_BYTES:
+
+        return (
+            f'La imagen "{archivo.name}" supera '
+            f"el límite de {LIMITE_MB} MB."
+        )
+
+
+    # ========================================================
+    # TIPO MIME
+    # ========================================================
+
+    tipo_archivo = getattr(
+        archivo,
+        "content_type",
+        ""
+    )
+
+
+    tipos_mime_validos = {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    }
+
+
+    if (
+        tipo_archivo
+        and
+        tipo_archivo not in tipos_mime_validos
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no tiene un formato permitido. "
+            "Utiliza JPG, PNG o WEBP."
+        )
+
+
+    # ========================================================
+    # CONTENIDO REAL
+    #
+    # No confiamos solamente en la extensión o en el MIME.
+    # Pillow verifica que realmente sea una imagen válida.
+    # ========================================================
+
+    try:
+
+        archivo.seek(0)
+
+        imagen = Image.open(
+            archivo
+        )
+
+        formato = (
+            imagen.format
+            or ""
+        ).upper()
+
+        imagen.verify()
+
+
+        if formato not in FORMATOS_VALIDOS:
+
+            return (
+                f'La imagen "{archivo.name}" tiene un '
+                "formato no permitido. "
+                "Utiliza JPG, PNG o WEBP."
+            )
+
+
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no contiene una imagen válida."
+        )
+
+
+    finally:
+
+        try:
+
+            archivo.seek(0)
+
+        except Exception:
+
+            pass
+
+
+    return None
+
+
+
+
+# ============================================================
+# EDITAR / GESTIONAR APIARIO
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+@require_POST
+def editar_apiario_apicultor(
+    request,
+    id_apiario
+):
+
+    # ========================================================
+    # 1. APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # 2. OBTENER APIARIO
+    #
+    # SEGURIDAD:
+    # Solo se puede modificar un apiario perteneciente
+    # al apicultor autenticado.
+    # ========================================================
+
+    apiario = get_object_or_404(
+        Apiario,
+        id_apiario=id_apiario,
+        id_apicultor=apicultor
+    )
+
+
+    # ========================================================
+    # 3. ORIGEN DEL FORMULARIO
+    #
+    # Esto nos permite saber si el usuario realizó
+    # la edición desde:
+    #
+    # - Mis Apiarios
+    # - Detalle del Apiario
+    # ========================================================
+
+    origen = (
+        request.POST
+        .get(
+            "origen",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # FUNCIÓN DE REDIRECCIÓN
+    # ========================================================
+
+    def redireccionar():
+
+        if origen == "detalle_apiario":
+
+            return redirect(
+                "detalle_apiario_apicultor",
+                id_apiario=apiario.id_apiario
+            )
+
+        return redirect(
+            "apiarios_apicultor"
+        )
+
+
+    # ========================================================
+    # 4. DATOS EDITABLES
+    # ========================================================
+
+    estado = (
+        request.POST
+        .get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
+
+
+    descripcion = (
+        request.POST
+        .get(
+            "descripcion",
+            ""
+        )
+        .strip()
+    )
+
+
+    nueva_imagen = (
+        request.FILES
+        .get(
+            "imagen"
+        )
+    )
+
+
+    # ========================================================
+    # 5. ESTADOS PERMITIDOS
+    # ========================================================
+
+    estados_validos = [
+        "Bueno",
+        "Precaución",
+        "Deficiente",
+    ]
+
+
+    # ========================================================
+    # 6. VALIDAR ESTADO
+    # ========================================================
+
+    if estado not in estados_validos:
+
+        messages.error(
+            request,
+            "Selecciona un estado válido para el apiario."
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # 7. VALIDAR FOTOGRAFÍA
+    # ========================================================
+
+    if nueva_imagen:
+
+        error_imagen = validar_imagen_apiario(
+            nueva_imagen
+        )
+
+        if error_imagen:
+
+            messages.error(
+                request,
+                error_imagen
+            )
+
+            return redireccionar()
+
+
+    # ========================================================
+    # 8. ACTUALIZAR ESTADO
+    # ========================================================
+
+    apiario.estadoapiario = estado
+
+
+    # ========================================================
+    # 9. ACTUALIZAR OBSERVACIONES
+    # ========================================================
+
+    apiario.descripcion = (
+        descripcion
+        or
+        None
+    )
+
+
+    campos_actualizados = [
+        "estadoapiario",
+        "descripcion",
+    ]
+
+
+    # ========================================================
+    # 10. ACTUALIZAR FOTOGRAFÍA
+    #
+    # Si no selecciona una nueva,
+    # se conserva la actual.
+    # ========================================================
+
+    if nueva_imagen:
+
+        try:
+
+            nueva_imagen.seek(0)
+
+        except Exception:
+
+            pass
+
+
+        apiario.imagen = nueva_imagen
+
+
+        campos_actualizados.append(
+            "imagen"
+        )
+
+
+    # ========================================================
+    # 11. GUARDAR
+    # ========================================================
+
+    try:
+
+        apiario.save(
+            update_fields=
+                campos_actualizados
+        )
+
+    except Exception:
+
+        messages.error(
+            request,
+            "No fue posible actualizar el apiario. "
+            "Inténtalo nuevamente."
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # 12. MENSAJE
+    # ========================================================
+
+    messages.success(
+        request,
+        (
+            f'El apiario "{apiario.nombreapiario}" '
+            "fue actualizado correctamente."
+        )
+    )
+
+
+    # ========================================================
+    # 13. REGRESAR AL LUGAR DE ORIGEN
+    # ========================================================
+
+    return redireccionar()
+
+
+
 # ============================================================
 # DETALLE DE APIARIO - APICULTOR
 # ============================================================
@@ -1102,6 +1505,16 @@ def detalle_apiario_apicultor(
     for colmena in colmenas:
 
         # ====================================================
+        # DISPONIBILIDAD PARA NUEVAS ACTIVIDADES
+        # ====================================================
+
+        colmena.permite_nuevas_actividades = (
+            colmena_esta_operativa(
+                colmena
+            )
+        )
+
+        # ====================================================
         # ÚLTIMO MANTENIMIENTO COMPLETADO
         # ====================================================
 
@@ -1206,6 +1619,35 @@ def detalle_apiario_apicultor(
         "panel_apicultor/detalle_apiario.html",
         contexto
     )
+
+
+
+# ============================================================
+# VALIDAR SI UNA COLMENA ADMITE NUEVAS ACTIVIDADES
+# ============================================================
+
+def colmena_esta_operativa(colmena):
+    """
+    Indica si una colmena puede recibir nuevas actividades.
+
+    Una colmena Inactiva conserva su historial, pero no puede recibir
+    nuevos mantenimientos, incidencias ni eventos.
+    """
+
+    if not colmena:
+        return False
+
+    estado = (
+        colmena.estadocolmena
+        or ""
+    ).strip().casefold()
+
+    return estado != "inactiva"
+
+
+
+
+
 
 
 # ============================================================
@@ -1451,6 +1893,16 @@ def mis_colmenas(request):
 
     for colmena in colmenas_pagina:
 
+        # ====================================================
+        # DISPONIBILIDAD PARA NUEVAS ACTIVIDADES
+        # ====================================================
+
+        colmena.permite_nuevas_actividades = (
+            colmena_esta_operativa(
+                colmena
+            )
+        )
+
         # Último mantenimiento completado
         colmena.ultimo_mantenimiento = (
             Mantenimiento.objects
@@ -1524,6 +1976,412 @@ def mis_colmenas(request):
         "panel_apicultor/colmenas.html",
         contexto
     )
+
+
+
+# ============================================================
+# VALIDAR FOTOGRAFÍA DE COLMENA
+# PANEL APICULTOR
+# ============================================================
+
+def validar_imagen_colmena(archivo):
+
+    LIMITE_MB = 5
+
+    LIMITE_BYTES = (
+        LIMITE_MB
+        * 1024
+        * 1024
+    )
+
+    FORMATOS_VALIDOS = {
+        "JPEG",
+        "PNG",
+        "WEBP",
+    }
+
+
+    # ========================================================
+    # ARCHIVO
+    # ========================================================
+
+    if not archivo:
+
+        return (
+            "No se pudo leer la fotografía seleccionada."
+        )
+
+
+    if archivo.size <= 0:
+
+        return (
+            f'La imagen "{archivo.name}" está vacía.'
+        )
+
+
+    # ========================================================
+    # TAMAÑO
+    # ========================================================
+
+    if archivo.size > LIMITE_BYTES:
+
+        return (
+            f'La imagen "{archivo.name}" supera '
+            f"el límite de {LIMITE_MB} MB."
+        )
+
+
+    # ========================================================
+    # TIPO MIME
+    # ========================================================
+
+    tipo_archivo = getattr(
+        archivo,
+        "content_type",
+        ""
+    )
+
+
+    if (
+        tipo_archivo
+        and
+        not tipo_archivo.startswith("image/")
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no es una imagen válida."
+        )
+
+
+    # ========================================================
+    # CONTENIDO REAL
+    # ========================================================
+
+    try:
+
+        archivo.seek(0)
+
+        imagen = Image.open(
+            archivo
+        )
+
+        formato = (
+            imagen.format
+            or ""
+        ).upper()
+
+        imagen.verify()
+
+
+        if formato not in FORMATOS_VALIDOS:
+
+            return (
+                f'La imagen "{archivo.name}" tiene un '
+                "formato no permitido. "
+                "Utiliza JPG, PNG o WEBP."
+            )
+
+
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+    ):
+
+        return (
+            f'El archivo "{archivo.name}" '
+            "no contiene una imagen válida."
+        )
+
+
+    finally:
+
+        try:
+
+            archivo.seek(0)
+
+        except Exception:
+
+            pass
+
+
+    return None
+
+
+
+
+
+# ============================================================
+# EDITAR / GESTIONAR COLMENA
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+@require_POST
+def editar_colmena_apicultor(
+    request,
+    id_colmena
+):
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # COLMENA
+    #
+    # SEGURIDAD:
+    # solamente puede editar una colmena perteneciente
+    # a uno de SUS apiarios.
+    #
+    # IMPORTANTE:
+    # Una colmena Inactiva SÍ puede editarse.
+    # Esto permite reactivarla.
+    # ========================================================
+
+    colmena = get_object_or_404(
+
+        Colmena.objects
+        .select_related(
+            "id_apiario"
+        ),
+
+        id_colmena=id_colmena,
+
+        id_apiario__id_apicultor=apicultor,
+
+    )
+
+
+    # ========================================================
+    # ORIGEN
+    #
+    # Nos permite regresar a:
+    #
+    # - Mis Colmenas
+    # - Detalle del Apiario
+    # ========================================================
+
+    origen = (
+        request.POST
+        .get(
+            "origen",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # REDIRECCIÓN
+    # ========================================================
+
+    def redireccionar():
+
+        if origen == "detalle_apiario":
+
+            return redirect(
+                "detalle_apiario_apicultor",
+                id_apiario=
+                    colmena.id_apiario_id
+            )
+
+        return redirect(
+            "colmenas_apicultor"
+        )
+
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    estado = (
+        request.POST
+        .get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
+
+
+    descripcion = (
+        request.POST
+        .get(
+            "descripcion",
+            ""
+        )
+        .strip()
+    )
+
+
+    nueva_imagen = (
+        request.FILES
+        .get(
+            "imagen"
+        )
+    )
+
+
+    # ========================================================
+    # ESTADOS PERMITIDOS
+    # ========================================================
+
+    estados_validos = [
+
+        "Activa",
+        "Riesgo",
+        "Inactiva",
+        "Revisión",
+
+    ]
+
+
+    # ========================================================
+    # VALIDAR ESTADO
+    # ========================================================
+
+    if estado not in estados_validos:
+
+        messages.error(
+            request,
+            "Selecciona un estado válido para la colmena."
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # VALIDAR DESCRIPCIÓN
+    # ========================================================
+
+    if not descripcion:
+
+        messages.error(
+            request,
+            "La descripción de la colmena no puede quedar vacía."
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # VALIDAR NUEVA IMAGEN
+    #
+    # Es opcional.
+    # Si no selecciona otra, conserva la actual.
+    # ========================================================
+
+    if nueva_imagen:
+
+        error_imagen = (
+            validar_imagen_colmena(
+                nueva_imagen
+            )
+        )
+
+
+        if error_imagen:
+
+            messages.error(
+                request,
+                error_imagen
+            )
+
+            return redireccionar()
+
+
+    # ========================================================
+    # ACTUALIZAR
+    # ========================================================
+
+    colmena.estadocolmena = (
+        estado
+    )
+
+
+    colmena.descripcion = (
+        descripcion
+    )
+
+
+    campos_actualizados = [
+
+        "estadocolmena",
+        "descripcion",
+
+    ]
+
+
+    # ========================================================
+    # FOTOGRAFÍA
+    # ========================================================
+
+    if nueva_imagen:
+
+        try:
+
+            nueva_imagen.seek(0)
+
+        except Exception:
+
+            pass
+
+
+        colmena.imagen = (
+            nueva_imagen
+        )
+
+
+        campos_actualizados.append(
+            "imagen"
+        )
+
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
+
+    try:
+
+        colmena.save(
+            update_fields=
+                campos_actualizados
+        )
+
+    except Exception:
+
+        messages.error(
+            request,
+            "No fue posible actualizar la colmena. "
+            "Inténtalo nuevamente."
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    messages.success(
+        request,
+        (
+            f'La colmena "{colmena.codigocolmena}" '
+            "fue actualizada correctamente."
+        )
+    )
+
+
+    return redireccionar()
+
 
 
 # ============================================================
@@ -1707,6 +2565,28 @@ def registrar_mantenimiento_apicultor(
         id_colmena=id_colmena,
         id_apiario__id_apicultor=apicultor
     )
+
+
+    # ========================================================
+    # COLMENA INACTIVA
+    # ========================================================
+
+    if not colmena_esta_operativa(
+        colmena
+    ):
+
+        messages.error(
+            request,
+            (
+                f'La colmena "{colmena.codigocolmena}" '
+                "se encuentra inactiva y no puede recibir "
+                "nuevos mantenimientos."
+            )
+        )
+
+        return redirect(
+            "colmenas_apicultor"
+        )
 
 
     # ========================================================
@@ -2008,6 +2888,28 @@ def reportar_incidencia_apicultor(
 
 
     # ========================================================
+    # COLMENA INACTIVA
+    # ========================================================
+
+    if not colmena_esta_operativa(
+        colmena
+    ):
+
+        messages.error(
+            request,
+            (
+                f'La colmena "{colmena.codigocolmena}" '
+                "se encuentra inactiva y no puede recibir "
+                "nuevas incidencias."
+            )
+        )
+
+        return redirect(
+            "colmenas_apicultor"
+        )
+
+
+    # ========================================================
     # REDIRIGIR AL NUEVO FORMULARIO
     #
     # Quedará preseleccionada la colmena.
@@ -2073,6 +2975,21 @@ def mantenimientos_apicultor(request):
         .order_by(
             "id_apiario__nombreapiario",
             "codigocolmena"
+        )
+    )
+
+
+    # ========================================================
+    # COLMENAS DISPONIBLES PARA NUEVOS MANTENIMIENTOS
+    #
+    # Conservamos "colmenas" completo para historial/edición.
+    # El formulario de creación debe usar "colmenas_operativas".
+    # ========================================================
+
+    colmenas_operativas = (
+        colmenas
+        .exclude(
+            estadocolmena__iexact="Inactiva"
         )
     )
 
@@ -2487,6 +3404,9 @@ def mantenimientos_apicultor(request):
         "colmenas":
             colmenas,
 
+        "colmenas_operativas":
+            colmenas_operativas,
+
         "mantenimientos":
             mantenimientos_pagina,
 
@@ -2853,6 +3773,16 @@ def crear_mantenimiento_apicultor(request):
                 errores.append(
                     "La colmena seleccionada no pertenece "
                     "al apiario indicado."
+                )
+
+            elif not colmena_esta_operativa(
+                colmena
+            ):
+
+                errores.append(
+                    f'La colmena "{colmena.codigocolmena}" '
+                    "se encuentra inactiva y no puede recibir "
+                    "nuevos mantenimientos."
                 )
 
 
@@ -3385,6 +4315,24 @@ def editar_mantenimiento_apicultor(
                     "La colmena seleccionada no pertenece "
                     "al apiario indicado."
                 )
+
+            elif not colmena_esta_operativa(
+                colmena
+            ):
+
+                misma_colmena_historica = (
+                    mantenimiento.id_colmena_id
+                    ==
+                    colmena.id_colmena
+                )
+
+                if not misma_colmena_historica:
+
+                    errores.append(
+                        f'La colmena "{colmena.codigocolmena}" '
+                        "se encuentra inactiva y no puede recibir "
+                        "nuevos mantenimientos."
+                    )
 
 
     # ========================================================
@@ -4586,7 +5534,7 @@ def crear_incidencia_apicultor(request):
     # 3. COLMENAS DE SUS APIARIOS
     # ========================================================
 
-    colmenas = (
+    colmenas_todas = (
         Colmena.objects
         .filter(
             id_apiario__id_apicultor=apicultor
@@ -4597,6 +5545,18 @@ def crear_incidencia_apicultor(request):
         .order_by(
             "id_apiario__nombreapiario",
             "codigocolmena"
+        )
+    )
+
+
+    # ========================================================
+    # COLMENAS DISPONIBLES PARA NUEVAS INCIDENCIAS
+    # ========================================================
+
+    colmenas = (
+        colmenas_todas
+        .exclude(
+            estadocolmena__iexact="Inactiva"
         )
     )
 
@@ -4656,7 +5616,7 @@ def crear_incidencia_apicultor(request):
     if colmena_preseleccionada.isdigit():
 
         colmena_inicial = (
-            colmenas
+            colmenas_todas
             .filter(
                 id_colmena=int(
                     colmena_preseleccionada
@@ -4666,7 +5626,26 @@ def crear_incidencia_apicultor(request):
         )
 
 
-        if colmena_inicial:
+        if (
+            colmena_inicial
+            and
+            not colmena_esta_operativa(
+                colmena_inicial
+            )
+        ):
+
+            messages.error(
+                request,
+                (
+                    f'La colmena "{colmena_inicial.codigocolmena}" '
+                    "se encuentra inactiva y no puede recibir "
+                    "nuevas incidencias."
+                )
+            )
+
+            colmena_preseleccionada = ""
+
+        elif colmena_inicial:
 
             tipo_inicial = "Colmena"
 
@@ -4955,7 +5934,7 @@ def crear_incidencia_apicultor(request):
             else:
 
                 colmena = (
-                    Colmena.objects
+                    colmenas_todas
                     .filter(
 
                         id_colmena=int(
@@ -4976,6 +5955,16 @@ def crear_incidencia_apicultor(request):
                     errores.append(
                         "La colmena seleccionada no pertenece "
                         "al apiario indicado."
+                    )
+
+                elif not colmena_esta_operativa(
+                    colmena
+                ):
+
+                    errores.append(
+                        f'La colmena "{colmena.codigocolmena}" '
+                        "se encuentra inactiva y no puede recibir "
+                        "nuevas incidencias."
                     )
 
 
@@ -6787,478 +7776,6 @@ def agenda_apicultor(request):
 def crear_evento_apicultor(request):
 
     # ========================================================
-    # APICULTOR AUTENTICADO
-    # ========================================================
-
-    apicultor = get_object_or_404(
-        Apicultor,
-        user=request.user
-    )
-
-
-    # ========================================================
-    # APIARIOS ASIGNADOS
-    # ========================================================
-
-    apiarios = (
-        Apiario.objects
-        .filter(
-            id_apicultor=apicultor
-        )
-        .order_by(
-            "nombreapiario"
-        )
-    )
-
-
-    # ========================================================
-    # COLMENAS ASIGNADAS
-    # ========================================================
-
-    colmenas = (
-        Colmena.objects
-        .filter(
-            id_apiario__id_apicultor=apicultor
-        )
-        .select_related(
-            "id_apiario"
-        )
-        .order_by(
-            "id_apiario__nombreapiario",
-            "codigocolmena"
-        )
-    )
-
-
-    # ========================================================
-    # TIPOS DE EVENTOS DISPONIBLES
-    # ========================================================
-
-    tipos_disponibles = [
-
-        {
-            "valor": EventoAgenda.TipoEvento.MANTENIMIENTO,
-            "nombre": "Mantenimiento",
-        },
-
-        {
-            "valor": EventoAgenda.TipoEvento.REVISION,
-            "nombre": "Revisión",
-        },
-
-        {
-            "valor": EventoAgenda.TipoEvento.INCIDENCIA,
-            "nombre": "Incidencia",
-        },
-
-        {
-            "valor": EventoAgenda.TipoEvento.EVENTO,
-            "nombre": "Evento general",
-        },
-
-    ]
-
-
-    # ========================================================
-    # POST
-    # ========================================================
-
-    if request.method == "POST":
-
-        titulo = request.POST.get(
-            "titulo",
-            ""
-        ).strip()
-
-
-        tipo_evento = request.POST.get(
-            "tipo_evento",
-            ""
-        ).strip()
-
-
-        id_apiario = request.POST.get(
-            "apiario",
-            ""
-        ).strip()
-
-
-        id_colmena = request.POST.get(
-            "colmena",
-            ""
-        ).strip()
-
-
-        fecha = request.POST.get(
-            "fecha",
-            ""
-        ).strip()
-
-
-        hora = request.POST.get(
-            "hora",
-            ""
-        ).strip()
-
-
-        descripcion = request.POST.get(
-            "descripcion",
-            ""
-        ).strip()
-
-
-        errores = []
-
-
-        # ====================================================
-        # TÍTULO
-        # ====================================================
-
-        if not titulo:
-
-            errores.append(
-                "Debes ingresar un título para el evento."
-            )
-
-
-        elif len(titulo) > 150:
-
-            errores.append(
-                "El título no puede superar los 150 caracteres."
-            )
-
-
-        # ====================================================
-        # TIPO
-        # ====================================================
-
-        tipos_validos = [
-
-            EventoAgenda.TipoEvento.MANTENIMIENTO,
-
-            EventoAgenda.TipoEvento.REVISION,
-
-            EventoAgenda.TipoEvento.INCIDENCIA,
-
-            EventoAgenda.TipoEvento.EVENTO,
-
-        ]
-
-
-        if tipo_evento not in tipos_validos:
-
-            errores.append(
-                "Selecciona un tipo de evento válido."
-            )
-
-
-        # ====================================================
-        # APIARIO
-        #
-        # Solo buscamos dentro de SUS apiarios.
-        # ====================================================
-
-        apiario = None
-
-
-        if not id_apiario.isdigit():
-
-            errores.append(
-                "Debes seleccionar un apiario."
-            )
-
-        else:
-
-            apiario = (
-                apiarios
-                .filter(
-                    id_apiario=int(
-                        id_apiario
-                    )
-                )
-                .first()
-            )
-
-
-            if not apiario:
-
-                errores.append(
-                    "El apiario seleccionado no pertenece "
-                    "a tus apiarios asignados."
-                )
-
-
-        # ====================================================
-        # COLMENA
-        #
-        # Es opcional.
-        # ====================================================
-
-        colmena = None
-
-
-        if id_colmena:
-
-            if not id_colmena.isdigit():
-
-                errores.append(
-                    "La colmena seleccionada no es válida."
-                )
-
-            elif apiario:
-
-                colmena = (
-                    Colmena.objects
-                    .filter(
-                        id_colmena=int(
-                            id_colmena
-                        ),
-                        id_apiario=apiario,
-                        id_apiario__id_apicultor=apicultor
-                    )
-                    .first()
-                )
-
-
-                if not colmena:
-
-                    errores.append(
-                        "La colmena seleccionada no pertenece "
-                        "al apiario indicado."
-                    )
-
-
-        # ====================================================
-        # FECHA
-        # ====================================================
-
-        fecha_evento = None
-
-
-        if not fecha:
-
-            errores.append(
-                "Debes seleccionar la fecha del evento."
-            )
-
-        else:
-
-            try:
-
-                fecha_evento = datetime.strptime(
-                    fecha,
-                    "%Y-%m-%d"
-                ).date()
-
-            except ValueError:
-
-                errores.append(
-                    "La fecha seleccionada no es válida."
-                )
-
-
-        # ====================================================
-        # NO PROGRAMAR EN EL PASADO
-        # ====================================================
-
-        if (
-            fecha_evento
-            and
-            fecha_evento < timezone.localdate()
-        ):
-
-            errores.append(
-                "No puedes programar un evento en una fecha pasada."
-            )
-
-
-        # ====================================================
-        # HORA
-        # ====================================================
-
-        hora_evento = None
-
-
-        if not hora:
-
-            errores.append(
-                "Debes seleccionar la hora del evento."
-            )
-
-        else:
-
-            try:
-
-                hora_evento = datetime.strptime(
-                    hora,
-                    "%H:%M"
-                ).time()
-
-            except ValueError:
-
-                errores.append(
-                    "La hora seleccionada no es válida."
-                )
-
-
-        # ====================================================
-        # DESCRIPCIÓN
-        # ====================================================
-
-        if len(descripcion) > 500:
-
-            errores.append(
-                "La descripción no puede superar "
-                "los 500 caracteres."
-            )
-
-
-        # ====================================================
-        # ERRORES
-        # ====================================================
-
-        if errores:
-
-            for error in errores:
-
-                messages.error(
-                    request,
-                    error
-                )
-
-
-            return render(
-                request,
-                "panel_apicultor/crear_evento.html",
-                {
-
-                    "apicultor":
-                        apicultor,
-
-                    "apiarios":
-                        apiarios,
-
-                    "colmenas":
-                        colmenas,
-
-                    "tipos_disponibles":
-                        tipos_disponibles,
-
-                    "fecha_hoy":
-                        timezone.localdate(),
-
-                    "valores_formulario": {
-
-                        "titulo":
-                            titulo,
-
-                        "tipo_evento":
-                            tipo_evento,
-
-                        "apiario":
-                            id_apiario,
-
-                        "colmena":
-                            id_colmena,
-
-                        "fecha":
-                            fecha,
-
-                        "hora":
-                            hora,
-
-                        "descripcion":
-                            descripcion,
-
-                    },
-
-                }
-            )
-
-
-        # ====================================================
-        # CREAR EVENTO
-        # ====================================================
-
-        EventoAgenda.objects.create(
-
-            titulo=titulo,
-
-            tipo_evento=tipo_evento,
-
-            id_apiario=apiario,
-
-            id_colmena=colmena,
-
-            # El mismo apicultor será responsable
-            responsable=apicultor,
-
-            fecha=fecha_evento,
-
-            hora=hora_evento,
-
-            descripcion=descripcion,
-
-            estado=EventoAgenda.EstadoEvento.PROGRAMADO,
-
-            # Permite saber quién lo creó
-            creado_por=request.user,
-
-        )
-
-
-        messages.success(
-            request,
-            "El evento fue agregado a tu agenda correctamente."
-        )
-
-
-        return redirect(
-            "agenda_apicultor"
-        )
-
-
-    # ========================================================
-    # GET
-    # ========================================================
-
-    return render(
-        request,
-        "panel_apicultor/crear_evento.html",
-        {
-
-            "apicultor":
-                apicultor,
-
-            "apiarios":
-                apiarios,
-
-            "colmenas":
-                colmenas,
-
-            "tipos_disponibles":
-                tipos_disponibles,
-
-            "fecha_hoy":
-                timezone.localdate(),
-
-            "valores_formulario":
-                {},
-
-        }
-    )
-
-
-
-# ============================================================
-# CREAR EVENTO
-# PANEL APICULTOR
-# ============================================================
-
-@login_required
-def crear_evento_apicultor(request):
-
-    # ========================================================
     # 1. APICULTOR AUTENTICADO
     # ========================================================
 
@@ -7290,7 +7807,7 @@ def crear_evento_apicultor(request):
     # 3. COLMENAS DE LOS APIARIOS ASIGNADOS
     # ========================================================
 
-    colmenas = (
+    colmenas_todas = (
         Colmena.objects
         .filter(
             id_apiario__id_apicultor=apicultor
@@ -7301,6 +7818,18 @@ def crear_evento_apicultor(request):
         .order_by(
             "id_apiario__nombreapiario",
             "codigocolmena"
+        )
+    )
+
+
+    # ========================================================
+    # COLMENAS DISPONIBLES PARA NUEVOS EVENTOS
+    # ========================================================
+
+    colmenas = (
+        colmenas_todas
+        .exclude(
+            estadocolmena__iexact="Inactiva"
         )
     )
 
@@ -7575,7 +8104,7 @@ def crear_evento_apicultor(request):
             elif apiario:
 
                 colmena = (
-                    Colmena.objects
+                    colmenas_todas
                     .filter(
 
                         id_colmena=int(
@@ -7596,6 +8125,16 @@ def crear_evento_apicultor(request):
                     errores.append(
                         "La colmena seleccionada no pertenece "
                         "al apiario indicado."
+                    )
+
+                elif not colmena_esta_operativa(
+                    colmena
+                ):
+
+                    errores.append(
+                        f'La colmena "{colmena.codigocolmena}" '
+                        "se encuentra inactiva y no puede utilizarse "
+                        "para programar nuevos eventos."
                     )
 
 
@@ -7899,4 +8438,1040 @@ def crear_evento_apicultor(request):
         request,
         "panel_apicultor/crear_evento.html",
         contexto
+    )
+
+
+
+
+# ============================================================
+# ACTUALIZAR ESTADO DE EVENTO
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+@require_POST
+def actualizar_estado_evento_apicultor(
+    request,
+    id_evento
+):
+
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # BUSCAR EVENTO
+    #
+    # SEGURIDAD:
+    # El evento debe pertenecer a uno de los apiarios
+    # asignados al apicultor autenticado.
+    #
+    # NO utilizamos el campo "responsable" como regla
+    # de acceso.
+    # ========================================================
+
+    evento = get_object_or_404(
+
+        EventoAgenda.objects
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "creado_por",
+        ),
+
+        id_evento=id_evento,
+
+        id_apiario__id_apicultor=apicultor,
+
+    )
+
+
+    # ========================================================
+    # FECHA ACTUAL
+    # ========================================================
+
+    hoy = timezone.localdate()
+
+
+    # ========================================================
+    # VALIDAR FECHA DEL EVENTO
+    #
+    # EVENTO FUTURO:
+    # NO se puede modificar.
+    #
+    # EVENTO HOY:
+    # SÍ.
+    #
+    # EVENTO PASADO:
+    # SÍ.
+    # ========================================================
+
+    if evento.fecha > hoy:
+
+        messages.error(
+            request,
+            (
+                "Todavía no puedes actualizar este evento. "
+                "Podrás cambiar su estado a partir del "
+                f"{evento.fecha.strftime('%d/%m/%Y')}."
+            )
+        )
+
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # SOLO SE PUEDE MODIFICAR SI ESTÁ PROGRAMADO
+    # ========================================================
+
+    if (
+        evento.estado
+        !=
+        EventoAgenda.EstadoEvento.PROGRAMADO
+    ):
+
+        messages.info(
+            request,
+            (
+                "Este evento ya tiene un estado final "
+                f"({evento.get_estado_display()}) "
+                "y no puede modificarse nuevamente "
+                "desde tu panel."
+            )
+        )
+
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # NUEVO ESTADO
+    # ========================================================
+
+    nuevo_estado = (
+        request.POST
+        .get(
+            "estado",
+            ""
+        )
+        .strip()
+        .lower()
+    )
+
+
+    # ========================================================
+    # ESTADOS QUE PUEDE SELECCIONAR EL APICULTOR
+    #
+    # El apicultor NO puede devolverlo a Programado.
+    #
+    # Solamente:
+    #
+    # - Completado
+    # - Cancelado
+    # ========================================================
+
+    estados_permitidos = {
+
+        EventoAgenda
+        .EstadoEvento
+        .COMPLETADO,
+
+        EventoAgenda
+        .EstadoEvento
+        .CANCELADO,
+
+    }
+
+
+    if (
+        nuevo_estado
+        not in
+        estados_permitidos
+    ):
+
+        messages.error(
+            request,
+            "Selecciona un estado válido para el evento."
+        )
+
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # ACTUALIZAR ÚNICAMENTE EL ESTADO
+    # ========================================================
+
+    evento.estado = (
+        nuevo_estado
+    )
+
+
+    evento.save(
+        update_fields=[
+            "estado"
+        ]
+    )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    if (
+        nuevo_estado
+        ==
+        EventoAgenda.EstadoEvento.COMPLETADO
+    ):
+
+        messages.success(
+            request,
+            (
+                f'El evento "{evento.titulo}" '
+                "fue marcado como completado."
+            )
+        )
+
+
+    else:
+
+        messages.success(
+            request,
+            (
+                f'El evento "{evento.titulo}" '
+                "fue marcado como cancelado."
+            )
+        )
+
+
+    # ========================================================
+    # REGRESAR A AGENDA
+    # ========================================================
+
+    return redirect(
+        "agenda_apicultor"
+    )
+
+
+# ============================================================
+# PERFIL DEL APICULTOR
+# ============================================================
+
+@login_required
+def perfil_apicultor(request):
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor.objects.select_related(
+            "user",
+            "id_rol"
+        ),
+        user=request.user
+    )
+
+
+    usuario = request.user
+
+
+    # ========================================================
+    # ACTUALIZAR PERFIL
+    # ========================================================
+
+    if request.method == "POST":
+
+        nombres = (
+            request.POST
+            .get(
+                "nombres",
+                ""
+            )
+            .strip()
+        )
+
+
+        apellidos = (
+            request.POST
+            .get(
+                "apellidos",
+                ""
+            )
+            .strip()
+        )
+
+
+        correo = (
+            request.POST
+            .get(
+                "correo",
+                ""
+            )
+            .strip()
+            .lower()
+        )
+
+
+        telefono = (
+            request.POST
+            .get(
+                "telefono",
+                ""
+            )
+            .strip()
+        )
+
+
+        zona_trabajo = (
+            request.POST
+            .get(
+                "zona_trabajo",
+                ""
+            )
+            .strip()
+        )
+
+
+        experiencia = (
+            request.POST
+            .get(
+                "experiencia",
+                ""
+            )
+            .strip()
+        )
+
+
+        nueva_foto = (
+            request.FILES
+            .get(
+                "fotoperfil"
+            )
+        )
+
+
+        eliminar_foto = (
+            request.POST
+            .get(
+                "eliminar_foto",
+                "0"
+            )
+            ==
+            "1"
+        )
+
+
+        errores = []
+
+
+        # ====================================================
+        # NOMBRES
+        # ====================================================
+
+        if not nombres:
+
+            errores.append(
+                "Debes ingresar tus nombres."
+            )
+
+
+        elif len(nombres) > 150:
+
+            errores.append(
+                "Los nombres no pueden superar los 150 caracteres."
+            )
+
+
+        # ====================================================
+        # APELLIDOS
+        # ====================================================
+
+        if not apellidos:
+
+            errores.append(
+                "Debes ingresar tus apellidos."
+            )
+
+
+        elif len(apellidos) > 150:
+
+            errores.append(
+                "Los apellidos no pueden superar los 150 caracteres."
+            )
+
+
+        # ====================================================
+        # CORREO
+        # ====================================================
+
+        if not correo:
+
+            errores.append(
+                "Debes ingresar un correo electrónico."
+            )
+
+
+        elif (
+            usuario.__class__.objects
+            .filter(
+                email__iexact=correo
+            )
+            .exclude(
+                pk=usuario.pk
+            )
+            .exists()
+        ):
+
+            errores.append(
+                "Ese correo electrónico ya está siendo utilizado."
+            )
+
+
+        # ====================================================
+        # TELÉFONO
+        # ====================================================
+
+        if telefono:
+
+            if not telefono.isdigit():
+
+                errores.append(
+                    "El teléfono solamente puede contener números."
+                )
+
+
+            elif (
+                len(telefono) < 7
+                or
+                len(telefono) > 20
+            ):
+
+                errores.append(
+                    "El teléfono debe contener entre 7 y 20 números."
+                )
+
+
+        # ====================================================
+        # ZONA DE TRABAJO
+        # ====================================================
+
+        if len(zona_trabajo) > 100:
+
+            errores.append(
+                "La zona de trabajo no puede superar los 100 caracteres."
+            )
+
+
+        # ====================================================
+        # EXPERIENCIA
+        # ====================================================
+
+        experiencia_numero = None
+
+
+        if experiencia:
+
+            try:
+
+                experiencia_numero = int(
+                    experiencia
+                )
+
+
+                if experiencia_numero < 0:
+
+                    errores.append(
+                        "Los años de experiencia no pueden ser negativos."
+                    )
+
+
+                elif experiencia_numero > 80:
+
+                    errores.append(
+                        "Los años de experiencia ingresados no son válidos."
+                    )
+
+
+            except ValueError:
+
+                errores.append(
+                    "Los años de experiencia deben ser un número entero."
+                )
+
+
+        # ====================================================
+        # FOTOGRAFÍA
+        # ====================================================
+
+        if nueva_foto:
+
+            formatos_validos = {
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+            }
+
+
+            if (
+                nueva_foto.content_type
+                not in formatos_validos
+            ):
+
+                errores.append(
+                    "La fotografía debe ser JPG, PNG o WEBP."
+                )
+
+
+            if (
+                nueva_foto.size
+                >
+                5 * 1024 * 1024
+            ):
+
+                errores.append(
+                    "La fotografía no puede superar los 5 MB."
+                )
+
+
+            if not errores:
+
+                try:
+
+                    nueva_foto.seek(
+                        0
+                    )
+
+
+                    imagen = Image.open(
+                        nueva_foto
+                    )
+
+
+                    imagen.verify()
+
+
+                    nueva_foto.seek(
+                        0
+                    )
+
+
+                except (
+                    UnidentifiedImageError,
+                    OSError,
+                    ValueError
+                ):
+
+                    errores.append(
+                        "El archivo seleccionado no contiene una imagen válida."
+                    )
+
+
+        # ====================================================
+        # MOSTRAR ERRORES
+        # ====================================================
+
+        if errores:
+
+            for error in errores:
+
+                messages.error(
+                    request,
+                    error
+                )
+
+
+        else:
+
+            # ================================================
+            # USUARIO DJANGO
+            # ================================================
+
+            usuario.first_name = (
+                nombres
+            )
+
+
+            usuario.last_name = (
+                apellidos
+            )
+
+
+            usuario.email = (
+                correo
+            )
+
+
+            usuario.save(
+                update_fields=[
+                    "first_name",
+                    "last_name",
+                    "email",
+                ]
+            )
+
+
+            # ================================================
+            # APICULTOR
+            # ================================================
+
+            apicultor.telefono = (
+                telefono
+                or
+                None
+            )
+
+
+            apicultor.zona_trabajo = (
+                zona_trabajo
+                or
+                None
+            )
+
+
+            apicultor.experienciaanios = (
+                experiencia_numero
+            )
+
+
+            campos_actualizados = [
+                "telefono",
+                "zona_trabajo",
+                "experienciaanios",
+            ]
+
+
+            # ================================================
+            # ELIMINAR FOTO
+            # ================================================
+
+            if eliminar_foto:
+
+                apicultor.fotoperfil = (
+                    None
+                )
+
+
+                campos_actualizados.append(
+                    "fotoperfil"
+                )
+
+
+            # ================================================
+            # NUEVA FOTO
+            # ================================================
+
+            elif nueva_foto:
+
+                apicultor.fotoperfil = (
+                    nueva_foto
+                )
+
+
+                campos_actualizados.append(
+                    "fotoperfil"
+                )
+
+
+            apicultor.save(
+                update_fields=
+                    campos_actualizados
+            )
+
+
+            messages.success(
+                request,
+                "Tu perfil fue actualizado correctamente."
+            )
+
+
+            return redirect(
+                "perfil_apicultor"
+            )
+
+
+    # ========================================================
+    # FOTO
+    # ========================================================
+
+    foto = ""
+
+
+    if apicultor.fotoperfil:
+
+        try:
+
+            foto = (
+                apicultor
+                .fotoperfil
+                .url
+            )
+
+        except ValueError:
+
+            foto = ""
+
+
+    # ========================================================
+    # CONFIGURACIÓN 2FA DEL USUARIO
+    # ========================================================
+
+    configuracion_2fa, _ = (
+        Configuracion2FA.objects
+        .get_or_create(
+            usuario=usuario
+        )
+    )
+
+
+    # ========================================================
+    # POLÍTICA GLOBAL DE SEGURIDAD 2FA
+    # ========================================================
+
+    politica_2fa = (
+        obtener_politica_2fa(
+            usuario
+        )
+    )
+
+
+    permitir_2fa = (
+        politica_2fa.get(
+            "permitir_2fa",
+            False
+        )
+    )
+
+
+    segundo_factor_obligatorio = (
+        politica_2fa.get(
+            "obligatorio",
+            False
+        )
+    )
+
+
+    # ========================================================
+    # ESTADO 2FA
+    # ========================================================
+
+    dos_factores_activo = (
+        configuracion_2fa.activo
+    )
+
+
+    # ========================================================
+    # CORREO DISPONIBLE PARA 2FA
+    # ========================================================
+
+    tiene_correo_2fa = bool(
+        usuario.email
+        and
+        usuario.email.strip()
+    )
+
+
+    # ========================================================
+    # DATOS DEL PERFIL
+    # ========================================================
+
+    contexto = {
+
+        # ----------------------------------------------------
+        # APICULTOR
+        # ----------------------------------------------------
+
+        "apicultor":
+            apicultor,
+
+
+        # ----------------------------------------------------
+        # USUARIO
+        # ----------------------------------------------------
+
+        "usuario":
+            usuario,
+
+
+        # ----------------------------------------------------
+        # FOTO
+        # ----------------------------------------------------
+
+        "foto":
+            foto,
+
+
+        # ----------------------------------------------------
+        # ROL
+        # ----------------------------------------------------
+
+        "rol":
+            (
+                str(apicultor.id_rol)
+                if apicultor.id_rol
+                else
+                "Apicultor"
+            ),
+
+
+        # ----------------------------------------------------
+        # INFORMACIÓN DEL APICULTOR
+        # ----------------------------------------------------
+
+        "telefono":
+            apicultor.telefono
+            or
+            "",
+
+
+        "identificacion":
+            apicultor.identificacion
+            or
+            "",
+
+
+        "zona_trabajo":
+            apicultor.zona_trabajo
+            or
+            "",
+
+
+        "experiencia":
+            apicultor.experienciaanios,
+
+
+        # ====================================================
+        # SEGURIDAD - 2FA
+        # ====================================================
+
+        "configuracion_2fa":
+            configuracion_2fa,
+
+
+        "permitir_2fa":
+            permitir_2fa,
+
+
+        "segundo_factor_obligatorio":
+            segundo_factor_obligatorio,
+
+
+        "dos_factores_activo":
+            dos_factores_activo,
+
+
+        "tiene_correo_2fa":
+            tiene_correo_2fa,
+
+    }
+
+
+    # ========================================================
+    # RENDERIZAR PERFIL
+    # ========================================================
+
+    return render(
+        request,
+        "panel_apicultor/perfil.html",
+        contexto
+    )
+
+
+
+# ============================================================
+# CAMBIAR CONTRASEÑA
+# PERFIL APICULTOR
+# ============================================================
+
+@login_required
+@require_POST
+def cambiar_password_apicultor(request):
+
+    # ========================================================
+    # 1. OBTENER DATOS
+    # ========================================================
+
+    password_actual = (
+        request.POST
+        .get(
+            "password_actual",
+            ""
+        )
+    )
+
+    password_nueva = (
+        request.POST
+        .get(
+            "password_nueva",
+            ""
+        )
+    )
+
+    password_confirmacion = (
+        request.POST
+        .get(
+            "password_confirmacion",
+            ""
+        )
+    )
+
+
+    # ========================================================
+    # 2. CAMPOS OBLIGATORIOS
+    # ========================================================
+
+    if (
+        not password_actual
+        or
+        not password_nueva
+        or
+        not password_confirmacion
+    ):
+
+        messages.error(
+            request,
+            "Debes completar todos los campos de contraseña."
+        )
+
+        return redirect(
+            "perfil_apicultor"
+        )
+
+
+    # ========================================================
+    # 3. VALIDAR CONTRASEÑA ACTUAL
+    # ========================================================
+
+    if not request.user.check_password(
+        password_actual
+    ):
+
+        messages.error(
+            request,
+            "La contraseña actual no es correcta."
+        )
+
+        return redirect(
+            "perfil_apicultor"
+        )
+
+
+    # ========================================================
+    # 4. VALIDAR COINCIDENCIA
+    # ========================================================
+
+    if (
+        password_nueva
+        !=
+        password_confirmacion
+    ):
+
+        messages.error(
+            request,
+            "Las contraseñas nuevas no coinciden."
+        )
+
+        return redirect(
+            "perfil_apicultor"
+        )
+
+
+    # ========================================================
+    # 5. NO PERMITIR LA MISMA CONTRASEÑA
+    # ========================================================
+
+    if request.user.check_password(
+        password_nueva
+    ):
+
+        messages.warning(
+            request,
+            (
+                "La nueva contraseña debe ser diferente "
+                "a la contraseña actual."
+            )
+        )
+
+        return redirect(
+            "perfil_apicultor"
+        )
+
+
+    # ========================================================
+    # 6. VALIDADORES DE DJANGO
+    # ========================================================
+
+    try:
+
+        validate_password(
+            password_nueva,
+            user=request.user
+        )
+
+    except ValidationError as errores:
+
+        for error in errores.messages:
+
+            messages.error(
+                request,
+                error
+            )
+
+        return redirect(
+            "perfil_apicultor"
+        )
+
+
+    # ========================================================
+    # 7. CAMBIAR CONTRASEÑA
+    # ========================================================
+
+    request.user.set_password(
+        password_nueva
+    )
+
+    request.user.save(
+        update_fields=[
+            "password"
+        ]
+    )
+
+
+    # ========================================================
+    # 8. MANTENER LA SESIÓN ACTUAL
+    # ========================================================
+
+    update_session_auth_hash(
+        request,
+        request.user
+    )
+
+
+    # ========================================================
+    # 9. MENSAJE
+    # ========================================================
+
+    messages.success(
+        request,
+        "Tu contraseña fue actualizada correctamente."
+    )
+
+
+    return redirect(
+        "perfil_apicultor"
     )

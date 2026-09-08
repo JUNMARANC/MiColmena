@@ -1018,26 +1018,42 @@ def generar_hash_codigo_2fa(
 
 def crear_desafio_2fa(
     request,
-    usuario
+    usuario,
+    proposito="login",
+    conservar_reenvios=False
 ):
+
+    # ========================================================
+    # CONSERVAR CONTADOR DE REENVÍOS
+    # ========================================================
+
+    if conservar_reenvios:
+
+        reenvios = int(
+            request.session.get(
+                "2fa_reenvios",
+                0
+            )
+        )
+
+    else:
+
+        reenvios = 0
+
 
     # ========================================================
     # GENERAR CÓDIGO
     # ========================================================
 
-    codigo = (
-        generar_codigo_2fa()
-    )
+    codigo = generar_codigo_2fa()
 
 
     # ========================================================
-    # IDENTIFICADOR ALEATORIO DEL DESAFÍO
+    # GENERAR NONCE ÚNICO
     # ========================================================
 
-    nonce = (
-        secrets.token_urlsafe(
-            16
-        )
+    nonce = secrets.token_urlsafe(
+        16
     )
 
 
@@ -1045,9 +1061,7 @@ def crear_desafio_2fa(
     # FECHA DE EXPIRACIÓN
     # ========================================================
 
-    ahora = (
-        timezone.now()
-    )
+    ahora = timezone.now()
 
 
     expira = (
@@ -1061,7 +1075,7 @@ def crear_desafio_2fa(
 
 
     # ========================================================
-    # CREAR HASH
+    # GENERAR HASH DEL CÓDIGO
     # ========================================================
 
     codigo_hash = (
@@ -1073,7 +1087,7 @@ def crear_desafio_2fa(
 
 
     # ========================================================
-    # GUARDAR INFORMACIÓN EN LA SESIÓN
+    # GUARDAR DESAFÍO EN LA SESIÓN
     # ========================================================
 
     request.session[
@@ -1102,22 +1116,28 @@ def crear_desafio_2fa(
 
 
     request.session[
-        "2fa_verificado"
-    ] = False
+        "2fa_proposito"
+    ] = proposito
+
+
+    request.session[
+        "2fa_reenvios"
+    ] = reenvios
+
+
+    request.session[
+        "2fa_ultimo_envio"
+    ] = ahora.timestamp()
 
 
     request.session.modified = True
 
 
     # ========================================================
-    # DEVOLVER EL CÓDIGO
-    #
-    # Este será enviado por correo en el siguiente paso.
-    # No se guarda en la base de datos ni en la sesión.
+    # DEVOLVER CÓDIGO SIN GUARDARLO EN TEXTO PLANO
     # ========================================================
 
     return codigo
-
 
 
 # ============================================================
@@ -1502,127 +1522,6 @@ def crear_y_enviar_codigo_2fa(
         "error": None,
     }
 
-
-# ============================================================
-# CREAR DESAFÍO 2FA
-# ============================================================
-
-def crear_desafio_2fa(
-    request,
-    usuario,
-    proposito="login",
-    conservar_reenvios=False
-):
-
-    # ========================================================
-    # CONSERVAR CONTADOR SI ES UN REENVÍO
-    # ========================================================
-
-    if conservar_reenvios:
-
-        reenvios = int(
-            request.session.get(
-                "2fa_reenvios",
-                0
-            )
-        )
-
-    else:
-
-        reenvios = 0
-
-
-    # ========================================================
-    # GENERAR CÓDIGO
-    # ========================================================
-
-    codigo = generar_codigo_2fa()
-
-
-    # ========================================================
-    # NONCE
-    # ========================================================
-
-    nonce = secrets.token_urlsafe(
-        16
-    )
-
-
-    # ========================================================
-    # TIEMPO
-    # ========================================================
-
-    ahora = timezone.now()
-
-
-    expira = (
-        ahora
-        +
-        timedelta(
-            minutes=
-                DURACION_CODIGO_2FA_MINUTOS
-        )
-    )
-
-
-    # ========================================================
-    # HASH
-    # ========================================================
-
-    codigo_hash = generar_hash_codigo_2fa(
-        codigo,
-        nonce
-    )
-
-
-    # ========================================================
-    # SESIÓN
-    # ========================================================
-
-    request.session[
-        "2fa_usuario_id"
-    ] = usuario.pk
-
-
-    request.session[
-        "2fa_codigo_hash"
-    ] = codigo_hash
-
-
-    request.session[
-        "2fa_nonce"
-    ] = nonce
-
-
-    request.session[
-        "2fa_expira"
-    ] = expira.timestamp()
-
-
-    request.session[
-        "2fa_intentos"
-    ] = 0
-
-
-    request.session[
-        "2fa_proposito"
-    ] = proposito
-
-
-    request.session[
-        "2fa_reenvios"
-    ] = reenvios
-
-
-    request.session[
-        "2fa_ultimo_envio"
-    ] = ahora.timestamp()
-
-
-    request.session.modified = True
-
-
-    return codigo
 
 
 # ============================================================

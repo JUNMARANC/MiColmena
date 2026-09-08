@@ -1,4 +1,5 @@
-{% extends "admin_panel/base_admin.html" %}
+{% extends base_template %}
+{% load static %}
 
 
 {% block title %}
@@ -11,180 +12,190 @@
 {% endblock %}
 
 
+{% block page_subtitle %}
+    Protege el acceso a tu cuenta con verificación en dos pasos
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'usuarios/css/seguridad_2fa.css' %}?v=10"
+>
+
+{% endblock %}
+
+
 {% block content %}
 
 
-<div
-    class="container"
-    style="
-        max-width: 520px;
-        margin-top: 40px;
-        margin-bottom: 40px;
-    "
->
+<div class="seguridad-2fa-page">
 
 
-    <div
-        class="card border-0 shadow-sm"
-        style="border-radius: 18px;"
-    >
+    <section class="seguridad-2fa-card">
 
 
-        <div class="card-body p-4 p-md-5">
+        <!-- =====================================================
+             ENCABEZADO
+        ====================================================== -->
+
+        <div class="seguridad-2fa-header">
 
 
-            <div class="text-center mb-4">
+            <div class="seguridad-2fa-icono">
 
-
-                <div
-                    class="
-                        d-inline-flex
-                        align-items-center
-                        justify-content-center
-                        rounded-circle
-                        mb-3
-                    "
-                    style="
-                        width: 64px;
-                        height: 64px;
-                        background: #eaf7ee;
-                        color: #326d56;
-                        font-size: 25px;
-                    "
-                >
-
-                    <i class="bi bi-shield-lock-fill"></i>
-
-                </div>
-
-
-                <h4 class="fw-bold">
-
-                    Verifica tu correo
-
-                </h4>
-
-
-                <p class="text-muted small mb-0">
-
-                    Enviamos un código de 6 dígitos a
-
-                    <strong>
-                        {{ correo_oculto }}
-                    </strong>
-
-                </p>
-
+                <i class="bi bi-shield-lock-fill"></i>
 
             </div>
 
 
+            <h2>
+                Verifica tu correo
+            </h2>
 
-            {% if error %}
 
-                <div class="alert alert-danger">
+            <p>
 
-                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                Enviamos un código de 6 dígitos a
 
+                <strong>
+                    {{ correo_oculto }}
+                </strong>
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- =====================================================
+             ERROR
+        ====================================================== -->
+
+        {% if error %}
+
+            <div class="seguridad-2fa-alerta error">
+
+                <i class="bi bi-exclamation-circle-fill"></i>
+
+                <span>
                     {{ error }}
+                </span>
 
-                </div>
+            </div>
 
-            {% endif %}
-
-
-
-            {% if puede_verificar %}
+        {% endif %}
 
 
-                <form
-                    method="POST"
-                    id="formVerificacion2FA"
-                >
 
-                    {% csrf_token %}
+        <!-- =====================================================
+             FORMULARIO
+        ====================================================== -->
+
+        {% if puede_verificar %}
 
 
-                    <div class="mb-4">
+            <form
+                method="POST"
+                id="formVerificacion2FA"
+                class="seguridad-2fa-form"
+            >
 
-                        <label
-                            for="codigo2FA"
-                            class="form-label fw-semibold"
-                        >
+                {% csrf_token %}
 
-                            Código de verificación
 
-                        </label>
+                <div class="seguridad-2fa-grupo">
+
+
+                    <label
+                        for="codigo2FA"
+                        class="seguridad-2fa-label"
+                    >
+
+                        Código de verificación
+
+                    </label>
+
+
+                    <div class="seguridad-2fa-input-contenedor">
+
+
+                        <i class="bi bi-key-fill"></i>
 
 
                         <input
                             type="text"
                             id="codigo2FA"
                             name="codigo"
-                            class="
-                                form-control
-                                form-control-lg
-                                text-center
-                            "
+                            class="seguridad-2fa-codigo"
                             inputmode="numeric"
                             pattern="[0-9]{6}"
                             maxlength="6"
                             autocomplete="one-time-code"
                             placeholder="000000"
                             required
-                            style="
-                                letter-spacing: 8px;
-                                font-weight: 700;
-                                font-size: 24px;
-                            "
                         >
 
-
-                        <small class="text-muted">
-
-                            El código tiene una duración
-                            de 5 minutos.
-
-                        </small>
 
                     </div>
 
 
+                    <small class="seguridad-2fa-ayuda">
 
-                    <button
-                        type="submit"
-                        class="btn btn-success w-100"
-                    >
+                        <i class="bi bi-clock"></i>
 
-                        <i class="bi bi-check-circle-fill me-2"></i>
+                        El código tiene una duración de
+                        5 minutos.
 
-                        Verificar y activar 2FA
-
-                    </button>
+                    </small>
 
 
-                </form>
+                </div>
 
 
-            {% else %}
 
-
-                <a
-                    href="{% url 'mi_perfil' %}"
-                    class="btn btn-outline-secondary w-100"
+                <button
+                    type="submit"
+                    class="seguridad-2fa-boton activar"
+                    id="btnVerificar2FA"
                 >
 
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    <span>
+                        Verificar y activar 2FA
+                    </span>
+
+                </button>
+
+
+            </form>
+
+
+        {% else %}
+
+
+            <a
+                href="{% url ruta_perfil %}"
+                class="seguridad-2fa-boton volver"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                <span>
                     Volver a Mi Perfil
+                </span>
 
-                </a>
-
-
-            {% endif %}
+            </a>
 
 
-        </div>
+        {% endif %}
 
-    </div>
+
+    </section>
+
 
 </div>
 
@@ -200,11 +211,40 @@ document.addEventListener(
             "codigo2FA"
         );
 
+        const formulario = document.getElementById(
+            "formVerificacion2FA"
+        );
+
+        const boton = document.getElementById(
+            "btnVerificar2FA"
+        );
+
+
+        /*
+        =========================================================
+        SI NO EXISTE INPUT
+        =========================================================
+        */
 
         if (!codigo) {
             return;
         }
 
+
+        /*
+        =========================================================
+        ENFOCAR AUTOMÁTICAMENTE
+        =========================================================
+        */
+
+        codigo.focus();
+
+
+        /*
+        =========================================================
+        SOLO NÚMEROS
+        =========================================================
+        */
 
         codigo.addEventListener(
             "input",
@@ -224,6 +264,47 @@ document.addEventListener(
 
             }
         );
+
+
+        /*
+        =========================================================
+        EVITAR DOBLE ENVÍO
+        =========================================================
+        */
+
+        if (
+            formulario
+            &&
+            boton
+        ) {
+
+            formulario.addEventListener(
+                "submit",
+                function () {
+
+                    if (
+                        codigo.value.length
+                        !==
+                        6
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    boton.disabled = true;
+
+
+                    boton.innerHTML = `
+                        <i class="bi bi-hourglass-split"></i>
+                        <span>Verificando...</span>
+                    `;
+
+                }
+            );
+
+        }
 
     }
 );

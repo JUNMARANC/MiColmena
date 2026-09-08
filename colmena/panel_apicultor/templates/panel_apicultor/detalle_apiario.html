@@ -21,10 +21,20 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/detalle_apiario.css' %}?v=3"
+    href="{% static 'panel_apicultor/css/detalle_apiario.css' %}?v=4"
+>
+
+<!--
+    Reutilizamos los estilos del modal de gestión
+    que ya construimos para Mis Apiarios.
+-->
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/apiarios.css' %}?v=2"
 >
 
 {% endblock %}
+
 
 
 {% block content %}
@@ -57,7 +67,7 @@
 
 
     <!-- =====================================================
-         TÍTULO DEL APIARIO
+         ENCABEZADO
     ====================================================== -->
 
     <section class="detalle-titulo">
@@ -73,19 +83,538 @@
             </h1>
 
             <p>
-                Información general y estado actual
-                de las colmenas de este apiario.
+                Información general, estado actual y colmenas
+                pertenecientes a este apiario.
             </p>
 
         </div>
+
+
+        <span
+            class="
+                detalle-estado-apiario
+
+                {% if apiario.estadoapiario == 'Bueno' %}
+                    bueno
+
+                {% elif apiario.estadoapiario == 'Precaución' %}
+                    precaucion
+
+                {% else %}
+                    deficiente
+                {% endif %}
+            "
+        >
+
+            <i class="bi bi-activity"></i>
+
+            {{ apiario.estadoapiario }}
+
+        </span>
 
     </section>
 
 
 
     <!-- =====================================================
-         RESUMEN SUPERIOR
-         INFORMACIÓN GENERAL + GRÁFICA
+         HERO DEL APIARIO
+    ====================================================== -->
+
+    <section class="detalle-apiario-hero">
+
+
+        <!-- =================================================
+             FOTOGRAFÍA
+        ================================================== -->
+
+        <div class="detalle-apiario-hero-imagen">
+
+
+            {% if apiario.imagen %}
+
+                <button
+                    type="button"
+                    class="detalle-apiario-foto-btn btn-imagen-apiario"
+                    data-imagen-apiario="{{ apiario.imagen.url }}"
+                    data-imagen-titulo="{{ apiario.nombreapiario }}"
+                    aria-label="Ampliar fotografía de {{ apiario.nombreapiario }}"
+                >
+
+                    <img
+                        src="{{ apiario.imagen.url }}"
+                        alt="Fotografía de {{ apiario.nombreapiario }}"
+                    >
+
+
+                    <span class="apiario-imagen-overlay">
+
+                        <i class="bi bi-arrows-fullscreen"></i>
+
+                        Ver fotografía
+
+                    </span>
+
+                </button>
+
+
+            {% else %}
+
+
+                <div class="detalle-apiario-sin-foto">
+
+                    <div>
+
+                        <i class="bi bi-image"></i>
+
+                    </div>
+
+                    <strong>
+                        Sin fotografía
+                    </strong>
+
+                    <span>
+                        Este apiario todavía no tiene
+                        una fotografía registrada.
+                    </span>
+
+                </div>
+
+
+            {% endif %}
+
+
+            <!-- ESTADO SOBRE FOTO -->
+
+            <span
+                class="
+                    detalle-hero-estado
+
+                    {% if apiario.estadoapiario == 'Bueno' %}
+                        bueno
+
+                    {% elif apiario.estadoapiario == 'Precaución' %}
+                        precaucion
+
+                    {% else %}
+                        deficiente
+                    {% endif %}
+                "
+            >
+
+                {% if apiario.estadoapiario == "Bueno" %}
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                {% elif apiario.estadoapiario == "Precaución" %}
+
+                    <i class="bi bi-exclamation-circle-fill"></i>
+
+                {% else %}
+
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                {% endif %}
+
+                {{ apiario.estadoapiario }}
+
+            </span>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             INFORMACIÓN PRINCIPAL
+        ================================================== -->
+
+        <div class="detalle-apiario-hero-info">
+
+
+            <div class="detalle-hero-superior">
+
+                <div>
+
+                    <span class="detalle-hero-etiqueta">
+                        Información del apiario
+                    </span>
+
+                    <h2>
+                        {{ apiario.nombreapiario }}
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-gestionar-apiario detalle-btn-gestionar"
+                    data-editar-apiario-modal="modalEditarApiario{{ apiario.id_apiario }}"
+                >
+
+                    <i class="bi bi-pencil-square"></i>
+
+                    <span>
+                        Gestionar
+                    </span>
+
+                </button>
+
+            </div>
+
+
+
+            <!-- UBICACIÓN -->
+
+            <div class="detalle-hero-dato">
+
+                <div class="detalle-hero-dato-icono">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Ubicación
+                    </span>
+
+                    <strong>
+
+                        {% if apiario.ubicacion %}
+
+                            {{ apiario.ubicacion }}
+
+                        {% else %}
+
+                            Sin ubicación registrada
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- COLMENAS -->
+
+            <div class="detalle-hero-dato">
+
+                <div class="detalle-hero-dato-icono">
+
+                    <i class="bi bi-hexagon-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Colmenas registradas
+                    </span>
+
+                    <strong>
+                        {{ total_colmenas|default:0 }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ÚLTIMO MANTENIMIENTO -->
+
+            <div class="detalle-hero-dato">
+
+                <div class="detalle-hero-dato-icono">
+
+                    <i class="bi bi-tools"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Último mantenimiento
+                    </span>
+
+                    <strong>
+
+                        {% if ultimo_mantenimiento_apiario %}
+
+                            {{ ultimo_mantenimiento_apiario.fechaejecucion|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin mantenimientos registrados
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 OBSERVACIONES
+            ================================================== -->
+
+            <div class="detalle-hero-observaciones">
+
+
+                <div class="detalle-hero-observaciones-titulo">
+
+                    <i class="bi bi-card-text"></i>
+
+                    <strong>
+                        Observaciones
+                    </strong>
+
+                </div>
+
+
+                {% if apiario.descripcion %}
+
+                    <p>
+                        {{ apiario.descripcion }}
+                    </p>
+
+                {% else %}
+
+                    <p class="sin-observaciones">
+                        No hay observaciones registradas
+                        para este apiario.
+                    </p>
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ACCIONES
+            ================================================== -->
+
+            <div class="detalle-hero-acciones">
+
+
+                <a
+                    href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ apiario.id_apiario }}"
+                    class="detalle-hero-accion mantenimiento"
+                >
+
+                    <i class="bi bi-tools"></i>
+
+                    <span>
+                        Registrar mantenimiento
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{% url 'crear_incidencia_apicultor' %}?apiario={{ apiario.id_apiario }}"
+                    class="detalle-hero-accion incidencia"
+                >
+
+                    <i class="bi bi-exclamation-triangle"></i>
+
+                    <span>
+                        Reportar incidencia
+                    </span>
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ESTADÍSTICAS RÁPIDAS
+    ====================================================== -->
+
+    <section class="detalle-estadisticas">
+
+
+        <!-- TOTAL -->
+
+        <article class="detalle-estadistica total">
+
+            <div class="detalle-estadistica-icono">
+
+                <i class="bi bi-hexagon-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    {{ total_colmenas|default:0 }}
+                </strong>
+
+                <small>
+                    Colmenas
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- ACTIVAS -->
+
+        <article class="detalle-estadistica activa">
+
+            <div class="detalle-estadistica-icono">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Activas
+                </span>
+
+                <strong>
+                    {{ colmenas_activas|default:0 }}
+                </strong>
+
+                <small>
+                    Operativas
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- REVISIÓN -->
+
+        <article class="detalle-estadistica revision">
+
+            <div class="detalle-estadistica-icono">
+
+                <i class="bi bi-search"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Revisión
+                </span>
+
+                <strong>
+                    {{ colmenas_revision|default:0 }}
+                </strong>
+
+                <small>
+                    En seguimiento
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- RIESGO -->
+
+        <article class="detalle-estadistica riesgo">
+
+            <div class="detalle-estadistica-icono">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Riesgo
+                </span>
+
+                <strong>
+                    {{ colmenas_riesgo|default:0 }}
+                </strong>
+
+                <small>
+                    Requieren atención
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- INACTIVAS -->
+
+        <article class="detalle-estadistica inactiva">
+
+            <div class="detalle-estadistica-icono">
+
+                <i class="bi bi-dash-circle-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Inactivas
+                </span>
+
+                <strong>
+                    {{ colmenas_inactivas|default:0 }}
+                </strong>
+
+                <small>
+                    Sin actividad
+                </small>
+
+            </div>
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESUMEN
     ====================================================== -->
 
     <section class="detalle-resumen-grid">
@@ -107,7 +636,7 @@
                     </h2>
 
                     <p>
-                        Datos principales del apiario
+                        Datos administrativos del apiario
                     </p>
 
                 </div>
@@ -115,7 +644,7 @@
 
                 <div class="detalle-card-icono">
 
-                    <i class="bi bi-flower1"></i>
+                    <i class="bi bi-info-circle-fill"></i>
 
                 </div>
 
@@ -123,11 +652,34 @@
 
 
 
-            <!-- =============================================
-                 DATOS DEL APIARIO
-            ============================================== -->
-
             <div class="apiario-informacion-principal">
+
+
+                <!-- NOMBRE -->
+
+                <div class="apiario-info-fila">
+
+                    <div class="apiario-info-icono">
+
+                        <i class="bi bi-flower1"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Nombre del apiario
+                        </span>
+
+                        <strong>
+                            {{ apiario.nombreapiario }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
 
 
                 <!-- UBICACIÓN -->
@@ -167,13 +719,13 @@
 
 
 
-                <!-- COLMENAS -->
+                <!-- FECHA -->
 
                 <div class="apiario-info-fila">
 
                     <div class="apiario-info-icono">
 
-                        <i class="bi bi-hexagon-fill"></i>
+                        <i class="bi bi-calendar3"></i>
 
                     </div>
 
@@ -181,11 +733,21 @@
                     <div>
 
                         <span>
-                            Colmenas registradas
+                            Fecha de registro
                         </span>
 
                         <strong>
-                            {{ total_colmenas|default:0 }}
+
+                            {% if apiario.fechaeclosionapiario %}
+
+                                {{ apiario.fechaeclosionapiario|date:"d/m/Y" }}
+
+                            {% else %}
+
+                                Sin fecha registrada
+
+                            {% endif %}
+
                         </strong>
 
                     </div>
@@ -231,7 +793,7 @@
 
 
 
-                <!-- ESTADO GENERAL -->
+                <!-- ESTADO -->
 
                 <div class="apiario-info-fila">
 
@@ -261,9 +823,7 @@
                                 {% endif %}
                             "
                         >
-
                             {{ apiario.estadoapiario }}
-
                         </strong>
 
                     </div>
@@ -274,26 +834,30 @@
             </div>
 
 
+            <!-- OBSERVACIONES -->
 
-            <!-- =============================================
-                 DESCRIPCIÓN
-            ============================================== -->
+            <div class="apiario-descripcion-detalle">
 
-            {% if apiario.descripcion %}
+                <span>
+                    Observaciones
+                </span>
 
-                <div class="apiario-descripcion-detalle">
 
-                    <span>
-                        Descripción
-                    </span>
+                {% if apiario.descripcion %}
 
                     <p>
                         {{ apiario.descripcion }}
                     </p>
 
-                </div>
+                {% else %}
 
-            {% endif %}
+                    <p class="sin-observaciones">
+                        Sin observaciones registradas.
+                    </p>
+
+                {% endif %}
+
+            </div>
 
 
         </article>
@@ -332,10 +896,6 @@
 
 
 
-            <!-- =============================================
-                 GRÁFICA DONA
-            ============================================== -->
-
             <div class="detalle-dona-contenedor">
 
                 <canvas
@@ -345,10 +905,6 @@
             </div>
 
 
-
-            <!-- =============================================
-                 LEYENDA
-            ============================================== -->
 
             <div class="detalle-leyenda-estados">
 
@@ -430,10 +986,6 @@
     <section class="detalle-card colmenas-apiario-card">
 
 
-        <!-- =================================================
-             HEADER TABLA
-        ================================================== -->
-
         <div class="detalle-card-header">
 
             <div>
@@ -443,7 +995,7 @@
                 </h2>
 
                 <p>
-                    Consulta el estado y actividad
+                    Consulta el estado, actividad y disponibilidad
                     de cada colmena.
                 </p>
 
@@ -464,19 +1016,11 @@
 
 
 
-        <!-- =================================================
-             TABLA
-        ================================================== -->
-
         <div class="detalle-tabla-responsive">
 
 
             <table class="tabla-colmenas-apiario">
 
-
-                <!-- =========================================
-                     CABECERA
-                ========================================== -->
 
                 <thead>
 
@@ -512,31 +1056,48 @@
 
 
 
-                <!-- =========================================
-                     CUERPO
-                ========================================== -->
-
                 <tbody>
 
 
                     {% for item in colmenas_detalle %}
 
 
-                        <tr>
+                        <tr
+                            {% if not item.colmena.permite_nuevas_actividades %}
+                                class="fila-colmena-inactiva"
+                            {% endif %}
+                        >
 
 
-                            <!-- =============================
+                            <!-- =================================
                                  COLMENA
-                            ============================== -->
+                            ================================== -->
 
                             <td>
 
                                 <div class="tabla-colmena-nombre">
 
 
-                                    <div class="tabla-colmena-icono">
+                                    <div class="tabla-colmena-fotografia">
 
-                                        <i class="bi bi-hexagon-fill"></i>
+
+                                        {% if item.colmena.imagen %}
+
+                                            <img
+                                                src="{{ item.colmena.imagen.url }}"
+                                                alt="Fotografía de {{ item.colmena.codigocolmena }}"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="tabla-colmena-icono">
+
+                                                <i class="bi bi-hexagon-fill"></i>
+
+                                            </div>
+
+                                        {% endif %}
+
 
                                     </div>
 
@@ -544,18 +1105,20 @@
                                     <div>
 
                                         <strong>
-
                                             {{ item.colmena.codigocolmena }}
-
                                         </strong>
 
 
                                         {% if item.colmena.descripcion %}
 
                                             <span>
-
                                                 {{ item.colmena.descripcion|truncatechars:45 }}
+                                            </span>
 
+                                        {% else %}
+
+                                            <span class="dato-no-disponible">
+                                                Sin observaciones
                                             </span>
 
                                         {% endif %}
@@ -569,9 +1132,9 @@
 
 
 
-                            <!-- =============================
+                            <!-- =================================
                                  ESTADO
-                            ============================== -->
+                            ================================== -->
 
                             <td>
 
@@ -597,13 +1160,26 @@
 
                                 </span>
 
+
+                                {% if not item.colmena.permite_nuevas_actividades %}
+
+                                    <div class="colmena-bloqueada-mini">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                        Sin nuevas actividades
+
+                                    </div>
+
+                                {% endif %}
+
                             </td>
 
 
 
-                            <!-- =============================
-                                 ÚLTIMO MANTENIMIENTO
-                            ============================== -->
+                            <!-- =================================
+                                 MANTENIMIENTO
+                            ================================== -->
 
                             <td>
 
@@ -629,9 +1205,9 @@
 
 
 
-                            <!-- =============================
+                            <!-- =================================
                                  INCIDENCIAS
-                            ============================== -->
+                            ================================== -->
 
                             <td>
 
@@ -661,9 +1237,9 @@
 
 
 
-                            <!-- =============================
-                                 FECHA REGISTRO
-                            ============================== -->
+                            <!-- =================================
+                                 FECHA
+                            ================================== -->
 
                             <td>
 
@@ -681,25 +1257,84 @@
 
 
 
-                            <!-- =============================
+                            <!-- =================================
                                  ACCIONES
-                            ============================== -->
+                            ================================== -->
 
                             <td class="columna-acciones">
 
-                                <button
-                                    type="button"
-                                    class="btn-ver-colmena"
-                                    data-modal-colmena="modalColmena{{ item.colmena.id_colmena }}"
-                                >
 
-                                    <i class="bi bi-eye"></i>
+                                <div class="detalle-colmena-acciones">
 
-                                    <span>
-                                        Ver colmena
-                                    </span>
 
-                                </button>
+                                    <!-- VER -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-ver-colmena"
+                                        data-modal-colmena="modalColmena{{ item.colmena.id_colmena }}"
+                                    >
+
+                                        <i class="bi bi-eye"></i>
+
+                                        <span>
+                                            Ver
+                                        </span>
+
+                                    </button>
+
+
+
+                                    {% if item.colmena.permite_nuevas_actividades %}
+
+
+                                        <!-- MANTENIMIENTO -->
+
+                                        <a
+                                            href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ item.colmena.id_apiario.id_apiario }}&colmena_nueva={{ item.colmena.id_colmena }}"
+                                            class="btn-accion-colmena-detalle mantenimiento"
+                                            title="Registrar mantenimiento"
+                                        >
+
+                                            <i class="bi bi-tools"></i>
+
+                                        </a>
+
+
+
+                                        <!-- INCIDENCIA -->
+
+                                        <a
+                                            href="{% url 'crear_incidencia_apicultor' %}?colmena={{ item.colmena.id_colmena }}"
+                                            class="btn-accion-colmena-detalle incidencia"
+                                            title="Reportar incidencia"
+                                        >
+
+                                            <i class="bi bi-exclamation-triangle"></i>
+
+                                        </a>
+
+
+                                    {% else %}
+
+
+                                        <button
+                                            type="button"
+                                            class="btn-accion-colmena-detalle bloqueado"
+                                            disabled
+                                            title="La colmena está inactiva"
+                                        >
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </button>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
 
                             </td>
 
@@ -761,7 +1396,7 @@
 
 
         <a
-            href="#"
+            href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ apiario.id_apiario }}"
             class="btn-accion-apiario mantenimiento"
         >
 
@@ -774,8 +1409,9 @@
         </a>
 
 
+
         <a
-            href="#"
+            href="{% url 'crear_incidencia_apicultor' %}?apiario={{ apiario.id_apiario }}"
             class="btn-accion-apiario incidencia"
         >
 
@@ -786,6 +1422,22 @@
             </span>
 
         </a>
+
+
+
+        <button
+            type="button"
+            class="btn-accion-apiario gestionar"
+            data-editar-apiario-modal="modalEditarApiario{{ apiario.id_apiario }}"
+        >
+
+            <i class="bi bi-pencil-square"></i>
+
+            <span>
+                Gestionar apiario
+            </span>
+
+        </button>
 
 
     </section>
@@ -813,10 +1465,7 @@
 
 <!-- =========================================================
      MODALES DE COLMENAS
-
-     IMPORTANTE:
-     Están FUERA de la tabla.
-========================================================== -->
+========================================================= -->
 
 {% for item in colmenas_detalle %}
 
@@ -837,7 +1486,7 @@
 
 
             <!-- =================================================
-                 HEADER MODAL
+                 HEADER
             ================================================== -->
 
             <div class="modal-colmena-header">
@@ -846,22 +1495,16 @@
                 <div>
 
                     <span class="modal-colmena-etiqueta">
-
                         {{ apiario.nombreapiario }}
-
                     </span>
-
 
                     <h2
                         id="tituloModalColmena{{ item.colmena.id_colmena }}"
                     >
-
                         {{ item.colmena.codigocolmena }}
-
                     </h2>
 
                 </div>
-
 
 
                 <button
@@ -881,15 +1524,46 @@
 
 
             <!-- =================================================
-                 CONTENIDO DEL MODAL
+                 FOTOGRAFÍA
+            ================================================== -->
+
+            <div class="modal-colmena-fotografia-detalle">
+
+
+                {% if item.colmena.imagen %}
+
+                    <img
+                        src="{{ item.colmena.imagen.url }}"
+                        alt="Fotografía de {{ item.colmena.codigocolmena }}"
+                    >
+
+                {% else %}
+
+                    <div class="modal-colmena-sin-foto">
+
+                        <i class="bi bi-image"></i>
+
+                        <span>
+                            Sin fotografía registrada
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CONTENIDO
             ================================================== -->
 
             <div class="modal-colmena-contenido">
 
 
-                <!-- =============================================
-                     INFORMACIÓN GENERAL
-                ============================================== -->
+                <!-- INFORMACIÓN -->
 
                 <section class="modal-colmena-seccion">
 
@@ -897,7 +1571,6 @@
                     <h3>
                         Información general
                     </h3>
-
 
 
                     <div class="modal-colmena-datos">
@@ -919,7 +1592,7 @@
 
 
 
-                        <!-- FECHA REGISTRO -->
+                        <!-- FECHA -->
 
                         <div>
 
@@ -945,7 +1618,7 @@
 
 
 
-                        <!-- ÚLTIMO MANTENIMIENTO -->
+                        <!-- MANTENIMIENTO -->
 
                         <div>
 
@@ -993,9 +1666,7 @@
 
 
 
-                <!-- =============================================
-                     ESTADO ACTUAL
-                ============================================== -->
+                <!-- ESTADO ACTUAL -->
 
                 <section class="modal-colmena-seccion modal-estado-colmena">
 
@@ -1003,7 +1674,6 @@
                     <h3>
                         Estado actual
                     </h3>
-
 
 
                     <div
@@ -1030,16 +1700,13 @@
 
                                 <i class="bi bi-check-circle-fill"></i>
 
-
                             {% elif item.colmena.estadocolmena == 'Riesgo' %}
 
                                 <i class="bi bi-exclamation-triangle-fill"></i>
 
-
                             {% elif item.colmena.estadocolmena == 'Revisión' %}
 
                                 <i class="bi bi-search"></i>
-
 
                             {% else %}
 
@@ -1049,7 +1716,6 @@
 
 
                         </div>
-
 
 
                         <div>
@@ -1068,6 +1734,61 @@
                     </div>
 
 
+
+                    {% if not item.colmena.permite_nuevas_actividades %}
+
+                        <div class="alerta-colmena-inactiva-detalle">
+
+                            <i class="bi bi-lock-fill"></i>
+
+                            <div>
+
+                                <strong>
+                                    Colmena inactiva
+                                </strong>
+
+                                <span>
+                                    Conserva su historial, pero no puede
+                                    recibir nuevos mantenimientos,
+                                    incidencias ni eventos.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                </section>
+
+
+
+                <!-- OBSERVACIONES -->
+
+                <section class="modal-colmena-seccion">
+
+
+                    <h3>
+                        Observaciones
+                    </h3>
+
+
+                    {% if item.colmena.descripcion %}
+
+                        <p class="modal-observaciones-colmena">
+                            {{ item.colmena.descripcion }}
+                        </p>
+
+                    {% else %}
+
+                        <p class="modal-observaciones-colmena sin-observaciones">
+                            No hay observaciones registradas.
+                        </p>
+
+                    {% endif %}
+
+
                 </section>
 
 
@@ -1076,34 +1797,156 @@
 
 
             <!-- =================================================
-                 DESCRIPCIÓN
+                 GESTIONAR COLMENA
+
+                 Siempre disponible, incluso si la colmena está
+                 Inactiva. Inactiva solo bloquea actividades nuevas.
             ================================================== -->
 
-            {% if item.colmena.descripcion %}
+            <section
+                class="modal-colmena-seccion detalle-edicion-colmena"
+                id="edicionColmena{{ item.colmena.id_colmena }}"
+                hidden
+            >
 
+                <h3>
+                    Gestionar colmena
+                </h3>
 
-                <div class="modal-colmena-descripcion">
+                <form
+                    method="POST"
+                    action="{% url 'editar_colmena_apicultor' item.colmena.id_colmena %}"
+                    enctype="multipart/form-data"
+                    class="form-editar-colmena-detalle"
+                >
 
+                    {% csrf_token %}
 
-                    <h3>
-                        Descripción
-                    </h3>
+                    <input
+                        type="hidden"
+                        name="origen"
+                        value="detalle_apiario"
+                    >
 
+                    <div class="apiario-form-grupo">
 
-                    <p>
-                        {{ item.colmena.descripcion }}
-                    </p>
+                        <label
+                            for="estadoColmenaDetalle{{ item.colmena.id_colmena }}"
+                        >
+                            Estado
+                            <span class="campo-obligatorio">*</span>
+                        </label>
 
+                        <select
+                            name="estado"
+                            id="estadoColmenaDetalle{{ item.colmena.id_colmena }}"
+                            class="apiario-input"
+                            required
+                        >
 
-                </div>
+                            <option
+                                value="Activa"
+                                {% if item.colmena.estadocolmena == "Activa" %}selected{% endif %}
+                            >
+                                Activa
+                            </option>
 
+                            <option
+                                value="Revisión"
+                                {% if item.colmena.estadocolmena == "Revisión" %}selected{% endif %}
+                            >
+                                Revisión
+                            </option>
 
-            {% endif %}
+                            <option
+                                value="Riesgo"
+                                {% if item.colmena.estadocolmena == "Riesgo" %}selected{% endif %}
+                            >
+                                Riesgo
+                            </option>
 
+                            <option
+                                value="Inactiva"
+                                {% if item.colmena.estadocolmena == "Inactiva" %}selected{% endif %}
+                            >
+                                Inactiva
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="apiario-form-grupo">
+
+                        <label
+                            for="descripcionColmenaDetalle{{ item.colmena.id_colmena }}"
+                        >
+                            Observaciones
+                            <span class="campo-obligatorio">*</span>
+                        </label>
+
+                        <textarea
+                            name="descripcion"
+                            id="descripcionColmenaDetalle{{ item.colmena.id_colmena }}"
+                            class="apiario-input"
+                            rows="5"
+                            required
+                        >{{ item.colmena.descripcion|default_if_none:"" }}</textarea>
+
+                    </div>
+
+                    <div class="apiario-form-grupo">
+
+                        <label
+                            for="imagenColmenaDetalle{{ item.colmena.id_colmena }}"
+                        >
+                            Cambiar fotografía
+                        </label>
+
+                        <input
+                            type="file"
+                            name="imagen"
+                            id="imagenColmenaDetalle{{ item.colmena.id_colmena }}"
+                            class="apiario-input input-imagen-colmena-detalle"
+                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                        >
+
+                        <small>
+                            JPG, PNG o WEBP · Máximo 5 MB.
+                            Si no seleccionas una nueva fotografía,
+                            se conservará la actual.
+                        </small>
+
+                    </div>
+
+                    <div class="apiario-editar-footer">
+
+                        <button
+                            type="button"
+                            class="btn-cancelar-editar-apiario"
+                            data-cancelar-edicion-colmena
+                        >
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn-guardar-apiario"
+                        >
+                            <i class="bi bi-check-circle"></i>
+                            Guardar cambios
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
 
 
             <!-- =================================================
-                 FOOTER MODAL
+                 ACCIONES DEL MODAL
             ================================================== -->
 
             <div class="modal-colmena-footer">
@@ -1120,6 +1963,50 @@
                 </button>
 
 
+                <button
+                    type="button"
+                    class="btn-modal-accion gestionar"
+                    data-editar-colmena-detalle="edicionColmena{{ item.colmena.id_colmena }}"
+                >
+
+                    <i class="bi bi-pencil-square"></i>
+
+                    Gestionar
+
+                </button>
+
+
+
+                {% if item.colmena.permite_nuevas_actividades %}
+
+
+                    <a
+                        href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ item.colmena.id_apiario.id_apiario }}&colmena_nueva={{ item.colmena.id_colmena }}"
+                        class="btn-modal-accion mantenimiento"
+                    >
+
+                        <i class="bi bi-tools"></i>
+
+                        Mantenimiento
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'crear_incidencia_apicultor' %}?colmena={{ item.colmena.id_colmena }}"
+                        class="btn-modal-accion incidencia"
+                    >
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                        Incidencia
+
+                    </a>
+
+
+                {% endif %}
+
+
             </div>
 
 
@@ -1134,8 +2021,594 @@
 
 
 <!-- =========================================================
+     MODAL GESTIONAR APIARIO
+========================================================= -->
+
+<div
+    class="apiario-editar-overlay modal-editar-apiario"
+    id="modalEditarApiario{{ apiario.id_apiario }}"
+    aria-hidden="true"
+>
+
+
+    <div
+        class="apiario-editar-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloEditarApiario{{ apiario.id_apiario }}"
+    >
+
+
+        <form
+            method="POST"
+            action="{% url 'editar_apiario_apicultor' apiario.id_apiario %}"
+            enctype="multipart/form-data"
+            class="form-editar-apiario"
+            data-id-apiario="{{ apiario.id_apiario }}"
+        >
+
+            {% csrf_token %}
+
+
+            <input
+                type="hidden"
+                name="origen"
+                value="detalle_apiario"
+            >
+
+
+
+            <!-- =============================================
+                 HEADER
+            ============================================== -->
+
+            <div class="apiario-editar-header">
+
+
+                <div class="apiario-editar-header-texto">
+
+
+                    <span class="apiario-editar-header-icono">
+
+                        <i class="bi bi-pencil-square"></i>
+
+                    </span>
+
+
+                    <div>
+
+                        <span>
+                            Gestión del apiario
+                        </span>
+
+                        <h2
+                            id="tituloEditarApiario{{ apiario.id_apiario }}"
+                        >
+                            {{ apiario.nombreapiario }}
+                        </h2>
+
+                    </div>
+
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-cerrar-editar-apiario"
+                    data-cerrar-editar-apiario
+                    aria-label="Cerrar"
+                >
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 BODY
+            ============================================== -->
+
+            <div class="apiario-editar-body">
+
+
+                <!-- =========================================
+                     INFORMACIÓN BLOQUEADA
+                ========================================== -->
+
+                <section class="apiario-editar-seccion">
+
+
+                    <div class="apiario-editar-seccion-titulo">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        <div>
+
+                            <strong>
+                                Información general
+                            </strong>
+
+                            <span>
+                                Estos datos no se pueden modificar
+                                desde tu perfil.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="apiario-editar-info-grid">
+
+
+                        <div class="apiario-info-bloque">
+
+                            <span>
+                                Nombre
+                            </span>
+
+                            <strong>
+                                {{ apiario.nombreapiario }}
+                            </strong>
+
+                            <i class="bi bi-lock-fill"></i>
+
+                        </div>
+
+
+
+                        <div class="apiario-info-bloque">
+
+                            <span>
+                                Ubicación
+                            </span>
+
+                            <strong>
+
+                                {% if apiario.ubicacion %}
+
+                                    {{ apiario.ubicacion }}
+
+                                {% else %}
+
+                                    Sin ubicación
+
+                                {% endif %}
+
+                            </strong>
+
+                            <i class="bi bi-lock-fill"></i>
+
+                        </div>
+
+
+
+                        <div class="apiario-info-bloque">
+
+                            <span>
+                                Colmenas
+                            </span>
+
+                            <strong>
+                                {{ total_colmenas|default:0 }}
+                            </strong>
+
+                            <i class="bi bi-lock-fill"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================================
+                     ESTADO
+                ========================================== -->
+
+                <section class="apiario-editar-seccion">
+
+
+                    <div class="apiario-editar-seccion-titulo">
+
+                        <i class="bi bi-activity"></i>
+
+                        <div>
+
+                            <strong>
+                                Estado del apiario
+                            </strong>
+
+                            <span>
+                                Selecciona el estado observado
+                                actualmente.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="apiario-form-grupo">
+
+
+                        <label
+                            for="estadoApiario{{ apiario.id_apiario }}"
+                        >
+                            Estado
+                            <span class="campo-obligatorio">*</span>
+                        </label>
+
+
+                        <select
+                            name="estado"
+                            id="estadoApiario{{ apiario.id_apiario }}"
+                            class="apiario-input apiario-select-estado"
+                            required
+                        >
+
+
+                            <option
+                                value="Bueno"
+                                {% if apiario.estadoapiario == "Bueno" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Bueno
+                            </option>
+
+
+                            <option
+                                value="Precaución"
+                                {% if apiario.estadoapiario == "Precaución" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Precaución
+                            </option>
+
+
+                            <option
+                                value="Deficiente"
+                                {% if apiario.estadoapiario == "Deficiente" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Deficiente
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================================
+                     OBSERVACIONES
+                ========================================== -->
+
+                <section class="apiario-editar-seccion">
+
+
+                    <div class="apiario-editar-seccion-titulo">
+
+                        <i class="bi bi-card-text"></i>
+
+                        <div>
+
+                            <strong>
+                                Observaciones
+                            </strong>
+
+                            <span>
+                                Registra información importante
+                                sobre las condiciones del apiario.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="apiario-form-grupo">
+
+
+                        <label
+                            for="descripcionApiario{{ apiario.id_apiario }}"
+                        >
+                            Observaciones
+                        </label>
+
+
+                        <textarea
+                            name="descripcion"
+                            id="descripcionApiario{{ apiario.id_apiario }}"
+                            class="apiario-input apiario-textarea"
+                            rows="5"
+                            placeholder="Escribe las observaciones del apiario..."
+                        >{{ apiario.descripcion|default_if_none:"" }}</textarea>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================================
+                     FOTOGRAFÍA
+                ========================================== -->
+
+                <section class="apiario-editar-seccion">
+
+
+                    <div class="apiario-editar-seccion-titulo">
+
+                        <i class="bi bi-image"></i>
+
+                        <div>
+
+                            <strong>
+                                Fotografía del apiario
+                            </strong>
+
+                            <span>
+                                Puedes conservar la actual
+                                o seleccionar otra.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div
+                        class="apiario-preview-imagen"
+                        id="previewApiario{{ apiario.id_apiario }}"
+                    >
+
+
+                        {% if apiario.imagen %}
+
+                            <img
+                                src="{{ apiario.imagen.url }}"
+                                alt="Fotografía actual de {{ apiario.nombreapiario }}"
+                                data-imagen-original="{{ apiario.imagen.url }}"
+                            >
+
+                            <div class="apiario-preview-overlay">
+
+                                <i class="bi bi-image"></i>
+
+                                <span>
+                                    Fotografía actual
+                                </span>
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <div
+                                class="apiario-preview-sin-imagen"
+                                data-preview-vacio
+                            >
+
+                                <i class="bi bi-image"></i>
+
+                                <strong>
+                                    Sin fotografía
+                                </strong>
+
+                                <span>
+                                    Puedes agregar una fotografía
+                                    del apiario.
+                                </span>
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <div class="apiario-form-grupo">
+
+
+                        <label
+                            for="imagenApiario{{ apiario.id_apiario }}"
+                        >
+                            Cambiar fotografía
+                        </label>
+
+
+                        <label
+                            for="imagenApiario{{ apiario.id_apiario }}"
+                            class="apiario-selector-imagen"
+                        >
+
+
+                            <div class="apiario-selector-imagen-icono">
+
+                                <i class="bi bi-cloud-arrow-up"></i>
+
+                            </div>
+
+
+                            <div class="apiario-selector-imagen-texto">
+
+                                <strong>
+                                    Seleccionar nueva fotografía
+                                </strong>
+
+                                <span>
+                                    JPG, PNG o WEBP · Máximo 5 MB
+                                </span>
+
+                            </div>
+
+
+                            <span class="apiario-selector-imagen-boton">
+
+                                Examinar
+
+                            </span>
+
+
+                        </label>
+
+
+                        <input
+                            type="file"
+                            name="imagen"
+                            id="imagenApiario{{ apiario.id_apiario }}"
+                            class="input-imagen-apiario"
+                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                            data-preview="previewApiario{{ apiario.id_apiario }}"
+                            hidden
+                        >
+
+
+                        <small>
+
+                            <i class="bi bi-shield-check"></i>
+
+                            Si no seleccionas otra fotografía,
+                            se conservará la actual.
+
+                        </small>
+
+
+                    </div>
+
+
+                </section>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 FOOTER
+            ============================================== -->
+
+            <div class="apiario-editar-footer">
+
+
+                <button
+                    type="button"
+                    class="btn-cancelar-editar-apiario"
+                    data-cerrar-editar-apiario
+                >
+
+                    <i class="bi bi-x-circle"></i>
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-guardar-apiario"
+                >
+
+                    <i class="bi bi-check-circle"></i>
+
+                    Guardar cambios
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     VISOR DE FOTOGRAFÍA DEL APIARIO
+========================================================= -->
+
+<div
+    class="visor-apiario-overlay"
+    id="visorImagenApiario"
+    aria-hidden="true"
+>
+
+
+    <button
+        type="button"
+        class="btn-cerrar-visor-apiario"
+        id="btnCerrarVisorApiario"
+        aria-label="Cerrar fotografía"
+    >
+
+        <i class="bi bi-x-lg"></i>
+
+    </button>
+
+
+    <div class="visor-apiario-contenido">
+
+
+        <div class="visor-apiario-header">
+
+            <span>
+                Fotografía del apiario
+            </span>
+
+            <strong id="tituloVisorApiario">
+                {{ apiario.nombreapiario }}
+            </strong>
+
+        </div>
+
+
+        <img
+            src=""
+            alt="Fotografía ampliada del apiario"
+            id="imagenVisorApiario"
+        >
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
      DATOS PARA CHART.JS
-========================================================== -->
+========================================================= -->
 
 {{ colmenas_activas|default:0|json_script:"detalle-colmenas-activas" }}
 
@@ -1155,7 +2628,7 @@
 
 <!-- =========================================================
      CHART.JS
-========================================================== -->
+========================================================= -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
@@ -1165,10 +2638,20 @@
 
 <!-- =========================================================
      JS DETALLE APIARIO
-========================================================== -->
+========================================================= -->
 
 <script
-    src="{% static 'panel_apicultor/js/detalle_apiario.js' %}?v=3"
+    src="{% static 'panel_apicultor/js/detalle_apiario.js' %}?v=5"
+></script>
+
+
+
+<!-- =========================================================
+     REUTILIZAR GESTIÓN DE MIS APIARIOS
+========================================================= -->
+
+<script
+    src="{% static 'panel_apicultor/js/apiarios.js' %}?v=2"
 ></script>
 
 

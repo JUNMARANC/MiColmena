@@ -1,67 +1,156 @@
 /* ==========================================================
    AGENDA - PANEL APICULTOR
    MI COLMENA
+
+   Funciones:
+   - Calendario mensual.
+   - Filtros.
+   - Modales de detalle.
+   - Modal dinámico para eventos fuera de la página actual.
+   - Cambio de estado del evento.
+   - El apicultor solo confirma Completado / Cancelado.
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       1. ELEMENTOS DEL CALENDARIO
+       1. ELEMENTOS PRINCIPALES
     ====================================================== */
 
-    const calendario = document.getElementById(
-        "calendarioAgenda"
-    );
+    const calendario =
+        document.getElementById(
+            "calendarioAgenda"
+        );
 
-    const tituloMes = document.getElementById(
-        "tituloMesAgenda"
-    );
 
-    const btnMesAnterior = document.getElementById(
-        "btnMesAnterior"
-    );
+    const tituloMes =
+        document.getElementById(
+            "tituloMesAgenda"
+        );
 
-    const btnMesSiguiente = document.getElementById(
-        "btnMesSiguiente"
-    );
 
-    const btnHoy = document.getElementById(
-        "btnHoyAgenda"
-    );
+    const btnMesAnterior =
+        document.getElementById(
+            "btnMesAnterior"
+        );
+
+
+    const btnMesSiguiente =
+        document.getElementById(
+            "btnMesSiguiente"
+        );
+
+
+    const btnHoy =
+        document.getElementById(
+            "btnHoyAgenda"
+        );
 
 
 
     /* ======================================================
-       2. FILTROS
+       FILTROS
     ====================================================== */
 
-    const formularioFiltros = document.querySelector(
-        ".agenda-filtros-form"
-    );
+    const formularioFiltros =
+        document.querySelector(
+            ".agenda-filtros-form"
+        );
 
-    const buscador = document.querySelector(
-        ".agenda-buscador input"
-    );
 
-    const selectsFiltros = document.querySelectorAll(
-        ".agenda-select"
-    );
+    const buscador =
+        document.querySelector(
+            ".agenda-buscador input"
+        );
 
-    const inputFechaFiltro = document.querySelector(
-        '.agenda-fecha-filtro input[name="fecha"]'
-    );
+
+    const selectsFiltros =
+        document.querySelectorAll(
+            ".agenda-select"
+        );
+
+
+    const inputFechaFiltro =
+        document.querySelector(
+            '.agenda-fecha-filtro input[name="fecha"]'
+        );
 
 
 
     /* ======================================================
-       3. DATOS DE EVENTOS ENVIADOS POR DJANGO
+       DATOS ENVIADOS DESDE DJANGO
     ====================================================== */
 
-    const scriptEventos = document.getElementById(
-        "eventosAgendaData"
-    );
+    const scriptEventos =
+        document.getElementById(
+            "eventosAgendaData"
+        );
 
+
+
+    /* ======================================================
+       2. MODAL DE CONFIRMACIÓN DEL ESTADO
+    ====================================================== */
+
+    const modalConfirmarEstadoEvento =
+        document.getElementById(
+            "modalConfirmarEstadoEvento"
+        );
+
+
+    const formCambiarEstadoEvento =
+        document.getElementById(
+            "formCambiarEstadoEvento"
+        );
+
+
+    const inputNuevoEstadoEvento =
+        document.getElementById(
+            "nuevoEstadoEvento"
+        );
+
+
+    const nombreEventoConfirmarEstado =
+        document.getElementById(
+            "nombreEventoConfirmarEstado"
+        );
+
+
+    const tituloConfirmarEstadoEvento =
+        document.getElementById(
+            "tituloConfirmarEstadoEvento"
+        );
+
+
+    const mensajeConfirmarEstadoEvento =
+        document.getElementById(
+            "mensajeConfirmarEstadoEvento"
+        );
+
+
+    const iconoConfirmarEstadoEvento =
+        document.getElementById(
+            "iconoConfirmarEstadoEvento"
+        );
+
+
+    const iconoConfirmarEstadoEventoI =
+        document.getElementById(
+            "iconoConfirmarEstadoEventoI"
+        );
+
+
+    const btnConfirmarEstadoEvento =
+        document.getElementById(
+            "btnConfirmarEstadoEvento"
+        );
+
+
+
+    /* ======================================================
+       3. CARGAR EVENTOS
+    ====================================================== */
 
     let eventos = [];
 
@@ -70,9 +159,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
 
-            eventos = JSON.parse(
-                scriptEventos.textContent
-            );
+            eventos =
+                JSON.parse(
+                    scriptEventos.textContent
+                );
 
         } catch (error) {
 
@@ -80,6 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 "No fue posible cargar los eventos de la agenda.",
                 error
             );
+
 
             eventos = [];
 
@@ -93,26 +184,20 @@ document.addEventListener("DOMContentLoaded", function () {
        4. FECHA ACTUAL
     ====================================================== */
 
-    const fechaActual = new Date();
+    const fechaActual =
+        new Date();
 
 
-    /*
-     * fechaVista representa el mes que se encuentra
-     * actualmente visible en el calendario.
-     */
-
-    let fechaVista = new Date(
-        fechaActual.getFullYear(),
-        fechaActual.getMonth(),
-        1
-    );
+    let fechaVista =
+        new Date(
+            fechaActual.getFullYear(),
+            fechaActual.getMonth(),
+            1
+        );
 
 
-    /*
-     * Fecha seleccionada visualmente.
-     */
-
-    let fechaSeleccionada = null;
+    let fechaSeleccionada =
+        null;
 
 
 
@@ -140,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       6. TIPOS DE EVENTO
+       6. TIPOS DE EVENTOS
     ====================================================== */
 
     const nombresTipos = {
@@ -198,7 +283,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       8. ESCAPAR HTML
+       8. ESTADO INTERNO DE MODALES
+    ====================================================== */
+
+    let modalActivo =
+        null;
+
+
+    let botonOrigenModal =
+        null;
+
+
+    /*
+     * Se utilizan cuando abrimos la ventana de confirmación
+     * desde el modal de detalle.
+     */
+
+    let modalEventoAntesConfirmacion =
+        null;
+
+
+    let botonCambioEstadoOrigen =
+        null;
+
+
+    let botonOrigenDetalleGuardado =
+        null;
+
+
+
+    /* ======================================================
+       9. ESCAPAR HTML
     ====================================================== */
 
     function escaparHTML(
@@ -206,7 +321,8 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
 
         if (
-            valor === null ||
+            valor === null
+            ||
             valor === undefined
         ) {
 
@@ -215,7 +331,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        return String(valor)
+        return String(
+            valor
+        )
 
             .replace(
                 /&/g,
@@ -247,14 +365,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       9. RELLENAR NÚMERO CON CERO
+       10. RELLENAR CERO
     ====================================================== */
 
     function rellenarCero(
         numero
     ) {
 
-        return String(numero).padStart(
+        return String(
+            numero
+        ).padStart(
             2,
             "0"
         );
@@ -264,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       10. CONVERTIR FECHA A YYYY-MM-DD
+       11. FECHA A YYYY-MM-DD
     ====================================================== */
 
     function fechaAISO(
@@ -273,15 +393,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return (
             fecha.getFullYear()
+
             +
+
             "-"
+
             +
+
             rellenarCero(
                 fecha.getMonth() + 1
             )
+
             +
+
             "-"
+
             +
+
             rellenarCero(
                 fecha.getDate()
             )
@@ -292,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       11. PARSEAR FECHA SIN PROBLEMAS DE ZONA HORARIA
+       12. PARSEAR FECHA LOCAL
     ====================================================== */
 
     function parsearFechaLocal(
@@ -306,29 +434,41 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const partes = textoFecha.split(
-            "-"
-        );
+        const partes =
+            textoFecha.split(
+                "-"
+            );
 
 
-        if (partes.length !== 3) {
+        if (
+            partes.length
+            !==
+            3
+        ) {
 
             return null;
 
         }
 
 
-        const anio = Number(
-            partes[0]
-        );
+        const anio =
+            Number(
+                partes[0]
+            );
 
-        const mes = Number(
-            partes[1]
-        ) - 1;
 
-        const dia = Number(
-            partes[2]
-        );
+        const mes =
+            Number(
+                partes[1]
+            )
+            -
+            1;
+
+
+        const dia =
+            Number(
+                partes[2]
+            );
 
 
         return new Date(
@@ -342,7 +482,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       12. COMPARAR DOS FECHAS
+       13. COMPARAR FECHAS
     ====================================================== */
 
     function fechasIguales(
@@ -351,7 +491,8 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
 
         if (
-            !fecha1 ||
+            !fecha1
+            ||
             !fecha2
         ) {
 
@@ -361,6 +502,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         return (
+
             fecha1.getFullYear()
             ===
             fecha2.getFullYear()
@@ -376,6 +518,7 @@ document.addEventListener("DOMContentLoaded", function () {
             fecha1.getDate()
             ===
             fecha2.getDate()
+
         );
 
     }
@@ -383,7 +526,94 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       13. OBTENER EVENTOS DE UNA FECHA
+       14. FORMATEAR FECHA VISUAL
+    ====================================================== */
+
+    function formatearFechaVisual(
+        fechaISO
+    ) {
+
+        const fecha =
+            parsearFechaLocal(
+                fechaISO
+            );
+
+
+        if (!fecha) {
+
+            return "Sin fecha";
+
+        }
+
+
+        return (
+
+            rellenarCero(
+                fecha.getDate()
+            )
+
+            +
+
+            "/"
+
+            +
+
+            rellenarCero(
+                fecha.getMonth() + 1
+            )
+
+            +
+
+            "/"
+
+            +
+
+            fecha.getFullYear()
+
+        );
+
+    }
+
+
+
+    /* ======================================================
+       15. BLOQUEAR SCROLL
+    ====================================================== */
+
+    function bloquearScroll() {
+
+        document.body.style.overflow =
+            "hidden";
+
+    }
+
+
+
+    /* ======================================================
+       16. RESTAURAR SCROLL
+    ====================================================== */
+
+    function restaurarScroll() {
+
+        const existeModalActivo =
+            document.querySelector(
+                ".agenda-modal-overlay.activo"
+            );
+
+
+        if (!existeModalActivo) {
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+    }
+
+
+
+    /* ======================================================
+       17. OBTENER EVENTOS POR FECHA
     ====================================================== */
 
     function obtenerEventosFecha(
@@ -396,14 +626,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 function (evento) {
 
                     return (
-                        evento.fecha === fechaISO
+                        evento.fecha
+                        ===
+                        fechaISO
                     );
 
                 }
             )
 
             .sort(
-                function (a, b) {
+                function (
+                    a,
+                    b
+                ) {
 
                     return String(
                         a.hora || ""
@@ -421,16 +656,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       14. CREAR BOTÓN DE EVENTO DEL CALENDARIO
+       18. CREAR BOTÓN DEL EVENTO
     ====================================================== */
 
     function crearEventoCalendario(
         evento
     ) {
 
-        const boton = document.createElement(
-            "button"
-        );
+        const boton =
+            document.createElement(
+                "button"
+            );
 
 
         boton.type =
@@ -441,7 +677,8 @@ document.addEventListener("DOMContentLoaded", function () {
             "agenda-dia-evento "
             +
             (
-                evento.tipo ||
+                evento.tipo
+                ||
                 "evento"
             );
 
@@ -454,41 +691,60 @@ document.addEventListener("DOMContentLoaded", function () {
             (
                 evento.hora
                     ?
-                    evento.hora + " · "
+                    evento.hora
+                    +
+                    " · "
                     :
                     ""
             )
+
             +
+
             (
-                evento.titulo ||
+                evento.titulo
+                ||
                 "Evento"
             );
 
 
-        const icono = (
+        const icono =
             iconosTipos[
                 evento.tipo
             ]
+
             ||
-            "bi-calendar-event-fill"
-        );
+
+            "bi-calendar-event-fill";
 
 
         boton.innerHTML = `
-            <i class="bi ${icono}"></i>
+
+            <i
+                class="
+                    bi
+                    ${icono}
+                "
+            ></i>
+
 
             <span>
+
                 ${
                     escaparHTML(
-                        evento.hora || ""
+                        evento.hora
+                        ||
+                        ""
                     )
                 }
 
                 ${
                     escaparHTML(
-                        evento.titulo || "Evento"
+                        evento.titulo
+                        ||
+                        "Evento"
                     )
                 }
+
             </span>
         `;
 
@@ -500,7 +756,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       15. CREAR DÍA DEL CALENDARIO
+       19. CREAR DÍA DEL CALENDARIO
     ====================================================== */
 
     function crearDiaCalendario(
@@ -508,16 +764,23 @@ document.addEventListener("DOMContentLoaded", function () {
         perteneceMesActual
     ) {
 
-        const dia = document.createElement(
-            "div"
-        );
+        const dia =
+            document.createElement(
+                "div"
+            );
 
 
         dia.className =
             "agenda-dia";
 
 
-        if (!perteneceMesActual) {
+        /* ==================================================
+           OTRO MES
+        ================================================== */
+
+        if (
+            !perteneceMesActual
+        ) {
 
             dia.classList.add(
                 "otro-mes"
@@ -525,6 +788,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
+
+        /* ==================================================
+           HOY
+        ================================================== */
 
         if (
             fechasIguales(
@@ -540,8 +808,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+
+        /* ==================================================
+           DÍA SELECCIONADO
+        ================================================== */
+
         if (
-            fechaSeleccionada &&
+            fechaSeleccionada
+            &&
             fechasIguales(
                 fecha,
                 fechaSeleccionada
@@ -553,6 +827,7 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
         }
+
 
 
         const fechaISO =
@@ -567,12 +842,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /* ==================================================
-           NÚMERO DEL DÍA
+           NÚMERO
         ================================================== */
 
-        const numero = document.createElement(
-            "span"
-        );
+        const numero =
+            document.createElement(
+                "span"
+            );
 
 
         numero.className =
@@ -590,7 +866,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /* ==================================================
-           EVENTOS DE ESE DÍA
+           EVENTOS
         ================================================== */
 
         const eventosDelDia =
@@ -600,7 +876,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            eventosDelDia.length > 0
+            eventosDelDia.length
+            >
+            0
         ) {
 
             const contenedorEventos =
@@ -614,35 +892,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /*
-             * Mostramos máximo 2 eventos directamente
-             * para evitar cargar demasiado cada cuadro.
+             * Máximo dos eventos visibles.
              */
 
             eventosDelDia
+
                 .slice(
                     0,
                     2
                 )
+
                 .forEach(
                     function (evento) {
 
                         contenedorEventos.appendChild(
+
                             crearEventoCalendario(
                                 evento
                             )
+
                         );
 
                     }
                 );
 
 
-            /*
-             * Si existen más de dos eventos,
-             * mostramos el contador.
-             */
+
+            /* ==================================================
+               MÁS EVENTOS
+            ================================================== */
 
             if (
-                eventosDelDia.length > 2
+                eventosDelDia.length
+                >
+                2
             ) {
 
                 const masEventos =
@@ -659,7 +942,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     "+"
                     +
                     (
-                        eventosDelDia.length -
+                        eventosDelDia.length
+                        -
                         2
                     )
                     +
@@ -687,12 +971,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         dia.addEventListener(
             "click",
-            function (eventoClick) {
-
+            function (
+                eventoClick
+            ) {
 
                 /*
-                 * Si el usuario presionó directamente
-                 * un evento, no seleccionamos el día.
+                 * Si pulsó sobre un evento
+                 * no seleccionamos el cuadro.
                  */
 
                 if (
@@ -721,13 +1006,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       16. RENDERIZAR CALENDARIO
+       20. RENDERIZAR CALENDARIO
     ====================================================== */
 
     function renderizarCalendario() {
 
         if (
-            !calendario ||
+            !calendario
+            ||
             !tituloMes
         ) {
 
@@ -754,16 +1040,22 @@ document.addEventListener("DOMContentLoaded", function () {
         ================================================== */
 
         tituloMes.textContent =
-            nombresMeses[mes]
+            nombresMeses[
+                mes
+            ]
+
             +
+
             " "
+
             +
+
             anio;
 
 
 
         /* ==================================================
-           PRIMER DÍA DEL MES
+           PRIMER DÍA
         ================================================== */
 
         const primerDiaMes =
@@ -777,9 +1069,9 @@ document.addEventListener("DOMContentLoaded", function () {
         /*
          * JavaScript:
          * Domingo = 0
-         * Lunes = 1
          *
-         * Nuestro calendario empieza por lunes.
+         * Nuestra agenda:
+         * Lunes primero.
          */
 
         const indicePrimerDia =
@@ -788,27 +1080,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 +
                 6
             )
+
             %
+
             7;
 
 
 
         /* ==================================================
-           PRIMER DÍA QUE MOSTRAREMOS
+           FECHA DE INICIO
         ================================================== */
 
         const fechaInicio =
             new Date(
                 anio,
                 mes,
-                1 - indicePrimerDia
+                1
+                -
+                indicePrimerDia
             );
 
 
-        /*
-         * Renderizamos 42 días:
-         * 6 semanas completas.
-         */
+
+        /* ==================================================
+           42 DÍAS = 6 SEMANAS
+        ================================================== */
 
         for (
             let i = 0;
@@ -830,15 +1126,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 mes;
 
 
-            const elementoDia =
+            calendario.appendChild(
+
                 crearDiaCalendario(
                     fechaDia,
                     perteneceMes
-                );
+                )
 
-
-            calendario.appendChild(
-                elementoDia
             );
 
         }
@@ -848,7 +1142,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       17. SELECCIONAR DÍA
+       21. SELECCIONAR DÍA
     ====================================================== */
 
     function seleccionarDia(
@@ -882,27 +1176,28 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        const diaSeleccionado =
-            calendario.querySelector(
-                `[data-fecha="${fechaISO}"]`
-            );
+        if (calendario) {
+
+            const diaSeleccionado =
+                calendario.querySelector(
+                    `[data-fecha="${fechaISO}"]`
+                );
 
 
-        if (diaSeleccionado) {
+            if (diaSeleccionado) {
 
-            diaSeleccionado.classList.add(
-                "seleccionado"
-            );
+                diaSeleccionado.classList.add(
+                    "seleccionado"
+                );
+
+            }
 
         }
 
 
         /*
-         * También dejamos seleccionada esta fecha
-         * en el filtro del listado.
-         *
-         * No enviamos automáticamente el formulario
-         * para no sacar al usuario del calendario.
+         * Dejamos la fecha en el filtro,
+         * pero NO enviamos automáticamente.
          */
 
         if (inputFechaFiltro) {
@@ -917,7 +1212,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       18. MES ANTERIOR
+       22. MES ANTERIOR
     ====================================================== */
 
     if (btnMesAnterior) {
@@ -926,11 +1221,12 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                fechaVista = new Date(
-                    fechaVista.getFullYear(),
-                    fechaVista.getMonth() - 1,
-                    1
-                );
+                fechaVista =
+                    new Date(
+                        fechaVista.getFullYear(),
+                        fechaVista.getMonth() - 1,
+                        1
+                    );
 
 
                 renderizarCalendario();
@@ -943,7 +1239,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       19. MES SIGUIENTE
+       23. MES SIGUIENTE
     ====================================================== */
 
     if (btnMesSiguiente) {
@@ -952,11 +1248,12 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                fechaVista = new Date(
-                    fechaVista.getFullYear(),
-                    fechaVista.getMonth() + 1,
-                    1
-                );
+                fechaVista =
+                    new Date(
+                        fechaVista.getFullYear(),
+                        fechaVista.getMonth() + 1,
+                        1
+                    );
 
 
                 renderizarCalendario();
@@ -969,7 +1266,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       20. BOTÓN HOY
+       24. BOTÓN HOY
     ====================================================== */
 
     if (btnHoy) {
@@ -978,11 +1275,12 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                fechaVista = new Date(
-                    fechaActual.getFullYear(),
-                    fechaActual.getMonth(),
-                    1
-                );
+                fechaVista =
+                    new Date(
+                        fechaActual.getFullYear(),
+                        fechaActual.getMonth(),
+                        1
+                    );
 
 
                 fechaSeleccionada =
@@ -1013,53 +1311,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       21. MODALES
-    ====================================================== */
-
-    let modalActivo = null;
-
-    let botonOrigenModal = null;
-
-
-
-    /* ======================================================
-       22. BLOQUEAR SCROLL
-    ====================================================== */
-
-    function bloquearScroll() {
-
-        document.body.style.overflow =
-            "hidden";
-
-    }
-
-
-
-    /* ======================================================
-       23. RESTAURAR SCROLL
-    ====================================================== */
-
-    function restaurarScroll() {
-
-        const existeModalActivo =
-            document.querySelector(
-                ".agenda-modal-overlay.activo"
-            );
-
-
-        if (!existeModalActivo) {
-
-            document.body.style.overflow =
-                "";
-
-        }
-
-    }
-
-
-
-    /* ======================================================
-       24. ABRIR MODAL EXISTENTE
+       25. ABRIR MODAL
     ====================================================== */
 
     function abrirModal(
@@ -1075,16 +1327,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /*
-         * Cerramos cualquier otro modal.
+         * Cerrar cualquier otro modal.
          */
 
         document.querySelectorAll(
             ".agenda-modal-overlay.activo"
         ).forEach(
-            function (otroModal) {
+            function (
+                otroModal
+            ) {
 
                 if (
-                    otroModal !== modal
+                    otroModal
+                    !==
+                    modal
                 ) {
 
                     otroModal.classList.remove(
@@ -1125,6 +1381,11 @@ document.addEventListener("DOMContentLoaded", function () {
         bloquearScroll();
 
 
+
+        /* ==================================================
+           FOCO
+        ================================================== */
+
         const botonCerrar =
             modal.querySelector(
                 ".agenda-modal-cerrar"
@@ -1149,7 +1410,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       25. CERRAR MODAL
+       26. CERRAR MODAL
     ====================================================== */
 
     function cerrarModal(
@@ -1175,10 +1436,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            modalActivo === modal
+            modalActivo
+            ===
+            modal
         ) {
 
-            modalActivo = null;
+            modalActivo =
+                null;
 
         }
 
@@ -1187,7 +1451,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            botonOrigenModal &&
+            botonOrigenModal
+            &&
             document.body.contains(
                 botonOrigenModal
             )
@@ -1206,7 +1471,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       26. BUSCAR EVENTO POR ID
+       27. BUSCAR EVENTO
     ====================================================== */
 
     function obtenerEventoPorId(
@@ -1216,12 +1481,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return eventos.find(
             function (evento) {
 
-                return String(
-                    evento.id
-                )
-                ===
-                String(
-                    idEvento
+                return (
+                    String(
+                        evento.id
+                    )
+                    ===
+                    String(
+                        idEvento
+                    )
                 );
 
             }
@@ -1232,8 +1499,485 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       27. MODAL DINÁMICO
-       PARA EVENTOS QUE NO ESTÁN EN LA PÁGINA DE LA TABLA
+       28. CONSTRUIR URL PARA CAMBIAR ESTADO
+    ====================================================== */
+
+    function construirUrlEstadoEvento(
+        idEvento
+    ) {
+
+        if (!idEvento) {
+
+            return "";
+
+        }
+
+
+        let rutaAgenda =
+            window.location.pathname;
+
+
+        if (
+            !rutaAgenda.endsWith(
+                "/"
+            )
+        ) {
+
+            rutaAgenda +=
+                "/";
+
+        }
+
+
+        return (
+
+            rutaAgenda
+
+            +
+
+            "evento/"
+
+            +
+
+            encodeURIComponent(
+                idEvento
+            )
+
+            +
+
+            "/estado/"
+
+        );
+
+    }
+
+
+
+    /* ======================================================
+       29. ¿PUEDE CAMBIAR ESTADO?
+    ====================================================== */
+
+    function eventoPuedeCambiarEstado(
+        evento
+    ) {
+
+        if (!evento) {
+
+            return false;
+
+        }
+
+
+        /*
+         * Solamente un evento programado.
+         */
+
+        if (
+            evento.estado
+            !==
+            "programado"
+        ) {
+
+            return false;
+
+        }
+
+
+        if (!evento.fecha) {
+
+            return false;
+
+        }
+
+
+        const hoyISO =
+            fechaAISO(
+                fechaActual
+            );
+
+
+        /*
+         * REGLA PRINCIPAL:
+         *
+         * La fecha del evento debe ser
+         * hoy o una fecha anterior.
+         */
+
+        return (
+            evento.fecha
+            <=
+            hoyISO
+        );
+
+    }
+
+
+
+    /* ======================================================
+       30. CONSTRUIR CONTROL DE ESTADO
+       PARA MODALES DINÁMICOS
+    ====================================================== */
+
+    function construirGestionEstadoDinamico(
+        evento
+    ) {
+
+        if (!evento) {
+
+            return "";
+
+        }
+
+
+        const estado =
+            evento.estado
+            ||
+            "";
+
+
+        const titulo =
+            escaparHTML(
+                evento.titulo
+                ||
+                "Evento"
+            );
+
+
+        const urlEstado =
+            construirUrlEstadoEvento(
+                evento.id
+            );
+
+
+
+        /* ==================================================
+           PROGRAMADO
+        ================================================== */
+
+        if (
+            estado
+            ===
+            "programado"
+        ) {
+
+
+            /* ==============================================
+               HOY O PASADO
+            ============================================== */
+
+            if (
+                eventoPuedeCambiarEstado(
+                    evento
+                )
+            ) {
+
+                return `
+
+                    <section
+                        class="
+                            agenda-gestion-estado
+                            agenda-gestion-estado-disponible
+                        "
+                    >
+
+
+                        <div class="agenda-gestion-estado-header">
+
+
+                            <div class="agenda-gestion-estado-icono">
+
+                                <i class="bi bi-check2-square"></i>
+
+                            </div>
+
+
+                            <div class="agenda-gestion-estado-contenido">
+
+
+                                <span class="agenda-gestion-estado-etiqueta">
+
+                                    Actualizar actividad
+
+                                </span>
+
+
+                                <strong>
+
+                                    ¿Cómo terminó este evento?
+
+                                </strong>
+
+
+                                <p>
+
+                                    La fecha programada ya llegó.
+
+                                    Registra el resultado de la actividad.
+
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="agenda-gestion-estado-acciones">
+
+
+                            <button
+                                type="button"
+                                class="
+                                    btn-evento-estado
+                                    btn-evento-completado
+                                "
+                                data-cambiar-estado-evento
+                                data-evento-url="${urlEstado}"
+                                data-evento-estado="completado"
+                                data-evento-titulo="${titulo}"
+                            >
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                <span>
+                                    Marcar completado
+                                </span>
+
+                            </button>
+
+
+
+                            <button
+                                type="button"
+                                class="
+                                    btn-evento-estado
+                                    btn-evento-cancelado
+                                "
+                                data-cambiar-estado-evento
+                                data-evento-url="${urlEstado}"
+                                data-evento-estado="cancelado"
+                                data-evento-titulo="${titulo}"
+                            >
+
+                                <i class="bi bi-x-circle-fill"></i>
+
+                                <span>
+                                    Cancelar evento
+                                </span>
+
+                            </button>
+
+
+                        </div>
+
+
+                    </section>
+                `;
+
+            }
+
+
+
+            /* ==============================================
+               EVENTO FUTURO
+            ============================================== */
+
+            return `
+
+                <section
+                    class="
+                        agenda-gestion-estado
+                        agenda-gestion-estado-bloqueado
+                    "
+                >
+
+
+                    <div class="agenda-gestion-estado-icono">
+
+                        <i class="bi bi-lock-fill"></i>
+
+                    </div>
+
+
+                    <div class="agenda-gestion-estado-contenido">
+
+
+                        <span class="agenda-gestion-estado-etiqueta">
+
+                            Cambio de estado bloqueado
+
+                        </span>
+
+
+                        <strong>
+
+                            El evento todavía no ha llegado
+
+                        </strong>
+
+
+                        <p>
+
+                            Podrás modificar su estado a partir del
+
+                            <b>
+
+                                ${
+                                    formatearFechaVisual(
+                                        evento.fecha
+                                    )
+                                }
+
+                            </b>.
+
+                        </p>
+
+
+                    </div>
+
+
+                </section>
+            `;
+
+        }
+
+
+
+        /* ==================================================
+           COMPLETADO
+        ================================================== */
+
+        if (
+            estado
+            ===
+            "completado"
+        ) {
+
+            return `
+
+                <section
+                    class="
+                        agenda-gestion-estado
+                        agenda-gestion-estado-finalizado
+                        completado
+                    "
+                >
+
+
+                    <div class="agenda-gestion-estado-icono">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                    </div>
+
+
+                    <div class="agenda-gestion-estado-contenido">
+
+
+                        <span class="agenda-gestion-estado-etiqueta">
+
+                            Actividad finalizada
+
+                        </span>
+
+
+                        <strong>
+
+                            Evento completado
+
+                        </strong>
+
+
+                        <p>
+
+                            El evento ya fue marcado como completado
+                            y no puede volver a modificarse desde tu panel.
+
+                        </p>
+
+
+                    </div>
+
+
+                </section>
+            `;
+
+        }
+
+
+
+        /* ==================================================
+           CANCELADO
+        ================================================== */
+
+        if (
+            estado
+            ===
+            "cancelado"
+        ) {
+
+            return `
+
+                <section
+                    class="
+                        agenda-gestion-estado
+                        agenda-gestion-estado-finalizado
+                        cancelado
+                    "
+                >
+
+
+                    <div class="agenda-gestion-estado-icono">
+
+                        <i class="bi bi-x-circle-fill"></i>
+
+                    </div>
+
+
+                    <div class="agenda-gestion-estado-contenido">
+
+
+                        <span class="agenda-gestion-estado-etiqueta">
+
+                            Actividad cerrada
+
+                        </span>
+
+
+                        <strong>
+
+                            Evento cancelado
+
+                        </strong>
+
+
+                        <p>
+
+                            El evento fue cancelado y no puede
+                            volver a modificarse desde tu panel.
+
+                        </p>
+
+
+                    </div>
+
+
+                </section>
+            `;
+
+        }
+
+
+        return "";
+
+    }
+
+
+
+    /* ======================================================
+       31. CREAR MODAL DINÁMICO
     ====================================================== */
 
     function crearModalDinamico(
@@ -1247,9 +1991,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        /*
-         * Eliminamos un modal dinámico anterior.
-         */
+
+        /* ==================================================
+           ELIMINAR MODAL DINÁMICO ANTERIOR
+        ================================================== */
 
         const anterior =
             document.getElementById(
@@ -1264,14 +2009,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+
         const tipo =
-            evento.tipo ||
+            evento.tipo
+            ||
             "evento";
 
 
         const nombreTipo =
-            nombresTipos[tipo]
+            nombresTipos[
+                tipo
+            ]
+
             ||
+
             "Evento";
 
 
@@ -1279,32 +2030,64 @@ document.addEventListener("DOMContentLoaded", function () {
             nombresEstados[
                 evento.estado
             ]
+
             ||
+
             evento.estado
+
             ||
+
             "Sin definir";
 
 
         const icono =
-            iconosTipos[tipo]
+            iconosTipos[
+                tipo
+            ]
+
             ||
+
             "bi-calendar-event-fill";
 
 
-        const ubicacion = evento.colmena
-            ?
-            "Colmena "
-            +
-            escaparHTML(
-                evento.colmena
-            )
-            :
-            "Apiario "
-            +
-            escaparHTML(
-                evento.apiario || ""
+
+        /* ==================================================
+           UBICACIÓN
+        ================================================== */
+
+        const ubicacion =
+            evento.colmena
+                ?
+                "Colmena "
+                +
+                escaparHTML(
+                    evento.colmena
+                )
+                :
+                "Apiario "
+                +
+                escaparHTML(
+                    evento.apiario
+                    ||
+                    ""
+                );
+
+
+
+        /* ==================================================
+           GESTIÓN DEL ESTADO
+        ================================================== */
+
+        const gestionEstado =
+            construirGestionEstadoDinamico(
+                evento
             );
 
+
+
+        /* ==================================================
+           OVERLAY
+        ================================================== */
 
         const overlay =
             document.createElement(
@@ -1326,6 +2109,11 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+
+        /* ==================================================
+           CONTENIDO
+        ================================================== */
+
         overlay.innerHTML = `
 
             <div
@@ -1334,10 +2122,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 aria-modal="true"
             >
 
+
+                <!-- =========================================
+                     HEADER
+                ========================================== -->
+
                 <div class="agenda-modal-header">
 
+
                     <div
-                        class="agenda-modal-icono ${escaparHTML(tipo)}"
+                        class="
+                            agenda-modal-icono
+                            ${escaparHTML(tipo)}
+                        "
                     >
 
                         <i class="bi ${icono}"></i>
@@ -1347,22 +2144,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     <div class="agenda-modal-header-info">
 
+
                         <span>
 
                             ${escaparHTML(nombreTipo)}
+
                             ·
+
                             Evento #${escaparHTML(evento.id)}
 
                         </span>
 
+
                         <h2>
 
-                            ${escaparHTML(
-                                evento.titulo ||
-                                "Evento"
-                            )}
+                            ${
+                                escaparHTML(
+                                    evento.titulo
+                                    ||
+                                    "Evento"
+                                )
+                            }
 
                         </h2>
+
 
                     </div>
 
@@ -1378,8 +2183,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     </button>
 
+
                 </div>
 
+
+
+                <!-- =========================================
+                     DATOS
+                ========================================== -->
 
                 <div class="agenda-modal-body">
 
@@ -1392,14 +2203,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <strong>
 
-                            ${escaparHTML(
-                                evento.apiario ||
-                                "Sin apiario"
-                            )}
+                            ${
+                                escaparHTML(
+                                    evento.apiario
+                                    ||
+                                    "Sin apiario"
+                                )
+                            }
 
                         </strong>
 
                     </div>
+
 
 
                     <div class="agenda-modal-dato">
@@ -1409,12 +2224,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         </span>
 
                         <strong>
-
                             ${ubicacion}
-
                         </strong>
 
                     </div>
+
 
 
                     <div class="agenda-modal-dato">
@@ -1425,13 +2239,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <strong>
 
-                            ${formatearFechaVisual(
-                                evento.fecha
-                            )}
+                            ${
+                                formatearFechaVisual(
+                                    evento.fecha
+                                )
+                            }
 
                         </strong>
 
                     </div>
+
 
 
                     <div class="agenda-modal-dato">
@@ -1442,14 +2259,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <strong>
 
-                            ${escaparHTML(
-                                evento.hora ||
-                                "Sin hora"
-                            )}
+                            ${
+                                escaparHTML(
+                                    evento.hora
+                                    ||
+                                    "Sin hora"
+                                )
+                            }
 
                         </strong>
 
                     </div>
+
 
 
                     <div class="agenda-modal-dato">
@@ -1459,14 +2280,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         </span>
 
                         <strong>
-
-                            ${escaparHTML(
-                                nombreTipo
-                            )}
-
+                            ${escaparHTML(nombreTipo)}
                         </strong>
 
                     </div>
+
 
 
                     <div class="agenda-modal-dato">
@@ -1475,32 +2293,52 @@ document.addEventListener("DOMContentLoaded", function () {
                             Estado
                         </span>
 
-                        <strong>
 
-                            ${escaparHTML(
-                                nombreEstado
-                            )}
+                        <div>
 
-                        </strong>
+                            <span
+                                class="
+                                    agenda-estado
+                                    ${escaparHTML(evento.estado || "")}
+                                "
+                            >
+
+                                <span></span>
+
+                                ${escaparHTML(nombreEstado)}
+
+                            </span>
+
+                        </div>
 
                     </div>
+
 
                 </div>
 
 
+
+                <!-- =========================================
+                     DESCRIPCIÓN
+                ========================================== -->
+
                 <div class="agenda-modal-descripcion">
+
 
                     <h3>
                         Descripción
                     </h3>
 
-                    <p class="${
-                        evento.descripcion
-                            ?
-                            ""
-                            :
-                            "sin-descripcion"
-                    }">
+
+                    <p
+                        class="${
+                            evento.descripcion
+                                ?
+                                ""
+                                :
+                                "sin-descripcion"
+                        }"
+                    >
 
                         ${
                             evento.descripcion
@@ -1514,10 +2352,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     </p>
 
+
                 </div>
 
 
+
+                <!-- =========================================
+                     GESTIÓN DEL ESTADO
+                ========================================== -->
+
+                ${gestionEstado}
+
+
+
+                <!-- =========================================
+                     FOOTER
+                ========================================== -->
+
                 <div class="agenda-modal-footer">
+
 
                     <button
                         type="button"
@@ -1529,7 +2382,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     </button>
 
+
                 </div>
+
 
             </div>
         `;
@@ -1547,48 +2402,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       28. FORMATEAR FECHA VISUAL
-    ====================================================== */
-
-    function formatearFechaVisual(
-        fechaISO
-    ) {
-
-        const fecha =
-            parsearFechaLocal(
-                fechaISO
-            );
-
-
-        if (!fecha) {
-
-            return "Sin fecha";
-
-        }
-
-
-        return (
-            rellenarCero(
-                fecha.getDate()
-            )
-            +
-            "/"
-            +
-            rellenarCero(
-                fecha.getMonth() + 1
-            )
-            +
-            "/"
-            +
-            fecha.getFullYear()
-        );
-
-    }
-
-
-
-    /* ======================================================
-       29. ABRIR EVENTO
+       32. ABRIR EVENTO
     ====================================================== */
 
     function abrirEvento(
@@ -1596,10 +2410,10 @@ document.addEventListener("DOMContentLoaded", function () {
         botonOrigen
     ) {
 
-        /*
-         * Primero buscamos si Django ya renderizó
-         * el modal completo.
-         */
+
+        /* ==================================================
+           BUSCAR MODAL RENDERIZADO POR DJANGO
+        ================================================== */
 
         const modalExistente =
             document.getElementById(
@@ -1622,11 +2436,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        /*
-         * Si el evento está en calendario / próximos
-         * pero no está dentro de la página actual de
-         * la tabla, generamos el modal con JSON.
-         */
+
+        /* ==================================================
+           SI NO ESTÁ EN LA PÁGINA ACTUAL
+        ================================================== */
 
         const evento =
             obtenerEventoPorId(
@@ -1657,16 +2470,758 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       30. CLIC GLOBAL EN EVENTOS / MODALES
+       33. RESTAURAR BOTÓN DE CONFIRMACIÓN
+    ====================================================== */
+
+    function restaurarBotonConfirmacionEstado() {
+
+        if (!btnConfirmarEstadoEvento) {
+
+            return;
+
+        }
+
+
+        btnConfirmarEstadoEvento.disabled =
+            false;
+
+
+        btnConfirmarEstadoEvento.classList.remove(
+            "completado",
+            "cancelado"
+        );
+
+
+        btnConfirmarEstadoEvento.innerHTML = `
+
+            <i
+                class="
+                    bi
+                    bi-check-lg
+                "
+            ></i>
+
+
+            <span>
+                Confirmar
+            </span>
+        `;
+
+    }
+
+
+
+    /* ======================================================
+       34. ABRIR CONFIRMACIÓN
+    ====================================================== */
+
+    function abrirConfirmacionEstado(
+        boton
+    ) {
+
+        if (
+            !boton
+            ||
+            !modalConfirmarEstadoEvento
+            ||
+            !formCambiarEstadoEvento
+            ||
+            !inputNuevoEstadoEvento
+        ) {
+
+            return;
+
+        }
+
+
+
+        /* ==================================================
+           DATOS DEL BOTÓN
+        ================================================== */
+
+        const url =
+            (
+                boton.dataset.eventoUrl
+                ||
+                ""
+            ).trim();
+
+
+        const estado =
+            (
+                boton.dataset.eventoEstado
+                ||
+                ""
+            ).trim();
+
+
+        const titulo =
+            (
+                boton.dataset.eventoTitulo
+                ||
+                "Evento"
+            ).trim();
+
+
+
+        /* ==================================================
+           VALIDAR
+        ================================================== */
+
+        if (
+            !url
+
+            ||
+
+            ![
+                "completado",
+                "cancelado"
+            ].includes(
+                estado
+            )
+        ) {
+
+            console.error(
+                "No fue posible preparar el cambio de estado."
+            );
+
+
+            return;
+
+        }
+
+
+
+        /* ==================================================
+           GUARDAR MODAL DEL EVENTO
+        ================================================== */
+
+        modalEventoAntesConfirmacion =
+            boton.closest(
+                ".agenda-modal-overlay"
+            );
+
+
+        botonCambioEstadoOrigen =
+            boton;
+
+
+        botonOrigenDetalleGuardado =
+            botonOrigenModal;
+
+
+
+        /* ==================================================
+           OCULTAR MODAL DEL EVENTO
+        ================================================== */
+
+        if (
+            modalEventoAntesConfirmacion
+        ) {
+
+            modalEventoAntesConfirmacion
+                .classList
+                .remove(
+                    "activo"
+                );
+
+
+            modalEventoAntesConfirmacion
+                .setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+        }
+
+
+
+        /* ==================================================
+           CONFIGURAR FORMULARIO
+        ================================================== */
+
+        formCambiarEstadoEvento.action =
+            url;
+
+
+        inputNuevoEstadoEvento.value =
+            estado;
+
+
+        if (
+            nombreEventoConfirmarEstado
+        ) {
+
+            nombreEventoConfirmarEstado.textContent =
+                titulo;
+
+        }
+
+
+
+        /* ==================================================
+           RESTAURAR BOTÓN
+        ================================================== */
+
+        restaurarBotonConfirmacionEstado();
+
+
+
+        const iconoBotonActual =
+            btnConfirmarEstadoEvento
+                ?
+                btnConfirmarEstadoEvento.querySelector(
+                    "i"
+                )
+                :
+                null;
+
+
+        const textoBotonActual =
+            btnConfirmarEstadoEvento
+                ?
+                btnConfirmarEstadoEvento.querySelector(
+                    "span"
+                )
+                :
+                null;
+
+
+
+        if (
+            iconoConfirmarEstadoEvento
+        ) {
+
+            iconoConfirmarEstadoEvento.classList.remove(
+                "completado",
+                "cancelado"
+            );
+
+        }
+
+
+
+        /* ==================================================
+           COMPLETADO
+        ================================================== */
+
+        if (
+            estado
+            ===
+            "completado"
+        ) {
+
+            if (
+                tituloConfirmarEstadoEvento
+            ) {
+
+                tituloConfirmarEstadoEvento.textContent =
+                    "¿Completar evento?";
+
+            }
+
+
+            if (
+                mensajeConfirmarEstadoEvento
+            ) {
+
+                mensajeConfirmarEstadoEvento.textContent =
+                    "Confirma que la actividad fue realizada correctamente.";
+
+            }
+
+
+            if (
+                iconoConfirmarEstadoEvento
+            ) {
+
+                iconoConfirmarEstadoEvento.classList.add(
+                    "completado"
+                );
+
+            }
+
+
+            if (
+                iconoConfirmarEstadoEventoI
+            ) {
+
+                iconoConfirmarEstadoEventoI.className =
+                    "bi bi-check-circle-fill";
+
+            }
+
+
+            if (
+                btnConfirmarEstadoEvento
+            ) {
+
+                btnConfirmarEstadoEvento.classList.add(
+                    "completado"
+                );
+
+            }
+
+
+            if (
+                iconoBotonActual
+            ) {
+
+                iconoBotonActual.className =
+                    "bi bi-check-lg";
+
+            }
+
+
+            if (
+                textoBotonActual
+            ) {
+
+                textoBotonActual.textContent =
+                    "Sí, completar";
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           CANCELADO
+        ================================================== */
+
+        else {
+
+            if (
+                tituloConfirmarEstadoEvento
+            ) {
+
+                tituloConfirmarEstadoEvento.textContent =
+                    "¿Cancelar evento?";
+
+            }
+
+
+            if (
+                mensajeConfirmarEstadoEvento
+            ) {
+
+                mensajeConfirmarEstadoEvento.textContent =
+                    "Confirma que deseas registrar esta actividad como cancelada.";
+
+            }
+
+
+            if (
+                iconoConfirmarEstadoEvento
+            ) {
+
+                iconoConfirmarEstadoEvento.classList.add(
+                    "cancelado"
+                );
+
+            }
+
+
+            if (
+                iconoConfirmarEstadoEventoI
+            ) {
+
+                iconoConfirmarEstadoEventoI.className =
+                    "bi bi-x-circle-fill";
+
+            }
+
+
+            if (
+                btnConfirmarEstadoEvento
+            ) {
+
+                btnConfirmarEstadoEvento.classList.add(
+                    "cancelado"
+                );
+
+            }
+
+
+            if (
+                iconoBotonActual
+            ) {
+
+                iconoBotonActual.className =
+                    "bi bi-x-lg";
+
+            }
+
+
+            if (
+                textoBotonActual
+            ) {
+
+                textoBotonActual.textContent =
+                    "Sí, cancelar";
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           MOSTRAR MODAL
+        ================================================== */
+
+        modalConfirmarEstadoEvento
+            .classList
+            .add(
+                "activo"
+            );
+
+
+        modalConfirmarEstadoEvento
+            .setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+
+        modalActivo =
+            modalConfirmarEstadoEvento;
+
+
+        bloquearScroll();
+
+
+
+        /* ==================================================
+           FOCO
+        ================================================== */
+
+        if (
+            btnConfirmarEstadoEvento
+        ) {
+
+            setTimeout(
+                function () {
+
+                    btnConfirmarEstadoEvento.focus();
+
+                },
+                70
+            );
+
+        }
+
+    }
+
+
+
+    /* ======================================================
+       35. CERRAR CONFIRMACIÓN
+    ====================================================== */
+
+    function cerrarConfirmacionEstado(
+        volverAlEvento = true
+    ) {
+
+        if (
+            !modalConfirmarEstadoEvento
+        ) {
+
+            return;
+
+        }
+
+
+
+        /* ==================================================
+           CERRAR CONFIRMACIÓN
+        ================================================== */
+
+        modalConfirmarEstadoEvento
+            .classList
+            .remove(
+                "activo"
+            );
+
+
+        modalConfirmarEstadoEvento
+            .setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+        restaurarBotonConfirmacionEstado();
+
+
+
+        /* ==================================================
+           VOLVER AL EVENTO
+        ================================================== */
+
+        if (
+            volverAlEvento
+
+            &&
+
+            modalEventoAntesConfirmacion
+
+            &&
+
+            document.body.contains(
+                modalEventoAntesConfirmacion
+            )
+        ) {
+
+            modalEventoAntesConfirmacion
+                .classList
+                .add(
+                    "activo"
+                );
+
+
+            modalEventoAntesConfirmacion
+                .setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+
+            modalActivo =
+                modalEventoAntesConfirmacion;
+
+
+            botonOrigenModal =
+                botonOrigenDetalleGuardado;
+
+
+            bloquearScroll();
+
+
+            if (
+                botonCambioEstadoOrigen
+
+                &&
+
+                document.body.contains(
+                    botonCambioEstadoOrigen
+                )
+            ) {
+
+                setTimeout(
+                    function () {
+
+                        botonCambioEstadoOrigen.focus();
+
+                    },
+                    60
+                );
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           CERRAR TODO
+        ================================================== */
+
+        else {
+
+            modalActivo =
+                null;
+
+
+            botonOrigenModal =
+                null;
+
+
+            restaurarScroll();
+
+
+            if (
+                botonOrigenDetalleGuardado
+
+                &&
+
+                document.body.contains(
+                    botonOrigenDetalleGuardado
+                )
+            ) {
+
+                botonOrigenDetalleGuardado.focus();
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           LIMPIAR VARIABLES
+        ================================================== */
+
+        modalEventoAntesConfirmacion =
+            null;
+
+
+        botonCambioEstadoOrigen =
+            null;
+
+
+        botonOrigenDetalleGuardado =
+            null;
+
+    }
+
+
+
+    /* ======================================================
+       36. ENVIAR CAMBIO DE ESTADO
+    ====================================================== */
+
+    if (
+        formCambiarEstadoEvento
+    ) {
+
+        formCambiarEstadoEvento.addEventListener(
+            "submit",
+            function (
+                eventoSubmit
+            ) {
+
+                const estado =
+                    inputNuevoEstadoEvento
+                        ?
+                        inputNuevoEstadoEvento.value
+                        :
+                        "";
+
+
+
+                /* ==================================================
+                   VALIDAR ESTADO
+                ================================================== */
+
+                if (
+                    ![
+                        "completado",
+                        "cancelado"
+                    ].includes(
+                        estado
+                    )
+                ) {
+
+                    eventoSubmit.preventDefault();
+
+
+                    return;
+
+                }
+
+
+
+                /* ==================================================
+                   EVITAR DOBLE ENVÍO
+                ================================================== */
+
+                if (
+                    btnConfirmarEstadoEvento
+                ) {
+
+                    btnConfirmarEstadoEvento.disabled =
+                        true;
+
+
+                    btnConfirmarEstadoEvento.innerHTML = `
+
+                        <span>
+                            Actualizando...
+                        </span>
+                    `;
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ======================================================
+       37. CLIC GLOBAL
     ====================================================== */
 
     document.addEventListener(
         "click",
-        function (eventoClick) {
+        function (
+            eventoClick
+        ) {
 
 
             /* ==================================================
-               EVENTO GENERADO POR CALENDARIO
+               CAMBIAR ESTADO
+            ================================================== */
+
+            const botonCambiarEstado =
+                eventoClick.target.closest(
+                    "[data-cambiar-estado-evento]"
+                );
+
+
+            if (
+                botonCambiarEstado
+            ) {
+
+                eventoClick.preventDefault();
+
+                eventoClick.stopPropagation();
+
+
+                abrirConfirmacionEstado(
+                    botonCambiarEstado
+                );
+
+
+                return;
+
+            }
+
+
+
+            /* ==================================================
+               CERRAR CONFIRMACIÓN
+            ================================================== */
+
+            const botonCerrarConfirmacion =
+                eventoClick.target.closest(
+                    "[data-cerrar-confirmacion-estado]"
+                );
+
+
+            if (
+                botonCerrarConfirmacion
+            ) {
+
+                eventoClick.preventDefault();
+
+
+                cerrarConfirmacionEstado(
+                    true
+                );
+
+
+                return;
+
+            }
+
+
+
+            /* ==================================================
+               EVENTO DEL CALENDARIO
             ================================================== */
 
             const botonEventoDinamico =
@@ -1675,7 +3230,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            if (botonEventoDinamico) {
+            if (
+                botonEventoDinamico
+            ) {
 
                 eventoClick.preventDefault();
 
@@ -1695,7 +3252,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
-               BOTÓN ESTÁTICO DEL HTML
+               EVENTO ESTÁTICO
             ================================================== */
 
             const botonModal =
@@ -1704,7 +3261,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            if (botonModal) {
+            if (
+                botonModal
+            ) {
 
                 eventoClick.preventDefault();
 
@@ -1718,6 +3277,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
 
                 }
+
 
 
                 const modal =
@@ -1739,16 +3299,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                /*
-                 * Fallback:
-                 *
-                 * si el botón está en "Próximos eventos"
-                 * o "Actividades de hoy", pero el evento
-                 * no está en la página actual de la tabla,
-                 * obtenemos el número desde:
-                 *
-                 * modalEvento15
-                 */
+
+                /* ==================================================
+                   FALLBACK
+                ================================================== */
 
                 const idEvento =
                     idModal.replace(
@@ -1779,7 +3333,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            if (botonCerrar) {
+            if (
+                botonCerrar
+            ) {
 
                 const modal =
                     botonCerrar.closest(
@@ -1791,6 +3347,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     modal
                 );
 
+
+                return;
+
             }
 
         }
@@ -1799,25 +3358,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       31. CERRAR TOCANDO EL FONDO
+       38. CERRAR TOCANDO EL FONDO
     ====================================================== */
 
     document.addEventListener(
         "click",
-        function (eventoClick) {
+        function (
+            eventoClick
+        ) {
 
             if (
-                eventoClick.target.classList &&
-                eventoClick.target.classList.contains(
+                !eventoClick.target.classList
+
+                ||
+
+                !eventoClick.target.classList.contains(
                     "agenda-modal-overlay"
                 )
             ) {
 
-                cerrarModal(
-                    eventoClick.target
-                );
+                return;
 
             }
+
+
+
+            /* ==================================================
+               CONFIRMACIÓN
+            ================================================== */
+
+            if (
+                eventoClick.target.id
+                ===
+                "modalConfirmarEstadoEvento"
+            ) {
+
+                cerrarConfirmacionEstado(
+                    true
+                );
+
+
+                return;
+
+            }
+
+
+
+            /* ==================================================
+               MODAL NORMAL
+            ================================================== */
+
+            cerrarModal(
+                eventoClick.target
+            );
 
         }
     );
@@ -1825,17 +3418,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       32. CERRAR CON ESCAPE
+       39. CERRAR CON ESCAPE
     ====================================================== */
 
     document.addEventListener(
         "keydown",
-        function (eventoTeclado) {
+        function (
+            eventoTeclado
+        ) {
 
             if (
-                eventoTeclado.key ===
+                eventoTeclado.key
+                !==
                 "Escape"
+            ) {
+
+                return;
+
+            }
+
+
+
+            /* ==================================================
+               CONFIRMACIÓN
+            ================================================== */
+
+            if (
+                modalConfirmarEstadoEvento
+
                 &&
+
+                modalConfirmarEstadoEvento
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+            ) {
+
+                cerrarConfirmacionEstado(
+                    true
+                );
+
+
+                return;
+
+            }
+
+
+
+            /* ==================================================
+               MODAL NORMAL
+            ================================================== */
+
+            if (
                 modalActivo
             ) {
 
@@ -1851,12 +3486,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       33. ENVIAR FILTROS
+       40. ENVIAR FILTROS
     ====================================================== */
 
     function enviarFiltros() {
 
-        if (!formularioFiltros) {
+        if (
+            !formularioFiltros
+        ) {
 
             return;
 
@@ -1871,7 +3508,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             formularioFiltros.requestSubmit();
 
-        } else {
+        }
+
+        else {
 
             formularioFiltros.submit();
 
@@ -1882,19 +3521,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       34. SELECTS AUTOMÁTICOS
+       41. SELECTS AUTOMÁTICOS
     ====================================================== */
 
     selectsFiltros.forEach(
-        function (select) {
+        function (
+            select
+        ) {
 
             select.addEventListener(
                 "change",
-                function () {
-
-                    enviarFiltros();
-
-                }
+                enviarFiltros
             );
 
         }
@@ -1903,23 +3540,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       35. FILTRAR AUTOMÁTICAMENTE AL CAMBIAR FECHA
+       42. FILTRO POR FECHA
     ====================================================== */
 
-    if (inputFechaFiltro) {
+    if (
+        inputFechaFiltro
+    ) {
 
         inputFechaFiltro.addEventListener(
             "change",
-            function () {
-
-                /*
-                 * Si selecciona una fecha desde el input
-                 * enviamos el filtro.
-                 */
-
-                enviarFiltros();
-
-            }
+            enviarFiltros
         );
 
     }
@@ -1927,20 +3557,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       36. BUSCAR CON ENTER
+       43. BUSCAR CON ENTER
     ====================================================== */
 
     if (
-        buscador &&
+        buscador
+        &&
         formularioFiltros
     ) {
 
         buscador.addEventListener(
             "keydown",
-            function (eventoTeclado) {
+            function (
+                eventoTeclado
+            ) {
 
                 if (
-                    eventoTeclado.key !==
+                    eventoTeclado.key
+                    !==
                     "Enter"
                 ) {
 
@@ -1961,18 +3595,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
-    }
 
 
-
-    /* ======================================================
-       37. LIMPIAR BUSCADOR ANTES DEL SUBMIT
-    ====================================================== */
-
-    if (
-        formularioFiltros &&
-        buscador
-    ) {
+        /* ==================================================
+           LIMPIAR TEXTO ANTES DE ENVIAR
+        ================================================== */
 
         formularioFiltros.addEventListener(
             "submit",
@@ -1989,12 +3616,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       38. SI VIENE UNA FECHA POR GET
-       ABRIR EL CALENDARIO EN ESE MES
+       44. SI VIENE FECHA POR GET
     ====================================================== */
 
     if (
-        inputFechaFiltro &&
+        inputFechaFiltro
+        &&
         inputFechaFiltro.value
     ) {
 
@@ -2004,13 +3631,16 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (fechaFiltro) {
+        if (
+            fechaFiltro
+        ) {
 
-            fechaVista = new Date(
-                fechaFiltro.getFullYear(),
-                fechaFiltro.getMonth(),
-                1
-            );
+            fechaVista =
+                new Date(
+                    fechaFiltro.getFullYear(),
+                    fechaFiltro.getMonth(),
+                    1
+                );
 
 
             fechaSeleccionada =
@@ -2023,7 +3653,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       39. RESTAURAR ESTADO AL VOLVER CON NAVEGADOR
+       45. RESTAURAR ESTADO AL VOLVER
     ====================================================== */
 
     window.addEventListener(
@@ -2031,10 +3661,16 @@ document.addEventListener("DOMContentLoaded", function () {
         function () {
 
 
+            /* ==================================================
+               CERRAR MODALES
+            ================================================== */
+
             document.querySelectorAll(
                 ".agenda-modal-overlay.activo"
             ).forEach(
-                function (modal) {
+                function (
+                    modal
+                ) {
 
                     modal.classList.remove(
                         "activo"
@@ -2050,6 +3686,11 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
+
+            /* ==================================================
+               VARIABLES
+            ================================================== */
+
             modalActivo =
                 null;
 
@@ -2058,9 +3699,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 null;
 
 
+            modalEventoAntesConfirmacion =
+                null;
+
+
+            botonCambioEstadoOrigen =
+                null;
+
+
+            botonOrigenDetalleGuardado =
+                null;
+
+
+
+            /* ==================================================
+               FORMULARIO DE ESTADO
+            ================================================== */
+
+            if (
+                inputNuevoEstadoEvento
+            ) {
+
+                inputNuevoEstadoEvento.value =
+                    "";
+
+            }
+
+
+            if (
+                formCambiarEstadoEvento
+            ) {
+
+                formCambiarEstadoEvento.removeAttribute(
+                    "action"
+                );
+
+            }
+
+
+            restaurarBotonConfirmacionEstado();
+
+
+
+            /* ==================================================
+               SCROLL
+            ================================================== */
+
             document.body.style.overflow =
                 "";
 
+
+
+            /* ==================================================
+               RENDER
+            ================================================== */
 
             renderizarCalendario();
 
@@ -2070,7 +3762,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       40. RENDER INICIAL
+       46. RENDER INICIAL
     ====================================================== */
 
     renderizarCalendario();

@@ -1,73 +1,235 @@
-from django.shortcuts import (
-    render,
-    redirect,
-    get_object_or_404,
-)
+from django.conf import settings
+from django.contrib import messages
+
 from django.contrib.auth import (
     authenticate,
     get_user_model,
     login,
     logout,
 )
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.contrib.sessions.models import Session
+
+from django.contrib.auth.decorators import (
+    login_required,
+)
+
+from django.contrib.auth.password_validation import (
+    validate_password,
+)
+
+from django.contrib.sessions.models import (
+    Session,
+)
+
+from django.core.exceptions import (
+    ValidationError,
+)
+
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
+
 from django.utils import timezone
-from django.views.decorators.http import require_POST
-from django.core.exceptions import ValidationError
+
+from django.views.decorators.http import (
+    require_POST,
+)
+
+
+# ============================================================
+# MODELOS
+# ============================================================
+
 from dbmicolmena.models import (
     Administrador,
     Apicultor,
 )
+
+
 from usuarios.models import (
+    Configuracion2FA,
+    RecuperacionPassword,
     SesionUsuario,
 )
+
+
+# ============================================================
+# SERVICIOS
+# ============================================================
+
 from usuarios.services import (
-    registrar_sesion_usuario,
     cerrar_registro_sesion_actual,
-    registrar_historial_acceso,
-    sincronizar_session_key,
+    crear_recuperacion_password,
+    crear_y_enviar_codigo_2fa,
+    enviar_correo_recuperacion_password,
+    limpiar_desafio_2fa,
     login_esta_bloqueado,
-    registrar_intento_login_fallido,
-    reiniciar_intentos_login,
-    reenviar_codigo_2fa,
     obtener_estado_reenvio_2fa,
     obtener_politica_2fa,
-    crear_recuperacion_password,
-    enviar_correo_recuperacion_password,
-)
-
-from django.contrib.auth import (
-    update_session_auth_hash,
-)
-from django.contrib.auth.password_validation import (
-    validate_password,
-    
-)
-from usuarios.models import Configuracion2FA,RecuperacionPassword,SesionUsuario
-from usuarios.services import (
-    crear_y_enviar_codigo_2fa,
-    verificar_codigo_2fa,
-    limpiar_desafio_2fa,
     obtener_recuperacion_password,
-    verificar_codigo_recuperacion,
+    reenviar_codigo_2fa,
     registrar_historial_acceso,
+    registrar_intento_login_fallido,
+    registrar_sesion_usuario,
+    reiniciar_intentos_login,
+    verificar_codigo_2fa,
+    verificar_codigo_recuperacion,
 )
-from django.conf import settings
-from django.contrib.auth.password_validation import (
-    validate_password
-)
-from django.core.exceptions import ValidationError
-
-
-
-
-
 
 
 # ============================================================
+# ============================================================
+#
+# FUNCIONES AUXILIARES
+#
+# ============================================================
+# ============================================================
+
+
+# ============================================================
+# DETERMINAR PANEL DEL USUARIO
+# ============================================================
+
+def obtener_panel_seguridad(usuario):
+
+    # ========================================================
+    # APICULTOR
+    # ========================================================
+
+    if Apicultor.objects.filter(
+        user=usuario
+    ).exists():
+
+        return {
+
+            "base_template":
+                "panel_apicultor/base_apicultor.html",
+
+            "ruta_perfil":
+                "perfil_apicultor",
+
+            "ruta_dashboard":
+                "dashboard_apicultor",
+
+            "tipo_usuario":
+                "apicultor",
+        }
+
+
+    # ========================================================
+    # ADMINISTRADOR
+    # ========================================================
+
+    if Administrador.objects.filter(
+        user=usuario
+    ).exists():
+
+        return {
+
+            "base_template":
+                "admin_panel/base_admin.html",
+
+            "ruta_perfil":
+                "mi_perfil",
+
+            "ruta_dashboard":
+                "dashboard_admin",
+
+            "tipo_usuario":
+                "administrador",
+        }
+
+
+    # ========================================================
+    # USUARIO SIN PERFIL
+    # ========================================================
+
+    return {
+
+        "base_template":
+            None,
+
+        "ruta_perfil":
+            "login",
+
+        "ruta_dashboard":
+            "login",
+
+        "tipo_usuario":
+            "usuario",
+    }
+
+
+# ============================================================
+# OCULTAR CORREO
+# ============================================================
+
+def ocultar_correo(correo):
+
+    if (
+        not correo
+        or
+        "@" not in correo
+    ):
+
+        return "correo registrado"
+
+
+    nombre, dominio = correo.split(
+        "@",
+        1
+    )
+
+
+    visibles = nombre[:2]
+
+
+    ocultos = "*" * max(
+        3,
+        len(nombre) - 2
+    )
+
+
+    return (
+        f"{visibles}"
+        f"{ocultos}"
+        f"@{dominio}"
+    )
+
+
+# ============================================================
+# CONTEXTO COMÚN PARA PANTALLAS DE SEGURIDAD
+# ============================================================
+
+def contexto_panel_seguridad(usuario):
+
+    panel = obtener_panel_seguridad(
+        usuario
+    )
+
+
+    return {
+
+        "base_template":
+            panel["base_template"],
+
+        "ruta_perfil":
+            panel["ruta_perfil"],
+
+        "tipo_usuario":
+            panel["tipo_usuario"],
+    }
+
+
+# ============================================================
+# ============================================================
+#
 # LOGIN
+#
 # ============================================================
+# ============================================================
+
 
 def login_view(request):
 
@@ -77,13 +239,38 @@ def login_view(request):
 
     if request.user.is_authenticated:
 
-        if Administrador.objects.filter(
-            user=request.user
-        ).exists():
+        panel = obtener_panel_seguridad(
+            request.user
+        )
+
+
+        if panel["tipo_usuario"] in (
+            "administrador",
+            "apicultor",
+        ):
 
             return redirect(
-                "dashboard_admin"
+                panel["ruta_dashboard"]
             )
+
+
+        messages.error(
+            request,
+            (
+                "Tu usuario no tiene "
+                "un perfil asignado."
+            )
+        )
+
+
+        logout(
+            request
+        )
+
+
+        return redirect(
+            "login"
+        )
 
 
     # ========================================================
@@ -118,8 +305,10 @@ def login_view(request):
                 "usuarios/login.html",
                 {
                     "error":
-                        "Debes ingresar el usuario "
-                        "y la contraseña."
+                        (
+                            "Debes ingresar el usuario "
+                            "y la contraseña."
+                        )
                 }
             )
 
@@ -128,7 +317,7 @@ def login_view(request):
         # VERIFICAR BLOQUEO TEMPORAL
         # ====================================================
 
-        bloqueado, control = (
+        bloqueado, _ = (
             login_esta_bloqueado(
                 usuario_input
             )
@@ -142,10 +331,12 @@ def login_view(request):
                 "usuarios/login.html",
                 {
                     "error":
-                        "El acceso está bloqueado "
-                        "temporalmente debido a varios "
-                        "intentos fallidos. Intenta "
-                        "nuevamente más tarde."
+                        (
+                            "El acceso está bloqueado "
+                            "temporalmente debido a varios "
+                            "intentos fallidos. Intenta "
+                            "nuevamente más tarde."
+                        )
                 }
             )
 
@@ -175,7 +366,9 @@ def login_view(request):
             )
 
 
-            if resultado_intento["bloqueado"]:
+            if resultado_intento[
+                "bloqueado"
+            ]:
 
                 error = (
                     "Se alcanzó el número máximo "
@@ -187,9 +380,9 @@ def login_view(request):
             else:
 
                 restantes = (
-                    resultado_intento[
+                    resultado_intento.get(
                         "restantes"
-                    ]
+                    )
                 )
 
 
@@ -210,7 +403,8 @@ def login_view(request):
                 request,
                 "usuarios/login.html",
                 {
-                    "error": error
+                    "error":
+                        error
                 }
             )
 
@@ -241,10 +435,39 @@ def login_view(request):
 
 
         # ====================================================
-        # CONFIGURACIÓN 2FA DEL USUARIO
+        # DETERMINAR PERFIL
         # ====================================================
 
-        config_2fa, creado = (
+        panel = obtener_panel_seguridad(
+            user
+        )
+
+
+        if panel[
+            "tipo_usuario"
+        ] not in (
+            "administrador",
+            "apicultor",
+        ):
+
+            return render(
+                request,
+                "usuarios/login.html",
+                {
+                    "error":
+                        (
+                            "Tu usuario no tiene "
+                            "un perfil asignado."
+                        )
+                }
+            )
+
+
+        # ====================================================
+        # CONFIGURACIÓN 2FA
+        # ====================================================
+
+        config_2fa, _ = (
             Configuracion2FA.objects
             .get_or_create(
                 usuario=user
@@ -253,7 +476,7 @@ def login_view(request):
 
 
         # ====================================================
-        # POLÍTICA GLOBAL 2FA
+        # POLÍTICA GLOBAL
         # ====================================================
 
         politica_2fa = (
@@ -268,13 +491,18 @@ def login_view(request):
         # ====================================================
 
         usar_2fa = (
+
             politica_2fa[
                 "permitir_2fa"
             ]
+
             and
+
             (
                 config_2fa.activo
+
                 or
+
                 politica_2fa[
                     "obligatorio"
                 ]
@@ -288,22 +516,17 @@ def login_view(request):
 
         if usar_2fa:
 
-            # ================================================
-            # ¿DEBEMOS ACTIVARLO AL VERIFICAR?
-            # ================================================
-
             activar_al_verificar = (
+
                 politica_2fa[
                     "obligatorio"
                 ]
+
                 and
+
                 not config_2fa.activo
             )
 
-
-            # ================================================
-            # CREAR Y ENVIAR CÓDIGO
-            # ================================================
 
             resultado_2fa = (
                 crear_y_enviar_codigo_2fa(
@@ -314,7 +537,9 @@ def login_view(request):
             )
 
 
-            if not resultado_2fa["ok"]:
+            if not resultado_2fa[
+                "ok"
+            ]:
 
                 return render(
                     request,
@@ -352,10 +577,6 @@ def login_view(request):
             ] = backend
 
 
-            # ================================================
-            # SI ES OBLIGATORIO Y NO LO TENÍA
-            # ================================================
-
             request.session[
                 "2fa_forzar_activacion"
             ] = activar_al_verificar
@@ -374,7 +595,7 @@ def login_view(request):
 
 
         # ====================================================
-        # SIN 2FA
+        # LOGIN SIN 2FA
         # ====================================================
 
         login(
@@ -403,7 +624,7 @@ def login_view(request):
 
 
         # ====================================================
-        # REGISTRAR HISTORIAL
+        # HISTORIAL
         # ====================================================
 
         try:
@@ -426,60 +647,13 @@ def login_view(request):
 
 
         # ====================================================
-        # ADMINISTRADOR
+        # IR AL DASHBOARD CORRECTO
         # ====================================================
 
-        if Administrador.objects.filter(
-            user=user
-        ).exists():
-
-            return redirect(
-                "dashboard_admin"
-            )
-
-
-        # ====================================================
-        # APICULTOR
-        # ====================================================
-
-        if Apicultor.objects.filter(
-            user=user
-        ).exists():
-        
-            return redirect(
-                "dashboard_apicultor"
-            )
-
-
-        # ====================================================
-        # SIN PERFIL
-        # ====================================================
-
-        try:
-
-            cerrar_registro_sesion_actual(
-                request,
-                motivo="sin_perfil"
-            )
-
-        except Exception:
-
-            pass
-
-
-        logout(
-            request
-        )
-
-
-        return render(
-            request,
-            "usuarios/login.html",
-            {
-                "error":
-                    "Tu usuario no tiene "
-                    "un perfil asignado."
-            }
+        return redirect(
+            panel[
+                "ruta_dashboard"
+            ]
         )
 
 
@@ -493,6 +667,13 @@ def login_view(request):
     )
 
 
+# ============================================================
+# ============================================================
+#
+# LOGOUT
+#
+# ============================================================
+# ============================================================
 
 
 def logout_view(request):
@@ -503,25 +684,45 @@ def logout_view(request):
 
 
         # ====================================================
-        # REGISTRAR HISTORIAL
+        # HISTORIAL
         # ====================================================
 
-        registrar_historial_acceso(
-            request,
-            usuario,
-            actividad="logout",
-            detalle="El usuario cerró la sesión."
-        )
+        try:
+
+            registrar_historial_acceso(
+                request,
+                usuario,
+                actividad="logout",
+                detalle=(
+                    "El usuario cerró la sesión."
+                )
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR REGISTRANDO HISTORIAL LOGOUT:",
+                error
+            )
 
 
         # ====================================================
-        # CERRAR REGISTRO SESIÓN
+        # CERRAR REGISTRO DE SESIÓN
         # ====================================================
 
-        cerrar_registro_sesion_actual(
-            request,
-            motivo="logout"
-        )
+        try:
+
+            cerrar_registro_sesion_actual(
+                request,
+                motivo="logout"
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR CERRANDO REGISTRO DE SESIÓN:",
+                error
+            )
 
 
     logout(
@@ -532,6 +733,16 @@ def logout_view(request):
     return redirect(
         "Inicio"
     )
+
+
+# ============================================================
+# ============================================================
+#
+# SESIONES ACTIVAS
+#
+# ============================================================
+# ============================================================
+
 
 # ============================================================
 # CERRAR UNA SESIÓN REMOTA
@@ -545,8 +756,21 @@ def cerrar_sesion_remota(
 ):
 
     # ========================================================
-    # BUSCAR LA SESIÓN
-    # SOLO PUEDE SER DEL USUARIO ACTUAL
+    # PANEL CORRECTO
+    # ========================================================
+
+    panel = obtener_panel_seguridad(
+        request.user
+    )
+
+
+    ruta_perfil = panel[
+        "ruta_perfil"
+    ]
+
+
+    # ========================================================
+    # BUSCAR SESIÓN
     # ========================================================
 
     sesion = get_object_or_404(
@@ -563,7 +787,7 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # NO PERMITIR CERRAR LA SESIÓN ACTUAL
+    # NO CERRAR LA SESIÓN ACTUAL
     # ========================================================
 
     if (
@@ -574,17 +798,20 @@ def cerrar_sesion_remota(
 
         messages.warning(
             request,
-            "No puedes cerrar tu sesión actual "
-            "desde esta opción."
+            (
+                "No puedes cerrar tu sesión actual "
+                "desde esta opción."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # GUARDAR INFORMACIÓN ANTES DE MODIFICARLA
+    # INFORMACIÓN PARA HISTORIAL
     # ========================================================
 
     navegador = (
@@ -593,11 +820,13 @@ def cerrar_sesion_remota(
         "Navegador desconocido"
     )
 
+
     sistema = (
         sesion.sistema_operativo
         or
         "Sistema desconocido"
     )
+
 
     dispositivo = (
         sesion.dispositivo
@@ -607,7 +836,7 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # ELIMINAR LA SESIÓN REAL DE DJANGO
+    # ELIMINAR SESIÓN REAL DE DJANGO
     # ========================================================
 
     Session.objects.filter(
@@ -616,18 +845,21 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # MARCAR SesionUsuario COMO CERRADA
+    # CERRAR REGISTRO PROPIO
     # ========================================================
 
     sesion.activa = False
+
 
     sesion.fecha_cierre = (
         timezone.now()
     )
 
+
     sesion.motivo_cierre = (
         "cerrada_remotamente"
     )
+
 
     sesion.save(
         update_fields=[
@@ -639,7 +871,7 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # REGISTRAR HISTORIAL
+    # HISTORIAL
     # ========================================================
 
     try:
@@ -658,8 +890,7 @@ def cerrar_sesion_remota(
     except Exception as error:
 
         print(
-            "ERROR REGISTRANDO "
-            "CIERRE REMOTO:",
+            "ERROR REGISTRANDO CIERRE REMOTO:",
             error
         )
 
@@ -671,9 +902,8 @@ def cerrar_sesion_remota(
 
 
     return redirect(
-        "mi_perfil"
+        ruta_perfil
     )
-
 
 
 # ============================================================
@@ -682,19 +912,22 @@ def cerrar_sesion_remota(
 
 @login_required
 @require_POST
-def cerrar_otras_sesiones(
-    request
-):
+def cerrar_otras_sesiones(request):
+
+    panel = obtener_panel_seguridad(
+        request.user
+    )
+
+
+    ruta_perfil = panel[
+        "ruta_perfil"
+    ]
+
 
     session_key_actual = (
         request.session.session_key
     )
 
-
-    # ========================================================
-    # OBTENER TODAS LAS SESIONES
-    # MENOS LA ACTUAL
-    # ========================================================
 
     sesiones = (
         SesionUsuario.objects
@@ -707,10 +940,6 @@ def cerrar_otras_sesiones(
         )
     )
 
-
-    # ========================================================
-    # OBTENER LAS CLAVES
-    # ========================================================
 
     claves = list(
         sesiones.values_list(
@@ -726,7 +955,7 @@ def cerrar_otras_sesiones(
 
 
     # ========================================================
-    # SI NO HAY OTRAS SESIONES
+    # NO HAY OTRAS SESIONES
     # ========================================================
 
     if cantidad == 0:
@@ -736,13 +965,14 @@ def cerrar_otras_sesiones(
             "No tienes otras sesiones activas."
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # ELIMINAR SESIONES REALES DE DJANGO
+    # ELIMINAR SESIONES DJANGO
     # ========================================================
 
     Session.objects.filter(
@@ -751,18 +981,23 @@ def cerrar_otras_sesiones(
 
 
     # ========================================================
-    # ACTUALIZAR NUESTROS REGISTROS
+    # ACTUALIZAR REGISTROS PROPIOS
     # ========================================================
 
     sesiones.update(
+
         activa=False,
-        fecha_cierre=timezone.now(),
-        motivo_cierre="cerrada_remotamente"
+
+        fecha_cierre=
+            timezone.now(),
+
+        motivo_cierre=
+            "cerrada_remotamente",
     )
 
 
     # ========================================================
-    # REGISTRAR HISTORIAL
+    # HISTORIAL
     # ========================================================
 
     try:
@@ -780,8 +1015,7 @@ def cerrar_otras_sesiones(
     except Exception as error:
 
         print(
-            "ERROR REGISTRANDO "
-            "CIERRE DE SESIONES:",
+            "ERROR REGISTRANDO CIERRE DE SESIONES:",
             error
         )
 
@@ -812,13 +1046,21 @@ def cerrar_otras_sesiones(
 
 
     return redirect(
-        "mi_perfil"
+        ruta_perfil
     )
 
 
+# ============================================================
+# ============================================================
+#
+# ACTIVACIÓN 2FA
+#
+# ============================================================
+# ============================================================
+
 
 # ============================================================
-# INICIAR ACTIVACIÓN DE 2FA
+# INICIAR ACTIVACIÓN
 # ============================================================
 
 @login_required
@@ -826,7 +1068,46 @@ def cerrar_otras_sesiones(
 def iniciar_activacion_2fa(request):
 
     # ========================================================
-    # OBTENER CONFIGURACIÓN 2FA DEL USUARIO
+    # PANEL
+    # ========================================================
+
+    panel = obtener_panel_seguridad(
+        request.user
+    )
+
+
+    ruta_perfil = panel[
+        "ruta_perfil"
+    ]
+
+
+    # ========================================================
+    # PERFIL VÁLIDO
+    # ========================================================
+
+    if panel[
+        "tipo_usuario"
+    ] not in (
+        "administrador",
+        "apicultor",
+    ):
+
+        messages.error(
+            request,
+            (
+                "No fue posible identificar "
+                "el perfil asociado a tu cuenta."
+            )
+        )
+
+
+        return redirect(
+            "login"
+        )
+
+
+    # ========================================================
+    # CONFIGURACIÓN
     # ========================================================
 
     config_2fa, _ = (
@@ -838,7 +1119,7 @@ def iniciar_activacion_2fa(request):
 
 
     # ========================================================
-    # CONSULTAR POLÍTICA GLOBAL DE 2FA
+    # POLÍTICA
     # ========================================================
 
     politica_2fa = (
@@ -849,7 +1130,7 @@ def iniciar_activacion_2fa(request):
 
 
     # ========================================================
-    # 2FA DESHABILITADO GLOBALMENTE
+    # DESHABILITADO GLOBALMENTE
     # ========================================================
 
     if not politica_2fa[
@@ -858,53 +1139,62 @@ def iniciar_activacion_2fa(request):
 
         messages.warning(
             request,
-            "La autenticación en dos pasos "
-            "está deshabilitada por la "
-            "configuración del sistema."
+            (
+                "La autenticación en dos pasos "
+                "está deshabilitada por la "
+                "configuración del sistema."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # YA ESTÁ ACTIVADO
+    # YA ACTIVO
     # ========================================================
 
     if config_2fa.activo:
 
         messages.info(
             request,
-            "La autenticación en dos pasos "
-            "ya está activada."
+            (
+                "La autenticación en dos pasos "
+                "ya está activada."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # VERIFICAR QUE EL USUARIO TENGA CORREO
+    # CORREO
     # ========================================================
 
     if not request.user.email:
 
         messages.error(
             request,
-            "Debes tener un correo electrónico "
-            "registrado para activar la "
-            "autenticación en dos pasos."
+            (
+                "Debes tener un correo electrónico "
+                "registrado para activar la "
+                "autenticación en dos pasos."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # CREAR Y ENVIAR CÓDIGO DE VERIFICACIÓN
+    # CREAR Y ENVIAR CÓDIGO
     # ========================================================
 
     resultado = (
@@ -916,24 +1206,25 @@ def iniciar_activacion_2fa(request):
     )
 
 
-    # ========================================================
-    # ERROR AL CREAR O ENVIAR EL CÓDIGO
-    # ========================================================
-
-    if not resultado["ok"]:
+    if not resultado[
+        "ok"
+    ]:
 
         messages.error(
             request,
-            resultado["error"]
+            resultado[
+                "error"
+            ]
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # IR A LA PANTALLA DE VERIFICACIÓN
+    # IR A VERIFICACIÓN
     # ========================================================
 
     return redirect(
@@ -942,58 +1233,53 @@ def iniciar_activacion_2fa(request):
 
 
 # ============================================================
-# OCULTAR CORREO
-# ============================================================
-
-def ocultar_correo(
-    correo
-):
-
-    if (
-        not correo
-        or
-        "@" not in correo
-    ):
-
-        return "correo registrado"
-
-
-    nombre, dominio = (
-        correo.split(
-            "@",
-            1
-        )
-    )
-
-
-    visibles = (
-        nombre[:2]
-    )
-
-
-    ocultos = "*" * max(
-        3,
-        len(nombre) - 2
-    )
-
-
-    return (
-        f"{visibles}"
-        f"{ocultos}"
-        f"@{dominio}"
-    )
-
-# ============================================================
-# VERIFICAR ACTIVACIÓN 2FA
+# VERIFICAR ACTIVACIÓN
 # ============================================================
 
 @login_required
-def verificar_activacion_2fa(
-    request
-):
+def verificar_activacion_2fa(request):
 
     # ========================================================
-    # VERIFICAR QUE EL DESAFÍO SEA DEL USUARIO ACTUAL
+    # PANEL
+    # ========================================================
+
+    panel = obtener_panel_seguridad(
+        request.user
+    )
+
+
+    ruta_perfil = panel[
+        "ruta_perfil"
+    ]
+
+
+    # ========================================================
+    # PERFIL VÁLIDO
+    # ========================================================
+
+    if panel[
+        "tipo_usuario"
+    ] not in (
+        "administrador",
+        "apicultor",
+    ):
+
+        messages.error(
+            request,
+            (
+                "No fue posible identificar "
+                "el perfil asociado a tu cuenta."
+            )
+        )
+
+
+        return redirect(
+            "login"
+        )
+
+
+    # ========================================================
+    # DESAFÍO
     # ========================================================
 
     usuario_id = (
@@ -1010,24 +1296,39 @@ def verificar_activacion_2fa(
     )
 
 
+    # ========================================================
+    # VALIDAR DESAFÍO
+    # ========================================================
+
     if (
-        usuario_id != request.user.pk
+        usuario_id
+        !=
+        request.user.pk
+
         or
-        proposito != "activar"
+
+        proposito
+        !=
+        "activar"
     ):
 
         messages.warning(
             request,
-            "No existe una verificación "
-            "2FA pendiente."
+            (
+                "No existe una verificación "
+                "2FA pendiente."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     error = None
+
+    puede_verificar = True
 
 
     # ========================================================
@@ -1041,6 +1342,7 @@ def verificar_activacion_2fa(
                 "codigo",
                 ""
             )
+            .strip()
         )
 
 
@@ -1048,18 +1350,21 @@ def verificar_activacion_2fa(
             verificar_codigo_2fa(
                 request,
                 codigo,
-                proposito_esperado="activar"
+                proposito_esperado=
+                    "activar"
             )
         )
 
 
         # ====================================================
-        # CÓDIGO CORRECTO
+        # CORRECTO
         # ====================================================
 
-        if resultado["ok"]:
+        if resultado[
+            "ok"
+        ]:
 
-            config_2fa, creado = (
+            config_2fa, _ = (
                 Configuracion2FA.objects
                 .get_or_create(
                     usuario=request.user
@@ -1069,9 +1374,11 @@ def verificar_activacion_2fa(
 
             config_2fa.activo = True
 
+
             config_2fa.fecha_activacion = (
                 timezone.now()
             )
+
 
             config_2fa.save(
                 update_fields=[
@@ -1082,6 +1389,34 @@ def verificar_activacion_2fa(
             )
 
 
+            # ================================================
+            # HISTORIAL
+            # ================================================
+
+            try:
+
+                registrar_historial_acceso(
+                    request,
+                    request.user,
+                    actividad="sistema",
+                    detalle=(
+                        "El usuario activó la "
+                        "autenticación en dos pasos."
+                    )
+                )
+
+            except Exception as error_historial:
+
+                print(
+                    "ERROR REGISTRANDO ACTIVACIÓN 2FA:",
+                    error_historial
+                )
+
+
+            # ================================================
+            # LIMPIAR DESAFÍO
+            # ================================================
+
             limpiar_desafio_2fa(
                 request
             )
@@ -1089,70 +1424,135 @@ def verificar_activacion_2fa(
 
             messages.success(
                 request,
-                "La autenticación en dos pasos "
-                "se activó correctamente."
+                (
+                    "La autenticación en dos pasos "
+                    "se activó correctamente."
+                )
             )
 
 
             return redirect(
-                "mi_perfil"
+                ruta_perfil
             )
 
 
-        error = (
-            resultado["error"]
+        # ====================================================
+        # INCORRECTO
+        # ====================================================
+
+        error = resultado.get(
+            "error",
+            "No fue posible verificar el código."
         )
 
 
-        # Si expiró o se bloquearon los intentos,
-        # ya no existe desafío activo.
-
-        if resultado["tipo"] in [
+        if resultado.get(
+            "tipo"
+        ) in [
             "expirado",
             "bloqueado",
             "sin_desafio",
             "invalido",
         ]:
 
-            return render(
-                request,
-                "usuarios/verificar_activacion_2fa.html",
-                {
-                    "error": error,
-                    "puede_verificar": False,
-                    "correo_oculto":
-                        ocultar_correo(
-                            request.user.email
-                        ),
-                }
-            )
+            puede_verificar = False
 
 
     # ========================================================
-    # MOSTRAR PANTALLA
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "error":
+            error,
+
+        "puede_verificar":
+            puede_verificar,
+
+        "correo_oculto":
+            ocultar_correo(
+                request.user.email
+            ),
+
+        **contexto_panel_seguridad(
+            request.user
+        ),
+    }
+
+
+    # ========================================================
+    # RENDER
     # ========================================================
 
     return render(
         request,
         "usuarios/verificar_activacion_2fa.html",
-        {
-            "error": error,
-
-            "puede_verificar": True,
-
-            "correo_oculto":
-                ocultar_correo(
-                    request.user.email
-                ),
-        }
+        contexto
     )
 
+
+# ============================================================
+# ============================================================
+#
+# DESACTIVACIÓN 2FA
+#
+# ============================================================
+# ============================================================
+
+
+# ============================================================
+# INICIAR DESACTIVACIÓN
+# ============================================================
 
 @login_required
 @require_POST
 def iniciar_desactivacion_2fa(request):
 
-    config_2fa, creado = (
+    # ========================================================
+    # PANEL
+    # ========================================================
+
+    panel = obtener_panel_seguridad(
+        request.user
+    )
+
+
+    ruta_perfil = panel[
+        "ruta_perfil"
+    ]
+
+
+    # ========================================================
+    # PERFIL VÁLIDO
+    # ========================================================
+
+    if panel[
+        "tipo_usuario"
+    ] not in (
+        "administrador",
+        "apicultor",
+    ):
+
+        messages.error(
+            request,
+            (
+                "No fue posible identificar "
+                "el perfil asociado a tu cuenta."
+            )
+        )
+
+
+        return redirect(
+            "login"
+        )
+
+
+    # ========================================================
+    # CONFIGURACIÓN 2FA
+    # ========================================================
+
+    config_2fa, _ = (
         Configuracion2FA.objects
         .get_or_create(
             usuario=request.user
@@ -1161,78 +1561,106 @@ def iniciar_desactivacion_2fa(request):
 
 
     # ========================================================
-    # POLÍTICA GLOBAL 2FA
+    # POLÍTICA
     # ========================================================
 
-    politica_2fa = obtener_politica_2fa(
-        request.user
+    politica_2fa = (
+        obtener_politica_2fa(
+            request.user
+        )
     )
 
 
     # ========================================================
-    # SI ES OBLIGATORIO, NO SE PUEDE DESACTIVAR
+    # 2FA OBLIGATORIO
     # ========================================================
 
-    if politica_2fa["obligatorio"]:
+    if politica_2fa[
+        "obligatorio"
+    ]:
 
         messages.warning(
             request,
-            "No puedes desactivar la autenticación "
-            "en dos pasos porque es obligatoria "
-            "según la política de seguridad del sistema."
+            (
+                "No puedes desactivar la autenticación "
+                "en dos pasos porque es obligatoria "
+                "según la política de seguridad."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # YA ESTÁ DESACTIVADO
+    # YA DESACTIVADO
     # ========================================================
 
     if not config_2fa.activo:
 
         messages.info(
             request,
-            "La autenticación en dos pasos "
-            "ya está desactivada."
+            (
+                "La autenticación en dos pasos "
+                "ya está desactivada."
+            )
         )
+
 
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
+
+    # ========================================================
+    # CORREO
+    # ========================================================
 
     if not request.user.email:
 
         messages.error(
             request,
-            "Tu cuenta no tiene un correo "
-            "electrónico registrado."
+            (
+                "Tu cuenta no tiene un correo "
+                "electrónico registrado."
+            )
         )
+
 
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
-    resultado = crear_y_enviar_codigo_2fa(
-        request,
-        request.user,
-        proposito="desactivar"
+    # ========================================================
+    # ENVIAR CÓDIGO
+    # ========================================================
+
+    resultado = (
+        crear_y_enviar_codigo_2fa(
+            request,
+            request.user,
+            proposito="desactivar"
+        )
     )
 
 
-    if not resultado["ok"]:
+    if not resultado[
+        "ok"
+    ]:
 
         messages.error(
             request,
-            resultado["error"]
+            resultado[
+                "error"
+            ]
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
@@ -1242,29 +1670,69 @@ def iniciar_desactivacion_2fa(request):
 
 
 # ============================================================
-# VERIFICAR DESACTIVACIÓN 2FA
+# VERIFICAR DESACTIVACIÓN
 # ============================================================
 
 @login_required
 def verificar_desactivacion_2fa(request):
 
     # ========================================================
-    # COMPROBAR POLÍTICA GLOBAL
+    # PANEL
     # ========================================================
 
-    politica_2fa = obtener_politica_2fa(
+    panel = obtener_panel_seguridad(
         request.user
     )
 
 
+    ruta_perfil = panel[
+        "ruta_perfil"
+    ]
+
+
     # ========================================================
-    # 2FA OBLIGATORIO
+    # PERFIL VÁLIDO
     # ========================================================
 
-    if politica_2fa["obligatorio"]:
+    if panel[
+        "tipo_usuario"
+    ] not in (
+        "administrador",
+        "apicultor",
+    ):
 
-        # Eliminar cualquier proceso de desactivación
-        # que hubiera quedado pendiente anteriormente.
+        messages.error(
+            request,
+            (
+                "No fue posible identificar "
+                "el perfil asociado a tu cuenta."
+            )
+        )
+
+
+        return redirect(
+            "login"
+        )
+
+
+    # ========================================================
+    # POLÍTICA
+    # ========================================================
+
+    politica_2fa = (
+        obtener_politica_2fa(
+            request.user
+        )
+    )
+
+
+    # ========================================================
+    # NO PERMITIR SI ES OBLIGATORIO
+    # ========================================================
+
+    if politica_2fa[
+        "obligatorio"
+    ]:
 
         if (
             request.session.get(
@@ -1281,70 +1749,70 @@ def verificar_desactivacion_2fa(request):
 
         messages.warning(
             request,
-            "No puedes desactivar la autenticación "
-            "en dos pasos porque es obligatoria "
-            "para tu cuenta."
+            (
+                "No puedes desactivar la autenticación "
+                "en dos pasos porque es obligatoria "
+                "para tu cuenta."
+            )
         )
 
 
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     # ========================================================
-    # A PARTIR DE AQUÍ CONTINÚA TU CÓDIGO ACTUAL
+    # DESAFÍO
     # ========================================================
 
-    usuario_id = request.session.get(
-        "2fa_usuario_id"
+    usuario_id = (
+        request.session.get(
+            "2fa_usuario_id"
+        )
     )
 
-    proposito = request.session.get(
-        "2fa_proposito"
-    )
 
-    # ...
-
-
-# ============================================================
-# VERIFICAR DESACTIVACIÓN 2FA
-# ============================================================
-
-@login_required
-def verificar_desactivacion_2fa(request):
-
-    usuario_id = request.session.get(
-        "2fa_usuario_id"
-    )
-
-    proposito = request.session.get(
-        "2fa_proposito"
+    proposito = (
+        request.session.get(
+            "2fa_proposito"
+        )
     )
 
 
     # ========================================================
-    # VERIFICAR DESAFÍO
+    # VALIDAR
     # ========================================================
 
     if (
-        usuario_id != request.user.pk
+        usuario_id
+        !=
+        request.user.pk
+
         or
-        proposito != "desactivar"
+
+        proposito
+        !=
+        "desactivar"
     ):
 
         messages.warning(
             request,
-            "No existe una verificación "
-            "2FA pendiente."
+            (
+                "No existe una verificación "
+                "2FA pendiente."
+            )
         )
 
+
         return redirect(
-            "mi_perfil"
+            ruta_perfil
         )
 
 
     error = None
+
+    puede_verificar = True
 
 
     # ========================================================
@@ -1353,26 +1821,34 @@ def verificar_desactivacion_2fa(request):
 
     if request.method == "POST":
 
-        codigo = request.POST.get(
-            "codigo",
-            ""
+        codigo = (
+            request.POST.get(
+                "codigo",
+                ""
+            )
+            .strip()
         )
 
 
-        resultado = verificar_codigo_2fa(
-            request,
-            codigo,
-            proposito_esperado="desactivar"
+        resultado = (
+            verificar_codigo_2fa(
+                request,
+                codigo,
+                proposito_esperado=
+                    "desactivar"
+            )
         )
 
 
         # ====================================================
-        # CÓDIGO CORRECTO
+        # CORRECTO
         # ====================================================
 
-        if resultado["ok"]:
+        if resultado[
+            "ok"
+        ]:
 
-            config_2fa, creado = (
+            config_2fa, _ = (
                 Configuracion2FA.objects
                 .get_or_create(
                     usuario=request.user
@@ -1394,6 +1870,34 @@ def verificar_desactivacion_2fa(request):
             )
 
 
+            # ================================================
+            # HISTORIAL
+            # ================================================
+
+            try:
+
+                registrar_historial_acceso(
+                    request,
+                    request.user,
+                    actividad="sistema",
+                    detalle=(
+                        "El usuario desactivó la "
+                        "autenticación en dos pasos."
+                    )
+                )
+
+            except Exception as error_historial:
+
+                print(
+                    "ERROR REGISTRANDO DESACTIVACIÓN 2FA:",
+                    error_historial
+                )
+
+
+            # ================================================
+            # LIMPIAR
+            # ================================================
+
             limpiar_desafio_2fa(
                 request
             )
@@ -1401,103 +1905,126 @@ def verificar_desactivacion_2fa(request):
 
             messages.success(
                 request,
-                "La autenticación en dos pasos "
-                "se desactivó correctamente."
+                (
+                    "La autenticación en dos pasos "
+                    "se desactivó correctamente."
+                )
             )
 
 
             return redirect(
-                "mi_perfil"
+                ruta_perfil
             )
 
 
         # ====================================================
-        # ERROR
+        # INCORRECTO
         # ====================================================
 
-        error = resultado["error"]
+        error = resultado.get(
+            "error",
+            "No fue posible verificar el código."
+        )
 
 
-        if resultado["tipo"] in [
+        if resultado.get(
+            "tipo"
+        ) in [
             "expirado",
             "bloqueado",
             "sin_desafio",
             "invalido",
         ]:
 
-            return render(
-                request,
-                "usuarios/verificar_desactivacion_2fa.html",
-                {
-                    "error": error,
+            puede_verificar = False
 
-                    "puede_verificar": False,
 
-                    "correo_oculto":
-                        ocultar_correo(
-                            request.user.email
-                        ),
-                }
-            )
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "error":
+            error,
+
+        "puede_verificar":
+            puede_verificar,
+
+        "correo_oculto":
+            ocultar_correo(
+                request.user.email
+            ),
+
+        **contexto_panel_seguridad(
+            request.user
+        ),
+    }
 
 
     return render(
         request,
         "usuarios/verificar_desactivacion_2fa.html",
-        {
-            "error": error,
-
-            "puede_verificar": True,
-
-            "correo_oculto":
-                ocultar_correo(
-                    request.user.email
-                ),
-        }
+        contexto
     )
 
 
+# ============================================================
+# ============================================================
+#
+# 2FA DURANTE EL LOGIN
+#
+# ============================================================
+# ============================================================
 
-# ============================================================
-# VERIFICAR 2FA DURANTE EL LOGIN
-# ============================================================
 
 def verificar_login_2fa(request):
 
     # ========================================================
-    # SI YA ESTÁ AUTENTICADO
+    # YA AUTENTICADO
     # ========================================================
 
     if request.user.is_authenticated:
 
-        if Administrador.objects.filter(
-            user=request.user
-        ).exists():
+        panel = obtener_panel_seguridad(
+            request.user
+        )
 
-            return redirect(
-                "dashboard_admin"
-            )
+
+        return redirect(
+            panel[
+                "ruta_dashboard"
+            ]
+        )
 
 
     # ========================================================
     # DATOS DEL DESAFÍO
     # ========================================================
 
-    usuario_id = request.session.get(
-        "2fa_usuario_id"
+    usuario_id = (
+        request.session.get(
+            "2fa_usuario_id"
+        )
     )
 
-    proposito = request.session.get(
-        "2fa_proposito"
+
+    proposito = (
+        request.session.get(
+            "2fa_proposito"
+        )
     )
 
-    backend = request.session.get(
-        "2fa_backend"
+
+    backend = (
+        request.session.get(
+            "2fa_backend"
+        )
     )
 
 
     # ========================================================
-    # NO EXISTE LOGIN 2FA PENDIENTE
+    # DESAFÍO INEXISTENTE
     # ========================================================
 
     if (
@@ -1510,11 +2037,15 @@ def verificar_login_2fa(request):
             request
         )
 
+
         messages.warning(
             request,
-            "No existe una verificación "
-            "de inicio de sesión pendiente."
+            (
+                "No existe una verificación "
+                "de inicio de sesión pendiente."
+            )
         )
+
 
         return redirect(
             "login"
@@ -1522,7 +2053,7 @@ def verificar_login_2fa(request):
 
 
     # ========================================================
-    # OBTENER USUARIO
+    # USUARIO
     # ========================================================
 
     User = get_user_model()
@@ -1544,11 +2075,15 @@ def verificar_login_2fa(request):
             request
         )
 
+
         messages.error(
             request,
-            "No fue posible completar "
-            "la autenticación."
+            (
+                "No fue posible completar "
+                "la autenticación."
+            )
         )
+
 
         return redirect(
             "login"
@@ -1556,7 +2091,42 @@ def verificar_login_2fa(request):
 
 
     # ========================================================
-    # POLÍTICA GLOBAL 2FA
+    # PERFIL
+    # ========================================================
+
+    panel = obtener_panel_seguridad(
+        user
+    )
+
+
+    if panel[
+        "tipo_usuario"
+    ] not in (
+        "administrador",
+        "apicultor",
+    ):
+
+        limpiar_desafio_2fa(
+            request
+        )
+
+
+        messages.error(
+            request,
+            (
+                "Tu usuario no tiene "
+                "un perfil asignado."
+            )
+        )
+
+
+        return redirect(
+            "login"
+        )
+
+
+    # ========================================================
+    # POLÍTICA GLOBAL
     # ========================================================
 
     politica_2fa = (
@@ -1566,10 +2136,6 @@ def verificar_login_2fa(request):
     )
 
 
-    # ========================================================
-    # 2FA DESHABILITADO GLOBALMENTE
-    # ========================================================
-
     if not politica_2fa[
         "permitir_2fa"
     ]:
@@ -1578,13 +2144,17 @@ def verificar_login_2fa(request):
             request
         )
 
+
         messages.warning(
             request,
-            "La autenticación en dos pasos "
-            "fue deshabilitada por la "
-            "configuración del sistema. "
-            "Inicia sesión nuevamente."
+            (
+                "La autenticación en dos pasos "
+                "fue deshabilitada por la "
+                "configuración del sistema. "
+                "Inicia sesión nuevamente."
+            )
         )
+
 
         return redirect(
             "login"
@@ -1592,10 +2162,10 @@ def verificar_login_2fa(request):
 
 
     # ========================================================
-    # CONFIGURACIÓN 2FA DEL USUARIO
+    # CONFIGURACIÓN
     # ========================================================
 
-    config_2fa, creado = (
+    config_2fa, _ = (
         Configuracion2FA.objects
         .get_or_create(
             usuario=user
@@ -1615,15 +2185,6 @@ def verificar_login_2fa(request):
     )
 
 
-    # ========================================================
-    # VALIDAR QUE EL DESAFÍO SIGA SIENDO VÁLIDO
-    #
-    # Permitimos continuar si:
-    #
-    # 1. El usuario ya tiene 2FA activo.
-    # 2. El sistema está obligándolo a activarlo.
-    # ========================================================
-
     if (
         not config_2fa.activo
         and
@@ -1634,21 +2195,21 @@ def verificar_login_2fa(request):
             request
         )
 
+
         messages.warning(
             request,
-            "La verificación en dos pasos "
-            "ya no está disponible. "
-            "Inicia sesión nuevamente."
+            (
+                "La verificación en dos pasos "
+                "ya no está disponible. "
+                "Inicia sesión nuevamente."
+            )
         )
+
 
         return redirect(
             "login"
         )
 
-
-    # ========================================================
-    # VARIABLES DE LA PANTALLA
-    # ========================================================
 
     error = None
 
@@ -1661,32 +2222,41 @@ def verificar_login_2fa(request):
 
     if request.method == "POST":
 
-        codigo = request.POST.get(
-            "codigo",
-            ""
+        codigo = (
+            request.POST.get(
+                "codigo",
+                ""
+            )
+            .strip()
         )
 
 
-        resultado = verificar_codigo_2fa(
-            request,
-            codigo,
-            proposito_esperado="login"
+        resultado = (
+            verificar_codigo_2fa(
+                request,
+                codigo,
+                proposito_esperado=
+                    "login"
+            )
         )
 
 
         # ====================================================
-        # CÓDIGO CORRECTO
+        # CORRECTO
         # ====================================================
 
-        if resultado["ok"]:
+        if resultado[
+            "ok"
+        ]:
 
             # ================================================
-            # ACTIVACIÓN OBLIGATORIA DE 2FA
+            # ACTIVACIÓN OBLIGATORIA
             # ================================================
 
             if forzar_activacion:
 
                 config_2fa.activo = True
+
 
                 config_2fa.fecha_activacion = (
                     timezone.now()
@@ -1701,10 +2271,6 @@ def verificar_login_2fa(request):
                     ]
                 )
 
-
-                # ============================================
-                # HISTORIAL DE ACTIVACIÓN OBLIGATORIA
-                # ============================================
 
                 try:
 
@@ -1728,7 +2294,7 @@ def verificar_login_2fa(request):
 
 
             # ================================================
-            # GUARDAR BACKEND ANTES DE LIMPIAR
+            # GUARDAR BACKEND
             # ================================================
 
             backend_login = backend
@@ -1744,19 +2310,6 @@ def verificar_login_2fa(request):
 
             # ================================================
             # LIMPIAR DESAFÍO
-            #
-            # Aquí se elimina:
-            #
-            # 2fa_usuario_id
-            # 2fa_codigo_hash
-            # 2fa_nonce
-            # 2fa_expira
-            # 2fa_intentos
-            # 2fa_proposito
-            # 2fa_backend
-            # 2fa_reenvios
-            # 2fa_ultimo_envio
-            # 2fa_forzar_activacion
             # ================================================
 
             limpiar_desafio_2fa(
@@ -1765,7 +2318,7 @@ def verificar_login_2fa(request):
 
 
             # ================================================
-            # AHORA SÍ INICIAMOS SESIÓN
+            # HACER LOGIN
             # ================================================
 
             login(
@@ -1776,7 +2329,7 @@ def verificar_login_2fa(request):
 
 
             # ================================================
-            # REGISTRAR SESIÓN ACTIVA
+            # REGISTRAR SESIÓN
             # ================================================
 
             try:
@@ -1795,7 +2348,7 @@ def verificar_login_2fa(request):
 
 
             # ================================================
-            # REGISTRAR HISTORIAL DEL LOGIN
+            # HISTORIAL
             # ================================================
 
             try:
@@ -1819,81 +2372,29 @@ def verificar_login_2fa(request):
 
 
             # ================================================
-            # ADMINISTRADOR
+            # DASHBOARD SEGÚN ROL
             # ================================================
-
-            if Administrador.objects.filter(
-                user=user
-            ).exists():
-
-                return redirect(
-                    "dashboard_admin"
-                )
-
-
-            # ================================================
-            # APICULTOR
-            # ================================================
-
-            # Cuando tengas listo el dashboard
-            # del apicultor puedes activar esto.
-
-            if Apicultor.objects.filter(
-                user=user
-            ).exists():
-            
-                return redirect(
-                    "dashboard_apicultor"
-                )
-
-
-            # ================================================
-            # SIN PERFIL
-            # ================================================
-
-            try:
-
-                cerrar_registro_sesion_actual(
-                    request,
-                    motivo="sin_perfil"
-                )
-
-            except Exception:
-
-                pass
-
-
-            logout(
-                request
-            )
-
-
-            messages.error(
-                request,
-                "Tu usuario no tiene "
-                "un perfil asignado."
-            )
-
 
             return redirect(
-                "login"
+                panel[
+                    "ruta_dashboard"
+                ]
             )
 
 
         # ====================================================
-        # CÓDIGO INCORRECTO
+        # INCORRECTO
         # ====================================================
 
-        error = resultado[
-            "error"
-        ]
+        error = resultado.get(
+            "error",
+            "No fue posible verificar el código."
+        )
 
 
-        # ====================================================
-        # EXPIRADO / BLOQUEADO / INVÁLIDO
-        # ====================================================
-
-        if resultado["tipo"] in [
+        if resultado.get(
+            "tipo"
+        ) in [
             "expirado",
             "bloqueado",
             "sin_desafio",
@@ -1904,11 +2405,7 @@ def verificar_login_2fa(request):
 
 
     # ========================================================
-    # ESTADO DEL REENVÍO
-    #
-    # IMPORTANTE:
-    # Esto va fuera del if request.method == "POST"
-    # para que también funcione cuando la página carga por GET.
+    # ESTADO DE REENVÍO
     # ========================================================
 
     estado_reenvio = (
@@ -1919,13 +2416,14 @@ def verificar_login_2fa(request):
 
 
     # ========================================================
-    # MOSTRAR PANTALLA
+    # RENDER
     # ========================================================
 
     return render(
         request,
         "usuarios/verificar_login_2fa.html",
         {
+
             "error":
                 error,
 
@@ -1960,35 +2458,46 @@ def verificar_login_2fa(request):
     )
 
 
-
 # ============================================================
-# REENVIAR CÓDIGO 2FA DEL LOGIN
+# REENVIAR CÓDIGO DEL LOGIN
 # ============================================================
 
 @require_POST
 def reenviar_login_2fa(request):
 
     # ========================================================
-    # SI YA ESTÁ AUTENTICADO
+    # YA AUTENTICADO
     # ========================================================
 
     if request.user.is_authenticated:
 
+        panel = obtener_panel_seguridad(
+            request.user
+        )
+
+
         return redirect(
-            "dashboard_admin"
+            panel[
+                "ruta_dashboard"
+            ]
         )
 
 
     # ========================================================
-    # DATOS PENDIENTES
+    # DESAFÍO
     # ========================================================
 
-    usuario_id = request.session.get(
-        "2fa_usuario_id"
+    usuario_id = (
+        request.session.get(
+            "2fa_usuario_id"
+        )
     )
 
-    proposito = request.session.get(
-        "2fa_proposito"
+
+    proposito = (
+        request.session.get(
+            "2fa_proposito"
+        )
     )
 
 
@@ -2000,9 +2509,12 @@ def reenviar_login_2fa(request):
 
         messages.error(
             request,
-            "No existe una verificación "
-            "de inicio de sesión pendiente."
+            (
+                "No existe una verificación "
+                "de inicio de sesión pendiente."
+            )
         )
+
 
         return redirect(
             "login"
@@ -2010,7 +2522,7 @@ def reenviar_login_2fa(request):
 
 
     # ========================================================
-    # OBTENER USUARIO
+    # USUARIO
     # ========================================================
 
     User = get_user_model()
@@ -2032,11 +2544,15 @@ def reenviar_login_2fa(request):
             request
         )
 
+
         messages.error(
             request,
-            "No fue posible completar "
-            "la verificación."
+            (
+                "No fue posible completar "
+                "la verificación."
+            )
         )
+
 
         return redirect(
             "login"
@@ -2047,26 +2563,35 @@ def reenviar_login_2fa(request):
     # REENVIAR
     # ========================================================
 
-    resultado = reenviar_codigo_2fa(
-        request,
-        user,
-        proposito_esperado="login"
+    resultado = (
+        reenviar_codigo_2fa(
+            request,
+            user,
+            proposito_esperado=
+                "login"
+        )
     )
 
 
-    if resultado["ok"]:
+    if resultado[
+        "ok"
+    ]:
 
         messages.success(
             request,
-            "Enviamos un nuevo código "
-            "de verificación a tu correo."
+            (
+                "Enviamos un nuevo código "
+                "de verificación a tu correo."
+            )
         )
 
     else:
 
         messages.error(
             request,
-            resultado["error"]
+            resultado[
+                "error"
+            ]
         )
 
 
@@ -2075,10 +2600,17 @@ def reenviar_login_2fa(request):
     )
 
 
+# ============================================================
+# ============================================================
+#
+# RECUPERACIÓN DE CONTRASEÑA
+#
+# ============================================================
+# ============================================================
 
 
 # ============================================================
-# SOLICITAR RECUPERACIÓN DE CONTRASEÑA
+# SOLICITAR RECUPERACIÓN
 # ============================================================
 
 @require_POST
@@ -2096,8 +2628,6 @@ def solicitar_recuperacion_password(request):
 
     # ========================================================
     # MENSAJE GENÉRICO
-    #
-    # No debemos revelar si un correo existe o no.
     # ========================================================
 
     mensaje_generico = (
@@ -2114,10 +2644,15 @@ def solicitar_recuperacion_password(request):
             mensaje_generico
         )
 
+
         return redirect(
             "login"
         )
 
+
+    # ========================================================
+    # BUSCAR USUARIO
+    # ========================================================
 
     User = get_user_model()
 
@@ -2142,6 +2677,7 @@ def solicitar_recuperacion_password(request):
             request,
             mensaje_generico
         )
+
 
         return redirect(
             "login"
@@ -2171,9 +2707,13 @@ def solicitar_recuperacion_password(request):
 
             usuario,
 
-            datos["codigo"],
+            datos[
+                "codigo"
+            ],
 
-            datos["token"],
+            datos[
+                "token"
+            ],
         )
     )
 
@@ -2187,8 +2727,10 @@ def solicitar_recuperacion_password(request):
 
         messages.error(
             request,
-            "No fue posible enviar el correo "
-            "de recuperación. Intenta nuevamente."
+            (
+                "No fue posible enviar el correo "
+                "de recuperación. Intenta nuevamente."
+            )
         )
 
 
@@ -2208,7 +2750,6 @@ def solicitar_recuperacion_password(request):
     )
 
 
-
 # ============================================================
 # RECUPERAR CONTRASEÑA MEDIANTE LINK
 # ============================================================
@@ -2219,7 +2760,7 @@ def recuperar_password(
 ):
 
     # ========================================================
-    # BUSCAR SOLICITUD
+    # BUSCAR RECUPERACIÓN
     # ========================================================
 
     recuperacion = (
@@ -2230,16 +2771,19 @@ def recuperar_password(
 
 
     # ========================================================
-    # TOKEN INVÁLIDO O EXPIRADO
+    # INVÁLIDA / EXPIRADA
     # ========================================================
 
     if not recuperacion:
 
         messages.error(
             request,
-            "El enlace de recuperación es inválido "
-            "o ha expirado. Solicita uno nuevo."
+            (
+                "El enlace de recuperación es inválido "
+                "o ha expirado. Solicita uno nuevo."
+            )
         )
+
 
         return redirect(
             "login"
@@ -2248,11 +2792,12 @@ def recuperar_password(
 
     usuario = recuperacion.usuario
 
+
     error_recuperacion = None
 
 
     # ========================================================
-    # POST - CAMBIAR CONTRASEÑA
+    # POST
     # ========================================================
 
     if request.method == "POST":
@@ -2262,14 +2807,20 @@ def recuperar_password(
             ""
         )
 
-        password_nueva = request.POST.get(
-            "password_nueva",
-            ""
+
+        password_nueva = (
+            request.POST.get(
+                "password_nueva",
+                ""
+            )
         )
 
-        password_confirmacion = request.POST.get(
-            "password_confirmacion",
-            ""
+
+        password_confirmacion = (
+            request.POST.get(
+                "password_confirmacion",
+                ""
+            )
         )
 
 
@@ -2286,15 +2837,19 @@ def recuperar_password(
         )
 
 
-        if not resultado_codigo["ok"]:
+        if not resultado_codigo[
+            "ok"
+        ]:
 
             error_recuperacion = (
-                resultado_codigo["error"]
+                resultado_codigo[
+                    "error"
+                ]
             )
 
 
         # ====================================================
-        # CONTRASEÑAS
+        # CONTRASEÑA VACÍA
         # ====================================================
 
         elif not password_nueva:
@@ -2303,6 +2858,10 @@ def recuperar_password(
                 "Debes ingresar una nueva contraseña."
             )
 
+
+        # ====================================================
+        # NO COINCIDEN
+        # ====================================================
 
         elif (
             password_nueva
@@ -2315,11 +2874,11 @@ def recuperar_password(
             )
 
 
-        else:
+        # ====================================================
+        # VALIDADORES DJANGO
+        # ====================================================
 
-            # ================================================
-            # VALIDADORES OFICIALES DE DJANGO
-            # ================================================
+        else:
 
             try:
 
@@ -2347,6 +2906,7 @@ def recuperar_password(
                 password_nueva
             )
 
+
             usuario.save(
                 update_fields=[
                     "password"
@@ -2354,24 +2914,29 @@ def recuperar_password(
             )
 
 
-            ahora = timezone.now()
+            ahora = (
+                timezone.now()
+            )
 
 
             # ================================================
-            # INVALIDAR SOLICITUDES DE RECUPERACIÓN
+            # INVALIDAR RECUPERACIONES
             # ================================================
 
             RecuperacionPassword.objects.filter(
                 usuario=usuario,
                 usado=False
             ).update(
+
                 usado=True,
-                fecha_uso=ahora
+
+                fecha_uso=
+                    ahora,
             )
 
 
             # ================================================
-            # CERRAR SESIONES ACTIVAS DEL USUARIO
+            # CERRAR TODAS LAS SESIONES ACTIVAS
             # ================================================
 
             sesiones_usuario = (
@@ -2384,6 +2949,7 @@ def recuperar_password(
 
 
             session_keys = list(
+
                 sesiones_usuario
                 .values_list(
                     "session_key",
@@ -2395,14 +2961,20 @@ def recuperar_password(
             if session_keys:
 
                 Session.objects.filter(
-                    session_key__in=session_keys
+                    session_key__in=
+                        session_keys
                 ).delete()
 
 
             sesiones_usuario.update(
+
                 activa=False,
-                fecha_cierre=ahora,
-                motivo_cierre="recuperacion_password"
+
+                fecha_cierre=
+                    ahora,
+
+                motivo_cierre=
+                    "recuperacion_password",
             )
 
 
@@ -2415,7 +2987,8 @@ def recuperar_password(
                 registrar_historial_acceso(
                     request,
                     usuario,
-                    actividad="cambio_password",
+                    actividad=
+                        "cambio_password",
                     detalle=(
                         "Contraseña restablecida mediante "
                         "recuperación por correo."
@@ -2432,8 +3005,10 @@ def recuperar_password(
 
             messages.success(
                 request,
-                "Tu contraseña fue restablecida "
-                "correctamente. Ya puedes iniciar sesión."
+                (
+                    "Tu contraseña fue restablecida "
+                    "correctamente. Ya puedes iniciar sesión."
+                )
             )
 
 
@@ -2443,14 +3018,16 @@ def recuperar_password(
 
 
     # ========================================================
-    # ABRIR LOGIN CON MODAL
+    # MOSTRAR MODAL
     # ========================================================
 
     return render(
         request,
         "usuarios/login.html",
         {
-            "abrir_modal_password": True,
+
+            "abrir_modal_password":
+                True,
 
             "token_recuperacion":
                 token,
