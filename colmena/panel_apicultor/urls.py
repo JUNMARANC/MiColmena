@@ -30,6 +30,11 @@ from panel_apicultor.views import (
     agenda_apicultor,
     crear_evento_apicultor,
     actualizar_estado_evento_apicultor,
+
+
+    #perfil
+    perfil_apicultor,
+    cambiar_password_apicultor,
 )
 
 
@@ -202,4 +207,11 @@ urlpatterns = [
         actualizar_estado_evento_apicultor,
         name="actualizar_estado_evento_apicultor",
     ),
+
+    # ============================================================
+    # PERFIL
+    # ============================================================
+
+    path("perfil/",perfil_apicultor,name="perfil_apicultor",),
+    path("perfil/cambiar-password/",cambiar_password_apicultor,name="cambiar_password_apicultor"),
 ]

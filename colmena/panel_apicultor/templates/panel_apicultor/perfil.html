@@ -1,0 +1,2146 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+    Mi Perfil | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+    Mi Perfil
+{% endblock %}
+
+
+{% block page_subtitle %}
+    Consulta y actualiza tu información personal y tus datos como apicultor
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/perfil.css' %}?v=5"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="perfil-apicultor-page pagina-mi-perfil">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="perfil-encabezado">
+
+        <div class="perfil-encabezado-contenido">
+
+            <span class="perfil-etiqueta">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+                MI CUENTA
+
+            </span>
+
+
+            <h1>
+                Mi perfil
+            </h1>
+
+
+            <p>
+                Administra tu información personal,
+                datos de contacto y fotografía de perfil.
+            </p>
+
+        </div>
+
+
+        <div class="perfil-encabezado-icono">
+
+            <i class="bi bi-person-circle"></i>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MENSAJES DJANGO
+    ====================================================== -->
+
+    {% if messages %}
+
+        <div class="perfil-mensajes">
+
+            {% for message in messages %}
+
+                <div
+                    class="
+                        perfil-alerta
+
+                        {% if message.tags == 'success' %}
+                            perfil-alerta-success
+                        {% elif message.tags == 'error' %}
+                            perfil-alerta-error
+                        {% elif message.tags == 'warning' %}
+                            perfil-alerta-warning
+                        {% else %}
+                            perfil-alerta-info
+                        {% endif %}
+                    "
+                >
+
+                    <div class="perfil-alerta-icono">
+
+                        {% if message.tags == "success" %}
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                        {% elif message.tags == "error" %}
+
+                            <i class="bi bi-exclamation-circle-fill"></i>
+
+                        {% elif message.tags == "warning" %}
+
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <span>
+                        {{ message }}
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         GRID PRINCIPAL
+    ====================================================== -->
+
+    <div class="perfil-grid">
+
+
+        <!-- =================================================
+             COLUMNA IZQUIERDA
+        ================================================== -->
+
+        <aside class="perfil-columna-lateral">
+
+
+            <!-- =============================================
+                 TARJETA IDENTIDAD
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-identidad">
+
+
+                <!-- FOTO -->
+
+                <div class="perfil-avatar-contenedor">
+
+
+                    <div class="perfil-avatar-principal">
+
+
+                        {% if foto %}
+
+                            <img
+                                src="{{ foto }}"
+                                alt="Foto de perfil"
+                                id="fotoPerfilPrincipal"
+                            >
+
+
+                            <div
+                                class="perfil-avatar-sin-foto d-none"
+                                id="iconoPerfilPrincipal"
+                            >
+
+                                <i class="bi bi-person-fill"></i>
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <img
+                                src=""
+                                alt="Vista previa de foto"
+                                id="fotoPerfilPrincipal"
+                                class="d-none"
+                            >
+
+
+                            <div
+                                class="perfil-avatar-sin-foto"
+                                id="iconoPerfilPrincipal"
+                            >
+
+                                <i class="bi bi-person-fill"></i>
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <span class="perfil-avatar-estado">
+
+                        <i class="bi bi-check-lg"></i>
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- NOMBRE -->
+
+                <div class="perfil-identidad">
+
+
+                    <h2>
+
+                        {% if usuario.get_full_name %}
+
+                            {{ usuario.get_full_name }}
+
+                        {% else %}
+
+                            {{ usuario.username }}
+
+                        {% endif %}
+
+                    </h2>
+
+
+                    <span class="perfil-badge-rol">
+
+                        <i class="bi bi-person-badge-fill"></i>
+
+                        Apicultor
+
+                    </span>
+
+
+                    {% if zona_trabajo %}
+
+                        <p class="perfil-zona">
+
+                            <i class="bi bi-geo-alt-fill"></i>
+
+                            {{ zona_trabajo }}
+
+                        </p>
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- INFORMACIÓN RÁPIDA -->
+
+                <div class="perfil-resumen">
+
+
+                    <!-- USUARIO -->
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-person-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Usuario
+                            </span>
+
+                            <strong>
+                                {{ usuario.username }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- CORREO -->
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-envelope-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Correo
+                            </span>
+
+                            <strong>
+                                {{ usuario.email|default:"Sin registrar" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- TELÉFONO -->
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-telephone-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Teléfono
+                            </span>
+
+                            <strong>
+
+                                {% if telefono %}
+
+                                    {{ telefono }}
+
+                                {% else %}
+
+                                    Sin registrar
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ESTADO -->
+
+                    <div class="perfil-resumen-item">
+
+                        <div class="perfil-resumen-icono">
+
+                            <i class="bi bi-shield-check"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Estado de la cuenta
+                            </span>
+
+
+                            {% if usuario.is_active %}
+
+                                <strong class="perfil-estado-activo">
+
+                                    <i class="bi bi-circle-fill"></i>
+
+                                    Activa
+
+                                </strong>
+
+                            {% else %}
+
+                                <strong class="perfil-estado-inactivo">
+
+                                    <i class="bi bi-circle-fill"></i>
+
+                                    Inactiva
+
+                                </strong>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+
+            <!-- =============================================
+                 INFORMACIÓN COMO APICULTOR
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-apicultor">
+
+
+                <div class="perfil-card-titulo">
+
+                    <div class="perfil-card-icono">
+
+                        <i class="bi bi-person-vcard-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Información del apicultor
+                        </h3>
+
+                        <p>
+                            Datos registrados en Mi Colmena.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="perfil-datos-apicultor">
+
+
+                    <!-- IDENTIFICACIÓN -->
+
+                    <div class="perfil-dato">
+
+                        <span>
+                            Identificación
+                        </span>
+
+                        <strong>
+
+                            {% if identificacion %}
+
+                                {{ identificacion }}
+
+                            {% else %}
+
+                                Sin registrar
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <!-- ZONA -->
+
+                    <div class="perfil-dato">
+
+                        <span>
+                            Zona de trabajo
+                        </span>
+
+                        <strong>
+
+                            {% if zona_trabajo %}
+
+                                {{ zona_trabajo }}
+
+                            {% else %}
+
+                                Sin registrar
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <!-- EXPERIENCIA -->
+
+                    <div class="perfil-dato">
+
+                        <span>
+                            Experiencia
+                        </span>
+
+                        <strong>
+
+                            {% if experiencia != None %}
+
+                                {{ experiencia }}
+
+                                {% if experiencia == 1 %}
+                                    año
+                                {% else %}
+                                    años
+                                {% endif %}
+
+                            {% else %}
+
+                                Sin registrar
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <!-- ROL -->
+
+                    <div class="perfil-dato">
+
+                        <span>
+                            Rol
+                        </span>
+
+                        <strong class="perfil-rol">
+
+                            <i class="bi bi-person-badge-fill"></i>
+
+                            Apicultor
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+
+            <!-- =============================================
+                 INFORMACIÓN DE LA CUENTA
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-seguridad">
+
+
+                <div class="perfil-card-titulo">
+
+                    <div class="perfil-card-icono">
+
+                        <i class="bi bi-shield-lock-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Información de la cuenta
+                        </h3>
+
+                        <p>
+                            Datos de acceso al sistema.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="perfil-datos-apicultor">
+
+
+                    <!-- ÚLTIMO ACCESO -->
+
+                    <div class="perfil-dato">
+
+                        <span>
+                            Último acceso
+                        </span>
+
+                        <strong>
+
+                            {% if usuario.last_login %}
+
+                                {{ usuario.last_login|date:"d/m/Y H:i" }}
+
+                            {% else %}
+
+                                Sin registros
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <!-- FECHA CREACIÓN -->
+
+                    <div class="perfil-dato">
+
+                        <span>
+                            Cuenta creada
+                        </span>
+
+                        <strong>
+
+                            {% if usuario.date_joined %}
+
+                                {{ usuario.date_joined|date:"d/m/Y" }}
+
+                            {% else %}
+
+                                Sin registrar
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+        </aside>
+
+
+
+        <!-- =================================================
+             COLUMNA DERECHA
+        ================================================== -->
+
+        <div class="perfil-contenido-principal">
+
+
+            <!-- =============================================
+                 FORMULARIO INFORMACIÓN PERSONAL
+            ============================================== -->
+
+            <article class="perfil-card perfil-card-formulario">
+
+
+                <!-- HEADER -->
+
+                <div class="perfil-card-header">
+
+                    <div class="perfil-card-titulo">
+
+                        <div class="perfil-card-icono">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Editar información
+                            </h3>
+
+                            <p>
+                                Mantén actualizados tus datos personales
+                                y de contacto.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FORMULARIO
+                ========================================== -->
+
+                <form
+                    method="POST"
+                    action="{% url 'perfil_apicultor' %}"
+                    enctype="multipart/form-data"
+                    id="formPerfilApicultor"
+                    novalidate
+                >
+
+                    {% csrf_token %}
+
+
+                    <input
+                        type="hidden"
+                        name="eliminar_foto"
+                        id="eliminarFotoPerfil"
+                        value="0"
+                    >
+
+
+
+                    <!-- =====================================
+                         FOTOGRAFÍA
+                    ====================================== -->
+
+                    <section class="perfil-seccion-formulario">
+
+
+                        <div class="perfil-seccion-titulo">
+
+                            <div>
+
+                                <h4>
+                                    Fotografía de perfil
+                                </h4>
+
+                                <p>
+                                    Selecciona una fotografía para
+                                    identificar tu cuenta.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="perfil-foto-edicion">
+
+
+                            <!-- PREVIEW -->
+
+                            <div class="perfil-foto-preview">
+
+
+                                {% if foto %}
+
+                                    <img
+                                        src="{{ foto }}"
+                                        alt="Foto de perfil"
+                                        id="imagenPreviewPerfil"
+                                    >
+
+
+                                    <div
+                                        class="perfil-preview-icono d-none"
+                                        id="iconoPreviewPerfil"
+                                    >
+
+                                        <i class="bi bi-person-fill"></i>
+
+                                    </div>
+
+
+                                {% else %}
+
+
+                                    <img
+                                        src=""
+                                        alt="Vista previa"
+                                        id="imagenPreviewPerfil"
+                                        class="d-none"
+                                    >
+
+
+                                    <div
+                                        class="perfil-preview-icono"
+                                        id="iconoPreviewPerfil"
+                                    >
+
+                                        <i class="bi bi-person-fill"></i>
+
+                                    </div>
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <!-- CONTROLES -->
+
+                            <div class="perfil-foto-controles">
+
+
+                                <h5>
+                                    Tu fotografía
+                                </h5>
+
+
+                                <p>
+                                    Formatos permitidos:
+                                    JPG, PNG o WEBP.
+                                    Tamaño máximo: 5 MB.
+                                </p>
+
+
+
+                                <div class="perfil-foto-botones">
+
+
+                                    <label
+                                        for="fotoperfil"
+                                        class="btn-cambiar-foto"
+                                    >
+
+                                        <i class="bi bi-camera-fill"></i>
+
+                                        <span>
+                                            Cambiar foto
+                                        </span>
+
+                                    </label>
+
+
+
+                                    <input
+                                        type="file"
+                                        id="fotoperfil"
+                                        name="fotoperfil"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        class="d-none"
+                                    >
+
+
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            btn-quitar-foto
+
+                                            {% if not foto %}
+                                                d-none
+                                            {% endif %}
+                                        "
+                                        id="btnQuitarFotoPerfil"
+                                    >
+
+                                        <i class="bi bi-trash3-fill"></i>
+
+                                        <span>
+                                            Quitar
+                                        </span>
+
+                                    </button>
+
+
+                                </div>
+
+
+
+                                <span
+                                    class="perfil-error-foto d-none"
+                                    id="errorFotoPerfil"
+                                >
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+                    <div class="perfil-separador"></div>
+
+
+
+                    <!-- =====================================
+                         INFORMACIÓN PERSONAL
+                    ====================================== -->
+
+                    <section class="perfil-seccion-formulario">
+
+
+                        <div class="perfil-seccion-titulo">
+
+                            <div>
+
+                                <h4>
+                                    Información personal
+                                </h4>
+
+                                <p>
+                                    Datos asociados a tu cuenta.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="row g-4">
+
+
+                            <!-- NOMBRES -->
+
+                            <div class="col-md-6">
+
+
+                                <label
+                                    for="nombresPerfil"
+                                    class="form-label"
+                                >
+
+                                    Nombres
+
+                                    <span class="campo-obligatorio">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="perfil-input-contenedor">
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-person"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="nombresPerfil"
+                                        name="nombres"
+                                        value="{{ usuario.first_name }}"
+                                        maxlength="150"
+                                        autocomplete="given-name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="invalid-feedback">
+                                    Ingresa tus nombres.
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- APELLIDOS -->
+
+                            <div class="col-md-6">
+
+
+                                <label
+                                    for="apellidosPerfil"
+                                    class="form-label"
+                                >
+
+                                    Apellidos
+
+                                    <span class="campo-obligatorio">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="perfil-input-contenedor">
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-person"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="apellidosPerfil"
+                                        name="apellidos"
+                                        value="{{ usuario.last_name }}"
+                                        maxlength="150"
+                                        autocomplete="family-name"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="invalid-feedback">
+                                    Ingresa tus apellidos.
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- CORREO -->
+
+                            <div class="col-md-6">
+
+
+                                <label
+                                    for="correoPerfil"
+                                    class="form-label"
+                                >
+
+                                    Correo electrónico
+
+                                    <span class="campo-obligatorio">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="perfil-input-contenedor">
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-envelope"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        id="correoPerfil"
+                                        name="correo"
+                                        value="{{ usuario.email }}"
+                                        maxlength="254"
+                                        autocomplete="email"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="invalid-feedback">
+                                    Ingresa un correo electrónico válido.
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- TELÉFONO -->
+
+                            <div class="col-md-6">
+
+
+                                <label
+                                    for="telefonoPerfil"
+                                    class="form-label"
+                                >
+                                    Teléfono
+                                </label>
+
+
+                                <div class="perfil-input-contenedor">
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-telephone"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="tel"
+                                        class="form-control"
+                                        id="telefonoPerfil"
+                                        name="telefono"
+                                        value="{{ telefono }}"
+                                        maxlength="20"
+                                        inputmode="numeric"
+                                        autocomplete="tel"
+                                        placeholder="Ejemplo: 3101234567"
+                                    >
+
+                                </div>
+
+
+                                <small class="perfil-ayuda">
+                                    Solo números.
+                                </small>
+
+                            </div>
+
+
+
+                            <!-- IDENTIFICACIÓN -->
+
+                            <div class="col-md-6">
+
+
+                                <label
+                                    for="identificacionPerfil"
+                                    class="form-label"
+                                >
+                                    Identificación
+                                </label>
+
+
+                                <div
+                                    class="
+                                        perfil-input-contenedor
+                                        perfil-input-bloqueado
+                                    "
+                                >
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-credit-card-2-front"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="identificacionPerfil"
+                                        value="{{ identificacion }}"
+                                        readonly
+                                        disabled
+                                    >
+
+
+                                    <span class="perfil-input-candado">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                    </span>
+
+                                </div>
+
+
+                                <small class="perfil-ayuda">
+                                    La identificación no puede modificarse
+                                    desde tu perfil.
+                                </small>
+
+                            </div>
+
+
+
+                            <!-- USERNAME -->
+
+                            <div class="col-md-6">
+
+
+                                <label
+                                    for="usernamePerfil"
+                                    class="form-label"
+                                >
+                                    Nombre de usuario
+                                </label>
+
+
+                                <div
+                                    class="
+                                        perfil-input-contenedor
+                                        perfil-input-bloqueado
+                                    "
+                                >
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-at"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="usernamePerfil"
+                                        value="{{ usuario.username }}"
+                                        readonly
+                                        disabled
+                                    >
+
+
+                                    <span class="perfil-input-candado">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                    </span>
+
+                                </div>
+
+
+                                <small class="perfil-ayuda">
+                                    El nombre de usuario no se modifica
+                                    desde esta sección.
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+                    <div class="perfil-separador"></div>
+
+
+
+                    <!-- =====================================
+                         INFORMACIÓN LABORAL
+                    ====================================== -->
+
+                    <section class="perfil-seccion-formulario">
+
+
+                        <div class="perfil-seccion-titulo">
+
+                            <div>
+
+                                <h4>
+                                    Información como apicultor
+                                </h4>
+
+                                <p>
+                                    Información relacionada con tu actividad
+                                    dentro de Mi Colmena.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="row g-4">
+
+
+                            <!-- ZONA DE TRABAJO -->
+
+                            <div class="col-md-7">
+
+
+                                <label
+                                    for="zonaTrabajoPerfil"
+                                    class="form-label"
+                                >
+                                    Zona de trabajo
+                                </label>
+
+
+                                <div class="perfil-input-contenedor">
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-geo-alt"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="zonaTrabajoPerfil"
+                                        name="zona_trabajo"
+                                        value="{{ zona_trabajo }}"
+                                        maxlength="100"
+                                        placeholder="Ejemplo: Urrao, Antioquia"
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- EXPERIENCIA -->
+
+                            <div class="col-md-5">
+
+
+                                <label
+                                    for="experienciaPerfil"
+                                    class="form-label"
+                                >
+                                    Años de experiencia
+                                </label>
+
+
+                                <div class="perfil-input-contenedor">
+
+                                    <span class="perfil-input-icono">
+
+                                        <i class="bi bi-award"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="experienciaPerfil"
+                                        name="experiencia"
+                                        value="{% if experiencia != None %}{{ experiencia }}{% endif %}"
+                                        min="0"
+                                        max="80"
+                                        step="1"
+                                        inputmode="numeric"
+                                        placeholder="Ejemplo: 3"
+                                    >
+
+                                </div>
+
+
+                                <small class="perfil-ayuda">
+                                    Entre 0 y 80 años.
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+                    <!-- =====================================
+                         PIE DEL FORMULARIO
+                    ====================================== -->
+
+                    <div class="perfil-formulario-footer">
+
+
+                        <div class="perfil-formulario-aviso">
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+
+                            <span>
+                                Los cambios realizados aquí afectarán
+                                la información de tu cuenta.
+                            </span>
+
+                        </div>
+
+
+
+                        <button
+                            type="submit"
+                            class="btn-guardar-perfil"
+                            id="btnGuardarPerfil"
+                        >
+
+                            <i class="bi bi-floppy-fill"></i>
+
+                            <span>
+                                Guardar cambios
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+
+            </article>
+
+
+
+            <!-- =====================================================
+                 SEGURIDAD
+            ====================================================== -->
+
+            <article class="perfil-card perfil-card-seguridad">
+
+
+                <!-- HEADER -->
+
+                <div class="perfil-card-header">
+
+
+                    <div class="perfil-card-titulo">
+
+
+                        <div class="perfil-card-icono">
+
+                            <i class="bi bi-shield-lock-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Seguridad
+                            </h3>
+
+                            <p>
+                                Administra la contraseña de acceso a tu cuenta.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- AVISO -->
+
+                <div class="perfil-aviso-seguridad">
+
+                    <i class="bi bi-info-circle-fill"></i>
+
+                    <p>
+                        Para cambiar tu contraseña debes ingresar primero
+                        la contraseña que utilizas actualmente.
+                    </p>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     FORMULARIO CAMBIAR CONTRASEÑA
+                ================================================== -->
+
+                <form
+                    method="POST"
+                    action="{% url 'cambiar_password_apicultor' %}"
+                    id="formCambiarPasswordPerfil"
+                    novalidate
+                >
+
+                    {% csrf_token %}
+
+
+
+                    <!-- =============================================
+                         CONTRASEÑA ACTUAL
+                    ============================================== -->
+
+                    <div class="mb-4">
+
+
+                        <label
+                            for="passwordActualPerfil"
+                            class="form-label"
+                        >
+
+                            Contraseña actual
+
+                            <span class="campo-obligatorio">
+                                *
+                            </span>
+
+                        </label>
+
+
+
+                        <div class="input-group">
+
+
+                            <span class="input-group-text">
+
+                                <i class="bi bi-key-fill"></i>
+
+                            </span>
+
+
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="passwordActualPerfil"
+                                name="password_actual"
+                                autocomplete="current-password"
+                                required
+                            >
+
+
+
+                            <button
+                                type="button"
+                                class="btn-password-perfil"
+                                data-password-target="passwordActualPerfil"
+                                aria-label="Mostrar contraseña"
+                                title="Mostrar contraseña"
+                            >
+
+                                <i class="bi bi-eye-fill"></i>
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         NUEVA + CONFIRMAR
+                    ============================================== -->
+
+                    <div class="row g-4">
+
+
+                        <!-- NUEVA CONTRASEÑA -->
+
+                        <div class="col-md-6">
+
+
+                            <label
+                                for="passwordNuevoPerfil"
+                                class="form-label"
+                            >
+
+                                Nueva contraseña
+
+                                <span class="campo-obligatorio">
+                                    *
+                                </span>
+
+                            </label>
+
+
+
+                            <div class="input-group">
+
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                </span>
+
+
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="passwordNuevoPerfil"
+                                    name="password_nueva"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    required
+                                >
+
+
+
+                                <button
+                                    type="button"
+                                    class="btn-password-perfil"
+                                    data-password-target="passwordNuevoPerfil"
+                                    aria-label="Mostrar contraseña"
+                                    title="Mostrar contraseña"
+                                >
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </button>
+
+
+                            </div>
+
+
+
+                            <small class="perfil-ayuda">
+
+                                Usa una contraseña segura de mínimo
+                                8 caracteres.
+
+                            </small>
+
+
+                        </div>
+
+
+
+                        <!-- CONFIRMAR CONTRASEÑA -->
+
+                        <div class="col-md-6">
+
+
+                            <label
+                                for="confirmarPasswordPerfil"
+                                class="form-label"
+                            >
+
+                                Confirmar contraseña
+
+                                <span class="campo-obligatorio">
+                                    *
+                                </span>
+
+                            </label>
+
+
+
+                            <div class="input-group">
+
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                </span>
+
+
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="confirmarPasswordPerfil"
+                                    name="password_confirmacion"
+                                    autocomplete="new-password"
+                                    required
+                                >
+
+
+
+                                <button
+                                    type="button"
+                                    class="btn-password-perfil"
+                                    data-password-target="confirmarPasswordPerfil"
+                                    aria-label="Mostrar contraseña"
+                                    title="Mostrar contraseña"
+                                >
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </button>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         ERROR COINCIDENCIA
+                    ============================================== -->
+
+                    <div
+                        class="perfil-password-error d-none"
+                        id="mensajePasswordPerfil"
+                    >
+
+                        <i class="bi bi-exclamation-circle-fill"></i>
+
+                        <span>
+                            Las contraseñas nuevas no coinciden.
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         VALIDACIÓN EN TIEMPO REAL
+                    ============================================== -->
+
+                    <div
+                        class="perfil-password-validacion d-none"
+                        id="estadoPasswordPerfil"
+                    >
+
+
+                        <!-- LONGITUD -->
+
+                        <div class="perfil-password-regla">
+
+
+                            <i
+                                class="bi bi-circle"
+                                id="iconoLongitudPassword"
+                            ></i>
+
+
+                            <span>
+                                Mínimo 8 caracteres
+                            </span>
+
+
+                        </div>
+
+
+
+                        <!-- COINCIDENCIA -->
+
+                        <div class="perfil-password-regla">
+
+
+                            <i
+                                class="bi bi-circle"
+                                id="iconoCoincidenciaPassword"
+                            ></i>
+
+
+                            <span>
+                                Las contraseñas coinciden
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         FOOTER SEGURIDAD
+                    ============================================== -->
+
+                    <div class="perfil-formulario-footer">
+
+
+                        <div class="perfil-formulario-aviso">
+
+
+                            <i class="bi bi-shield-check"></i>
+
+
+                            <span>
+
+                                Después de cambiarla seguirás conectado
+                                en esta sesión.
+
+                            </span>
+
+
+                        </div>
+
+
+
+                        <button
+                            type="submit"
+                            class="btn-guardar-perfil"
+                            id="btnCambiarPasswordPerfil"
+                        >
+
+
+                            <i class="bi bi-shield-lock-fill"></i>
+
+
+                            <span>
+                                Actualizar contraseña
+                            </span>
+
+
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+
+                <!-- =====================================================
+                    VERIFICACIÓN EN DOS PASOS
+                ====================================================== -->
+
+                <article class="perfil-card perfil-card-seguridad perfil-card-2fa">
+
+
+                    <!-- =================================================
+                        HEADER
+                    ================================================== -->
+
+                    <div class="perfil-card-header">
+
+                        <div class="perfil-card-titulo">
+
+                            <div class="perfil-card-icono">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+                                    Verificación en dos pasos
+                                </h3>
+
+                                <p>
+                                    Añade una capa adicional de seguridad
+                                    a tu cuenta.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                        2FA NO DISPONIBLE
+                    ================================================== -->
+
+                    {% if not permitir_2fa %}
+
+                        <div class="perfil-2fa-aviso bloqueado">
+
+                            <div class="perfil-2fa-aviso-icono">
+                                <i class="bi bi-shield-x"></i>
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    Función no disponible
+                                </strong>
+
+                                <p>
+                                    La verificación en dos pasos está
+                                    deshabilitada por la configuración
+                                    de seguridad del sistema.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                    {% else %}
+
+
+                        <!-- =============================================
+                            ESTADO
+                        ============================================== -->
+
+                        <div class="perfil-2fa-contenido">
+
+
+                            <div class="perfil-2fa-estado">
+
+
+                                <div>
+
+                                    <span class="perfil-2fa-etiqueta">
+                                        Estado
+                                    </span>
+
+
+                                    {% if configuracion_2fa.activo %}
+
+                                        <span class="perfil-2fa-badge activo">
+
+                                            <i class="bi bi-check-circle-fill"></i>
+
+                                            Activada
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="perfil-2fa-badge inactivo">
+
+                                            <i class="bi bi-circle"></i>
+
+                                            Desactivada
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div>
+
+                                    <span class="perfil-2fa-etiqueta">
+                                        Método
+                                    </span>
+
+                                    <strong>
+                                        <i class="bi bi-envelope-fill"></i>
+                                        Correo electrónico
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span class="perfil-2fa-etiqueta">
+                                        Correo
+                                    </span>
+
+                                    <strong>
+                                        {{ usuario.email|default:"Sin registrar" }}
+                                    </strong>
+
+                                </div>
+
+
+                                {% if configuracion_2fa.fecha_activacion %}
+
+                                    <div>
+
+                                        <span class="perfil-2fa-etiqueta">
+                                            Activada desde
+                                        </span>
+
+                                        <strong>
+                                            {{ configuracion_2fa.fecha_activacion|date:"d/m/Y H:i" }}
+                                        </strong>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                            <!-- =========================================
+                                INFORMACIÓN
+                            ========================================== -->
+
+                            <div class="perfil-2fa-explicacion">
+
+                                <i class="bi bi-envelope-shield-fill"></i>
+
+                                <div>
+
+                                    <strong>
+                                        Protección mediante código temporal
+                                    </strong>
+
+                                    <p>
+                                        Cuando inicies sesión, Mi Colmena
+                                        enviará un código de 6 dígitos a tu
+                                        correo electrónico. El código vence
+                                        después de 5 minutos.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================================
+                                OBLIGATORIO
+                            ========================================== -->
+
+                            {% if segundo_factor_obligatorio %}
+
+                                <div class="perfil-2fa-obligatorio">
+
+                                    <i class="bi bi-shield-lock-fill"></i>
+
+                                    <div>
+
+                                        <strong>
+                                            Protección obligatoria
+                                        </strong>
+
+                                        <p>
+                                            La política de seguridad de
+                                            Mi Colmena requiere que tu cuenta
+                                            utilice verificación en dos pasos.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- =========================================
+                                ACCIONES
+                            ========================================== -->
+
+                            <div class="perfil-2fa-acciones">
+
+
+                                {% if configuracion_2fa.activo %}
+
+
+                                    {% if not segundo_factor_obligatorio %}
+
+                                        <form
+                                            method="POST"
+                                            action="{% url 'iniciar_desactivacion_2fa' %}"
+                                        >
+
+                                            {% csrf_token %}
+
+
+                                            <button
+                                                type="submit"
+                                                class="btn-perfil-2fa desactivar"
+                                            >
+
+                                                <i class="bi bi-shield-x"></i>
+
+                                                <span>
+                                                    Desactivar verificación
+                                                </span>
+
+                                            </button>
+
+                                        </form>
+
+                                    {% endif %}
+
+
+                                {% else %}
+
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'iniciar_activacion_2fa' %}"
+                                    >
+
+                                        {% csrf_token %}
+
+
+                                        <button
+                                            type="submit"
+                                            class="btn-perfil-2fa activar"
+                                            {% if not usuario.email %}
+                                                disabled
+                                            {% endif %}
+                                        >
+
+                                            <i class="bi bi-shield-check"></i>
+
+                                            <span>
+                                                Activar verificación en dos pasos
+                                            </span>
+
+                                        </button>
+
+                                    </form>
+
+
+                                    {% if not usuario.email %}
+
+                                        <small class="perfil-2fa-sin-correo">
+
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                            Debes registrar un correo electrónico
+                                            antes de activar esta función.
+
+                                        </small>
+
+                                    {% endif %}
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </article>
+
+
+            </article>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'panel_apicultor/js/perfil.js' %}?v=5"
+></script>
+
+{% endblock %}
