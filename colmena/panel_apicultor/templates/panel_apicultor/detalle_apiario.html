@@ -761,7 +761,7 @@
 
 
         <a
-            href="#"
+            href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ apiario.id_apiario }}"
             class="btn-accion-apiario mantenimiento"
         >
 
@@ -775,7 +775,7 @@
 
 
         <a
-            href="#"
+            href="{% url 'crear_incidencia_apicultor' %}?apiario={{ apiario.id_apiario }}"
             class="btn-accion-apiario incidencia"
         >
 

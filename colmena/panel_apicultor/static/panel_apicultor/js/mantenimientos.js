@@ -4517,6 +4517,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+
+            /* ==============================================
+               ABRIR DESDE APIARIOS / COLMENAS
+            ============================================== */
+
+            prepararMantenimientoDesdeColmena();
+
+
         }
     );
 
@@ -4635,8 +4643,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /* ==================================================
-        SELECCIONAR ALCANCE COLMENA
+        SELECCIONAR ALCANCE
         ================================================== */
+
+        const radioApiario =
+            formularioCrear.querySelector(
+                '.alcance-mantenimiento-radio-apicultor[value="Apiario"]'
+            );
+
 
         const radioColmena =
             formularioCrear.querySelector(
@@ -4644,9 +4658,28 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (radioColmena) {
+        /*
+         * Si viene una colmena:
+         * mantenimiento específico de colmena.
+         *
+         * Si solamente viene el apiario:
+         * mantenimiento general del apiario.
+         */
+
+        if (
+            idColmena
+            &&
+            radioColmena
+        ) {
 
             radioColmena.checked =
+                true;
+
+        } else if (
+            radioApiario
+        ) {
+
+            radioApiario.checked =
                 true;
 
         }
