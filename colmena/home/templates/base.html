@@ -82,23 +82,23 @@
 
     <footer class="footer">
         <div class="container-fluid footer-contenido">
-            <div class="row g-4">
+            <div class="footer-grid">
 
-                <div class="col-12 col-md-6 col-lg footer-col">
+                <div class="footer-col">
                     <h3>Contáctenos</h3>
                     <a href="mailto:{{ configuracion_sistema.correo_contacto|default:'micolmena690@gmail.com' }}"><i class="bi bi-envelope"></i> {{ configuracion_sistema.correo_contacto|default:'micolmena690@gmail.com' }}</a>
                     <a href="tel:+573146035811"><i class="bi bi-telephone-fill"></i> {{ configuracion_sistema.telefono_contacto }} - 313 6739180</a>
                     <a href="https://acortar.link/1IHWrA" target="_blank" rel="noopener"><i class="bi bi-geo-alt"></i> Urrao (ANT)</a>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg footer-col">
+                <div class="footer-col">
                     <h3>Redes sociales</h3>
                     <a href="https://www.instagram.com/kemi_colombia_oficial/" target="_blank" rel="noopener" class="enlace-instagram"><i class="bi bi-instagram"></i> kemi_colombia_oficial</a>
                     <a href="https://www.facebook.com/kemi_colombia_oficial" target="_blank" rel="noopener" class="enlace-facebook"><i class="bi bi-facebook"></i> kemi_colombia_oficial</a>
                     <a href="https://wa.me/573148443004" target="_blank" rel="noopener" class="enlace-whatsapp"><i class="bi bi-whatsapp"></i> 314 8443004</a>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg footer-col">
+                <div class="footer-col">
                     <h3>Navegación</h3>
                     <a href="{% url 'Inicio' %}">Inicio</a>
                     <a href="{% url 'Servicios' %}">Servicios</a>
@@ -106,12 +106,12 @@
                     <a href="#">Ayuda/Soporte</a>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg footer-col ubicacion">
+                <div class="footer-col ubicacion">
                     <h3>Ubicación</h3>
                     <a href="https://acortar.link/1IHWrA"><img src="{% static 'home/img/ubicacion.png' %}" alt="Ubicación" loading="lazy" decoding="async"></a>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg footer-col">
+                <div class="footer-col">
                     <h3>Desarrollado por:</h3>
                     <a href="https://github.com/Nocturn676">Jaime Andrés Arboleda Ochoa</a>
                     <a href="https://github.com/JUNMARANC">Juan Manuel Herrera</a>
@@ -123,8 +123,10 @@
         <div class="footer-abajo">
             <p>© 2025 Mi Colmena. Todos los derechos reservados.</p>
 
-            <img src="{% static 'home/img/kemi.png' %}" alt="Logo Kemi" class="logo-footer" loading="lazy" decoding="async">
-            <a href="https://senalasalada.blogspot.com/"><img src="{% static 'home/img/sena.png' %}" alt="Logo Sena" class="logo-sena" loading="lazy" decoding="async"></a>
+            <div class="footer-logos">
+                <img src="{% static 'home/img/kemi.png' %}" alt="Logo Kemi" class="logo-footer" loading="lazy" decoding="async">
+                <a href="https://senalasalada.blogspot.com/"><img src="{% static 'home/img/sena.png' %}" alt="Logo Sena" class="logo-sena" loading="lazy" decoding="async"></a>
+            </div>
             
             <p class="footer-legales">
 

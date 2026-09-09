@@ -674,6 +674,138 @@ FOOTER
     .footer::before{ animation: none; }
 }
 
+/* =========================
+GRILLA DEL FOOTER
+
+Antes eran cinco columnas con clases de Bootstrap:
+
+    <div class="col-12 col-md-6 col-lg footer-col">  x5
+
+Con `col-md-6` van de a dos por fila, y cinco elementos dan
+2 + 2 + 1: la última columna ("Desarrollado por") se quedaba
+sola ocupando media pantalla, con un hueco al lado. Ese era
+el descuadre.
+
+Con grilla propia se controla cuántas columnas hay en cada
+ancho, y las filas incompletas se centran en vez de quedar
+pegadas a la izquierda.
+========================= */
+
+.footer-grid{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 30px 24px;
+    align-items: start;
+}
+
+
+/* Entre 992 y 1200px, cinco columnas quedan demasiado
+   angostas: "Jaime Andrés Arboleda Ochoa" se partía en tres
+   líneas. Pasamos a tres columnas.
+
+   La grilla se declara de 6 y cada elemento ocupa 2, para
+   poder centrar la última fila: los dos elementos sobrantes
+   se colocan a mano en las posiciones 2-3 y 4-5. */
+
+@media (max-width: 1200px){
+
+    .footer-grid{
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .footer-col{
+        grid-column: span 2;
+    }
+
+    .footer-col:nth-child(4){
+        grid-column: 2 / span 2;
+    }
+
+    .footer-col:nth-child(5){
+        grid-column: 4 / span 2;
+    }
+}
+
+
+/* Dos columnas: 5 elementos dan 2 + 2 + 1, y el quinto se
+   centra ocupando el ancho completo. */
+
+@media (max-width: 860px){
+
+    .footer-grid{
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-col{
+        grid-column: auto;
+    }
+
+    .footer-col:nth-child(4),
+    .footer-col:nth-child(5){
+        grid-column: auto;
+    }
+
+    .footer-col:nth-child(5){
+        grid-column: 1 / -1;
+    }
+}
+
+
+@media (max-width: 520px){
+
+    .footer-grid{
+        grid-template-columns: 1fr;
+        gap: 26px;
+    }
+
+    .footer-col:nth-child(5){
+        grid-column: auto;
+    }
+}
+
+
+/* =========================
+CENTRADO DEL FOOTER
+
+Arranca en 860px, el mismo ancho donde la grilla pasa a dos
+columnas, para que no haya un tramo con las columnas ya
+apiladas pero el texto todavía a la izquierda.
+
+Importante: .footer-col p y a son `display: flex`, así que
+`text-align: center` NO los centra. Antes solo los <p> tenían
+justify-content, y los <a> —que son casi todo el contenido del
+footer— se quedaban a la izquierda mientras los títulos sí se
+centraban. Eso era buena parte del desalineado.
+========================= */
+
+@media (max-width: 860px){
+
+    .footer-col{
+        text-align: center;
+    }
+
+    .footer-col h3{
+        justify-content: center;
+    }
+
+    .footer-col p,
+    .footer-col a{
+        justify-content: center;
+    }
+}
+
+
+/* Un correo largo no debe empujar la columna ni salirse */
+.footer-col a{
+    min-width: 0;
+    word-break: break-word;
+}
+
+.footer-col a i{
+    flex: none;
+}
+
+
 .footer-col h3{
     position: relative;
     display: inline-flex;
@@ -744,15 +876,45 @@ FOOTER
     clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
 }
 
+/* =========================
+FILA INFERIOR DEL FOOTER
+
+Tenía `justify-content: space-around` con cuatro hijos sueltos
+(texto, logo Kemi, logo Sena, enlaces legales). Mientras caben
+en una línea se ve bien, pero al envolver, space-around reparte
+el sobrante a los lados de cada elemento: quedaban flotando con
+separaciones distintas entre sí, sin alinearse con nada.
+
+Con `center` y un gap fijo, al envolver cada fila queda centrada
+y con la misma separación siempre.
+========================= */
+
 .footer-abajo{
     margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(33, 79, 59, .12);
+
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 18px 28px;
+
     font-size: 12px;
     font-weight: bold;
+    text-align: center;
+}
+
+.footer-abajo > p{
+    margin: 0;
+}
+
+/* Los dos logos van juntos: sueltos se separaban al envolver y
+   uno se iba a la línea de abajo, solo. */
+.footer-logos{
+    display: flex;
+    align-items: center;
+    gap: 18px;
 }
 
 /* =========================
@@ -960,13 +1122,9 @@ MÓVIL
         padding: 25px;
     }
 
-    .footer-col{
-        text-align: center;
-    }
-
-    .footer-col p{
-        justify-content: center;
-    }
+    /* El centrado del footer se movió a su propio bloque de 860px,
+       para que coincida con el ancho donde la grilla pasa a dos
+       columnas. Ver "CENTRADO DEL FOOTER". */
 }
 
 /* =========================

@@ -114,7 +114,6 @@ DATABASES = {
         'NAME': 'dbmicolmena',
         'USER' : 'root',
         'PASSWORD' : '123456',
-        'PASSWORD' : 'admin',
         'HOST' : 'localhost',
         'PORT' : '3306'
     }

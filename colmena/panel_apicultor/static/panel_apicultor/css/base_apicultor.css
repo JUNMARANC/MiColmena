@@ -1655,3 +1655,1633 @@ body {
     color:
         #A93630;
 }
+
+/* ==========================================================
+   ==========================================================
+   AÑADIDOS AL SIDEBAR
+
+   Todo lo de aquí abajo es nuevo. No se modificó ninguna regla
+   anterior: si algo se ve raro, se puede borrar este bloque
+   completo y el menú vuelve a como estaba.
+
+   Cubre lo que el panel del administrador ya tenía y este no:
+   contraer el menú, tooltips al estar contraído, aviso de
+   scroll y enlace para saltar al contenido.
+   ========================================================== */
+
+
+/* ==========================================================
+   ENLACE PARA SALTAR AL CONTENIDO
+
+   Oculto hasta que recibe el foco con Tab. Es lo primero que
+   se enfoca en la página.
+========================================================== */
+
+.salto-contenido {
+
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -120%);
+
+    z-index: 2000;
+    padding: 12px 22px;
+
+    border-radius: 0 0 10px 10px;
+
+    background:
+        var(--apicultor-verde-oscuro);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition:
+        transform 0.25s ease;
+
+}
+
+
+.salto-contenido:focus {
+
+    transform: translate(-50%, 0);
+    color: #ffffff;
+
+}
+
+
+#contenidoPrincipal {
+
+    display: block;
+    height: 0;
+    outline: none;
+
+}
+
+
+/* ==========================================================
+   FOCO VISIBLE
+
+   El panel no tenía ninguna regla de foco: al navegar con Tab
+   no se veía dónde estaba uno parado.
+========================================================== */
+
+.sidebar-apicultor :focus-visible,
+.main-apicultor :focus-visible {
+
+    outline:
+        3px solid
+        var(--apicultor-verde-oscuro);
+
+    outline-offset: 2px;
+
+}
+
+
+/* ==========================================================
+   BOTÓN DE CONTRAER
+========================================================== */
+
+.btn-contraer-sidebar {
+
+    position: absolute;
+    top: 46px;
+    right: -16px;
+
+    width: 32px;
+    height: 32px;
+
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background:
+        linear-gradient(
+            155deg,
+            var(--apicultor-verde-medio),
+            var(--apicultor-verde-oscuro)
+        );
+
+    color: #fffbe8;
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    box-shadow:
+        0 6px 16px
+        rgba(0, 0, 0, 0.18);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.35s
+            cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.2s ease;
+
+}
+
+
+.btn-contraer-sidebar:hover {
+
+    transform: scale(1.12);
+
+    box-shadow:
+        0 8px 20px
+        rgba(0, 0, 0, 0.26);
+
+}
+
+
+.btn-contraer-sidebar:active {
+
+    transform: scale(0.93);
+
+}
+
+
+.btn-contraer-sidebar i {
+
+    font-size: 14px;
+
+    transition:
+        transform 0.4s
+            cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+
+.sidebar-apicultor.contraido
+.btn-contraer-sidebar i {
+
+    transform: rotate(180deg);
+
+}
+
+
+/* En móvil el menú se abre y se cierra con la hamburguesa;
+   contraerlo ahí no tiene sentido. */
+
+@media (max-width: 820px) {
+
+    .btn-contraer-sidebar {
+        display: none;
+    }
+
+}
+
+
+/* ==========================================================
+   ESTADO CONTRAÍDO
+========================================================== */
+
+/* Aquí había un `.sidebar-apicultor { position: relative; }` que
+   pisaba el `position: fixed` del original. Al perder el fixed, el
+   menú dejaba de ocupar todo el alto y empujaba el contenido hacia
+   abajo.
+
+   La regla sobraba: `position: fixed` ya sirve de referencia para
+   los hijos con `position: absolute`, que era para lo único que la
+   había puesto. */
+
+.sidebar-apicultor.contraido {
+
+    width: 82px;
+
+}
+
+
+.sidebar-apicultor.contraido
++ .main-apicultor,
+.sidebar-apicultor.contraido
+~ .main-apicultor {
+
+    margin-left: 82px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-logo-texto,
+.sidebar-apicultor.contraido
+.sidebar-link span,
+.sidebar-apicultor.contraido
+.sidebar-user-info,
+.sidebar-apicultor.contraido
+.sidebar-user-arrow,
+.sidebar-apicultor.contraido
+.sidebar-user-logout span {
+
+    display: none;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-logo {
+
+    justify-content: center;
+    padding: 22px 10px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-logo-icono {
+
+    width: 52px;
+    height: 52px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-menu {
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-link {
+
+    justify-content: center;
+    padding: 11px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-link:hover {
+
+    transform: none;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-user {
+
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-user-main {
+
+    justify-content: center;
+    padding: 8px;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-user-logout {
+
+    justify-content: center;
+
+}
+
+
+/* ==========================================================
+   TOOLTIPS AL ESTAR CONTRAÍDO
+
+   Sin el texto al lado, hace falta algo que diga a dónde
+   lleva cada icono.
+========================================================== */
+
+.sidebar-apicultor.contraido
+.sidebar-link {
+
+    position: relative;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-link::after {
+
+    content: attr(data-tooltip);
+
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+
+    transform:
+        translateY(-50%)
+        translateX(-6px);
+
+    padding: 6px 12px;
+
+    border-radius: 10px;
+
+    background:
+        var(--apicultor-verde-oscuro);
+
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    opacity: 0;
+    pointer-events: none;
+
+    box-shadow:
+        0 8px 18px
+        rgba(0, 0, 0, 0.22);
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+
+    z-index: 1200;
+
+}
+
+
+.sidebar-apicultor.contraido
+.sidebar-link:hover::after,
+.sidebar-apicultor.contraido
+.sidebar-link:focus-visible::after {
+
+    opacity: 1;
+
+    transform:
+        translateY(-50%)
+        translateX(0);
+
+}
+
+
+/* ==========================================================
+   CONTRAÍDO: SE ASOMA AL PASAR EL MOUSE
+========================================================== */
+
+/* Mientras esté .sin-asomar, el menú no se abre al pasar el
+   mouse. Lo pone el JS justo después de contraer y lo quita
+   cuando el cursor sale del menú. */
+
+.sidebar-apicultor.contraido.sin-asomar:hover {
+
+    width: 82px;
+    box-shadow: none;
+
+}
+
+
+.sidebar-apicultor.contraido.sin-asomar:hover
+.sidebar-logo-texto,
+.sidebar-apicultor.contraido.sin-asomar:hover
+.sidebar-user-info,
+.sidebar-apicultor.contraido.sin-asomar:hover
+.sidebar-link span,
+.sidebar-apicultor.contraido.sin-asomar:hover
+.sidebar-user-arrow,
+.sidebar-apicultor.contraido.sin-asomar:hover
+.sidebar-user-logout span {
+
+    display: none;
+
+}
+
+
+.sidebar-apicultor.contraido:hover {
+
+    width:
+        var(--sidebar-width);
+
+    z-index: 1200;
+
+    box-shadow:
+        14px 0 34px
+        rgba(0, 0, 0, 0.22);
+
+}
+
+
+.sidebar-apicultor.contraido:hover
+.sidebar-logo-texto,
+.sidebar-apicultor.contraido:hover
+.sidebar-user-info {
+
+    display: flex;
+
+}
+
+
+.sidebar-apicultor.contraido:hover
+.sidebar-link span,
+.sidebar-apicultor.contraido:hover
+.sidebar-user-logout span {
+
+    display: inline;
+
+}
+
+
+.sidebar-apicultor.contraido:hover
+.sidebar-user-arrow {
+
+    display: flex;
+
+}
+
+
+.sidebar-apicultor.contraido:hover
+.sidebar-logo {
+
+    justify-content: flex-start;
+    padding: 22px 18px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover
+.sidebar-link {
+
+    justify-content: flex-start;
+    padding: 11px 17px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover
+.sidebar-user-main {
+
+    justify-content: flex-start;
+
+}
+
+
+/* Ya se ve el texto: el tooltip sobra */
+
+.sidebar-apicultor.contraido:hover
+.sidebar-link::after {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   AVISO DE SCROLL EN EL MENÚ
+
+   Aparece cuando quedan ítems por debajo del área visible.
+   Lo activa el JS con la clase .visible.
+========================================================== */
+
+.sidebar-menu-wrap {
+
+    position: relative;
+
+    flex: 1 1 auto;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+.sidebar-scroll-hint {
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 38px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    padding-bottom: 4px;
+
+    border: none;
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255, 221, 113, 0) 0%,
+            var(--apicultor-sidebar) 78%
+        );
+
+    color:
+        var(--apicultor-verde-oscuro);
+
+    font-size: 15px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity 0.2s ease;
+
+    z-index: 5;
+
+}
+
+
+.sidebar-scroll-hint.visible {
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+}
+
+
+.sidebar-scroll-hint i {
+
+    animation:
+        rebotarFlechaScroll
+        1.3s ease-in-out infinite;
+
+}
+
+
+@keyframes rebotarFlechaScroll {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(4px);
+    }
+
+}
+
+
+/* ==========================================================
+   BLOQUEO DEL SCROLL DE FONDO EN MÓVIL
+========================================================== */
+
+body.sidebar-movil-abierto {
+
+    overflow: hidden;
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .salto-contenido,
+    .btn-contraer-sidebar,
+    .btn-contraer-sidebar i,
+    .sidebar-apicultor.contraido
+    .sidebar-link::after,
+    .sidebar-scroll-hint {
+        transition: none !important;
+    }
+
+    .btn-contraer-sidebar:hover {
+        transform: none;
+    }
+
+    .sidebar-scroll-hint i {
+        animation: none;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   IGUALAR LA APARIENCIA AL PANEL DEL ADMINISTRADOR
+
+   Bloque nuevo, al final del archivo. Redefine solo el aspecto
+   visual del menú (colores, medidas, tipografía) usando las
+   clases que ya tiene este panel: no se renombró nada ni se
+   tocó el HTML más allá del logo.
+
+   Los valores son los mismos de estilos_admin.css, sección 6.
+
+   Si quieren volver al amarillo, borren este bloque completo:
+   el menú regresa a su tema anterior con todas las funciones
+   nuevas intactas.
+   ========================================================== */
+
+
+/* ==========================================================
+   TOKENS DEL TEMA ADMIN
+
+   Este panel solo define variables --apicultor-*. Estas son
+   las del panel del administrador, necesarias para que los
+   colores coincidan exactamente.
+========================================================== */
+
+:root {
+
+    /* El administrador usa 260px. Este panel venía con 310px (270
+       por debajo de 1400px). Se iguala aquí, y como .main-apicultor
+       ya usa var(--sidebar-width) para su margen, el contenido se
+       corre solo: no hay que tocar nada más. */
+    --sidebar-width: 260px;
+
+
+    /* ---------- PALETA ----------
+
+       Se toma la estructura del administrador (medidas, espaciados,
+       comportamiento) pero con el amarillo de este panel. Los
+       valores salen de las variables --apicultor-* que ya existían
+       arriba en este mismo archivo.
+
+       Para cambiar el tema completo basta con tocar estas ocho
+       líneas: el resto del bloque las usa. */
+
+    --sb-fondo:           #FFDD71;   /* --apicultor-sidebar */
+    --sb-activo:          #FFF6D6;   /* pastilla de la sección actual */
+    --sb-hover:           rgba(137, 104, 23, 0.18);
+    --sb-verde-oscuro:    #214F3B;   /* logo, hexágono y acentos */
+    --sb-verde-medio:     #5F9781;
+    --sb-texto:           #3A2B05;   /* marrón oscuro, legible sobre amarillo */
+    --sb-texto-tenue:     #7A5F14;
+    --sb-crema:           #FFFBE8;   /* fondo del círculo del logo */
+    --sb-borde:           rgba(137, 104, 23, 0.30);
+
+}
+
+
+/* ==========================================================
+   CONTENEDOR
+
+   Fondo verde con la textura de panal en SVG, igual que el
+   administrador. Se conserva el position: fixed del original.
+========================================================== */
+
+.sidebar-apicultor {
+
+    padding: 18px 14px;
+
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(137,104,23,0.075)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(137,104,23,0.075)' stroke-width='1'/%3E%3C/svg%3E"),
+        var(--sb-fondo);
+
+    background-repeat: repeat, no-repeat;
+
+    border-right:
+        1px solid
+        var(--sb-borde);
+
+}
+
+
+/* ==========================================================
+   LOGO
+========================================================== */
+
+.sidebar-logo {
+
+    min-height: 0;
+    margin-bottom: 28px;
+    padding: 0;
+    gap: 12px;
+
+}
+
+
+.sidebar-logo-icono {
+
+    width: 58px;
+    height: 58px;
+
+    background: var(--sb-crema);
+
+    border:
+        2px solid
+        var(--sb-verde-oscuro);
+
+    color: var(--sb-verde-oscuro);
+
+}
+
+
+/* La abeja del panel del administrador */
+
+.sidebar-logo-img {
+
+    width: 38px;
+    height: 38px;
+    display: block;
+    object-fit: contain;
+
+    animation:
+        flotarLogoSidebar
+        3.2s ease-in-out infinite;
+
+}
+
+
+@keyframes flotarLogoSidebar {
+
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-3px) rotate(-8deg);
+    }
+
+}
+
+
+.sidebar-logo-texto strong {
+
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--sb-verde-oscuro);
+
+}
+
+
+.sidebar-logo-texto span {
+
+    font-size: 12px;
+    color: var(--sb-texto-tenue);
+
+}
+
+
+/* ==========================================================
+   MENÚ
+========================================================== */
+
+.sidebar-menu {
+
+    gap: 6px;
+    padding: 0 3px 0 0;
+
+}
+
+
+.sidebar-link {
+
+    min-height: 42px;
+    padding: 10px 13px;
+    gap: 11px;
+
+    border-radius: 13px;
+
+    color: var(--sb-texto);
+
+    font-size: 13px;
+    font-weight: 500;
+
+    position: relative;
+
+}
+
+
+.sidebar-link i {
+
+    width: auto;
+    min-width: 22px;
+
+    font-size: 18px;
+
+    color: var(--sb-texto);
+
+    transition:
+        transform 0.35s
+            cubic-bezier(0.34, 1.56, 0.64, 1),
+        color 0.25s ease;
+
+}
+
+
+.sidebar-link:hover {
+
+    background: var(--sb-hover);
+
+    transform: translateX(3px);
+
+    color: var(--sb-texto);
+
+}
+
+
+.sidebar-link:hover i {
+
+    transform:
+        scale(1.22)
+        rotate(-8deg);
+
+}
+
+
+.sidebar-link.active {
+
+    background: var(--sb-activo);
+
+    color: var(--sb-texto);
+
+    font-weight: 600;
+
+}
+
+
+.sidebar-link.active i {
+
+    color: var(--sb-texto);
+
+}
+
+
+/* Hexágono amarillo que marca la sección actual */
+
+.sidebar-link.active::before {
+
+    content: "";
+
+    position: absolute;
+    left: -9px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 14px;
+    height: 14px;
+
+    background: var(--sb-verde-oscuro);
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+}
+
+
+/* ==========================================================
+   BLOQUE DE USUARIO
+========================================================== */
+
+.sidebar-user {
+
+    padding: 16px 0 0;
+
+    border-top:
+        1px solid
+        var(--sb-borde);
+
+    gap: 8px;
+
+}
+
+
+.sidebar-user-main {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        50px
+        minmax(0, 1fr)
+        20px;
+
+    align-items: center;
+    column-gap: 11px;
+
+    padding: 8px;
+
+    border-radius: 14px;
+
+    color: var(--sb-texto);
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.sidebar-user-main:hover {
+
+    background: var(--sb-hover);
+
+    color: var(--sb-texto);
+
+    transform: none;
+
+}
+
+
+.sidebar-user-avatar {
+
+    width: 50px;
+    height: 50px;
+
+    background: #ffffff;
+
+    border:
+        2px solid
+        var(--sb-verde-medio);
+
+    color: var(--sb-verde-oscuro);
+
+    font-size: 22px;
+
+}
+
+
+.sidebar-user-info strong {
+
+    color: var(--sb-texto);
+
+    font-size: 14px;
+    font-weight: 700;
+
+}
+
+
+.sidebar-user-info small {
+
+    color: var(--sb-texto-tenue);
+
+    font-size: 12px;
+    font-weight: 500;
+
+}
+
+
+.sidebar-user-arrow {
+
+    color: var(--sb-texto-tenue);
+
+}
+
+
+.sidebar-user-logout {
+
+    justify-content: flex-start;
+
+    padding-left: 12px;
+    padding-right: 12px;
+
+    color: #a92121;
+
+}
+
+
+.sidebar-user-logout i {
+
+    color: #a92121;
+
+}
+
+
+.sidebar-user-logout:hover {
+
+    background:
+        rgba(209, 47, 47, 0.10);
+
+    color: #a92121;
+
+}
+
+
+/* ==========================================================
+   BOTÓN DE CONTRAER
+
+   Mismo degradado ámbar-verde del administrador.
+========================================================== */
+
+.btn-contraer-sidebar {
+
+    top: 22px;
+    right: -17px;
+
+    width: 34px;
+    height: 34px;
+
+    background:
+        linear-gradient(
+            155deg,
+            var(--sb-verde-medio),
+            var(--sb-verde-oscuro)
+        );
+
+    color: var(--sb-verde-oscuro);
+
+}
+
+
+.btn-contraer-sidebar:hover {
+
+    background:
+        linear-gradient(
+            155deg,
+            var(--sb-verde-oscuro),
+            var(--sb-verde-medio)
+        );
+
+    color: var(--sb-crema);
+
+}
+
+
+/* ==========================================================
+   AVISO DE SCROLL
+
+   El degradado tiene que terminar en el verde del fondo.
+========================================================== */
+
+.sidebar-scroll-hint {
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255, 221, 113, 0) 0%,
+            var(--sb-fondo) 78%
+        );
+
+    color: var(--sb-verde-oscuro);
+
+}
+
+
+/* ==========================================================
+   ENTRADA ESCALONADA DEL MENÚ
+
+   Los ítems aparecen uno tras otro al cargar, como en el
+   panel del administrador.
+========================================================== */
+
+.sidebar-menu .sidebar-link {
+
+    opacity: 0;
+
+    animation:
+        entradaMenuLateral
+        0.5s ease forwards;
+
+}
+
+
+.sidebar-menu .sidebar-link:nth-child(1) { animation-delay: .03s; }
+.sidebar-menu .sidebar-link:nth-child(2) { animation-delay: .07s; }
+.sidebar-menu .sidebar-link:nth-child(3) { animation-delay: .11s; }
+.sidebar-menu .sidebar-link:nth-child(4) { animation-delay: .15s; }
+.sidebar-menu .sidebar-link:nth-child(5) { animation-delay: .19s; }
+.sidebar-menu .sidebar-link:nth-child(6) { animation-delay: .23s; }
+.sidebar-menu .sidebar-link:nth-child(7) { animation-delay: .27s; }
+.sidebar-menu .sidebar-link:nth-child(8) { animation-delay: .31s; }
+
+/* Red de seguridad: si se agregan más ítems, igual aparecen */
+.sidebar-menu .sidebar-link:nth-child(n+9) { animation-delay: .35s; }
+
+
+@keyframes entradaMenuLateral {
+
+    from {
+        opacity: 0;
+        transform: translateX(-14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+/* ==========================================================
+   FOCO Y SALTO AL CONTENIDO EN VERDE
+========================================================== */
+
+.salto-contenido {
+
+    background: var(--sb-verde-oscuro);
+
+}
+
+
+.sidebar-apicultor :focus-visible,
+.main-apicultor :focus-visible {
+
+    outline:
+        3px solid
+        #F0A000;
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar-logo-img,
+    .sidebar-menu .sidebar-link {
+        animation: none !important;
+    }
+
+    .sidebar-menu .sidebar-link {
+        opacity: 1;
+    }
+
+    .sidebar-link i {
+        transition: none !important;
+    }
+
+    .sidebar-link:hover i {
+        transform: none;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   SUAVIZAR LA ANIMACIÓN DEL MENÚ
+
+   Se veía brusco por tres razones, no una:
+
+   1. El contenedor tenía `transition: transform 0.25s ease`.
+      Solo transform. El cambio de ancho de 260 a 82px pasaba
+      de golpe, sin animar.
+
+   2. `.main-apicultor` no tenía ninguna transición, así que
+      todo el contenido pegaba un salto al correrse.
+
+   3. Los textos usaban `display: none`, que no se puede
+      animar: desaparecían de un frame al otro.
+   ========================================================== */
+
+
+/* ==========================================================
+   1. EL CONTENEDOR TAMBIÉN ANIMA EL ANCHO
+========================================================== */
+
+.sidebar-apicultor {
+
+    /* Se conserva el transform del original, para el menú móvil */
+    transition:
+        transform 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s ease;
+
+    /* Nota: aquí había un `overflow-x: hidden`. Convertía el
+       menú en un contenedor con scroll horizontal propio, y
+       durante la animación el navegador lo desplazaba: medido,
+       el contenido quedaba en x = -17px, fuera del menú.
+
+       No hace falta: los textos ya se recortan solos con su
+       `max-width: 0` y su `overflow: hidden`. */
+
+}
+
+
+/* ==========================================================
+   2. EL CONTENIDO SE CORRE A LA PAR
+
+   Misma duración y misma curva que el menú, para que se
+   muevan juntos y no uno detrás del otro.
+========================================================== */
+
+.main-apicultor {
+
+    transition:
+        margin-left 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1);
+
+}
+
+
+/* ==========================================================
+   3. LOS TEXTOS SE DESVANECEN
+
+   En vez de `display: none`, se combina opacidad con
+   max-width. Así el texto se apaga y encoge a la vez que el
+   menú, sin dar el tirón.
+
+   Los tiempos están desfasados a propósito:
+   · al contraer, el texto se va rápido (0.14s) y deja que el
+     ancho termine solo
+   · al expandir, el texto espera 0.14s a que haya sitio y
+     entonces aparece
+
+   Es el mismo truco de los menús que se sienten bien: lo que
+   estorba sale primero y entra último.
+========================================================== */
+
+.sidebar-logo-texto,
+.sidebar-link span,
+.sidebar-user-info,
+.sidebar-user-arrow,
+.sidebar-user-logout span {
+
+    display: flex;
+
+    max-width: 200px;
+    opacity: 1;
+
+    overflow: hidden;
+    white-space: nowrap;
+
+    transition:
+        opacity 0.2s ease 0.14s,
+        max-width 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1);
+
+}
+
+
+.sidebar-link span,
+.sidebar-user-logout span {
+
+    display: inline-block;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-logo-texto,
+.sidebar-apicultor.contraido .sidebar-link span,
+.sidebar-apicultor.contraido .sidebar-user-info,
+.sidebar-apicultor.contraido .sidebar-user-arrow,
+.sidebar-apicultor.contraido .sidebar-user-logout span {
+
+    display: flex;
+
+    max-width: 0;
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.14s ease,
+        max-width 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1);
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-link span,
+.sidebar-apicultor.contraido .sidebar-user-logout span {
+
+    display: inline-block;
+
+}
+
+
+/* Cuando se asoma al pasar el mouse, el texto vuelve */
+
+.sidebar-apicultor.contraido:hover .sidebar-logo-texto,
+.sidebar-apicultor.contraido:hover .sidebar-link span,
+.sidebar-apicultor.contraido:hover .sidebar-user-info,
+.sidebar-apicultor.contraido:hover .sidebar-user-arrow,
+.sidebar-apicultor.contraido:hover .sidebar-user-logout span {
+
+    max-width: 200px;
+    opacity: 1;
+
+    pointer-events: auto;
+
+}
+
+
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-logo-texto,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-link span,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-info,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-arrow,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-logout span {
+
+    max-width: 0;
+    opacity: 0;
+
+}
+
+
+/* ==========================================================
+   4. EL HUECO ENTRE EL ICONO Y EL TEXTO
+
+   Con max-width en 0 el texto ya no ocupa, pero el `gap` de
+   11px seguía ahí y dejaba el icono descentrado. Se anima
+   junto con lo demás.
+========================================================== */
+
+.sidebar-link,
+.sidebar-logo,
+.sidebar-user-logout {
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        color 0.2s ease,
+        gap 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1);
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-link,
+.sidebar-apicultor.contraido .sidebar-logo,
+.sidebar-apicultor.contraido .sidebar-user-logout {
+
+    gap: 0;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-link,
+.sidebar-apicultor.contraido:hover .sidebar-logo {
+
+    gap: 11px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-user-logout {
+
+    gap: 12px;
+
+}
+
+
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-link,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-logo,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-logout {
+
+    gap: 0;
+
+}
+
+
+/* La tarjeta de perfil es una grilla: sus columnas también
+   tienen que encogerse, o el avatar se queda descentrado. */
+
+.sidebar-user-main {
+
+    transition:
+        background-color 0.2s ease,
+        grid-template-columns 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1),
+        column-gap 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.32s
+            cubic-bezier(0.4, 0, 0.2, 1);
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-user-main {
+
+    grid-template-columns: 50px 0 0;
+    column-gap: 0;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-user-main {
+
+    grid-template-columns:
+        50px
+        minmax(0, 1fr)
+        20px;
+
+    column-gap: 11px;
+
+}
+
+
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-main {
+
+    grid-template-columns: 50px 0 0;
+    column-gap: 0;
+
+}
+
+
+/* ==========================================================
+   5. EL BOTÓN GIRA CON LA MISMA CURVA
+========================================================== */
+
+.btn-contraer-sidebar i {
+
+    transition:
+        transform 0.4s
+            cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+
+   Con animaciones desactivadas en el sistema, el menú cambia
+   de estado al instante en vez de animarse.
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar-apicultor,
+    .main-apicultor,
+    .sidebar-link,
+    .sidebar-logo,
+    .sidebar-user-main,
+    .sidebar-user-logout,
+    .sidebar-logo-texto,
+    .sidebar-link span,
+    .sidebar-user-info,
+    .sidebar-user-arrow,
+    .sidebar-user-logout span,
+    .btn-contraer-sidebar i {
+        transition: none !important;
+    }
+
+}
+
+
+/* ==========================================================
+   CENTRADO EN EL ESTADO CONTRAÍDO
+
+   Medido en el navegador: con el menú contraído a 82px, los
+   iconos, el logo y el avatar quedaban centrados en x=24
+   cuando el centro real es x=41. Estaban 17px corridos a la
+   izquierda.
+
+   La causa es que los paddings laterales (14px del contenedor
+   y 10px del menú) siguen aplicando cuando ya no hay ancho
+   para ellos. Aquí se anulan y se centra todo de forma
+   explícita.
+========================================================== */
+
+.sidebar-apicultor.contraido {
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-menu {
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-link {
+
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-logo {
+
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-user {
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-user-main {
+
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido .sidebar-user-logout {
+
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+/* Al asomarse, vuelven los paddings normales */
+
+.sidebar-apicultor.contraido:hover {
+
+    padding-left: 14px;
+    padding-right: 14px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-menu {
+
+    padding-right: 3px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-link {
+
+    justify-content: flex-start;
+
+    padding-left: 13px;
+    padding-right: 13px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-logo {
+
+    justify-content: flex-start;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-user-main {
+
+    justify-content: flex-start;
+
+    padding-left: 8px;
+    padding-right: 8px;
+
+}
+
+
+.sidebar-apicultor.contraido:hover .sidebar-user-logout {
+
+    justify-content: flex-start;
+
+    padding-left: 12px;
+    padding-right: 12px;
+
+}
+
+
+/* Y con .sin-asomar se mantiene centrado */
+
+.sidebar-apicultor.contraido.sin-asomar:hover {
+
+    padding-left: 0;
+    padding-right: 0;
+
+}
+
+
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-link,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-logo,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-main,
+.sidebar-apicultor.contraido.sin-asomar:hover .sidebar-user-logout {
+
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+
+}

@@ -21,7 +21,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/dashboard_apicultor.css' %}?v=6"
+    href="{% static 'panel_apicultor/css/dashboard_apicultor.css' %}?v=7"
 >
 
 {% endblock %}
@@ -76,7 +76,11 @@
              APIARIOS
         ================================================== -->
 
-        <article class="resumen-card">
+        <a
+            href="{% url 'apiarios_apicultor' %}"
+            class="resumen-card resumen-card--apiarios"
+            aria-label="Apiarios asignados. Ir al módulo"
+        >
 
             <div class="resumen-card-icono">
 
@@ -103,7 +107,7 @@
 
             </div>
 
-        </article>
+        </a>
 
 
 
@@ -111,7 +115,11 @@
              COLMENAS ACTIVAS
         ================================================== -->
 
-        <article class="resumen-card">
+        <a
+            href="{% url 'colmenas_apicultor' %}"
+            class="resumen-card resumen-card--colmenas"
+            aria-label="Colmenas activas. Ir al módulo"
+        >
 
             <div class="resumen-card-icono">
 
@@ -138,7 +146,7 @@
 
             </div>
 
-        </article>
+        </a>
 
 
 
@@ -146,7 +154,11 @@
              MANTENIMIENTOS
         ================================================== -->
 
-        <article class="resumen-card">
+        <a
+            href="{% url 'mantenimientos_apicultor' %}"
+            class="resumen-card resumen-card--mantenimientos"
+            aria-label="Mantenimientos pendientes. Ir al módulo"
+        >
 
             <div class="resumen-card-icono">
 
@@ -173,7 +185,7 @@
 
             </div>
 
-        </article>
+        </a>
 
 
 
@@ -181,7 +193,11 @@
              INCIDENCIAS
         ================================================== -->
 
-        <article class="resumen-card">
+        <a
+            href="{% url 'incidencias_apicultor' %}"
+            class="resumen-card resumen-card--incidencias"
+            aria-label="Incidencias activas. Ir al módulo"
+        >
 
             <div class="resumen-card-icono">
 
@@ -208,7 +224,7 @@
 
             </div>
 
-        </article>
+        </a>
 
 
 
@@ -216,7 +232,11 @@
              REVISIONES
         ================================================== -->
 
-        <article class="resumen-card">
+        <a
+            href="{% url 'mantenimientos_apicultor' %}"
+            class="resumen-card resumen-card--revisiones"
+            aria-label="Revisiones este mes. Ir al módulo"
+        >
 
             <div class="resumen-card-icono">
 
@@ -243,7 +263,7 @@
 
             </div>
 
-        </article>
+        </a>
 
 
     </section>
@@ -1067,7 +1087,7 @@
 ========================================================== -->
 
 <script
-    src="{% static 'panel_apicultor/js/dashboard_apicultor.js' %}?v=7"
+    src="{% static 'panel_apicultor/js/dashboard_apicultor.js' %}?v=8"
 ></script>
 
 

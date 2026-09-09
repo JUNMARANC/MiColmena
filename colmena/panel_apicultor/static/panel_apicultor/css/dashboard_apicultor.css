@@ -1490,3 +1490,1153 @@
     }
 
 }
+
+/* ==========================================================
+   ==========================================================
+   MEJORAS DEL PANEL
+
+   Bloque nuevo, al final del archivo. No se modificó ninguna
+   regla anterior: si algo no convence, se borra este bloque
+   completo y el panel vuelve a como estaba.
+   ========================================================== */
+
+
+/* ==========================================================
+   1. LAS TARJETAS AHORA SON ENLACES
+
+   Antes eran <article>: mostraban «1 Apiarios asignados» y no
+   se podía hacer nada con ese dato. Lo natural al ver un
+   número en un panel es querer ver el detalle.
+========================================================== */
+
+.resumen-card {
+
+    color: inherit;
+    text-decoration: none;
+
+    cursor: pointer;
+
+}
+
+
+.resumen-card:hover,
+.resumen-card:focus-visible {
+
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(33, 79, 59, 0.20);
+
+    box-shadow:
+        0 10px 24px
+        rgba(33, 79, 59, 0.13);
+
+}
+
+
+.resumen-card:active {
+
+    transform: translateY(-1px);
+
+}
+
+
+.resumen-card-icono {
+
+    transition:
+        transform 0.35s
+            cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+
+.resumen-card:hover .resumen-card-icono,
+.resumen-card:focus-visible .resumen-card-icono {
+
+    transform:
+        scale(1.08)
+        rotate(-5deg);
+
+}
+
+
+/* ==========================================================
+   2. UN COLOR POR MÓDULO
+
+   Las cinco tarjetas usaban el mismo fondo y el mismo verde
+   en el icono. De un vistazo eran indistinguibles, y la de
+   incidencias —la única que pide acción— no destacaba.
+========================================================== */
+
+.resumen-card--apiarios .resumen-card-icono {
+
+    background: #E4F0FA;
+    color: #3D6FA0;
+
+}
+
+
+.resumen-card--colmenas .resumen-card-icono {
+
+    background: #FFF4DB;
+    color: #896817;
+
+}
+
+
+.resumen-card--mantenimientos .resumen-card-icono {
+
+    background: #EAF6ED;
+    color: #2F7D4F;
+
+}
+
+
+.resumen-card--incidencias .resumen-card-icono {
+
+    background: #FFE8E5;
+    color: #C44134;
+
+}
+
+
+.resumen-card--revisiones .resumen-card-icono {
+
+    background: #EDE8F7;
+    color: #6B4E9B;
+
+}
+
+
+/* Un hilo de color arriba refuerza la identidad de cada
+   tarjeta sin recargarla */
+
+.resumen-card {
+
+    position: relative;
+    overflow: hidden;
+
+}
+
+
+.resumen-card::before {
+
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+
+    opacity: 0;
+
+    transition: opacity 0.2s ease;
+
+}
+
+
+.resumen-card:hover::before,
+.resumen-card:focus-visible::before {
+
+    opacity: 1;
+
+}
+
+
+.resumen-card--apiarios::before       { background: #3D6FA0; }
+.resumen-card--colmenas::before       { background: #896817; }
+.resumen-card--mantenimientos::before { background: #2F7D4F; }
+.resumen-card--incidencias::before    { background: #C44134; }
+.resumen-card--revisiones::before     { background: #6B4E9B; }
+
+
+/* ==========================================================
+   3. LOS NÚMEROS NO ENSANCHAN LA TARJETA
+
+   Con la fuente normal, al pasar de 9 a 10 o de 99 a 100 el
+   número cambia de ancho y mueve el texto de al lado.
+   tabular-nums le da a cada dígito el mismo ancho.
+========================================================== */
+
+.resumen-numero {
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+/* ==========================================================
+   4. FILAS INCOMPLETAS CENTRADAS
+
+   Son cinco tarjetas. En tres columnas quedan 3 + 2 y en dos
+   columnas 2 + 2 + 1: la última fila se pegaba a la izquierda
+   y dejaba un hueco a la derecha.
+
+   Se declara la grilla con el doble de columnas y cada tarjeta
+   ocupa dos, para poder colocar las sobrantes en el centro.
+========================================================== */
+
+@media (max-width: 1500px) {
+
+    .resumen-grid {
+        grid-template-columns:
+            repeat(6, minmax(0, 1fr));
+    }
+
+    .resumen-card {
+        grid-column: span 2;
+    }
+
+    /* Las dos últimas, centradas */
+    .resumen-card:nth-child(4) {
+        grid-column: 2 / span 2;
+    }
+
+    .resumen-card:nth-child(5) {
+        grid-column: 4 / span 2;
+    }
+
+}
+
+
+@media (max-width: 1200px) {
+
+    .resumen-grid {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+    }
+
+    .resumen-card,
+    .resumen-card:nth-child(4) {
+        grid-column: span 2;
+    }
+
+    /* La quinta, a lo ancho */
+    .resumen-card:nth-child(5) {
+        grid-column: 1 / -1;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    /* La regla original de una sola columna está más arriba en
+       el archivo, así que mi repeat(4) de 1200px la pisaba: en
+       un celular salían cuatro tarjetas apretadas en una fila.
+       Se vuelve a declarar aquí. */
+    .resumen-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-card,
+    .resumen-card:nth-child(4),
+    .resumen-card:nth-child(5) {
+        grid-column: auto;
+    }
+
+}
+
+
+/* ==========================================================
+   5. FOCO VISIBLE
+
+   Las tarjetas ahora reciben el foco con Tab: hay que verlo.
+========================================================== */
+
+.resumen-card:focus-visible,
+.accion-rapida:focus-visible,
+.dashboard-card a:focus-visible {
+
+    outline:
+        3px solid
+        #F0A000;
+
+    outline-offset: 3px;
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .resumen-card,
+    .resumen-card-icono,
+    .resumen-card::before {
+        transition: none !important;
+    }
+
+    .resumen-card:hover,
+    .resumen-card:focus-visible,
+    .resumen-card:hover .resumen-card-icono,
+    .resumen-card:focus-visible .resumen-card-icono {
+        transform: none;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   PULIDO VISUAL Y ANIMACIONES
+
+   Segundo bloque nuevo, después del de MEJORAS DEL PANEL.
+   Igual que aquel: solo agrega, no modifica reglas anteriores.
+   Se puede borrar entero sin romper nada.
+   ========================================================== */
+
+
+/* ==========================================================
+   1. ENCABEZADO DE BIENVENIDA
+
+   Era un título y un párrafo sueltos sobre el fondo. Ahora es
+   una banda con la textura de panal del proyecto, que le da
+   un punto de entrada claro a la pantalla.
+========================================================== */
+
+.dashboard-bienvenida {
+
+    position: relative;
+    overflow: hidden;
+
+    margin-bottom: 22px;
+    padding: 26px 28px;
+
+    border: 1px solid rgba(137, 104, 23, 0.16);
+    border-radius: 20px;
+
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(137,104,23,0.10)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(137,104,23,0.10)' stroke-width='1'/%3E%3C/svg%3E"),
+        linear-gradient(
+            110deg,
+            #FFF3C4 0%,
+            #FFFBE8 55%,
+            #FFFFFF 100%
+        );
+
+    background-repeat: repeat, no-repeat;
+
+}
+
+
+/* Hexágono decorativo que asoma por la esquina */
+
+.dashboard-bienvenida::after {
+
+    content: "";
+
+    position: absolute;
+    top: -34px;
+    right: -26px;
+
+    width: 128px;
+    height: 128px;
+
+    background:
+        linear-gradient(
+            155deg,
+            var(--apicultor-sidebar),
+            var(--apicultor-verde-medio)
+        );
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    opacity: 0.16;
+
+    pointer-events: none;
+
+}
+
+
+.dashboard-bienvenida h1 {
+
+    position: relative;
+    z-index: 1;
+
+    font-weight: 700;
+    color: var(--apicultor-verde-oscuro);
+
+}
+
+
+.dashboard-bienvenida p {
+
+    position: relative;
+    z-index: 1;
+
+    max-width: 62ch;
+
+}
+
+
+/* ==========================================================
+   2. TARJETAS DE RESUMEN
+
+   Menos alto y un degradado suave, para que el número pese
+   más que el envase.
+========================================================== */
+
+.resumen-card {
+
+    min-height: 158px;
+
+    gap: 11px;
+
+    background:
+        linear-gradient(
+            170deg,
+            #FFFFFF 0%,
+            #FEFCF4 100%
+        );
+
+}
+
+
+.resumen-card-icono {
+
+    width: 58px;
+    height: 58px;
+
+    font-size: 23px;
+
+    /* Halo suave del color de cada módulo */
+    box-shadow:
+        0 0 0 6px
+        rgba(255, 255, 255, 0.75);
+
+}
+
+
+.resumen-card-contenido span {
+
+    letter-spacing: 0.2px;
+
+}
+
+
+@media (max-width: 1500px) {
+
+    .resumen-card {
+        min-height: 148px;
+    }
+
+}
+
+
+/* ==========================================================
+   3. ENCABEZADOS DE LAS TARJETAS GRANDES
+
+   Un filete de color a la izquierda del título ancla la
+   sección sin agregar ruido.
+========================================================== */
+
+.dashboard-card {
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            170deg,
+            #FFFFFF 0%,
+            #FDFCF6 100%
+        );
+
+    transition:
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+
+}
+
+
+.dashboard-card:hover {
+
+    border-color: rgba(33, 79, 59, 0.16);
+
+    box-shadow:
+        0 9px 26px
+        rgba(33, 79, 59, 0.10);
+
+}
+
+
+.dashboard-card-header {
+
+    position: relative;
+
+    padding-left: 13px;
+
+}
+
+
+.dashboard-card-header::before {
+
+    content: "";
+
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+
+    width: 4px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--apicultor-sidebar),
+            var(--apicultor-verde-medio)
+        );
+
+}
+
+
+/* ==========================================================
+   4. ACCIONES RÁPIDAS
+
+   Cada una con su color y una flecha que se desliza. Antes
+   las tres eran del mismo tono crema.
+========================================================== */
+
+.accion-rapida {
+
+    position: relative;
+    overflow: hidden;
+
+}
+
+
+.accion-rapida::before {
+
+    content: "";
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 4px;
+
+    opacity: 0;
+
+    transition: opacity 0.2s ease;
+
+}
+
+
+.accion-rapida:hover::before,
+.accion-rapida:focus-visible::before {
+
+    opacity: 1;
+
+}
+
+
+.accion-rapida:nth-child(1)::before { background: #2F7D4F; }
+.accion-rapida:nth-child(2)::before { background: #C44134; }
+.accion-rapida:nth-child(3)::before { background: #3D6FA0; }
+
+
+.accion-rapida:hover {
+
+    background: rgba(255, 237, 180, 0.62);
+
+    transform: translateX(3px);
+
+}
+
+
+/* La flecha del final se desliza al pasar el mouse */
+
+.accion-rapida > :last-child {
+
+    transition:
+        transform 0.28s
+            cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+
+.accion-rapida:hover > :last-child {
+
+    transform: translateX(4px);
+
+}
+
+
+/* ==========================================================
+   5. TABLA DE INCIDENCIAS
+
+   Filas alternas y realce al pasar el mouse: en una tabla de
+   seis columnas ayuda a no perder el renglón.
+========================================================== */
+
+.tabla-incidencias tbody tr {
+
+    transition: background 0.15s ease;
+
+}
+
+
+.tabla-incidencias tbody tr:nth-child(even) {
+
+    background: rgba(255, 253, 240, 0.75);
+
+}
+
+
+.tabla-incidencias tbody tr:hover {
+
+    background: rgba(255, 237, 180, 0.42);
+
+}
+
+
+/* ==========================================================
+   6. ESTADOS VACÍOS
+
+   El icono flota suavemente: da la sensación de que la
+   pantalla está viva y no de que algo falló al cargar.
+========================================================== */
+
+.estado-vacio i,
+.tabla-vacia i {
+
+    display: inline-block;
+
+    animation:
+        flotarVacio
+        3.4s ease-in-out infinite;
+
+}
+
+
+@keyframes flotarVacio {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+
+}
+
+
+/* ==========================================================
+   7. ENTRADA DE LA PANTALLA
+
+   Las secciones aparecen escalonadas al cargar, de arriba
+   hacia abajo. Los tiempos son cortos a propósito: si se
+   nota que "está animando", estorba.
+========================================================== */
+
+.dashboard-bienvenida,
+.resumen-card,
+.dashboard-fila-graficas > *,
+.dashboard-fila-secundaria > *,
+.incidencias-card {
+
+    opacity: 0;
+
+    animation:
+        entradaPanel
+        0.45s
+        cubic-bezier(0.22, 1, 0.36, 1)
+        forwards;
+
+}
+
+
+@keyframes entradaPanel {
+
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.dashboard-bienvenida            { animation-delay: .02s; }
+
+.resumen-card:nth-child(1)       { animation-delay: .08s; }
+.resumen-card:nth-child(2)       { animation-delay: .12s; }
+.resumen-card:nth-child(3)       { animation-delay: .16s; }
+.resumen-card:nth-child(4)       { animation-delay: .20s; }
+.resumen-card:nth-child(5)       { animation-delay: .24s; }
+
+.dashboard-fila-graficas > *:nth-child(1)   { animation-delay: .30s; }
+.dashboard-fila-graficas > *:nth-child(2)   { animation-delay: .35s; }
+
+.dashboard-fila-secundaria > *:nth-child(1) { animation-delay: .40s; }
+.dashboard-fila-secundaria > *:nth-child(2) { animation-delay: .45s; }
+
+.incidencias-card                { animation-delay: .50s; }
+
+
+/* Red de seguridad: si se agregan más tarjetas de resumen,
+   igual aparecen en vez de quedarse invisibles. */
+.resumen-card:nth-child(n+6)     { animation-delay: .28s; }
+
+
+/* ==========================================================
+   8. LA GRÁFICA DE DONA RESPIRA
+
+   Un pulso muy lento sobre el contenedor. Es de esos detalles
+   que no se notan de frente pero hacen que la pantalla no se
+   sienta un pantallazo estático.
+========================================================== */
+
+.grafica-dona-contenedor {
+
+    animation:
+        respirarDona
+        6s ease-in-out infinite;
+
+}
+
+
+@keyframes respirarDona {
+
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.015);
+    }
+
+}
+
+
+/* ==========================================================
+   9. LEYENDA DEL ESTADO DE COLMENAS
+========================================================== */
+
+.leyenda-colmenas > * {
+
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+
+}
+
+
+.leyenda-colmenas > *:hover {
+
+    transform: translateX(2px);
+
+}
+
+
+.estado-punto {
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 255, 255, 0.85);
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+
+   Nada de lo anterior debe moverse si el sistema pide menos
+   animación. Las secciones aparecen ya visibles.
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .dashboard-bienvenida,
+    .resumen-card,
+    .dashboard-fila-graficas > *,
+    .dashboard-fila-secundaria > *,
+    .incidencias-card {
+        opacity: 1;
+        animation: none !important;
+        transform: none;
+    }
+
+    .estado-vacio i,
+    .tabla-vacia i,
+    .grafica-dona-contenedor {
+        animation: none !important;
+    }
+
+    .dashboard-card,
+    .accion-rapida,
+    .accion-rapida::before,
+    .accion-rapida > :last-child,
+    .tabla-incidencias tbody tr,
+    .leyenda-colmenas > * {
+        transition: none !important;
+    }
+
+    .accion-rapida:hover,
+    .accion-rapida:hover > :last-child,
+    .leyenda-colmenas > *:hover {
+        transform: none;
+    }
+
+}
+
+
+/* ==========================================================
+   10. ALINEACIÓN DE LAS ETIQUETAS
+
+   «Colmenas activas» cabe en una línea; «Mantenimientos
+   pendientes», «Incidencias activas» y «Revisiones este mes»
+   se parten en dos. Como la tarjeta centra su contenido, eso
+   dejaba los números a alturas distintas dentro de la misma
+   fila y se veía descuadrado.
+
+   Reservando el alto de dos líneas, los cinco números quedan
+   a la misma altura.
+========================================================== */
+
+.resumen-card-contenido {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+.resumen-card-contenido span {
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    min-height: 2.6em;
+
+    line-height: 1.3;
+
+}
+
+
+@media (max-width: 560px) {
+
+    /* En una columna la tarjeta es horizontal y el texto ya no
+       necesita reservar dos líneas. */
+    .resumen-card-contenido {
+        align-items: flex-start;
+    }
+
+    .resumen-card-contenido span {
+        min-height: 0;
+        justify-content: flex-start;
+    }
+
+}
+
+
+/* ==========================================================
+   11. AVISO DE VALOR ACTUALIZADO
+
+   El panel se refresca solo cada 10 segundos. Hasta ahora, si
+   un número cambiaba mientras usted miraba la pantalla, lo
+   hacía en silencio.
+
+   Lo activa dashboard_animaciones.js cuando detecta el cambio.
+========================================================== */
+
+.resumen-card--actualizada {
+
+    animation:
+        destacarTarjeta
+        1.4s ease-out;
+
+}
+
+
+@keyframes destacarTarjeta {
+
+    0% {
+        box-shadow:
+            0 5px 17px rgba(33, 79, 59, 0.07),
+            0 0 0 0 rgba(240, 160, 0, 0.55);
+    }
+
+    18% {
+        box-shadow:
+            0 8px 22px rgba(33, 79, 59, 0.12),
+            0 0 0 7px rgba(240, 160, 0, 0.30);
+    }
+
+    100% {
+        box-shadow:
+            0 5px 17px rgba(33, 79, 59, 0.07),
+            0 0 0 16px rgba(240, 160, 0, 0);
+    }
+
+}
+
+
+/* El número también late una vez */
+
+.resumen-card--actualizada .resumen-numero {
+
+    animation:
+        latirNumero
+        0.7s
+        cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+
+@keyframes latirNumero {
+
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.14); }
+    100% { transform: scale(1); }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .resumen-card--actualizada,
+    .resumen-card--actualizada .resumen-numero {
+        animation: none !important;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   ESCALA TIPOGRÁFICA
+
+   Medido sobre este mismo archivo: había 15 tamaños distintos
+   en una sola pantalla, y 13 de 31 reglas usaban 10px o menos.
+
+       8px  = 50% del texto por defecto del navegador  (x2)
+       9px  = 56%                                      (x5)
+      10px  = 62%                                      (x6)
+
+   Lo más grave: los datos de la tabla de incidencias estaban
+   a 10px y los badges de estado y prioridad a 8px. Eso es
+   difícil de leer en un portátil, y este panel lo usa gente
+   que muchas veces lo consulta en campo.
+
+   Aquí se reduce a siete tamaños con una progresión clara, y
+   el mínimo sube a 11px. Nada crece de golpe: el salto más
+   grande es de 3px.
+   ========================================================== */
+
+:root {
+
+    --txt-xs:   11px;   /* badges y etiquetas en mayúsculas */
+    --txt-sm:   12px;   /* apoyos y textos secundarios */
+    --txt-md:   13px;   /* datos de tabla y descripciones */
+    --txt-base: 14px;   /* texto normal */
+    --txt-lg:   16px;   /* destacados dentro de una tarjeta */
+    --txt-xl:   19px;   /* títulos de sección */
+    --txt-2xl:  30px;   /* saludo */
+    --txt-cifra: 38px;  /* los números de las tarjetas */
+
+}
+
+
+/* ---------- 8px → 11px : badges de la tabla ---------- */
+
+.badge-estado-incidencia,
+.badge-prioridad {
+
+    font-size: var(--txt-xs);
+
+    /* Con más tamaño, el interlineado y el espaciado también
+       tienen que crecer o la pastilla se ve apretada */
+    padding: 4px 10px;
+    letter-spacing: 0.4px;
+
+}
+
+
+/* ---------- 9px → 12px ---------- */
+
+.accion-rapida span,
+.proxima-fecha span,
+.proxima-info span,
+.proxima-info small,
+.tabla-vacia span,
+.dashboard-footer {
+
+    font-size: var(--txt-sm);
+
+}
+
+
+.dashboard-footer i {
+
+    font-size: var(--txt-sm);
+
+}
+
+
+/* ---------- 10px → 13px : los datos de la tabla ---------- */
+
+.tabla-incidencias tbody td {
+
+    font-size: var(--txt-md);
+
+    /* Un poco más de aire vertical: con 10px las filas se
+       veían pegadas y ahora el texto ocupa más */
+    padding-top: 13px;
+    padding-bottom: 13px;
+
+}
+
+
+.tabla-incidencias thead th {
+
+    font-size: var(--txt-xs);
+
+    letter-spacing: 0.5px;
+
+}
+
+
+.dashboard-card-periodo,
+.estado-vacio span,
+.leyenda-colmenas > div {
+
+    font-size: var(--txt-md);
+
+}
+
+
+/* ---------- 11px y 12px → 13px ---------- */
+
+.accion-rapida strong,
+.dashboard-card-header p,
+.tabla-vacia strong,
+.estado-vacio strong,
+.proxima-info strong {
+
+    font-size: var(--txt-md);
+
+}
+
+
+/* Los títulos de los estados vacíos y de las acciones rápidas
+   son el texto principal de su bloque: merecen un punto más */
+
+.accion-rapida strong,
+.estado-vacio strong,
+.tabla-vacia strong {
+
+    font-size: var(--txt-base);
+
+}
+
+
+/* ---------- 14px : se queda ---------- */
+
+.dashboard-bienvenida p,
+.resumen-card-contenido span {
+
+    font-size: var(--txt-base);
+
+}
+
+
+/* ---------- 17, 18, 19 → 19px ---------- */
+
+.dashboard-card-header h2 {
+
+    font-size: var(--txt-xl);
+
+}
+
+
+.proxima-fecha strong {
+
+    font-size: var(--txt-lg);
+
+}
+
+
+/* ---------- 31 → 30px ---------- */
+
+.dashboard-bienvenida h1 {
+
+    font-size: var(--txt-2xl);
+
+}
+
+
+/* ---------- 39 → 38px ---------- */
+
+.resumen-numero {
+
+    font-size: var(--txt-cifra);
+
+}
+
+
+/* ==========================================================
+   LA TABLA NECESITA MÁS ANCHO
+
+   El texto pasó de 10 a 13px, un 30% más. Con el min-width
+   anterior las columnas quedaban apretadas y los títulos de
+   incidencia se partían.
+========================================================== */
+
+.tabla-incidencias {
+
+    min-width: 880px;
+
+}
+
+
+/* ==========================================================
+   EN PANTALLAS PEQUEÑAS
+
+   Aquí el texto puede bajar un punto, pero nunca por debajo
+   de 11px.
+========================================================== */
+
+@media (max-width: 820px) {
+
+    :root {
+        --txt-2xl:  25px;
+        --txt-cifra: 32px;
+        --txt-xl:   17px;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    :root {
+        --txt-2xl:  22px;
+        --txt-cifra: 29px;
+    }
+
+}

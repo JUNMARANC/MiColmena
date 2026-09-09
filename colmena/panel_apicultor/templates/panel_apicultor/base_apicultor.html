@@ -39,7 +39,7 @@
 
     <link
         rel="stylesheet"
-        href="{% static 'panel_apicultor/css/base_apicultor.css' %}?v=7"
+        href="{% static 'panel_apicultor/css/base_apicultor.css' %}?v=9"
     >
 
 
@@ -50,6 +50,13 @@
 
 
 <body>
+
+<!-- Enlace para saltar el menú. Oculto hasta que se enfoca con Tab:
+     sin él, para llegar al contenido de cualquier página hay que
+     pasar antes por los seis ítems del menú. -->
+<a href="#contenidoPrincipal" class="salto-contenido">
+    Saltar al contenido
+</a>
 
 <div class="app-apicultor">
 
@@ -63,6 +70,37 @@
         id="sidebarApicultor"
     >
 
+        <script>
+            // Aplica el estado guardado (contraído o expandido) antes de
+            // que el navegador pinte el menú, para que no se vea el salto
+            // del menú expandido que enseguida se contrae.
+            (function () {
+                try {
+                    if (localStorage.getItem("sidebarApicultorContraido") === "1") {
+                        document
+                            .getElementById("sidebarApicultor")
+                            .classList.add("contraido");
+                    }
+                } catch (error) {}
+            })();
+        </script>
+
+
+        <!-- =================================================
+             BOTÓN DE CONTRAER
+        ================================================== -->
+
+        <button
+            type="button"
+            class="btn-contraer-sidebar"
+            id="btnContraerSidebar"
+            aria-label="Contraer o expandir el menú"
+            aria-controls="sidebarMenuApicultor"
+            aria-expanded="true"
+        >
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </button>
+
 
         <!-- =================================================
              LOGO
@@ -73,15 +111,15 @@
 
             <div class="sidebar-logo-icono">
 
-                <i class="bi bi-hexagon-fill"></i>
-
-                <i
-                    class="
-                        bi
-                        bi-diagram-2
-                        sidebar-abeja-icono
-                    "
-                ></i>
+                <!-- La misma abeja del panel del administrador.
+                     Antes eran dos iconos superpuestos: un hexágono
+                     de fondo y un bi-diagram-2 encima, que no es
+                     una abeja sino un diagrama de nodos. -->
+                <img
+                    src="{% static 'panel_admin/img/abeja_sidebar.png' %}"
+                    alt=""
+                    class="sidebar-logo-img"
+                >
 
             </div>
 
@@ -107,7 +145,13 @@
              MENÚ PRINCIPAL
         ================================================== -->
 
-        <nav class="sidebar-menu">
+        <div class="sidebar-menu-wrap">
+
+        <nav
+            class="sidebar-menu"
+            id="sidebarMenuApicultor"
+            aria-label="Menú principal"
+        >
 
 
             <!-- =============================================
@@ -116,6 +160,8 @@
 
             <a
                 href="{% url 'dashboard_apicultor' %}"
+                data-tooltip="Inicio"
+                {% if request.resolver_match.url_name == 'dashboard_apicultor' %}aria-current="page"{% endif %}
                 class="
                     sidebar-link
 
@@ -125,7 +171,7 @@
                 "
             >
 
-                <i class="bi bi-house-door"></i>
+                <i class="bi bi-house-door" aria-hidden="true"></i>
 
                 <span>
                     Inicio
@@ -141,6 +187,8 @@
 
             <a
                 href="{% url 'apiarios_apicultor' %}"
+                data-tooltip="Mis Apiarios"
+                {% if request.resolver_match.url_name == 'apiarios_apicultor' %}aria-current="page"{% endif %}
                 class="
                     sidebar-link
 
@@ -150,7 +198,7 @@
                 "
             >
 
-                <i class="bi bi-geo-alt"></i>
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
 
                 <span>
                     Mis Apiarios
@@ -166,6 +214,8 @@
 
             <a
                 href="{% url 'colmenas_apicultor' %}"
+                data-tooltip="Mis Colmenas"
+                {% if request.resolver_match.url_name == 'colmenas_apicultor' %}aria-current="page"{% endif %}
                 class="
                     sidebar-link
 
@@ -175,7 +225,7 @@
                 "
             >
 
-                <i class="bi bi-hexagon-fill"></i>
+                <i class="bi bi-hexagon-fill" aria-hidden="true"></i>
 
                 <span>
                     Mis Colmenas
@@ -191,6 +241,8 @@
 
             <a
                 href="{% url 'mantenimientos_apicultor' %}"
+                data-tooltip="Mantenimientos"
+                {% if request.resolver_match.url_name == 'mantenimientos_apicultor' %}aria-current="page"{% endif %}
                 class="
                     sidebar-link
 
@@ -200,7 +252,7 @@
                 "
             >
 
-                <i class="bi bi-tools"></i>
+                <i class="bi bi-tools" aria-hidden="true"></i>
 
                 <span>
                     Mantenimientos
@@ -216,6 +268,8 @@
 
             <a
                 href="{% url 'incidencias_apicultor' %}"
+                data-tooltip="Incidencias"
+                {% if request.resolver_match.url_name == 'incidencias_apicultor' %}aria-current="page"{% endif %}
                 class="
                     sidebar-link
 
@@ -225,7 +279,7 @@
                 "
             >
 
-                <i class="bi bi-exclamation-triangle"></i>
+                <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
 
                 <span>
                     Incidencias
@@ -241,6 +295,8 @@
 
             <a
                 href="{% url 'agenda_apicultor' %}"
+                data-tooltip="Agenda"
+                {% if request.resolver_match.url_name == 'agenda_apicultor' %}aria-current="page"{% endif %}
                 class="
                     sidebar-link
 
@@ -250,7 +306,7 @@
                 "
             >
 
-                <i class="bi bi-calendar3"></i>
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
 
                 <span>
                     Agenda
@@ -260,6 +316,18 @@
 
 
         </nav>
+
+            <button
+                type="button"
+                class="sidebar-scroll-hint"
+                id="sidebarScrollHint"
+                tabindex="-1"
+                aria-hidden="true"
+            >
+                <i class="bi bi-chevron-down"></i>
+            </button>
+
+        </div>
 
 
 
@@ -275,7 +343,7 @@
             ============================================== -->
 
             <a
-                href="{% url 'perfil_apicultor' %}"
+                href="{% url 'mi_perfil' %}"
                 class="sidebar-user-main"
             >
 
@@ -380,7 +448,7 @@
                 class="sidebar-user-logout"
             >
 
-                <i class="bi bi-box-arrow-right"></i>
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
 
                 <span>
                     Cerrar sesión
@@ -413,6 +481,8 @@
 
     <main class="main-apicultor">
 
+        <span id="contenidoPrincipal" tabindex="-1"></span>
+
 
         <!-- =================================================
              HEADER SUPERIOR
@@ -434,7 +504,9 @@
                     type="button"
                     class="btn-menu-apicultor"
                     id="btnMenuApicultor"
-                    aria-label="Abrir menú"
+                    aria-label="Abrir el menú"
+                    aria-controls="sidebarApicultor"
+                    aria-expanded="false"
                 >
 
                     <i class="bi bi-list"></i>
@@ -600,7 +672,7 @@
 ========================================================== -->
 
 <script
-    src="{% static 'panel_apicultor/js/base_apicultor.js' %}?v=6"
+    src="{% static 'panel_apicultor/js/base_apicultor.js' %}?v=7"
 ></script>
 
 

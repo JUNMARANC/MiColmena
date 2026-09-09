@@ -1759,3 +1759,196 @@ document.addEventListener(
     }
 
 );
+
+
+/* ==========================================================
+   ==========================================================
+   ANIMACIONES DEL PANEL
+
+   Bloque nuevo, al final del archivo. Todo lo de arriba queda
+   igual: no se modificó ni una línea de la lógica anterior.
+
+   Va fuera del DOMContentLoaded de arriba a propósito, con su
+   propio listener, para que sea independiente. Si algo aquí
+   fallara, el panel sigue funcionando.
+
+   Si quieren quitarlo, borren de este comentario hacia abajo.
+   ========================================================== */
+
+(function () {
+
+    "use strict";
+
+
+    var CONTADORES = [
+        "contadorApiariosAsignados",
+        "contadorColmenasActivas",
+        "contadorMantenimientosPendientes",
+        "contadorIncidenciasActivas",
+        "contadorRevisionesMes"
+    ];
+
+    var DURACION_CONTEO = 700;
+
+    var prefiereMenosMovimiento =
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+
+    /* ======================================================
+       CONTEO ANIMADO
+
+       Sube de un número a otro con una curva que desacelera
+       al final, que es como se siente natural.
+    ====================================================== */
+
+    function animarConteo(elemento, desde, hasta, alTerminar) {
+
+        var inicio = null;
+
+        function paso(ahora) {
+
+            if (inicio === null) {
+                inicio = ahora;
+            }
+
+            var avance = Math.min((ahora - inicio) / DURACION_CONTEO, 1);
+
+            // easeOutCubic: rápido al principio, suave al final
+            var suavizado = 1 - Math.pow(1 - avance, 3);
+
+            elemento.textContent = Math.round(
+                desde + (hasta - desde) * suavizado
+            );
+
+            if (avance < 1) {
+                window.requestAnimationFrame(paso);
+            } else {
+                elemento.textContent = hasta;
+                if (alTerminar) {
+                    alTerminar();
+                }
+            }
+        }
+
+        window.requestAnimationFrame(paso);
+    }
+
+
+    /* ======================================================
+       DESTACAR LA TARJETA QUE CAMBIÓ
+    ====================================================== */
+
+    function destacar(elemento) {
+
+        var tarjeta = elemento.closest(".resumen-card");
+
+        if (!tarjeta) {
+            return;
+        }
+
+        tarjeta.classList.remove("resumen-card--actualizada");
+
+        // Fuerza el reinicio de la animación
+        void tarjeta.offsetWidth;
+
+        tarjeta.classList.add("resumen-card--actualizada");
+
+        window.setTimeout(function () {
+            tarjeta.classList.remove("resumen-card--actualizada");
+        }, 1400);
+    }
+
+
+    /* ======================================================
+       ARRANQUE
+    ====================================================== */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        CONTADORES.forEach(function (id) {
+
+            var elemento = document.getElementById(id);
+
+            if (!elemento) {
+                return;
+            }
+
+            var valorActual = parseInt(elemento.textContent, 10);
+
+            if (isNaN(valorActual)) {
+                return;
+            }
+
+
+            /* Bandera para distinguir nuestras escrituras de las
+               del refresco. El observador se dispara también
+               mientras el número está contando: sin esto se
+               llamaría a sí mismo en bucle.
+
+               Se declara ANTES de usarse. Con `var` funcionaría
+               igual por el hoisting, pero deja una trampa: si
+               alguien baja el retardo de 350ms a 0, el valor
+               todavía sería undefined. */
+
+            var escribiendoNosotros = false;
+            var ultimoValor = valorActual;
+
+
+            /* ----- Conteo inicial: de 0 al valor real ----- */
+
+            if (!prefiereMenosMovimiento && valorActual > 0) {
+
+                elemento.textContent = "0";
+
+                // Espera a que termine la entrada escalonada de
+                // las tarjetas para que no compitan
+                window.setTimeout(function () {
+                    escribiendoNosotros = true;
+                    animarConteo(elemento, 0, valorActual, function () {
+                        escribiendoNosotros = false;
+                    });
+                }, 350);
+            }
+
+
+            /* ----- Vigilar los cambios del refresco ----- */
+
+            var observador = new MutationObserver(function () {
+
+                if (escribiendoNosotros) {
+                    return;
+                }
+
+                var nuevoValor = parseInt(elemento.textContent, 10);
+
+                if (isNaN(nuevoValor) || nuevoValor === ultimoValor) {
+                    return;
+                }
+
+                var anterior = ultimoValor;
+                ultimoValor = nuevoValor;
+
+                destacar(elemento);
+
+                if (prefiereMenosMovimiento) {
+                    return;
+                }
+
+                escribiendoNosotros = true;
+
+                animarConteo(elemento, anterior, nuevoValor, function () {
+                    escribiendoNosotros = false;
+                });
+            });
+
+            observador.observe(elemento, {
+                childList: true,
+                characterData: true,
+                subtree: true
+            });
+
+        });
+
+    });
+
+})();
