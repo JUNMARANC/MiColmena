@@ -1,0 +1,364 @@
+/* ==========================================================
+   ANIMACIONES DEL PANEL DEL APICULTOR
+
+   Archivo compartido por los 14 módulos. Se carga DESPUÉS del
+   CSS de cada pantalla, en el bloque extra_css de la plantilla
+   base, para que pueda animar lo que cada módulo ya define.
+
+   CÓMO ALCANZA A TODOS LOS MÓDULOS SIN RENOMBRAR NADA
+
+   Cada pantalla usa su propio prefijo pero el mismo sufijo:
+   .agenda-card, .colmenas-card, .incidencia-resumen-card...
+   Aprovechando eso, los selectores usan [class*="-card"] en
+   vez de listar catorce nombres.
+
+   Si mañana agregan una pantalla nueva que siga la misma
+   convención, hereda las animaciones sola.
+
+   TODO tiene su bloque de movimiento reducido al final: antes,
+   8 de los 14 módulos no lo tenían.
+   ========================================================== */
+
+
+:root {
+
+    --ap-t-rapido:  .16s;
+    --ap-t-normal:  .26s;
+    --ap-t-lento:   .42s;
+
+    --ap-curva:     cubic-bezier(.4, 0, .2, 1);
+    --ap-rebote:    cubic-bezier(.34, 1.56, .64, 1);
+
+}
+
+
+/* ==========================================================
+   1. ENTRADA DE LA PANTALLA
+
+   Las secciones aparecen de arriba hacia abajo al cargar.
+   Los tiempos son cortos a propósito: si se nota que "está
+   animando", estorba.
+========================================================== */
+
+@keyframes apEntrada {
+
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+[class*="-encabezado"],
+[class*="-resumen-grid"],
+[class*="-card"]:not([class*="-resumen-card"]),
+[class*="-tabla-wrapper"],
+[class*="-resultados"] {
+
+    animation: apEntrada var(--ap-t-lento) var(--ap-curva) both;
+
+}
+
+
+[class*="-encabezado"]      { animation-delay: .02s; }
+[class*="-resumen-grid"]    { animation-delay: .08s; }
+[class*="-resultados"]      { animation-delay: .14s; }
+
+
+/* ==========================================================
+   2. TARJETAS DE RESUMEN ESCALONADAS
+
+   Aparecen una tras otra. La red de seguridad del final evita
+   el problema clásico: si mañana agregan una sexta tarjeta,
+   igual aparece en vez de quedarse invisible.
+========================================================== */
+
+[class*="-resumen-card"] {
+
+    animation: apEntrada var(--ap-t-lento) var(--ap-curva) both;
+
+}
+
+[class*="-resumen-card"]:nth-child(1) { animation-delay: .10s; }
+[class*="-resumen-card"]:nth-child(2) { animation-delay: .15s; }
+[class*="-resumen-card"]:nth-child(3) { animation-delay: .20s; }
+[class*="-resumen-card"]:nth-child(4) { animation-delay: .25s; }
+[class*="-resumen-card"]:nth-child(5) { animation-delay: .30s; }
+[class*="-resumen-card"]:nth-child(6) { animation-delay: .35s; }
+
+[class*="-resumen-card"]:nth-child(n+7) { animation-delay: .40s; }
+
+
+/* Se levantan al pasar el mouse */
+
+[class*="-resumen-card"] {
+
+    transition:
+        transform var(--ap-t-normal) var(--ap-curva),
+        box-shadow var(--ap-t-normal) ease;
+
+}
+
+[class*="-resumen-card"]:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 24px
+        rgba(33, 79, 59, .13);
+
+}
+
+
+/* ==========================================================
+   3. FILAS DE TABLA
+
+   Los tres módulos con tabla —agenda, incidencias y
+   mantenimientos— no tenían ni realce al pasar el mouse. En
+   una tabla de cinco o seis columnas ayuda a no perder el
+   renglón a media lectura.
+========================================================== */
+
+[class*="-tabla"] tbody tr {
+
+    transition: background-color var(--ap-t-rapido) ease;
+
+}
+
+
+[class*="-tabla"] tbody tr:hover {
+
+    background-color: rgba(255, 237, 180, .40);
+
+}
+
+
+/* Las filas también entran escalonadas */
+
+[class*="-tabla"] tbody tr {
+
+    animation: apEntrada .34s var(--ap-curva) both;
+
+}
+
+[class*="-tabla"] tbody tr:nth-child(1)  { animation-delay: .16s; }
+[class*="-tabla"] tbody tr:nth-child(2)  { animation-delay: .20s; }
+[class*="-tabla"] tbody tr:nth-child(3)  { animation-delay: .24s; }
+[class*="-tabla"] tbody tr:nth-child(4)  { animation-delay: .28s; }
+[class*="-tabla"] tbody tr:nth-child(5)  { animation-delay: .32s; }
+[class*="-tabla"] tbody tr:nth-child(6)  { animation-delay: .36s; }
+[class*="-tabla"] tbody tr:nth-child(7)  { animation-delay: .40s; }
+[class*="-tabla"] tbody tr:nth-child(8)  { animation-delay: .44s; }
+
+/* A partir de la novena entran todas juntas: escalonar veinte
+   filas se vuelve lento de ver */
+[class*="-tabla"] tbody tr:nth-child(n+9) { animation-delay: .46s; }
+
+
+/* ==========================================================
+   4. BOTONES
+
+   El panel tenía transiciones en unos módulos y en otros no:
+   registrar_mantenimiento y reportar_incidencia no tenían
+   ninguna, los botones cambiaban de color de golpe.
+========================================================== */
+
+[class^="btn-"],
+[class*=" btn-"] {
+
+    transition:
+        transform var(--ap-t-rapido) var(--ap-curva),
+        box-shadow var(--ap-t-rapido) ease,
+        background-color var(--ap-t-rapido) ease,
+        border-color var(--ap-t-rapido) ease,
+        color var(--ap-t-rapido) ease;
+
+}
+
+
+[class^="btn-"]:hover,
+[class*=" btn-"]:hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+[class^="btn-"]:active,
+[class*=" btn-"]:active {
+
+    transform: translateY(0) scale(.98);
+
+}
+
+
+/* El icono del botón acompaña el gesto */
+
+[class^="btn-"] i,
+[class*=" btn-"] i {
+
+    display: inline-block;
+
+    transition: transform var(--ap-t-normal) var(--ap-rebote);
+
+}
+
+
+[class^="btn-"]:hover i,
+[class*=" btn-"]:hover i {
+
+    transform: scale(1.12);
+
+}
+
+
+/* ==========================================================
+   5. CAMPOS DE BÚSQUEDA Y SELECTORES
+
+   Un anillo suave al enfocar, en vez del salto seco.
+========================================================== */
+
+[class*="-buscador"] input,
+[class*="-select"],
+[class*="-fecha-filtro"] input {
+
+    transition:
+        border-color var(--ap-t-normal) ease,
+        box-shadow var(--ap-t-normal) ease;
+
+}
+
+
+[class*="-buscador"] input:focus,
+[class*="-select"]:focus,
+[class*="-fecha-filtro"] input:focus {
+
+    box-shadow:
+        0 0 0 3px
+        rgba(95, 151, 129, .18);
+
+}
+
+
+/* ==========================================================
+   6. ESTADOS VACÍOS
+
+   El icono flota despacio. Es un detalle pequeño pero cambia
+   el mensaje: "no hay nada todavía" en vez de "algo falló al
+   cargar".
+========================================================== */
+
+@keyframes apFlotar {
+
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-5px); }
+
+}
+
+
+[class*="-vacio"] i,
+[class*="-vacia"] i {
+
+    display: inline-block;
+
+    animation: apFlotar 3.4s ease-in-out infinite;
+
+}
+
+
+/* ==========================================================
+   7. FOCO VISIBLE
+
+   Ocho de los catorce módulos no tenían ninguna regla de foco.
+   Al navegar con Tab no se veía dónde estaba uno parado.
+
+   :focus-visible solo se activa con teclado: al hacer clic con
+   el mouse no aparece nada.
+========================================================== */
+
+.main-apicultor :focus-visible {
+
+    outline: 3px solid var(--ap-miel, #F0A000);
+    outline-offset: 2px;
+    border-radius: 6px;
+
+}
+
+
+/* ==========================================================
+   8. TARJETAS Y BLOQUES CON IMAGEN
+
+   Las miniaturas de apiarios y colmenas se acercan un poco al
+   pasar el mouse, sin salirse de su marco.
+========================================================== */
+
+[class*="-card"] img,
+[class*="-imagen"] img {
+
+    transition: transform var(--ap-t-lento) var(--ap-curva);
+
+}
+
+
+[class*="-card"]:hover img {
+
+    transform: scale(1.04);
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+
+   Un solo bloque que cubre todo lo anterior. Antes solo 6 de
+   los 14 módulos respetaban esta preferencia del sistema.
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    [class*="-encabezado"],
+    [class*="-resumen-grid"],
+    [class*="-resumen-card"],
+    [class*="-card"],
+    [class*="-tabla-wrapper"],
+    [class*="-resultados"],
+    [class*="-tabla"] tbody tr {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    [class*="-vacio"] i,
+    [class*="-vacia"] i {
+        animation: none !important;
+    }
+
+    [class*="-resumen-card"],
+    [class^="btn-"],
+    [class*=" btn-"],
+    [class^="btn-"] i,
+    [class*=" btn-"] i,
+    [class*="-buscador"] input,
+    [class*="-select"],
+    [class*="-card"] img,
+    [class*="-imagen"] img,
+    [class*="-tabla"] tbody tr {
+        transition: none !important;
+    }
+
+    [class*="-resumen-card"]:hover,
+    [class^="btn-"]:hover,
+    [class*=" btn-"]:hover,
+    [class^="btn-"]:hover i,
+    [class*=" btn-"]:hover i,
+    [class*="-card"]:hover img {
+        transform: none !important;
+    }
+
+}

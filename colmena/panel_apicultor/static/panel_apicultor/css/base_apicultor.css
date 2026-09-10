@@ -1,4 +1,52 @@
 /* ==========================================================
+   PALETA DEL PANEL DEL APICULTOR
+
+   Antes había 584 colores distintos repartidos entre los 14
+   módulos. Al comparar unos con otros resultó que solo 215
+   eran realmente distintos: el resto eran variantes que el
+   ojo no puede diferenciar, como #66746C y #68766D, o
+   #896817 y #886814.
+
+   Esos duplicados ya se unificaron. Estos 18 tokens cubren
+   el 52% de todos los usos de color del panel: cambiar la
+   identidad visual se hace aquí, no en catorce archivos.
+
+   Este archivo se carga ANTES que el CSS de cada módulo, así
+   que cualquiera puede sobrescribirlos si lo necesita.
+   ========================================================== */
+
+:root {
+
+    /* ---------- VERDES ---------- */
+    --ap-verde-oscuro:    #214F3B;
+    --ap-verde-medio:     #5F9781;
+    --ap-verde-hoja:      #4F744B;
+    --ap-verde-claro:     #74A66D;
+    --ap-verde-fondo:     #E7F2E3;
+    --ap-texto:           #163324;
+
+    /* ---------- MIEL Y AMARILLOS ---------- */
+    --ap-amarillo:        #FFDD71;
+    --ap-amarillo-activo: #FFEDB4;
+    --ap-amarillo-suave:  #FFF0BE;
+    --ap-miel:            #F0A000;
+    --ap-miel-oscura:     #896817;
+    --ap-dorado:          #D7B94E;
+
+    /* ---------- NEUTROS ---------- */
+    --ap-blanco:          #FFFFFF;
+    --ap-borde:           #DCE3DE;
+    --ap-texto-tenue:     #66746C;
+    --ap-texto-apagado:   #89938D;
+
+    /* ---------- ESTADOS ---------- */
+    --ap-rojo:            #A84D44;
+    --ap-rojo-fondo:      #FCE2DE;
+
+}
+
+
+/* ==========================================================
    PANEL APICULTOR - BASE
 ========================================================== */
 
@@ -11,26 +59,26 @@
 
     /* COLORES PRINCIPALES DEL APICULTOR */
 
-    --apicultor-sidebar: #FFDD71;
+    --apicultor-sidebar: var(--ap-amarillo);
 
-    --apicultor-activo: #FFEDB4;
+    --apicultor-activo: var(--ap-amarillo-activo);
 
-    --apicultor-fondo: #FFFFE8;
+    --apicultor-fondo: #FFFBE8;
 
 
     /* COLORES COMPLEMENTARIOS */
 
-    --apicultor-verde-oscuro: #214F3B;
+    --apicultor-verde-oscuro: var(--ap-verde-oscuro);
 
-    --apicultor-verde-medio: #5F9781;
+    --apicultor-verde-medio: var(--ap-verde-medio);
 
     --apicultor-verde-claro: #C0F1CA;
 
-    --apicultor-texto: #163324;
+    --apicultor-texto: var(--ap-texto);
 
-    --apicultor-texto-secundario: #68776E;
+    --apicultor-texto-secundario: var(--ap-texto-tenue);
 
-    --apicultor-blanco: #FFFFFF;
+    --apicultor-blanco: var(--ap-blanco);
 
     --apicultor-borde: #EADFAE;
 
@@ -198,7 +246,7 @@ body {
 
 .sidebar-logo-icono > .bi-hexagon-fill {
 
-    font-size: 28px;
+    font-size: 30px;
 
     opacity: 0.13;
 
@@ -211,7 +259,7 @@ body {
 
     position: absolute;
 
-    font-size: 24px;
+    font-size: 25px;
 
 }
 
@@ -238,7 +286,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 20px;
+    font-size: 18px;
 
     font-weight: 800;
 
@@ -258,7 +306,7 @@ body {
     color:
         rgba(22, 51, 36, 0.70);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 600;
 
@@ -465,7 +513,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 17px;
+    font-size: 16px;
 
     font-weight: 800;
 
@@ -515,7 +563,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 13px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -539,7 +587,7 @@ body {
     color:
         rgba(22, 51, 36, 0.67);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 600;
 
@@ -609,7 +657,7 @@ body {
     color:
         var(--apicultor-rojo);
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -623,7 +671,7 @@ body {
 
 .sidebar-user-logout i {
 
-    font-size: 15px;
+    font-size: 16px;
 
 }
 
@@ -726,7 +774,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 28px;
+    font-size: 30px;
 
     font-weight: 800;
 
@@ -742,7 +790,7 @@ body {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 500;
 
@@ -777,7 +825,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 23px;
+    font-size: 21px;
 
     cursor: pointer;
 
@@ -887,7 +935,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -946,7 +994,7 @@ body {
 
     border-radius: 11px;
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 600;
 
@@ -957,7 +1005,7 @@ body {
 
 .mensaje-apicultor.success {
 
-    background: #E7F7EC;
+    background: #E8F5EC;
 
     color: #286044;
 
@@ -968,7 +1016,7 @@ body {
 
 .mensaje-apicultor.error {
 
-    background: #FDECEB;
+    background: #FCE9E6;
 
     color: #99443E;
 
@@ -979,9 +1027,9 @@ body {
 
 .mensaje-apicultor.warning {
 
-    background: #FFF2C7;
+    background: #FFF2C8;
 
-    color: #775C14;
+    color: #765B0E;
 
 }
 
@@ -990,7 +1038,7 @@ body {
 
 .mensaje-apicultor.info {
 
-    background: #E9F3EE;
+    background: #EDF1EF;
 
     color: #35664F;
 
@@ -1057,7 +1105,7 @@ body {
 
     .sidebar-link {
 
-        font-size: 13px;
+        font-size: 14px;
 
     }
 
@@ -1198,7 +1246,7 @@ body {
 
     .header-titulo h1 {
 
-        font-size: 19px;
+        font-size: 18px;
 
     }
 
@@ -1364,21 +1412,21 @@ body {
 
         min-height: 49px;
 
-        font-size: 12px;
+        font-size: 14px;
 
     }
 
 
     .sidebar-user-info strong {
 
-        font-size: 12px;
+        font-size: 14px;
 
     }
 
 
     .sidebar-user-info small {
 
-        font-size: 9px;
+        font-size: 13px;
 
     }
 
@@ -1471,7 +1519,7 @@ body {
 
     border-radius: 50%;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     color:
         var(--apicultor-verde-oscuro);
@@ -1515,7 +1563,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 13px;
+    font-size: 14px;
 
     font-weight: 800;
 
@@ -1534,7 +1582,7 @@ body {
     color:
         rgba(33, 79, 59, 0.65);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 600;
 }
@@ -1629,7 +1677,7 @@ body {
     color:
         #C4473D;
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -1643,7 +1691,7 @@ body {
 
 .sidebar-user-logout i {
 
-    font-size: 15px;
+    font-size: 16px;
 }
 
 
@@ -1692,7 +1740,7 @@ body {
     background:
         var(--apicultor-verde-oscuro);
 
-    color: #ffffff;
+    color: var(--ap-blanco);
 
     font-size: 14px;
     font-weight: 600;
@@ -1707,7 +1755,7 @@ body {
 .salto-contenido:focus {
 
     transform: translate(-50%, 0);
-    color: #ffffff;
+    color: var(--ap-blanco);
 
 }
 
@@ -1768,7 +1816,7 @@ body {
             var(--apicultor-verde-oscuro)
         );
 
-    color: #fffbe8;
+    color: #FFFBE8;
 
     clip-path:
         polygon(
@@ -1995,9 +2043,9 @@ body {
     background:
         var(--apicultor-verde-oscuro);
 
-    color: #ffffff;
+    color: var(--ap-blanco);
 
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     white-space: nowrap;
 
@@ -2189,7 +2237,7 @@ body {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 15px;
+    font-size: 16px;
 
     opacity: 0;
     visibility: hidden;
@@ -2315,11 +2363,11 @@ body.sidebar-movil-abierto {
        Para cambiar el tema completo basta con tocar estas ocho
        líneas: el resto del bloque las usa. */
 
-    --sb-fondo:           #FFDD71;   /* --apicultor-sidebar */
-    --sb-activo:          #FFF6D6;   /* pastilla de la sección actual */
+    --sb-fondo:           var(--ap-amarillo);   /* --apicultor-sidebar */
+    --sb-activo:          #FFF8D8;   /* pastilla de la sección actual */
     --sb-hover:           rgba(137, 104, 23, 0.18);
-    --sb-verde-oscuro:    #214F3B;   /* logo, hexágono y acentos */
-    --sb-verde-medio:     #5F9781;
+    --sb-verde-oscuro:    var(--ap-verde-oscuro);   /* logo, hexágono y acentos */
+    --sb-verde-medio:     var(--ap-verde-medio);
     --sb-texto:           #3A2B05;   /* marrón oscuro, legible sobre amarillo */
     --sb-texto-tenue:     #7A5F14;
     --sb-crema:           #FFFBE8;   /* fondo del círculo del logo */
@@ -2413,7 +2461,7 @@ body.sidebar-movil-abierto {
 
 .sidebar-logo-texto strong {
 
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--sb-verde-oscuro);
 
@@ -2422,7 +2470,7 @@ body.sidebar-movil-abierto {
 
 .sidebar-logo-texto span {
 
-    font-size: 12px;
+    font-size: 14px;
     color: var(--sb-texto-tenue);
 
 }
@@ -2450,7 +2498,7 @@ body.sidebar-movil-abierto {
 
     color: var(--sb-texto);
 
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
 
     position: relative;
@@ -2603,7 +2651,7 @@ body.sidebar-movil-abierto {
     width: 50px;
     height: 50px;
 
-    background: #ffffff;
+    background: var(--ap-blanco);
 
     border:
         2px solid
@@ -2611,7 +2659,7 @@ body.sidebar-movil-abierto {
 
     color: var(--sb-verde-oscuro);
 
-    font-size: 22px;
+    font-size: 21px;
 
 }
 
@@ -2630,7 +2678,7 @@ body.sidebar-movil-abierto {
 
     color: var(--sb-texto-tenue);
 
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
 
 }
@@ -2650,14 +2698,14 @@ body.sidebar-movil-abierto {
     padding-left: 12px;
     padding-right: 12px;
 
-    color: #a92121;
+    color: #A92121;
 
 }
 
 
 .sidebar-user-logout i {
 
-    color: #a92121;
+    color: #A92121;
 
 }
 
@@ -2667,7 +2715,7 @@ body.sidebar-movil-abierto {
     background:
         rgba(209, 47, 47, 0.10);
 
-    color: #a92121;
+    color: #A92121;
 
 }
 
@@ -2794,7 +2842,7 @@ body.sidebar-movil-abierto {
 
     outline:
         3px solid
-        #F0A000;
+        var(--ap-miel);
 
 }
 

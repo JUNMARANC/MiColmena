@@ -62,11 +62,11 @@
 
     border-radius: 30px;
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
-    color: #896817;
+    color: var(--ap-miel-oscura);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-transform: uppercase;
@@ -80,7 +80,7 @@
 
     margin: 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 30px;
     font-weight: 800;
@@ -96,9 +96,9 @@
 
     margin: 6px 0 0;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 500;
 
     line-height: 1.65;
@@ -140,15 +140,15 @@
 
     padding: 9px 16px;
 
-    border: 1px solid #DDBA3F;
+    border: 1px solid #D8B844;
 
     border-radius: 11px;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -168,11 +168,11 @@
 
 .btn-agregar-evento:hover {
 
-    border-color: #CAA72B;
+    border-color: #C8A72C;
 
-    background: #F5CE55;
+    background: #F5CF56;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     transform: translateY(-1px);
 
@@ -185,7 +185,7 @@
 
 .btn-agregar-evento i {
 
-    font-size: 11px;
+    font-size: 14px;
 
 }
 
@@ -208,11 +208,11 @@
 
     border-radius: 16px;
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 23px;
+    font-size: 21px;
 
 }
 
@@ -306,9 +306,9 @@
 .agenda-resumen-card.programados
 .agenda-resumen-icono {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #896817;
+    color: var(--ap-miel-oscura);
 
 }
 
@@ -336,9 +336,9 @@
 
 .agenda-resumen-card strong {
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 800;
 
     line-height: 1;
@@ -350,9 +350,9 @@
 
     margin-top: 5px;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 700;
 
 }
@@ -438,7 +438,7 @@
 
     color: #A38116;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
     text-transform: uppercase;
@@ -452,7 +452,7 @@
 
     margin: 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 16px;
     font-weight: 800;
@@ -487,15 +487,15 @@
     align-items: center;
     justify-content: center;
 
-    border: 1px solid #DCE3DE;
+    border: 1px solid var(--ap-borde);
 
     border-radius: 9px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     cursor: pointer;
 
@@ -509,9 +509,9 @@
 
 .btn-calendario-control:hover {
 
-    border-color: #D7C56E;
+    border-color: #D8C26A;
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
     transform: translateY(-1px);
 
@@ -529,17 +529,17 @@
 
     padding: 0 12px;
 
-    border: 1px solid #DDBA3F;
+    border: 1px solid #D8B844;
 
     border-radius: 9px;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-family: inherit;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
     cursor: pointer;
@@ -589,9 +589,9 @@
     align-items: center;
     justify-content: center;
 
-    color: #7E8982;
+    color: #7C8A82;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
     text-transform: uppercase;
@@ -636,7 +636,7 @@
 
     border-radius: 10px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     cursor: default;
 
@@ -650,9 +650,9 @@
 
 .agenda-dia:hover {
 
-    border-color: #D9C670;
+    border-color: #D8C777;
 
-    background: #FFFDF5;
+    background: #FFF8F7;
 
     transform: translateY(-1px);
 
@@ -663,14 +663,14 @@
 
     opacity: 0.35;
 
-    background: #F6F8F6;
+    background: #F4F6F4;
 
 }
 
 
 .agenda-dia.hoy {
 
-    border-color: #D8B43B;
+    border-color: #D2B23D;
 
     background: rgba(255, 237, 180, 0.31);
 
@@ -679,7 +679,7 @@
 
 .agenda-dia.seleccionado {
 
-    border-color: #214F3B;
+    border-color: var(--ap-verde-oscuro);
 
     box-shadow:
         0 0 0 2px
@@ -704,9 +704,9 @@
 
     border-radius: 7px;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
 }
@@ -715,7 +715,7 @@
 .agenda-dia.hoy
 .agenda-dia-numero {
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
 }
 
@@ -765,7 +765,7 @@
 
     font-family: inherit;
 
-    font-size: 6px;
+    font-size: 11px;
     font-weight: 700;
 
     text-align: left;
@@ -779,7 +779,7 @@
 
     flex-shrink: 0;
 
-    font-size: 7px;
+    font-size: 11px;
 
 }
 
@@ -813,9 +813,9 @@
 .agenda-evento-icono.mantenimiento,
 .agenda-modal-icono.mantenimiento {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #896817;
+    color: var(--ap-miel-oscura);
 
 }
 
@@ -837,9 +837,9 @@
 .agenda-evento-icono.incidencia,
 .agenda-modal-icono.incidencia {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 
 }
 
@@ -849,9 +849,9 @@
 .agenda-evento-icono.evento,
 .agenda-modal-icono.evento {
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
 }
 
@@ -866,9 +866,9 @@
 
     margin-top: 1px;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 6px;
+    font-size: 11px;
     font-weight: 800;
 
 }
@@ -905,9 +905,9 @@
 
     gap: 5px;
 
-    color: #6C7870;
+    color: #6D786F;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 700;
 
 }
@@ -941,14 +941,14 @@
 
 .leyenda-punto.incidencia {
 
-    background: #D86659;
+    background: #D9665C;
 
 }
 
 
 .leyenda-punto.evento {
 
-    background: #74A66D;
+    background: var(--ap-verde-claro);
 
 }
 
@@ -1009,7 +1009,7 @@
 
     color: #A38116;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
     text-transform: uppercase;
@@ -1021,7 +1021,7 @@
 
     margin: 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 14px;
     font-weight: 800;
@@ -1043,9 +1043,9 @@
 
     border-radius: 10px;
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 14px;
 
@@ -1088,7 +1088,7 @@
 
     border-radius: 11px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     font-family: inherit;
 
@@ -1108,7 +1108,7 @@
 
     border-color: #E3D38C;
 
-    background: #FFFDF5;
+    background: #FFF8F7;
 
     transform: translateX(2px);
 
@@ -1159,9 +1159,9 @@
 
     overflow: hidden;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -1177,9 +1177,9 @@
 
     margin-top: 3px;
 
-    color: #6F7C74;
+    color: #718078;
 
-    font-size: 6px;
+    font-size: 11px;
 
     white-space: nowrap;
 
@@ -1196,7 +1196,7 @@
 
     color: #929C96;
 
-    font-size: 6px;
+    font-size: 11px;
 
     text-overflow: ellipsis;
 
@@ -1209,9 +1209,9 @@
 
     flex-shrink: 0;
 
-    color: #98A19B;
+    color: #9AA39E;
 
-    font-size: 9px;
+    font-size: 13px;
 
 }
 
@@ -1252,20 +1252,20 @@
 
     border-radius: 50%;
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
-    font-size: 19px;
+    font-size: 18px;
 
 }
 
 
 .agenda-proximos-vacio strong {
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 800;
 
 }
@@ -1277,9 +1277,9 @@
 
     margin-top: 4px;
 
-    color: #7D8981;
+    color: #7C8A82;
 
-    font-size: 7px;
+    font-size: 11px;
 
     line-height: 1.55;
 
@@ -1331,7 +1331,7 @@
 
     color: #A38116;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
 }
@@ -1341,7 +1341,7 @@
 
     margin: 2px 0 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 14px;
     font-weight: 800;
@@ -1363,11 +1363,11 @@
 
     border-radius: 50%;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
 
 }
@@ -1448,9 +1448,9 @@
 
 .agenda-hoy-hora {
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-align: center;
@@ -1488,14 +1488,14 @@
 
 .agenda-hoy-linea.incidencia {
 
-    background: #D86659;
+    background: #D9665C;
 
 }
 
 
 .agenda-hoy-linea.evento {
 
-    background: #74A66D;
+    background: var(--ap-verde-claro);
 
 }
 
@@ -1517,9 +1517,9 @@
 
     overflow: hidden;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -1537,9 +1537,9 @@
 
     overflow: hidden;
 
-    color: #7C8881;
+    color: #7C8A82;
 
-    font-size: 7px;
+    font-size: 11px;
 
     text-overflow: ellipsis;
 
@@ -1621,7 +1621,7 @@
 
     color: #7C8A82;
 
-    font-size: 11px;
+    font-size: 14px;
 
     pointer-events: none;
 
@@ -1639,19 +1639,19 @@
         0
         38px;
 
-    border: 1px solid #DCE3DE;
+    border: 1px solid var(--ap-borde);
 
     border-radius: 10px;
 
     outline: none;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #163324;
+    color: var(--ap-texto);
 
     font-family: inherit;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 500;
 
     transition:
@@ -1663,14 +1663,14 @@
 
 .agenda-buscador input::placeholder {
 
-    color: #A0AAA4;
+    color: #A2ACA6;
 
 }
 
 
 .agenda-buscador input:focus {
 
-    border-color: #D5B849;
+    border-color: var(--ap-dorado);
 
     box-shadow:
         0 0 0 3px
@@ -1692,19 +1692,19 @@
 
     padding: 0 10px;
 
-    border: 1px solid #DCE3DE;
+    border: 1px solid var(--ap-borde);
 
     border-radius: 10px;
 
     outline: none;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #163324;
+    color: var(--ap-texto);
 
     font-family: inherit;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 600;
 
     cursor: pointer;
@@ -1718,7 +1718,7 @@
 
 .agenda-select:focus {
 
-    border-color: #D5B849;
+    border-color: var(--ap-dorado);
 
     box-shadow:
         0 0 0 3px
@@ -1753,7 +1753,7 @@
 
     color: #7C8A82;
 
-    font-size: 10px;
+    font-size: 13px;
 
     pointer-events: none;
 
@@ -1771,19 +1771,19 @@
         0
         32px;
 
-    border: 1px solid #DCE3DE;
+    border: 1px solid var(--ap-borde);
 
     border-radius: 10px;
 
     outline: none;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #163324;
+    color: var(--ap-texto);
 
     font-family: inherit;
 
-    font-size: 7px;
+    font-size: 11px;
 
 }
 
@@ -1805,17 +1805,17 @@
 
     padding: 0 13px;
 
-    border: 1px solid #DDBA3F;
+    border: 1px solid #D8B844;
 
     border-radius: 10px;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-family: inherit;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
     white-space: nowrap;
@@ -1855,15 +1855,15 @@
 
     padding: 0 12px;
 
-    border: 1px solid #DCE3DE;
+    border: 1px solid var(--ap-borde);
 
     border-radius: 10px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 700;
 
     text-decoration: none;
@@ -1879,9 +1879,9 @@
 
 .btn-agenda-limpiar:hover {
 
-    border-color: #CBD5CE;
+    border-color: #CBD6CE;
 
-    background: #F5F7F5;
+    background: #F4F6F4;
 
 }
 
@@ -1908,16 +1908,16 @@
 
     margin: 0;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 8px;
+    font-size: 12px;
 
 }
 
 
 .agenda-resultados-header p strong {
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
 }
 
@@ -1938,11 +1938,11 @@
 
     border-radius: 20px;
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
-    color: #896817;
+    color: var(--ap-miel-oscura);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
 }
@@ -2038,9 +2038,9 @@
 
     background: rgba(255, 237, 180, 0.24);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
     text-align: left;
@@ -2058,7 +2058,7 @@
 
     color: #58665E;
 
-    font-size: 7px;
+    font-size: 11px;
 
     vertical-align: middle;
 
@@ -2116,7 +2116,7 @@
 
     border-radius: 9px;
 
-    font-size: 13px;
+    font-size: 14px;
 
 }
 
@@ -2136,9 +2136,9 @@
 
     overflow: hidden;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -2154,9 +2154,9 @@
 
     margin-top: 3px;
 
-    color: #98A19B;
+    color: #9AA39E;
 
-    font-size: 6px;
+    font-size: 11px;
 
 }
 
@@ -2180,9 +2180,9 @@
 
     overflow: hidden;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -2202,9 +2202,9 @@
 
     margin-top: 3px;
 
-    color: #738078;
+    color: #718078;
 
-    font-size: 6px;
+    font-size: 11px;
 
 }
 
@@ -2230,7 +2230,7 @@
 .agenda-fecha i,
 .agenda-hora i {
 
-    color: #A98113;
+    color: #A38116;
 
 }
 
@@ -2252,7 +2252,7 @@
 
     border-radius: 20px;
 
-    font-size: 6px;
+    font-size: 11px;
     font-weight: 800;
 
     white-space: nowrap;
@@ -2262,9 +2262,9 @@
 
 .agenda-tipo.mantenimiento {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #896817;
+    color: var(--ap-miel-oscura);
 
 }
 
@@ -2280,18 +2280,18 @@
 
 .agenda-tipo.incidencia {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 
 }
 
 
 .agenda-tipo.evento {
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
 }
 
@@ -2314,7 +2314,7 @@
 
     border-radius: 20px;
 
-    font-size: 6px;
+    font-size: 11px;
     font-weight: 800;
 
     white-space: nowrap;
@@ -2336,9 +2336,9 @@
 
 .agenda-estado.programado {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #896817;
+    color: var(--ap-miel-oscura);
 
 }
 
@@ -2352,32 +2352,32 @@
 
 .agenda-estado.completado {
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
 }
 
 
 .agenda-estado.completado > span {
 
-    background: #74A66D;
+    background: var(--ap-verde-claro);
 
 }
 
 
 .agenda-estado.cancelado {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 
 }
 
 
 .agenda-estado.cancelado > span {
 
-    background: #D86659;
+    background: #D9665C;
 
 }
 
@@ -2403,9 +2403,9 @@
 
     flex-shrink: 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 12px;
+    font-size: 14px;
 
 }
 
@@ -2444,15 +2444,15 @@
     align-items: center;
     justify-content: center;
 
-    border: 1px solid #DCE3DE;
+    border: 1px solid var(--ap-borde);
 
     border-radius: 9px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     cursor: pointer;
 
@@ -2466,9 +2466,9 @@
 
 .btn-ver-evento:hover {
 
-    border-color: #D9C670;
+    border-color: #D8C777;
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
     transform: translateY(-1px);
 
@@ -2507,11 +2507,11 @@
 
     border-radius: 9px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -2525,7 +2525,7 @@
 
 .agenda-pagina:hover {
 
-    background: #FFEDB4;
+    background: var(--ap-amarillo-activo);
 
     transform: translateY(-1px);
 
@@ -2536,7 +2536,7 @@
 
     border-color: #D8B844;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
 }
 
@@ -2584,9 +2584,9 @@
 
     border-radius: 50%;
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
     font-size: 25px;
 
@@ -2597,7 +2597,7 @@
 
     margin: 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 16px;
     font-weight: 800;
@@ -2611,9 +2611,9 @@
 
     margin: 8px auto 0;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 8px;
+    font-size: 12px;
 
     line-height: 1.65;
 
@@ -2635,11 +2635,11 @@
 
     border-radius: 10px;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -2699,7 +2699,7 @@
 
     border-radius: 20px;
 
-    background: #FFFFF7;
+    background: var(--ap-blanco);
 
     box-shadow:
         0 25px 70px
@@ -2821,7 +2821,7 @@
 
     color: #8B731E;
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
 
 }
@@ -2831,7 +2831,7 @@
 
     margin: 0;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-size: 18px;
     font-weight: 800;
@@ -2857,7 +2857,7 @@
 
     background: transparent;
 
-    color: #728078;
+    color: #718078;
 
     font-size: 14px;
 
@@ -2868,9 +2868,9 @@
 
 .agenda-modal-cerrar:hover {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 
 }
 
@@ -2932,9 +2932,9 @@
 
 .agenda-modal-dato span {
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 600;
 
 }
@@ -2942,9 +2942,9 @@
 
 .agenda-modal-dato strong {
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 800;
 
     overflow-wrap: anywhere;
@@ -2984,9 +2984,9 @@
         0
         7px;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
 
 }
@@ -2996,9 +2996,9 @@
 
     margin: 0;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 8px;
+    font-size: 12px;
 
     line-height: 1.7;
 
@@ -3062,7 +3062,7 @@
 
     background: #DCEFD7;
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
     font-size: 14px;
 
@@ -3075,7 +3075,7 @@
 
     color: #718078;
 
-    font-size: 7px;
+    font-size: 11px;
 
 }
 
@@ -3086,9 +3086,9 @@
 
     margin-top: 2px;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 800;
 
 }
@@ -3137,11 +3137,11 @@
 
     border-radius: 10px;
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -3157,7 +3157,7 @@
 
     background: #DCEFD7;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     transform: translateY(-1px);
 
@@ -3179,17 +3179,17 @@
 
     padding: 8px 14px;
 
-    border: 1px solid #DFC45D;
+    border: 1px solid #E0C258;
 
     border-radius: 10px;
 
-    background: #FFDD71;
+    background: var(--ap-amarillo);
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-family: inherit;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     cursor: pointer;
@@ -3430,7 +3430,7 @@
         width: 40px;
         height: 40px;
 
-        font-size: 15px;
+        font-size: 16px;
 
     }
 
@@ -3606,14 +3606,14 @@
 
     .agenda-encabezado h1 {
 
-        font-size: 22px;
+        font-size: 21px;
 
     }
 
 
     .agenda-encabezado p {
 
-        font-size: 8px;
+        font-size: 12px;
 
     }
 
@@ -3634,7 +3634,7 @@
 
     .agenda-calendario-semana span {
 
-        font-size: 6px;
+        font-size: 11px;
 
     }
 
@@ -3662,7 +3662,7 @@
         width: 21px;
         height: 21px;
 
-        font-size: 7px;
+        font-size: 11px;
 
     }
 
@@ -3688,7 +3688,7 @@
 
     .agenda-hoy-hora {
 
-        font-size: 7px;
+        font-size: 11px;
 
     }
 
@@ -3731,14 +3731,14 @@
         width: 19px;
         height: 19px;
 
-        font-size: 6px;
+        font-size: 11px;
 
     }
 
 
     .agenda-calendario-leyenda span {
 
-        font-size: 6px;
+        font-size: 11px;
 
     }
 
@@ -3782,7 +3782,7 @@
         rgba(33, 79, 59, 0.09);
 
     background:
-        #FFFFFF;
+        var(--ap-blanco);
 
 }
 
@@ -3846,7 +3846,7 @@
 
     margin-bottom: 3px;
 
-    font-size: 6.5px;
+    font-size: 11px;
 
     font-weight: 800;
 
@@ -3861,9 +3861,9 @@
 
     display: block;
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -3879,9 +3879,9 @@
         0
         0;
 
-    color: #66746C;
+    color: var(--ap-texto-tenue);
 
-    font-size: 7.5px;
+    font-size: 12px;
 
     line-height: 1.65;
 
@@ -3890,7 +3890,7 @@
 
 .agenda-gestion-estado-contenido > p b {
 
-    color: #214F3B;
+    color: var(--ap-verde-oscuro);
 
     font-weight: 800;
 
@@ -3905,7 +3905,7 @@
 .agenda-gestion-estado-disponible {
 
     border-color:
-        #CFE2CB;
+        #CFE1CA;
 
     background:
         linear-gradient(
@@ -3924,7 +3924,7 @@
         #DCEFD7;
 
     color:
-        #4F744B;
+        var(--ap-verde-hoja);
 
 }
 
@@ -3980,7 +3980,7 @@
 
     font-family: inherit;
 
-    font-size: 7.5px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -3998,7 +3998,7 @@
 
 .btn-evento-estado i {
 
-    font-size: 12px;
+    font-size: 14px;
 
 }
 
@@ -4015,10 +4015,10 @@
         #BFD9BA;
 
     background:
-        #E7F2E3;
+        var(--ap-verde-fondo);
 
     color:
-        #4F744B;
+        var(--ap-verde-hoja);
 
 }
 
@@ -4053,13 +4053,13 @@
 
     border:
         1px solid
-        #E6C1BC;
+        #E7BCBC;
 
     background:
-        #FCE2DE;
+        var(--ap-rojo-fondo);
 
     color:
-        #A84D44;
+        var(--ap-rojo);
 
 }
 
@@ -4067,10 +4067,10 @@
 .btn-evento-cancelado:hover {
 
     border-color:
-        #D99A92;
+        #DF9C95;
 
     background:
-        #F7D3CE;
+        #F8D3CD;
 
     color:
         #8E3932;
@@ -4099,7 +4099,7 @@
     gap: 11px;
 
     border-color:
-        #E6DAA7;
+        #E8DBA4;
 
     background:
         linear-gradient(
@@ -4115,10 +4115,10 @@
 .agenda-gestion-estado-icono {
 
     background:
-        #FFF0BE;
+        var(--ap-amarillo-suave);
 
     color:
-        #896817;
+        var(--ap-miel-oscura);
 
 }
 
@@ -4127,7 +4127,7 @@
 .agenda-gestion-estado-etiqueta {
 
     color:
-        #A17D18;
+        #A38116;
 
 }
 
@@ -4156,7 +4156,7 @@
 .agenda-gestion-estado-finalizado.completado {
 
     border-color:
-        #C9DEC5;
+        #C9DFC5;
 
     background:
         rgba(231, 242, 227, 0.60);
@@ -4171,7 +4171,7 @@
         #DCEFD7;
 
     color:
-        #4F744B;
+        var(--ap-verde-hoja);
 
 }
 
@@ -4205,10 +4205,10 @@
 .agenda-gestion-estado-icono {
 
     background:
-        #FCE2DE;
+        var(--ap-rojo-fondo);
 
     color:
-        #A84D44;
+        var(--ap-rojo);
 
 }
 
@@ -4217,7 +4217,7 @@
 .agenda-gestion-estado-etiqueta {
 
     color:
-        #A84D44;
+        var(--ap-rojo);
 
 }
 
@@ -4306,10 +4306,10 @@
     border-radius: 13px;
 
     background:
-        #FFF0BE;
+        var(--ap-amarillo-suave);
 
     color:
-        #896817;
+        var(--ap-miel-oscura);
 
     font-size: 18px;
 
@@ -4328,7 +4328,7 @@
         #DCEFD7;
 
     color:
-        #4F744B;
+        var(--ap-verde-hoja);
 
 }
 
@@ -4338,10 +4338,10 @@
 .agenda-confirmacion-icono.cancelado {
 
     background:
-        #FCE2DE;
+        var(--ap-rojo-fondo);
 
     color:
-        #A84D44;
+        var(--ap-rojo);
 
 }
 
@@ -4367,7 +4367,7 @@
     color:
         #8B731E;
 
-    font-size: 6.5px;
+    font-size: 11px;
 
     font-weight: 800;
 
@@ -4383,9 +4383,9 @@
     margin: 0;
 
     color:
-        #214F3B;
+        var(--ap-verde-oscuro);
 
-    font-size: 17px;
+    font-size: 16px;
 
     font-weight: 800;
 
@@ -4406,7 +4406,7 @@
         20px;
 
     background:
-        #FFFFF7;
+        var(--ap-blanco);
 
 }
 
@@ -4419,9 +4419,9 @@
         15px;
 
     color:
-        #66746C;
+        var(--ap-texto-tenue);
 
-    font-size: 8px;
+    font-size: 12px;
 
     line-height: 1.7;
 
@@ -4459,9 +4459,9 @@
     margin-bottom: 3px;
 
     color:
-        #7B877F;
+        #7C8A82;
 
-    font-size: 6.5px;
+    font-size: 11px;
 
     font-weight: 700;
 
@@ -4473,9 +4473,9 @@
     display: block;
 
     color:
-        #214F3B;
+        var(--ap-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -4510,7 +4510,7 @@
         rgba(33, 79, 59, 0.08);
 
     background:
-        #FFFFF7;
+        var(--ap-blanco);
 
 }
 
@@ -4538,21 +4538,20 @@
 
     border:
         1px solid
-        #DCE3DE;
+        var(--ap-borde);
 
     border-radius:
         10px;
 
     background:
-        #FFFFFF;
+        var(--ap-blanco);
 
     color:
-        #66746C;
+        var(--ap-texto-tenue);
 
     font-family: inherit;
 
-    font-size:
-        7.5px;
+    font-size: 12px;
 
     font-weight:
         800;
@@ -4571,10 +4570,10 @@
 .btn-confirmacion-volver:hover {
 
     border-color:
-        #CBD5CE;
+        #CBD6CE;
 
     background:
-        #F4F7F5;
+        #F4F6F4;
 
     transform:
         translateY(-1px);
@@ -4605,22 +4604,21 @@
 
     border:
         1px solid
-        #DDBA3F;
+        #D8B844;
 
     border-radius:
         10px;
 
     background:
-        #FFDD71;
+        var(--ap-amarillo);
 
     color:
-        #214F3B;
+        var(--ap-verde-oscuro);
 
     font-family:
         inherit;
 
-    font-size:
-        7.5px;
+    font-size: 12px;
 
     font-weight:
         800;
@@ -4646,7 +4644,7 @@
 .btn-confirmacion-estado.completado {
 
     border-color:
-        #AFCDAA;
+        #B4D0AE;
 
     background:
         #DCEFD7;
@@ -4683,13 +4681,13 @@
 .btn-confirmacion-estado.cancelado {
 
     border-color:
-        #E0AAA3;
+        #E3AAA4;
 
     background:
-        #FCE2DE;
+        var(--ap-rojo-fondo);
 
     color:
-        #A84D44;
+        var(--ap-rojo);
 
 }
 
@@ -4700,7 +4698,7 @@
         #D38D84;
 
     background:
-        #F7D2CD;
+        #F8D3CD;
 
     color:
         #8E3932;
@@ -4783,7 +4781,7 @@
         20px;
 
     background:
-        #CBB44F;
+        #CAB34D;
 
 }
 
@@ -4791,7 +4789,7 @@
 .agenda-modal::-webkit-scrollbar-thumb:hover {
 
     background:
-        #A99032;
+        #A88E2D;
 
 }
 
@@ -4938,8 +4936,7 @@
         border-radius:
             10px;
 
-        font-size:
-            14px;
+        font-size: 14px;
 
     }
 
@@ -4968,16 +4965,14 @@
         border-radius:
             11px;
 
-        font-size:
-            16px;
+        font-size: 16px;
 
     }
 
 
     .agenda-confirmacion-header-info h2 {
 
-        font-size:
-            15px;
+        font-size: 16px;
 
     }
 
@@ -5011,16 +5006,14 @@
 
     .agenda-gestion-estado-contenido > strong {
 
-        font-size:
-            9px;
+        font-size: 13px;
 
     }
 
 
     .agenda-gestion-estado-contenido > p {
 
-        font-size:
-            7px;
+        font-size: 11px;
 
     }
 

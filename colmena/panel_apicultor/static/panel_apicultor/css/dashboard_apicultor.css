@@ -36,7 +36,7 @@
     color:
         var(--apicultor-texto);
 
-    font-size: 31px;
+    font-size: 30px;
 
     font-weight: 500;
 
@@ -179,7 +179,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 39px;
+    font-size: 36px;
 
     font-weight: 800;
 
@@ -265,7 +265,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 500;
 }
@@ -309,9 +309,9 @@
 
     flex-shrink: 0;
 
-    color: #89958E;
+    color: var(--ap-texto-apagado);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 500;
 }
@@ -414,9 +414,9 @@
     gap: 8px;
 
     color:
-        #59675F;
+        #58665E;
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 600;
 }
@@ -446,7 +446,7 @@
 
 .estado-punto.riesgo {
 
-    background: #F2C94C;
+    background: #F3CA4E;
 }
 
 
@@ -605,7 +605,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 19px;
+    font-size: 18px;
 
     font-weight: 800;
 
@@ -620,7 +620,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 700;
 
@@ -651,7 +651,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -673,7 +673,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 500;
 }
@@ -708,7 +708,7 @@
     color:
         #D0AC38;
 
-    font-size: 33px;
+    font-size: 30px;
 }
 
 
@@ -717,7 +717,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 700;
 }
@@ -732,7 +732,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 10px;
+    font-size: 13px;
 
     line-height: 1.5;
 }
@@ -833,27 +833,27 @@
 
     border-radius: 12px;
 
-    background: #E5F2E2;
+    background: var(--ap-verde-fondo);
 
-    color: #4F7A4B;
+    color: #4F7B49;
 
-    font-size: 17px;
+    font-size: 16px;
 }
 
 
 .accion-icono.incidencia {
 
-    background: #FDE5E0;
+    background: var(--ap-rojo-fondo);
 
-    color: #A94E46;
+    color: var(--ap-rojo);
 }
 
 
 .accion-icono.agenda {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #8D6A17;
+    color: var(--ap-miel-oscura);
 }
 
 
@@ -874,7 +874,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 800;
 }
@@ -889,7 +889,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     line-height: 1.45;
 }
@@ -898,7 +898,7 @@
 .accion-rapida > .bi-chevron-right {
 
     color:
-        #819087;
+        #849087;
 
     font-size: 14px;
 }
@@ -959,7 +959,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -984,7 +984,7 @@
 
     color: #526057;
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 500;
 
@@ -1057,7 +1057,7 @@
 
     border-radius: 20px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -1067,25 +1067,25 @@
 
 .badge-prioridad.alta {
 
-    background: #FDE5E0;
+    background: var(--ap-rojo-fondo);
 
-    color: #A94E46;
+    color: var(--ap-rojo);
 }
 
 
 .badge-prioridad.media {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #8D6A17;
+    color: var(--ap-miel-oscura);
 }
 
 
 .badge-prioridad.baja {
 
-    background: #E7F4E5;
+    background: var(--ap-verde-fondo);
 
-    color: #52794C;
+    color: var(--ap-verde-hoja);
 }
 
 
@@ -1107,11 +1107,11 @@
 
     border-radius: 20px;
 
-    background: #EDF3EF;
+    background: #EDF1EF;
 
-    color: #51645A;
+    color: #526057;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 700;
 }
@@ -1137,7 +1137,7 @@
 
     color: #78A965;
 
-    font-size: 28px;
+    font-size: 30px;
 }
 
 
@@ -1148,7 +1148,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 }
 
 
@@ -1161,7 +1161,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 }
 
 
@@ -1187,7 +1187,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 500;
 }
@@ -1198,7 +1198,7 @@
     color:
         var(--apicultor-sidebar);
 
-    font-size: 10px;
+    font-size: 13px;
 }
 
 
@@ -1284,7 +1284,7 @@
 
     .dashboard-bienvenida p {
 
-        font-size: 12px;
+        font-size: 14px;
 
         line-height: 1.6;
     }
@@ -1318,13 +1318,13 @@
 
     .resumen-numero {
 
-        font-size: 31px;
+        font-size: 30px;
     }
 
 
     .resumen-card-contenido span {
 
-        font-size: 11px;
+        font-size: 14px;
     }
 
 
@@ -1338,7 +1338,7 @@
 
     .dashboard-card-header h2 {
 
-        font-size: 15px;
+        font-size: 16px;
     }
 
 
@@ -1366,13 +1366,13 @@
 
     .dashboard-bienvenida h1 {
 
-        font-size: 22px;
+        font-size: 21px;
     }
 
 
     .dashboard-bienvenida p {
 
-        font-size: 11px;
+        font-size: 14px;
     }
 
 
@@ -1411,13 +1411,13 @@
 
         height: 48px;
 
-        font-size: 19px;
+        font-size: 18px;
     }
 
 
     .resumen-numero {
 
-        font-size: 26px;
+        font-size: 25px;
     }
 
 
@@ -1425,7 +1425,7 @@
 
         max-width: none;
 
-        font-size: 11px;
+        font-size: 14px;
     }
 
 
@@ -1570,7 +1570,7 @@
 
 .resumen-card--apiarios .resumen-card-icono {
 
-    background: #E4F0FA;
+    background: #E5EFFA;
     color: #3D6FA0;
 
 }
@@ -1578,15 +1578,15 @@
 
 .resumen-card--colmenas .resumen-card-icono {
 
-    background: #FFF4DB;
-    color: #896817;
+    background: #FFF8D8;
+    color: var(--ap-miel-oscura);
 
 }
 
 
 .resumen-card--mantenimientos .resumen-card-icono {
 
-    background: #EAF6ED;
+    background: #EDF1EF;
     color: #2F7D4F;
 
 }
@@ -1594,7 +1594,7 @@
 
 .resumen-card--incidencias .resumen-card-icono {
 
-    background: #FFE8E5;
+    background: #FCE9E6;
     color: #C44134;
 
 }
@@ -1646,7 +1646,7 @@
 
 
 .resumen-card--apiarios::before       { background: #3D6FA0; }
-.resumen-card--colmenas::before       { background: #896817; }
+.resumen-card--colmenas::before       { background: var(--ap-miel-oscura); }
 .resumen-card--mantenimientos::before { background: #2F7D4F; }
 .resumen-card--incidencias::before    { background: #C44134; }
 .resumen-card--revisiones::before     { background: #6B4E9B; }
@@ -1752,7 +1752,7 @@
 
     outline:
         3px solid
-        #F0A000;
+        var(--ap-miel);
 
     outline-offset: 3px;
 
@@ -1814,9 +1814,9 @@
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(137,104,23,0.10)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(137,104,23,0.10)' stroke-width='1'/%3E%3C/svg%3E"),
         linear-gradient(
             110deg,
-            #FFF3C4 0%,
+            var(--ap-amarillo-suave) 0%,
             #FFFBE8 55%,
-            #FFFFFF 100%
+            var(--ap-blanco) 100%
         );
 
     background-repeat: repeat, no-repeat;
@@ -1898,8 +1898,8 @@
     background:
         linear-gradient(
             170deg,
-            #FFFFFF 0%,
-            #FEFCF4 100%
+            var(--ap-blanco) 0%,
+            #FFF8F7 100%
         );
 
 }
@@ -1910,7 +1910,7 @@
     width: 58px;
     height: 58px;
 
-    font-size: 23px;
+    font-size: 21px;
 
     /* Halo suave del color de cada módulo */
     box-shadow:
@@ -1950,8 +1950,8 @@
     background:
         linear-gradient(
             170deg,
-            #FFFFFF 0%,
-            #FDFCF6 100%
+            var(--ap-blanco) 0%,
+            #FFF8F7 100%
         );
 
     transition:

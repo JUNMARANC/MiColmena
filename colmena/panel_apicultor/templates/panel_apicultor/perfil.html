@@ -668,6 +668,36 @@
                  FORMULARIO INFORMACIÓN PERSONAL
             ============================================== -->
 
+            <!-- =============================================
+                 PESTAÑAS
+            
+                 Antes las cinco secciones iban una debajo de
+                 otra y había que bajar mucho para llegar al
+                 historial. Agrupadas en pestañas, cada una se
+                 ve completa sin desplazarse.
+            
+                 Es el mismo patrón del panel del administrador:
+                 mismos nombres de clase y mismos atributos.
+            ============================================== -->
+            
+            <div class="perfil-tabs-principales" role="tablist">
+            
+                <button type="button" class="perfil-tab-btn activo"
+                        data-tab-target="perfil-tab-info" role="tab" aria-selected="true">
+                    <i class="bi bi-person-vcard" aria-hidden="true"></i>
+                    <span>Información</span>
+                </button>
+            
+                <button type="button" class="perfil-tab-btn"
+                        data-tab-target="perfil-tab-seguridad" role="tab" aria-selected="false">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                    <span>Seguridad</span>
+                </button>
+            
+            </div>
+            
+            
+            <div class="perfil-tab-panel" data-tab-panel="perfil-tab-info">
             <article class="perfil-card perfil-card-formulario">
 
 
@@ -1411,12 +1441,42 @@
             <!-- =====================================================
                  SEGURIDAD
             ====================================================== -->
-
-            <article class="perfil-card perfil-card-seguridad">
-
-
-                <!-- HEADER -->
-
+            </div>
+            
+            
+            <div class="perfil-tab-panel d-none" data-tab-panel="perfil-tab-seguridad">
+            
+                <div class="perfil-subtabs" role="tablist">
+            
+                    <button type="button" class="perfil-subtab-btn activo"
+                            data-tab-target="sub-password" role="tab" aria-selected="true">
+                        <i class="bi bi-key" aria-hidden="true"></i>
+                        <span>Contraseña</span>
+                    </button>
+            
+                    <button type="button" class="perfil-subtab-btn"
+                            data-tab-target="sub-2fa" role="tab" aria-selected="false">
+                        <i class="bi bi-shield-check" aria-hidden="true"></i>
+                        <span>Verificación en dos pasos</span>
+                    </button>
+            
+                    <button type="button" class="perfil-subtab-btn"
+                            data-tab-target="sub-sesiones" role="tab" aria-selected="false">
+                        <i class="bi bi-laptop" aria-hidden="true"></i>
+                        <span>Sesiones</span>
+                    </button>
+            
+                    <button type="button" class="perfil-subtab-btn"
+                            data-tab-target="sub-historial" role="tab" aria-selected="false">
+                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                        <span>Historial</span>
+                    </button>
+            
+                </div>
+            
+            
+                <div data-tab-panel="sub-password">
+                    <article class="perfil-card perfil-card-seguridad">
                 <div class="perfil-card-header">
 
 
@@ -1807,12 +1867,11 @@
 
 
                 </form>
-
-
-                <!-- =====================================================
-                    VERIFICACIÓN EN DOS PASOS
-                ====================================================== -->
-
+                    </article>
+                </div>
+            
+            
+                <div class="d-none" data-tab-panel="sub-2fa">
                 <article class="perfil-card perfil-card-seguridad perfil-card-2fa">
 
 
@@ -2119,12 +2178,10 @@
 
 
                 </article>
-
-
-                <!-- =========================================================
-                    SESIONES ACTIVAS
-                ========================================================== -->
-
+                </div>
+            
+            
+                <div class="d-none" data-tab-panel="sub-sesiones">
                 <article class="perfil-card perfil-card-sesiones">
 
 
@@ -2492,12 +2549,10 @@
 
 
                 </article>
-
-
-                <!-- =========================================================
-                    HISTORIAL DE ACCESOS
-                ========================================================== -->
-
+                </div>
+            
+            
+                <div class="d-none" data-tab-panel="sub-historial">
                 <article class="perfil-card perfil-card-historial">
 
                     <!-- =====================================================
@@ -2784,9 +2839,9 @@
                     {% endif %}
 
                 </article>
-
-
-            </article>
+                </div>
+            
+            </div>
 
 
         </div>

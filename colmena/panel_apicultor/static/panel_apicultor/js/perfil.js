@@ -1919,3 +1919,92 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================================
 
 });
+
+/* ==========================================================
+   ==========================================================
+   PESTAÑAS DEL PERFIL
+
+   Mismo comportamiento que el panel del administrador: cada
+   grupo de botones [data-tab-target] controla los paneles
+   [data-tab-panel] que son hijos DIRECTOS del contenedor del
+   grupo.
+
+   Ese detalle importa: sin el ":scope >", las pestañas
+   principales también ocultarían los paneles de las
+   sub-pestañas de Seguridad, porque están anidados dentro.
+   ========================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document
+        .querySelectorAll(".perfil-tabs-principales, .perfil-subtabs")
+        .forEach(function (grupo) {
+
+            const contenedor = grupo.parentElement;
+
+            if (!contenedor) {
+                return;
+            }
+
+            const botones = grupo.querySelectorAll("[data-tab-target]");
+
+            botones.forEach(function (boton) {
+
+                boton.addEventListener("click", function () {
+
+                    const destino = boton.dataset.tabTarget;
+
+                    botones.forEach(function (otro) {
+                        otro.classList.remove("activo");
+                        otro.setAttribute("aria-selected", "false");
+                    });
+
+                    boton.classList.add("activo");
+                    boton.setAttribute("aria-selected", "true");
+
+                    contenedor
+                        .querySelectorAll(":scope > [data-tab-panel]")
+                        .forEach(function (panel) {
+                            panel.classList.toggle(
+                                "d-none",
+                                panel.dataset.tabPanel !== destino
+                            );
+                        });
+
+                });
+
+            });
+
+        });
+
+
+    /* ======================================================
+       ABRIR LA PESTAÑA CORRECTA AL PAGINAR EL HISTORIAL
+
+       El historial se pagina con ?page_accesos=N. Sin esto,
+       al pasar de página la pantalla volvía a "Información"
+       y había que buscar el historial otra vez.
+    ====================================================== */
+
+    const parametros = new URLSearchParams(window.location.search);
+
+    if (parametros.has("page_accesos")) {
+
+        const btnSeguridad = document.querySelector(
+            '.perfil-tab-btn[data-tab-target="perfil-tab-seguridad"]'
+        );
+
+        const btnHistorial = document.querySelector(
+            '.perfil-subtab-btn[data-tab-target="sub-historial"]'
+        );
+
+        if (btnSeguridad) {
+            btnSeguridad.click();
+        }
+
+        if (btnHistorial) {
+            btnHistorial.click();
+        }
+    }
+
+});

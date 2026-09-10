@@ -48,7 +48,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 700;
 
@@ -106,7 +106,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -136,7 +136,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 500;
 
@@ -212,7 +212,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 17px;
+    font-size: 16px;
 
     font-weight: 800;
 }
@@ -225,7 +225,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 500;
 }
@@ -355,7 +355,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 600;
 }
@@ -366,7 +366,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 800;
 
@@ -392,7 +392,7 @@
 
     border-radius: 20px;
 
-    font-size: 9px !important;
+    font-size: 13px !important;
 
     font-weight: 800 !important;
 }
@@ -400,7 +400,7 @@
 
 .estado-general-apiario.bueno {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49 !important;
 }
@@ -408,17 +408,17 @@
 
 .estado-general-apiario.precaucion {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814 !important;
+    color: var(--ap-miel-oscura) !important;
 }
 
 
 .estado-general-apiario.deficiente {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44 !important;
+    color: var(--ap-rojo) !important;
 }
 
 
@@ -447,7 +447,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -460,7 +460,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 10px;
+    font-size: 13px;
 
     line-height: 1.65;
 }
@@ -536,7 +536,7 @@
     color:
         #5F6D65;
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 600;
 }
@@ -547,7 +547,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -577,7 +577,7 @@
 
 .estado-punto.revision {
 
-    background: #F2C94C;
+    background: #F3CA4E;
 }
 
 
@@ -633,7 +633,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 
     font-weight: 800;
 }
@@ -684,7 +684,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -708,9 +708,9 @@
         rgba(33, 79, 59, 0.07);
 
     color:
-        #536158;
+        #526057;
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 500;
 
@@ -776,7 +776,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 13px;
+    font-size: 14px;
 }
 
 
@@ -793,7 +793,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -812,7 +812,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 8px;
+    font-size: 12px;
 
     text-overflow: ellipsis;
 
@@ -838,7 +838,7 @@
 
     border-radius: 20px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 }
@@ -858,7 +858,7 @@
 
 .badge-estado-colmena.activa {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49;
 }
@@ -874,9 +874,9 @@
 
 .badge-estado-colmena.riesgo {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 }
 
 
@@ -890,15 +890,15 @@
 
 .badge-estado-colmena.revision {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814;
+    color: var(--ap-miel-oscura);
 }
 
 
 .badge-estado-colmena.revision > span {
 
-    background: #F2C94C;
+    background: #F3CA4E;
 }
 
 
@@ -908,7 +908,7 @@
 
     background: #EDF1EF;
 
-    color: #647069;
+    color: var(--ap-texto-tenue);
 }
 
 
@@ -946,7 +946,7 @@
 
     color: #9AA39E;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-style: italic;
 }
@@ -970,11 +970,11 @@
 
     border-radius: 20px;
 
-    background: #E9F4E7;
+    background: var(--ap-verde-fondo);
 
-    color: #51754D;
+    color: var(--ap-verde-hoja);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 }
@@ -982,9 +982,9 @@
 
 .contador-incidencias.tiene {
 
-    background: #FCE6E2;
+    background: var(--ap-rojo-fondo);
 
-    color: #A64E46;
+    color: var(--ap-rojo);
 }
 
 
@@ -1028,7 +1028,7 @@
 
     font-family: inherit;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -1081,7 +1081,7 @@
     color:
         #D0AC38;
 
-    font-size: 28px;
+    font-size: 30px;
 }
 
 
@@ -1090,7 +1090,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 11px;
+    font-size: 14px;
 }
 
 
@@ -1101,7 +1101,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 }
 
 
@@ -1139,7 +1139,7 @@
 
     border-radius: 11px;
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -1162,9 +1162,9 @@
 
 .btn-accion-apiario.mantenimiento {
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 }
 
 
@@ -1202,7 +1202,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 }
 
 
@@ -1270,7 +1270,7 @@
     border-radius: 20px;
 
     background:
-        #FFFFF7;
+        var(--ap-blanco);
 
     box-shadow:
         0 25px 70px
@@ -1338,7 +1338,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 600;
 }
@@ -1351,7 +1351,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 22px;
+    font-size: 21px;
 
     font-weight: 800;
 }
@@ -1382,7 +1382,7 @@
     background: transparent;
 
     color:
-        #748078;
+        #718078;
 
     font-size: 18px;
 
@@ -1449,7 +1449,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 800;
 }
@@ -1493,7 +1493,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 600;
 }
@@ -1504,7 +1504,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -1545,7 +1545,7 @@
 
     border-radius: 50%;
 
-    font-size: 20px;
+    font-size: 18px;
 }
 
 
@@ -1561,7 +1561,7 @@
 
 .estado-colmena-grande span {
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 600;
 }
@@ -1569,7 +1569,7 @@
 
 .estado-colmena-grande strong {
 
-    font-size: 13px;
+    font-size: 14px;
 
     font-weight: 800;
 }
@@ -1579,9 +1579,9 @@
 
 .estado-colmena-grande.activa {
 
-    background: #E7F4E5;
+    background: var(--ap-verde-fondo);
 
-    color: #4F774A;
+    color: var(--ap-verde-hoja);
 }
 
 
@@ -1596,9 +1596,9 @@
 
 .estado-colmena-grande.riesgo {
 
-    background: #FDE7E3;
+    background: #FCE9E6;
 
-    color: #A64F47;
+    color: var(--ap-rojo);
 }
 
 
@@ -1615,7 +1615,7 @@
 
     background: #FFF2C8;
 
-    color: #8C6B19;
+    color: var(--ap-miel-oscura);
 }
 
 
@@ -1632,14 +1632,14 @@
 
     background: #EDF1EF;
 
-    color: #657169;
+    color: var(--ap-texto-tenue);
 }
 
 
 .estado-colmena-grande.inactiva
 .estado-colmena-grande-icono {
 
-    background: #DDE4E0;
+    background: var(--ap-borde);
 }
 
 
@@ -1674,7 +1674,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     line-height: 1.65;
 }
@@ -1722,7 +1722,7 @@
 
     font-family: inherit;
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -1775,7 +1775,7 @@
 
     .detalle-titulo h1 {
 
-        font-size: 24px;
+        font-size: 25px;
     }
 
 
@@ -1794,7 +1794,7 @@
 
     .detalle-card-header h2 {
 
-        font-size: 15px;
+        font-size: 16px;
     }
 
 
@@ -1837,7 +1837,7 @@
 
     .detalle-titulo p {
 
-        font-size: 10px;
+        font-size: 13px;
     }
 
 
@@ -1949,7 +1949,7 @@
 
     border-radius: 20px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     box-shadow:
         0 6px 20px
@@ -2037,7 +2037,7 @@
 
 .apiario-hero-sin-imagen i {
 
-    font-size: 48px;
+    font-size: 44px;
 
     opacity: 0.55;
 }
@@ -2045,7 +2045,7 @@
 
 .apiario-hero-sin-imagen strong {
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 800;
 }
@@ -2053,7 +2053,7 @@
 
 .apiario-hero-sin-imagen span {
 
-    font-size: 9px;
+    font-size: 13px;
 
     color:
         var(--apicultor-texto-secundario);
@@ -2096,11 +2096,11 @@
     background:
         rgba(24, 51, 38, 0.78);
 
-    color: #FFFFFF;
+    color: var(--ap-blanco);
 
     font-family: inherit;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -2152,9 +2152,9 @@
     margin-bottom: 7px;
 
     color:
-        #A17D13;
+        #A38116;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -2171,7 +2171,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 28px;
+    font-size: 30px;
 
     font-weight: 800;
 
@@ -2199,7 +2199,7 @@
 
     border-radius: 20px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -2223,7 +2223,7 @@
 
 .apiario-hero-estado.bueno {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49;
 }
@@ -2231,17 +2231,17 @@
 
 .apiario-hero-estado.precaucion {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814;
+    color: var(--ap-miel-oscura);
 }
 
 
 .apiario-hero-estado.deficiente {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 }
 
 
@@ -2286,7 +2286,7 @@
     border-radius: 11px;
 
     background:
-        #FAFBF8;
+        #FFF8F7;
 }
 
 
@@ -2311,7 +2311,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 12px;
+    font-size: 14px;
 }
 
 
@@ -2332,7 +2332,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 7px;
+    font-size: 11px;
 
     font-weight: 700;
 }
@@ -2345,7 +2345,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -2388,7 +2388,7 @@
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -2400,7 +2400,7 @@
 
     color: #B8921E;
 
-    font-size: 11px;
+    font-size: 14px;
 }
 
 
@@ -2409,9 +2409,9 @@
     margin: 0;
 
     color:
-        #647269;
+        var(--ap-texto-tenue);
 
-    font-size: 9px;
+    font-size: 13px;
 
     line-height: 1.65;
 }
@@ -2420,7 +2420,7 @@
 .apiario-hero-observaciones.sin-observaciones p {
 
     color:
-        #909B94;
+        #8C9891;
 
     font-style: italic;
 }
@@ -2464,7 +2464,7 @@
 
     border:
         1px solid
-        #DABC43;
+        #D8B844;
 
     border-radius: 10px;
 
@@ -2476,7 +2476,7 @@
 
     font-family: inherit;
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -2493,7 +2493,7 @@
 
 .btn-gestionar-detalle-apiario:hover {
 
-    background: #F3CA4C;
+    background: #F3CA4E;
 
     transform:
         translateY(-1px);
@@ -2565,7 +2565,7 @@
 
     border-radius: 11px;
 
-    font-size: 15px;
+    font-size: 16px;
 }
 
 
@@ -2599,7 +2599,7 @@
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 700;
 }
@@ -2627,7 +2627,7 @@
 .detalle-estadistica.activas
 .detalle-estadistica-icono {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49;
 }
@@ -2640,9 +2640,9 @@
 .detalle-estadistica.riesgo
 .detalle-estadistica-icono {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 }
 
 
@@ -2653,9 +2653,9 @@
 .detalle-estadistica.revision
 .detalle-estadistica-icono {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814;
+    color: var(--ap-miel-oscura);
 }
 
 
@@ -2668,7 +2668,7 @@
 
     background: #EDF1EF;
 
-    color: #647069;
+    color: var(--ap-texto-tenue);
 }
 
 
@@ -2713,12 +2713,12 @@ tr.colmena-inactiva:hover {
     border-radius: 7px;
 
     background:
-        #F1F3F2;
+        #F4F6F4;
 
     color:
-        #727D76;
+        #718078;
 
-    font-size: 7px;
+    font-size: 11px;
 
     font-weight: 700;
 }
@@ -2765,14 +2765,14 @@ tr.colmena-inactiva:hover {
     border-radius: 8px;
 
     background:
-        #FFFFFF;
+        var(--ap-blanco);
 
     color:
         var(--apicultor-verde-oscuro);
 
     font-family: inherit;
 
-    font-size: 7px;
+    font-size: 11px;
 
     font-weight: 800;
 
@@ -2909,7 +2909,7 @@ tr.colmena-inactiva:hover {
     background:
         rgba(255, 255, 255, 0.11);
 
-    color: #FFFFFF;
+    color: var(--ap-blanco);
 
     font-size: 16px;
 
@@ -3045,7 +3045,7 @@ tr.colmena-inactiva:hover {
 
     .apiario-hero-contenido h1 {
 
-        font-size: 22px;
+        font-size: 21px;
 
     }
 
@@ -3124,7 +3124,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 20px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     box-shadow:
         0 6px 20px
@@ -3223,7 +3223,7 @@ tr.colmena-inactiva:hover {
         linear-gradient(
             135deg,
             #FFF8D8,
-            #FFFFF3
+            #FFFFF4
         );
 }
 
@@ -3247,7 +3247,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 27px;
+    font-size: 25px;
 }
 
 
@@ -3256,7 +3256,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 12px;
+    font-size: 14px;
 
     font-weight: 800;
 }
@@ -3269,7 +3269,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     line-height: 1.5;
 }
@@ -3300,7 +3300,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 20px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -3312,7 +3312,7 @@ tr.colmena-inactiva:hover {
 
 .detalle-hero-estado.bueno {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49;
 }
@@ -3320,17 +3320,17 @@ tr.colmena-inactiva:hover {
 
 .detalle-hero-estado.precaucion {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814;
+    color: var(--ap-miel-oscura);
 }
 
 
 .detalle-hero-estado.deficiente {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 }
 
 
@@ -3376,9 +3376,9 @@ tr.colmena-inactiva:hover {
 
     margin-bottom: 5px;
 
-    color: #A17D13;
+    color: #A38116;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -3395,7 +3395,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 23px;
+    font-size: 21px;
 
     font-weight: 800;
 
@@ -3462,7 +3462,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 13px;
+    font-size: 14px;
 }
 
 
@@ -3483,7 +3483,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 600;
 }
@@ -3494,7 +3494,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 10px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -3540,13 +3540,13 @@ tr.colmena-inactiva:hover {
 
     color: #B8921E;
 
-    font-size: 12px;
+    font-size: 14px;
 }
 
 
 .detalle-hero-observaciones-titulo strong {
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -3559,7 +3559,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     line-height: 1.65;
 }
@@ -3568,7 +3568,7 @@ tr.colmena-inactiva:hover {
 .detalle-hero-observaciones
 .sin-observaciones {
 
-    color: #929B96;
+    color: #929C96;
 
     font-style: italic;
 }
@@ -3612,7 +3612,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 10px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -3633,9 +3633,9 @@ tr.colmena-inactiva:hover {
 
 .detalle-hero-accion.mantenimiento {
 
-    background: #E7F2E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 }
 
 
@@ -3669,7 +3669,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 20px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 }
@@ -3677,7 +3677,7 @@ tr.colmena-inactiva:hover {
 
 .detalle-estado-apiario.bueno {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49;
 }
@@ -3685,17 +3685,17 @@ tr.colmena-inactiva:hover {
 
 .detalle-estado-apiario.precaucion {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814;
+    color: var(--ap-miel-oscura);
 }
 
 
 .detalle-estado-apiario.deficiente {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 }
 
 
@@ -3734,7 +3734,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 14px;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     box-shadow:
         0 3px 12px
@@ -3757,7 +3757,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 11px;
 
-    font-size: 15px;
+    font-size: 16px;
 }
 
 
@@ -3778,7 +3778,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 700;
 }
@@ -3789,7 +3789,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 19px;
+    font-size: 18px;
 
     font-weight: 800;
 
@@ -3801,7 +3801,7 @@ tr.colmena-inactiva:hover {
 
     color: #929C96;
 
-    font-size: 7px;
+    font-size: 11px;
 
     font-weight: 600;
 }
@@ -3821,7 +3821,7 @@ tr.colmena-inactiva:hover {
 .detalle-estadistica.activa
 .detalle-estadistica-icono {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
     color: #4F7B49;
 }
@@ -3830,18 +3830,18 @@ tr.colmena-inactiva:hover {
 .detalle-estadistica.revision
 .detalle-estadistica-icono {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
-    color: #886814;
+    color: var(--ap-miel-oscura);
 }
 
 
 .detalle-estadistica.riesgo
 .detalle-estadistica-icono {
 
-    background: #FCE2DE;
+    background: var(--ap-rojo-fondo);
 
-    color: #A84D44;
+    color: var(--ap-rojo);
 }
 
 
@@ -3850,7 +3850,7 @@ tr.colmena-inactiva:hover {
 
     background: #EDF1EF;
 
-    color: #647069;
+    color: var(--ap-texto-tenue);
 }
 
 
@@ -3931,11 +3931,11 @@ tr.colmena-inactiva:hover {
 
     border-radius: 7px;
 
-    background: #EEF1EF;
+    background: #EDF1EF;
 
-    color: #707B74;
+    color: #718078;
 
-    font-size: 6px;
+    font-size: 11px;
 
     font-weight: 700;
 }
@@ -4008,7 +4008,7 @@ tr.colmena-inactiva:hover {
 
 .modal-colmena-sin-foto span {
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 700;
 
@@ -4034,9 +4034,9 @@ tr.colmena-inactiva:hover {
 
     border-radius: 10px;
 
-    background: #EEF1EF;
+    background: #EDF1EF;
 
-    color: #667169;
+    color: var(--ap-texto-tenue);
 }
 
 
@@ -4044,7 +4044,7 @@ tr.colmena-inactiva:hover {
 
     margin-top: 2px;
 
-    font-size: 13px;
+    font-size: 14px;
 }
 
 
@@ -4060,7 +4060,7 @@ tr.colmena-inactiva:hover {
 
 .alerta-colmena-inactiva-detalle strong {
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -4068,7 +4068,7 @@ tr.colmena-inactiva:hover {
 
 .alerta-colmena-inactiva-detalle span {
 
-    font-size: 7px;
+    font-size: 11px;
 
     line-height: 1.5;
 }
@@ -4085,7 +4085,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 9px;
+    font-size: 13px;
 
     line-height: 1.65;
 }
@@ -4093,7 +4093,7 @@ tr.colmena-inactiva:hover {
 
 .modal-observaciones-colmena.sin-observaciones {
 
-    color: #949D97;
+    color: #929C96;
 
     font-style: italic;
 }
@@ -4127,7 +4127,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 10px;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -4148,15 +4148,15 @@ tr.colmena-inactiva:hover {
 
 .btn-modal-accion.mantenimiento {
 
-    background: #E5F4E3;
+    background: var(--ap-verde-fondo);
 
-    color: #4F744B;
+    color: var(--ap-verde-hoja);
 }
 
 
 .btn-modal-accion.incidencia {
 
-    background: #FFF0BE;
+    background: var(--ap-amarillo-suave);
 
     color: #806312;
 }
@@ -4188,9 +4188,9 @@ tr.colmena-inactiva:hover {
 
 .btn-accion-colmena-detalle.bloqueado {
 
-    background: #EEF1EF;
+    background: #EDF1EF;
 
-    color: #8A948E;
+    color: var(--ap-texto-apagado);
 
     cursor: not-allowed;
 
@@ -4253,7 +4253,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 14px;
 
-    background: #FFFDF3;
+    background: #FFF8F7;
 }
 
 
@@ -4286,7 +4286,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 700;
 
@@ -4301,7 +4301,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 15px;
+    font-size: 16px;
 
     font-weight: 800;
 }
@@ -4357,7 +4357,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 }
@@ -4375,27 +4375,27 @@ tr.colmena-inactiva:hover {
 
     border:
         1px solid
-        #DCE3DE;
+        var(--ap-borde);
 
     border-radius: 10px;
 
     outline: none;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     color:
         var(--apicultor-texto);
 
     font-family: inherit;
 
-    font-size: 9px;
+    font-size: 13px;
 }
 
 
 .detalle-edicion-grupo select:focus,
 .detalle-edicion-grupo textarea:focus {
 
-    border-color: #D4B640;
+    border-color: #D8B844;
 
     box-shadow:
         0 0 0 3px
@@ -4418,7 +4418,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-texto-secundario);
 
-    font-size: 7px;
+    font-size: 11px;
 }
 
 
@@ -4455,7 +4455,7 @@ tr.colmena-inactiva:hover {
 
     font-family: inherit;
 
-    font-size: 8px;
+    font-size: 12px;
 
     font-weight: 800;
 
@@ -4467,11 +4467,11 @@ tr.colmena-inactiva:hover {
 
     border:
         1px solid
-        #DCE3DE;
+        var(--ap-borde);
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
-    color: #66736B;
+    color: var(--ap-texto-tenue);
 }
 
 
@@ -4479,7 +4479,7 @@ tr.colmena-inactiva:hover {
 
     border:
         1px solid
-        #D8B93D;
+        #D8B844;
 
     background:
         var(--apicultor-sidebar);
@@ -4493,7 +4493,7 @@ tr.colmena-inactiva:hover {
 
     border:
         1px solid
-        #D8B93D;
+        #D8B844;
 
     background:
         var(--apicultor-sidebar);
@@ -4559,7 +4559,7 @@ tr.colmena-inactiva:hover {
 
     border-radius: 16px;
 
-    background: #FFFFF7;
+    background: var(--ap-blanco);
 
     animation:
         aparecerGestionColmena
@@ -4627,7 +4627,7 @@ tr.colmena-inactiva:hover {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 9px;
+    font-size: 13px;
 
     font-weight: 800;
 
@@ -4647,13 +4647,13 @@ tr.colmena-inactiva:hover {
 
     border:
         1px solid
-        #D8E0DA;
+        var(--ap-borde);
 
     border-radius: 10px;
 
     outline: none;
 
-    background: #FFFFFF;
+    background: var(--ap-blanco);
 
     color:
         var(--apicultor-verde-oscuro);
@@ -4677,7 +4677,7 @@ textarea.apiario-input {
 .apiario-input:focus {
 
     border-color:
-        #D2B23B;
+        #D2B23D;
 
     box-shadow:
         0 0 0 3px
@@ -4700,7 +4700,7 @@ textarea.apiario-input {
     color:
         var(--apicultor-verde-oscuro);
 
-    font-size: 17px;
+    font-size: 16px;
 
     font-weight: 800;
 
@@ -4754,7 +4754,7 @@ textarea.apiario-input {
 .modal-colmena.modo-edicion-colmena {
 
     background:
-        #FFFFF7;
+        var(--ap-blanco);
 
 }
 
@@ -4777,7 +4777,7 @@ textarea.apiario-input {
 
     border:
         1px solid
-        #D8B93D;
+        #D8B844;
 
     background:
         var(--apicultor-sidebar);
