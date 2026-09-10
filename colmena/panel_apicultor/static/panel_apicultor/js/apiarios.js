@@ -132,13 +132,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        const caracteresRestantes =
+            (
+                MAX_OBSERVACIONES
+                -
+                descripcion.value.length
+            );
+
+
         contador.textContent =
             (
-                descripcion.value.length
+                caracteresRestantes
                 +
-                " / "
-                +
-                MAX_OBSERVACIONES
+                " caracteres restantes"
             );
 
     }
@@ -998,12 +1004,375 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // =========================================================
     // MOSTRAR MENSAJE DE ERROR
+    // TOAST NO BLOQUEANTE
     // =========================================================
 
     function mostrarError(mensaje) {
 
-        window.alert(
-            mensaje
+        // =====================================================
+        // CONTENEDOR GLOBAL
+        // =====================================================
+
+        // =====================================================
+        // MODAL ACTUALMENTE ABIERTO
+        // =====================================================
+
+        const modalActivo =
+            document.querySelector(
+                ".modal-editar-apiario.activo .apiario-editar-modal"
+            );
+
+
+        if (!modalActivo) {
+
+            return;
+
+        }
+
+
+        // =====================================================
+        // CONTENEDOR DEL TOAST DENTRO DEL MODAL
+        // =====================================================
+
+        let contenedor =
+            modalActivo.querySelector(
+                ".contenedor-toast-apiario"
+            );
+
+
+        if (!contenedor) {
+
+            contenedor =
+                document.createElement(
+                    "div"
+                );
+
+
+            contenedor.className =
+                "contenedor-toast-apiario";
+
+
+            modalActivo.appendChild(
+                contenedor
+            );
+
+        }
+
+
+        // =====================================================
+        // EVITAR ACUMULAR VARIOS AVISOS
+        // =====================================================
+
+        const toastAnterior =
+            contenedor.querySelector(
+                ".toast-apiario"
+            );
+
+
+        if (toastAnterior) {
+
+            toastAnterior.remove();
+
+        }
+
+
+        // =====================================================
+        // CREAR TOAST
+        // =====================================================
+
+        const toast =
+            document.createElement(
+                "div"
+            );
+
+
+        toast.className =
+            "toast-apiario toast-apiario-warning";
+
+
+        // =====================================================
+        // ICONO
+        // =====================================================
+
+        const icono =
+            document.createElement(
+                "div"
+            );
+
+
+        icono.className =
+            "toast-apiario-icono";
+
+
+        icono.innerHTML = `
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        `;
+
+
+        // =====================================================
+        // CONTENIDO
+        // =====================================================
+
+        const contenido =
+            document.createElement(
+                "div"
+            );
+
+
+        contenido.className =
+            "toast-apiario-contenido";
+
+
+        const titulo =
+            document.createElement(
+                "strong"
+            );
+
+
+        titulo.textContent =
+            "Atención";
+
+
+        const texto =
+            document.createElement(
+                "span"
+            );
+
+
+        texto.textContent =
+            mensaje;
+
+
+        contenido.appendChild(
+            titulo
+        );
+
+
+        contenido.appendChild(
+            texto
+        );
+
+
+        // =====================================================
+        // BOTÓN CERRAR
+        // =====================================================
+
+        const botonCerrar =
+            document.createElement(
+                "button"
+            );
+
+
+        botonCerrar.type =
+            "button";
+
+
+        botonCerrar.className =
+            "toast-apiario-cerrar";
+
+
+        botonCerrar.setAttribute(
+            "aria-label",
+            "Cerrar notificación"
+        );
+
+
+        botonCerrar.innerHTML = `
+            <i class="bi bi-x-lg"></i>
+        `;
+
+
+        // =====================================================
+        // ARMAR TOAST
+        // =====================================================
+
+        toast.appendChild(
+            icono
+        );
+
+
+        toast.appendChild(
+            contenido
+        );
+
+
+        toast.appendChild(
+            botonCerrar
+        );
+
+
+        contenedor.appendChild(
+            toast
+        );
+
+
+        // =====================================================
+        // FUNCIÓN CERRAR
+        // =====================================================
+
+        function cerrarToast() {
+
+            if (
+                !toast.isConnected
+            ) {
+
+                return;
+
+            }
+
+
+            // =============================================
+            // DEJAR DE ESCUCHAR CLICS EXTERNOS
+            // =============================================
+
+            document.removeEventListener(
+                "pointerdown",
+                cerrarAlHacerClickFuera
+            );
+
+
+            // =============================================
+            // ANIMACIÓN DE SALIDA
+            // =============================================
+
+            toast.classList.add(
+                "toast-apiario-saliendo"
+            );
+
+
+            window.setTimeout(
+                function () {
+
+                    if (
+                        toast.isConnected
+                    ) {
+
+                        toast.remove();
+
+                    }
+
+
+                    // =====================================
+                    // ELIMINAR CONTENEDOR SI QUEDÓ VACÍO
+                    // =====================================
+
+                    if (
+                        contenedor.isConnected
+                        &&
+                        !contenedor.querySelector(
+                            ".toast-apiario"
+                        )
+                    ) {
+
+                        contenedor.remove();
+
+                    }
+
+                },
+                300
+            );
+
+        }
+
+
+        // =====================================================
+        // CERRAR AL HACER CLIC FUERA DEL TOAST
+        // =====================================================
+
+        function cerrarAlHacerClickFuera(
+            evento
+        ) {
+
+            if (
+                !toast.isConnected
+            ) {
+
+                return;
+
+            }
+
+
+            // =============================================
+            // SI EL CLIC FUE DENTRO DEL TOAST,
+            // NO HACEMOS NADA
+            // =============================================
+
+            if (
+                toast.contains(
+                    evento.target
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            cerrarToast();
+
+        }
+
+
+        // =====================================================
+        // CERRAR MANUALMENTE CON LA X
+        // =====================================================
+
+        botonCerrar.addEventListener(
+            "click",
+            cerrarToast
+        );
+
+
+        // =====================================================
+        // ACTIVAR CIERRE AL HACER CLIC FUERA
+        //
+        // Usamos un pequeño retraso para evitar que el mismo
+        // clic que originó la notificación pueda cerrarla.
+        // =====================================================
+
+        window.setTimeout(
+            function () {
+
+                if (
+                    toast.isConnected
+                ) {
+
+                    document.addEventListener(
+                        "pointerdown",
+                        cerrarAlHacerClickFuera
+                    );
+
+                }
+
+            },
+            50
+        );
+
+
+        // =====================================================
+        // ANIMACIÓN DE ENTRADA
+        // =====================================================
+
+        window.setTimeout(
+            function () {
+
+                toast.classList.add(
+                    "toast-apiario-visible"
+                );
+
+            },
+            20
+        );
+
+
+        // =====================================================
+        // CERRAR AUTOMÁTICAMENTE
+        // 4.5 SEGUNDOS
+        // =====================================================
+
+        window.setTimeout(
+            cerrarToast,
+            4500
         );
 
     }

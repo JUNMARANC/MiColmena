@@ -2918,3 +2918,469 @@ body.modal-apiario-abierto {
     }
 
 }
+
+/* =========================================================
+   TOAST / NOTIFICACIÓN BONITA - APIARIOS APICULTOR
+   CENTRADA SOBRE EL MODAL
+========================================================= */
+
+.contenedor-toast-apiario {
+
+    position: fixed;
+
+    top: 50%;
+
+    left: 50%;
+
+    transform: translate(
+        -50%,
+        -50%
+    );
+
+    z-index: 10050;
+
+    width: min(
+        430px,
+        calc(100vw - 40px)
+    );
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 12px;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast-apiario {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    padding: 18px 18px;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 60px
+        rgba(0, 0, 0, 0.25);
+
+    border: 1px solid
+        rgba(0, 0, 0, 0.06);
+
+    border-left: 5px solid
+        #d8b24c;
+
+    opacity: 0;
+
+    transform:
+        translateY(-12px)
+        scale(0.96);
+
+    transition:
+        opacity 0.28s ease,
+        transform 0.28s ease;
+
+    pointer-events: auto;
+
+}
+
+
+/* =========================================================
+   ENTRADA
+========================================================= */
+
+.toast-apiario-visible {
+
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+}
+
+
+/* =========================================================
+   SALIDA
+========================================================= */
+
+.toast-apiario-saliendo {
+
+    opacity: 0;
+
+    transform:
+        translateY(-12px)
+        scale(0.96);
+
+}
+
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.toast-apiario-warning {
+
+    border-left-color:
+        #d6a62b;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffdf7 0%,
+            #fff7dc 100%
+        );
+
+}
+
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+.toast-apiario-success {
+
+    border-left-color:
+        #4e9b72;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7fff9 0%,
+            #eaf7ef 100%
+        );
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.toast-apiario-error {
+
+    border-left-color:
+        #c65a5a;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff8f8 0%,
+            #fdecec 100%
+        );
+
+}
+
+
+/* =========================================================
+   ICONO
+========================================================= */
+
+.toast-apiario-icono {
+
+    flex-shrink: 0;
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.8
+        );
+
+    box-shadow:
+        0 4px 12px
+        rgba(0, 0, 0, 0.06);
+
+    font-size: 1.05rem;
+
+}
+
+
+/* =========================================================
+   COLOR ICONO WARNING
+========================================================= */
+
+.toast-apiario-warning
+.toast-apiario-icono {
+
+    color:
+        #b78914;
+
+}
+
+
+/* =========================================================
+   COLOR ICONO SUCCESS
+========================================================= */
+
+.toast-apiario-success
+.toast-apiario-icono {
+
+    color:
+        #3b7f5a;
+
+}
+
+
+/* =========================================================
+   COLOR ICONO ERROR
+========================================================= */
+
+.toast-apiario-error
+.toast-apiario-icono {
+
+    color:
+        #b04a4a;
+
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.toast-apiario-contenido {
+
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding-top: 1px;
+
+}
+
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.toast-apiario-contenido strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        #2f3e37;
+
+    font-size: 0.9rem;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+}
+
+
+/* =========================================================
+   MENSAJE
+========================================================= */
+
+.toast-apiario-contenido span {
+
+    display: block;
+
+    color:
+        #5c6b64;
+
+    font-size: 0.8rem;
+
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* =========================================================
+   BOTÓN CERRAR
+========================================================= */
+
+.toast-apiario-cerrar {
+
+    flex-shrink: 0;
+
+    width: 28px;
+
+    height: 28px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    background:
+        transparent;
+
+    color:
+        #7a857f;
+
+    padding: 0;
+
+    font-size: 0.8rem;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        color 0.18s ease,
+        background-color 0.18s ease;
+
+}
+
+
+/* =========================================================
+   BOTÓN CERRAR HOVER
+========================================================= */
+
+.toast-apiario-cerrar:hover {
+
+    color:
+        #2f3e37;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.05
+        );
+
+    transform:
+        scale(1.06);
+
+}
+
+
+/* =========================================================
+   BOTÓN CERRAR FOCUS
+========================================================= */
+
+.toast-apiario-cerrar:focus-visible {
+
+    outline:
+        2px solid
+        rgba(
+            183,
+            137,
+            20,
+            0.45
+        );
+
+    outline-offset:
+        2px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    .contenedor-toast-apiario {
+
+        top: 50%;
+
+        left: 50%;
+
+        width:
+            calc(
+                100vw - 32px
+            );
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            );
+
+    }
+
+
+    .toast-apiario {
+
+        padding:
+            15px;
+
+        gap:
+            11px;
+
+        border-radius:
+            15px;
+
+    }
+
+
+    .toast-apiario-icono {
+
+        width:
+            38px;
+
+        height:
+            38px;
+
+        border-radius:
+            11px;
+
+    }
+
+
+    .toast-apiario-contenido strong {
+
+        font-size:
+            0.85rem;
+
+    }
+
+
+    .toast-apiario-contenido span {
+
+        font-size:
+            0.76rem;
+
+    }
+
+}

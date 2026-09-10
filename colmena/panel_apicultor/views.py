@@ -1437,7 +1437,16 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
-    # 9. ACTUALIZAR OBSERVACIONES
+    # 9. ACTUALIZAR ESTADO
+    # ========================================================
+
+    apiario.estadoapiario = (
+        estado
+    )
+
+
+    # ========================================================
+    # 10. ACTUALIZAR OBSERVACIONES
     # ========================================================
 
     apiario.descripcion = (
@@ -1454,7 +1463,7 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
-    # 10. ACTUALIZAR FOTOGRAFÍA
+    # 11. ACTUALIZAR FOTOGRAFÍA
     #
     # Si no selecciona una nueva,
     # se conserva la actual.
@@ -1480,7 +1489,7 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
-    # 11. GUARDAR
+    # 12. GUARDAR
     # ========================================================
 
     try:
@@ -1502,7 +1511,7 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
-    # 12. MENSAJE
+    # 13. MENSAJE
     # ========================================================
 
     messages.success(
@@ -1515,7 +1524,7 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
-    # 13. REGRESAR AL LUGAR DE ORIGEN
+    # 14. REGRESAR AL LUGAR DE ORIGEN
     # ========================================================
 
     return redireccionar()
