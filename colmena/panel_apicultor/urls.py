@@ -2,6 +2,7 @@ from django.urls import path
 
 from panel_apicultor.views import (
     dashboard_apicultor,
+    datos_dashboard_apicultor,
 
     # Apiarios
     mis_apiarios,
@@ -45,6 +46,7 @@ urlpatterns = [
     # ============================================================
 
     path("",dashboard_apicultor,name="dashboard_apicultor"),
+    path("dashboard/datos/",datos_dashboard_apicultor,name="datos_dashboard_apicultor",),
 
     # ============================================================
     # MIS APIARIOS

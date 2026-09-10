@@ -119,23 +119,26 @@ def obtener_actividad_dashboard_apicultor(
         # ====================================================
 
         total_revisiones = (
-            Seguimientoapicola.objects
+            EventoAgenda.objects
             .filter(
-                Q(
-                    id_apicultor=
-                        apicultor
-                )
-                |
-                Q(
-                    id_apiario__in=
-                        apiarios
-                ),
-                fecharegistro__range=(
+                responsable=
+                    apicultor,
+
+                tipo_evento=
+                    EventoAgenda
+                    .TipoEvento
+                    .REVISION,
+
+                estado=
+                    EventoAgenda
+                    .EstadoEvento
+                    .COMPLETADO,
+
+                fecha__range=(
                     inicio,
                     fin
-                )
+                ),
             )
-            .distinct()
             .count()
         )
 
@@ -411,23 +414,27 @@ def dashboard_apicultor(request):
 
 
     revisiones_mes = (
-        Seguimientoapicola.objects
+        EventoAgenda.objects
         .filter(
-            Q(
-                id_apicultor=
-                    apicultor
-            )
-            |
-            Q(
-                id_apiario__in=
-                    apiarios
-            ),
-            fecharegistro__year=
+            responsable=
+                apicultor,
+
+            tipo_evento=
+                EventoAgenda
+                .TipoEvento
+                .REVISION,
+
+            estado=
+                EventoAgenda
+                .EstadoEvento
+                .COMPLETADO,
+
+            fecha__year=
                 hoy.year,
-            fecharegistro__month=
-                hoy.month
+
+            fecha__month=
+                hoy.month,
         )
-        .distinct()
         .count()
     )
 
@@ -570,6 +577,35 @@ def datos_dashboard_apicultor(
         .count()
     )
 
+    colmenas_riesgo = (
+        colmenas
+        .filter(
+            estadocolmena__iexact=
+                "Riesgo"
+        )
+        .count()
+    )
+
+
+    colmenas_revision = (
+        colmenas
+        .filter(
+            estadocolmena__iexact=
+                "Revisión"
+        )
+        .count()
+    )
+
+
+    colmenas_inactivas = (
+        colmenas
+        .filter(
+            estadocolmena__iexact=
+                "Inactiva"
+        )
+        .count()
+    )
+
 
     mantenimientos_pendientes = (
         Mantenimiento.objects
@@ -610,23 +646,27 @@ def datos_dashboard_apicultor(
 
 
     revisiones_mes = (
-        Seguimientoapicola.objects
+        EventoAgenda.objects
         .filter(
-            Q(
-                id_apicultor=
-                    apicultor
-            )
-            |
-            Q(
-                id_apiario__in=
-                    apiarios
-            ),
-            fecharegistro__year=
+            responsable=
+                apicultor,
+
+            tipo_evento=
+                EventoAgenda
+                .TipoEvento
+                .REVISION,
+
+            estado=
+                EventoAgenda
+                .EstadoEvento
+                .COMPLETADO,
+
+            fecha__year=
                 hoy.year,
-            fecharegistro__month=
-                hoy.month
+
+            fecha__month=
+                hoy.month,
         )
-        .distinct()
         .count()
     )
 
@@ -807,6 +847,15 @@ def datos_dashboard_apicultor(
 
                 "colmenas_activas":
                     colmenas_activas,
+
+                "colmenas_riesgo":
+                    colmenas_riesgo,
+
+                "colmenas_revision":
+                    colmenas_revision,
+
+                "colmenas_inactivas":
+                    colmenas_inactivas,
 
                 "mantenimientos_pendientes":
                     mantenimientos_pendientes,

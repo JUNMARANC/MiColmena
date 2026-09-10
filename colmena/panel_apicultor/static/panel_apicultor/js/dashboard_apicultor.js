@@ -639,20 +639,22 @@ document.addEventListener(
         );
 
 
+        let graficaEstadoColmenas =
+            null;
+
+
+        let totalColmenas = (
+            colmenasActivas
+            +
+            colmenasRiesgo
+            +
+            colmenasRevision
+            +
+            colmenasInactivas
+        );
+
+
         if (canvasEstado) {
-
-
-            const totalColmenas = (
-
-                colmenasActivas
-                +
-                colmenasRiesgo
-                +
-                colmenasRevision
-                +
-                colmenasInactivas
-
-            );
 
 
 
@@ -827,7 +829,7 @@ document.addEventListener(
                CREAR DONA
             ================================================== */
 
-            new Chart(
+            graficaEstadoColmenas = new Chart(
                 canvasEstado,
                 {
 
@@ -1084,6 +1086,138 @@ document.addEventListener(
 
                 }
             );
+
+        }
+
+        /* ==========================================================
+        ACTUALIZAR DONA DE ESTADO DE COLMENAS
+        ========================================================== */
+
+        function actualizarGraficaEstadoColmenas(
+            resumen
+        ) {
+
+            if (
+                !graficaEstadoColmenas
+                ||
+                !resumen
+            ) {
+
+                return;
+
+            }
+
+
+            const activas =
+                normalizarNumero(
+                    resumen.colmenas_activas
+                );
+
+
+            const riesgo =
+                normalizarNumero(
+                    resumen.colmenas_riesgo
+                );
+
+
+            const revision =
+                normalizarNumero(
+                    resumen.colmenas_revision
+                );
+
+
+            const inactivas =
+                normalizarNumero(
+                    resumen.colmenas_inactivas
+                );
+
+
+            totalColmenas = (
+                activas
+                +
+                riesgo
+                +
+                revision
+                +
+                inactivas
+            );
+
+
+            const sinDatosActual =
+                totalColmenas === 0;
+
+
+            graficaEstadoColmenas.data.labels =
+                sinDatosActual
+
+                    ? [
+                        "Sin datos"
+                    ]
+
+                    : [
+                        "Activas",
+                        "Riesgo",
+                        "Revisión",
+                        "Inactivas"
+                    ];
+
+
+            graficaEstadoColmenas
+                .data
+                .datasets[0]
+                .data =
+
+                    sinDatosActual
+
+                        ? [
+                            1
+                        ]
+
+                        : [
+                            activas,
+                            riesgo,
+                            revision,
+                            inactivas
+                        ];
+
+
+            graficaEstadoColmenas
+                .data
+                .datasets[0]
+                .backgroundColor =
+
+                    sinDatosActual
+
+                        ? [
+                            "#E8E8D8"
+                        ]
+
+                        : [
+                            "#78A965",
+                            "#F2C94C",
+                            "#C6B86D",
+                            "#F08A6A"
+                        ];
+
+
+            graficaEstadoColmenas
+                .data
+                .datasets[0]
+                .hoverOffset =
+                    sinDatosActual
+                        ? 0
+                        : 6;
+
+
+            graficaEstadoColmenas
+                .options
+                .plugins
+                .tooltip
+                .enabled =
+                    !sinDatosActual;
+
+
+            graficaEstadoColmenas.update();
 
         }
 
@@ -1682,6 +1816,14 @@ document.addEventListener(
                 ================================================== */
 
                 actualizarTarjetasResumen(
+                    datos.resumen
+                );
+
+                /* ==================================================
+                DONA ESTADO DE COLMENAS
+                ================================================== */
+
+                actualizarGraficaEstadoColmenas(
                     datos.resumen
                 );
 
