@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const MAX_TAMANO_MB = 5;
 
+    const MAX_OBSERVACIONES = 1000;
+
     const MAX_TAMANO_BYTES =
         MAX_TAMANO_MB * 1024 * 1024;
 
@@ -99,6 +101,229 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const previewOriginal = new WeakMap();
 
+    // =========================================================
+    // CONTADOR DE OBSERVACIONES
+    // =========================================================
+
+    function actualizarContadorObservaciones(
+        formulario
+    ) {
+
+        const descripcion =
+            formulario.querySelector(
+                '[name="descripcion"]'
+            );
+
+
+        const contador =
+            formulario.querySelector(
+                "[data-contador-observaciones]"
+            );
+
+
+        if (
+            !descripcion
+            ||
+            !contador
+        ) {
+
+            return;
+
+        }
+
+
+        contador.textContent =
+            (
+                descripcion.value.length
+                +
+                " / "
+                +
+                MAX_OBSERVACIONES
+            );
+
+    }
+
+
+    // =========================================================
+    // REGLA DINÁMICA DE OBSERVACIONES
+    // =========================================================
+
+    function actualizarReglaObservaciones(
+        formulario,
+        enfocar = false
+    ) {
+
+        const selectEstado =
+            formulario.querySelector(
+                '[name="estado"]'
+            );
+
+
+        const descripcion =
+            formulario.querySelector(
+                '[name="descripcion"]'
+            );
+
+
+        const mensaje =
+            formulario.querySelector(
+                "[data-mensaje-observaciones]"
+            );
+
+
+        const datosOriginales =
+            estadoOriginalFormularios.get(
+                formulario
+            );
+
+
+        if (
+            !selectEstado
+            ||
+            !descripcion
+        ) {
+
+            return;
+
+        }
+
+
+        const estado =
+            selectEstado.value.trim();
+
+
+        const requiereObservaciones =
+            (
+                estado === "Precaución"
+                ||
+                estado === "Deficiente"
+            );
+
+
+        const cambioAEstadoAtencion =
+            (
+                requiereObservaciones
+                &&
+                datosOriginales
+                &&
+                estado
+                !==
+                datosOriginales.estado
+            );
+
+
+        const descripcionActual =
+            descripcion.value.trim();
+
+
+        const descripcionOriginal =
+            (
+                datosOriginales
+                &&
+                datosOriginales.descripcion
+                    ? datosOriginales.descripcion.trim()
+                    : ""
+            );
+
+
+        // =============================================
+        // REQUIRED DINÁMICO
+        // =============================================
+
+        descripcion.required =
+            requiereObservaciones;
+
+
+        // =============================================
+        // MENSAJE DE AYUDA
+        // =============================================
+
+        if (mensaje) {
+
+            if (cambioAEstadoAtencion) {
+
+                mensaje.textContent =
+                    (
+                        'Cambiaste el estado a "'
+                        +
+                        estado
+                        +
+                        '". Actualiza las observaciones '
+                        +
+                        "para indicar el motivo."
+                    );
+
+            } else if (requiereObservaciones) {
+
+                mensaje.textContent =
+                    (
+                        "Las observaciones son obligatorias "
+                        +
+                        'mientras el apiario esté en estado "'
+                        +
+                        estado
+                        +
+                        '".'
+                    );
+
+            } else {
+
+                mensaje.textContent =
+                    (
+                        "Las observaciones son opcionales "
+                        +
+                        "mientras el apiario esté en estado Bueno."
+                    );
+
+            }
+
+        }
+
+
+        // =============================================
+        // DETERMINAR SI FALTA INFORMACIÓN
+        // =============================================
+
+        const observacionSinActualizar =
+            (
+                cambioAEstadoAtencion
+                &&
+                descripcionActual
+                ===
+                descripcionOriginal
+            );
+
+
+        const observacionInvalida =
+            (
+                requiereObservaciones
+                &&
+                (
+                    !descripcionActual
+                    ||
+                    observacionSinActualizar
+                )
+            );
+
+
+        descripcion.classList.toggle(
+            "is-invalid",
+            observacionInvalida
+        );
+
+
+        if (
+            observacionInvalida
+            &&
+            enfocar
+        ) {
+
+            descripcion.focus();
+
+        }
+
+    }
+
 
     formulariosEditar.forEach(function (formulario) {
 
@@ -123,6 +348,67 @@ document.addEventListener("DOMContentLoaded", function () {
                         ? descripcion.value
                         : ""
             }
+        );
+
+        // =====================================================
+        // CAMBIO DE ESTADO
+        // =====================================================
+
+        if (estado) {
+
+            estado.addEventListener(
+                "change",
+                function () {
+
+                    actualizarReglaObservaciones(
+                        formulario,
+                        true
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // ESCRITURA EN OBSERVACIONES
+        // =====================================================
+
+        if (descripcion) {
+
+            descripcion.addEventListener(
+                "input",
+                function () {
+
+                    actualizarContadorObservaciones(
+                        formulario
+                    );
+
+
+                    actualizarReglaObservaciones(
+                        formulario,
+                        false
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // ESTADO INICIAL
+        // =====================================================
+
+        actualizarContadorObservaciones(
+            formulario
+        );
+
+
+        actualizarReglaObservaciones(
+            formulario,
+            false
         );
 
 
@@ -292,6 +578,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 datosOriginales.descripcion;
 
         }
+
+
+        actualizarContadorObservaciones(
+            formulario
+        );
+
+
+        actualizarReglaObservaciones(
+            formulario,
+            false
+        );
+
 
 
         // ---------------------------------------------
@@ -921,6 +1219,164 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         descripcion.value =
                             descripcion.value.trim();
+
+
+                        // =====================================
+                        // MÁXIMO 1000 CARACTERES
+                        // =====================================
+
+                        if (
+                            descripcion.value.length
+                            >
+                            MAX_OBSERVACIONES
+                        ) {
+
+                            evento.preventDefault();
+
+
+                            descripcion.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            descripcion.focus();
+
+
+                            mostrarError(
+                                "Las observaciones no pueden superar "
+                                +
+                                MAX_OBSERVACIONES
+                                +
+                                " caracteres."
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        // =====================================
+                        // OBLIGATORIAS SEGÚN EL ESTADO
+                        // =====================================
+
+                        const datosOriginales =
+                            estadoOriginalFormularios.get(
+                                formulario
+                            );
+
+
+                        const requiereObservaciones =
+                            (
+                                estado === "Precaución"
+                                ||
+                                estado === "Deficiente"
+                            );
+
+
+                        const descripcionActual =
+                            descripcion.value.trim();
+
+
+                        const descripcionOriginal =
+                            (
+                                datosOriginales
+                                &&
+                                datosOriginales.descripcion
+                                    ? datosOriginales.descripcion.trim()
+                                    : ""
+                            );
+
+
+                        const cambioAEstadoAtencion =
+                            (
+                                requiereObservaciones
+                                &&
+                                datosOriginales
+                                &&
+                                estado
+                                !==
+                                datosOriginales.estado
+                            );
+
+
+                        if (
+                            requiereObservaciones
+                            &&
+                            !descripcionActual
+                        ) {
+
+                            evento.preventDefault();
+
+
+                            descripcion.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            descripcion.focus();
+
+
+                            mostrarError(
+                                "Debes indicar en las observaciones "
+                                +
+                                "el motivo por el que el apiario está "
+                                +
+                                'en estado "'
+                                +
+                                estado
+                                +
+                                '".'
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        // =====================================
+                        // AL CAMBIAR EL ESTADO DE ATENCIÓN,
+                        // LA OBSERVACIÓN TAMBIÉN DEBE CAMBIAR
+                        // =====================================
+
+                        if (
+                            cambioAEstadoAtencion
+                            &&
+                            descripcionActual
+                            ===
+                            descripcionOriginal
+                        ) {
+
+                            evento.preventDefault();
+
+
+                            descripcion.classList.add(
+                                "is-invalid"
+                            );
+
+
+                            descripcion.focus();
+
+
+                            mostrarError(
+                                'Cambiaste el estado a "'
+                                +
+                                estado
+                                +
+                                '". Actualiza también las '
+                                +
+                                "observaciones indicando el motivo."
+                            );
+
+
+                            return;
+
+                        }
+
+                        descripcion.classList.remove(
+                            "is-invalid"
+                        );
 
                     }
 

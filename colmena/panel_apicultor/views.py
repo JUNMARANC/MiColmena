@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect,get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Count
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.utils import timezone
@@ -920,12 +920,23 @@ def mis_apiarios(request):
 
     # ========================================================
     # APIARIOS DEL APICULTOR
+    #
+    # colmenas_registradas:
+    # cantidad REAL de colmenas que existen actualmente
+    # dentro de cada apiario.
     # ========================================================
 
     apiarios = (
         Apiario.objects
         .filter(
-            id_apicultor=apicultor
+            id_apicultor=
+                apicultor
+        )
+        .annotate(
+            colmenas_registradas=
+                Count(
+                    "colmena"
+                )
         )
         .order_by(
             "nombreapiario"
@@ -1228,6 +1239,25 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
+    # ESTADO Y OBSERVACIÓN ORIGINALES
+    #
+    # Se utilizan para detectar si el apicultor está
+    # cambiando realmente la condición del apiario.
+    # ========================================================
+
+    estado_original = (
+        apiario.estadoapiario
+        or ""
+    ).strip()
+
+
+    descripcion_original = (
+        apiario.descripcion
+        or ""
+    ).strip()
+
+
+    # ========================================================
     # 3. ORIGEN DEL FORMULARIO
     #
     # Esto nos permite saber si el usuario realizó
@@ -1323,7 +1353,71 @@ def editar_apiario_apicultor(
 
 
     # ========================================================
-    # 7. VALIDAR FOTOGRAFÍA
+    # 7. VALIDAR OBSERVACIONES
+    # ========================================================
+
+    if len(descripcion) > 1000:
+
+        messages.error(
+            request,
+            "Las observaciones no pueden superar "
+            "los 1000 caracteres."
+        )
+
+        return redireccionar()
+
+
+    if (
+        estado in {
+            "Precaución",
+            "Deficiente",
+        }
+        and
+        not descripcion
+    ):
+
+        messages.error(
+            request,
+            (
+                "Debes indicar en las observaciones "
+                f'el motivo por el que el apiario está '
+                f'en estado "{estado}".'
+            )
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # SI CAMBIA A UN ESTADO DE ATENCIÓN,
+    # DEBE ACTUALIZAR TAMBIÉN LA OBSERVACIÓN
+    # ========================================================
+
+    if (
+        estado in {
+            "Precaución",
+            "Deficiente",
+        }
+        and
+        estado != estado_original
+        and
+        descripcion == descripcion_original
+    ):
+
+        messages.error(
+            request,
+            (
+                f'Al cambiar el apiario de "{estado_original}" '
+                f'a "{estado}", debes actualizar las '
+                "observaciones indicando el motivo del cambio."
+            )
+        )
+
+        return redireccionar()
+
+
+    # ========================================================
+    # 8. VALIDAR FOTOGRAFÍA
     # ========================================================
 
     if nueva_imagen:
@@ -1340,13 +1434,6 @@ def editar_apiario_apicultor(
             )
 
             return redireccionar()
-
-
-    # ========================================================
-    # 8. ACTUALIZAR ESTADO
-    # ========================================================
-
-    apiario.estadoapiario = estado
 
 
     # ========================================================

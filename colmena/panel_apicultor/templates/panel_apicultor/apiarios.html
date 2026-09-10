@@ -330,6 +330,8 @@
 
                             <span>
 
+                                {{ apiario.colmenas_registradas|default:0 }}
+                                de
                                 {{ apiario.cantidadcolmenas|default:0 }}
 
                                 colmenas
@@ -605,6 +607,8 @@
 
                                             <strong>
 
+                                                {{ apiario.colmenas_registradas|default:0 }}
+                                                /
                                                 {{ apiario.cantidadcolmenas|default:0 }}
 
                                             </strong>
@@ -613,9 +617,7 @@
 
                                         </div>
 
-
                                     </div>
-
 
                                 </section>
 
@@ -766,6 +768,7 @@
                                             id="descripcionApiario{{ apiario.id_apiario }}"
                                             class="apiario-input apiario-textarea"
                                             rows="5"
+                                            maxlength="1000"
                                             placeholder="Ejemplo: El apiario se encuentra en buenas condiciones generales..."
                                         >{{ apiario.descripcion|default_if_none:"" }}</textarea>
 
@@ -774,8 +777,16 @@
 
                                             <i class="bi bi-info-circle"></i>
 
-                                            Puedes actualizar estas observaciones
-                                            cuando cambien las condiciones del apiario.
+                                            <span data-mensaje-observaciones>
+                                                Las observaciones son opcionales mientras
+                                                el apiario esté en estado Bueno.
+                                            </span>
+
+                                            ·
+
+                                            <strong data-contador-observaciones>
+                                                0 / 1000
+                                            </strong>
 
                                         </small>
 
@@ -1225,7 +1236,7 @@
 ========================================================= -->
 
 <script
-    src="{% static 'panel_apicultor/js/apiarios.js' %}?v=2"
+    src="{% static 'panel_apicultor/js/apiarios.js' %}?v=3"
 ></script>
 
 
