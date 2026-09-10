@@ -2121,6 +2121,671 @@
                 </article>
 
 
+                <!-- =========================================================
+                    SESIONES ACTIVAS
+                ========================================================== -->
+
+                <article class="perfil-card perfil-card-sesiones">
+
+
+                    <!-- =====================================================
+                        HEADER
+                    ====================================================== -->
+
+                    <div class="perfil-card-header">
+
+                        <div class="perfil-card-titulo">
+
+                            <div class="perfil-card-icono">
+
+                                <i class="bi bi-laptop"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+                                    Sesiones activas
+                                </h3>
+
+                                <p>
+                                    Revisa los dispositivos donde tienes
+                                    abierta tu cuenta.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="perfil-sesiones-contador">
+
+                            {{ total_sesiones_activas|default:0 }}
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================================
+                        INFORMACIÓN
+                    ====================================================== -->
+
+                    <div class="perfil-sesiones-aviso">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <div>
+
+                            <strong>
+                                Controla el acceso a tu cuenta
+                            </strong>
+
+                            <p>
+                                Si encuentras un dispositivo que no reconoces,
+                                puedes cerrar esa sesión de forma remota.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================================
+                        LISTA DE SESIONES
+                    ====================================================== -->
+
+                    <div class="perfil-sesiones-lista">
+
+
+                        {% for sesion in sesiones_activas %}
+
+
+                            <div
+                                class="
+                                    perfil-sesion-item
+
+                                    {% if sesion.es_actual %}
+                                        actual
+                                    {% endif %}
+                                "
+                            >
+
+
+                                <!-- =========================================
+                                    ICONO DISPOSITIVO
+                                ========================================== -->
+
+                                <div class="perfil-sesion-dispositivo">
+
+
+                                    {% if sesion.dispositivo == "Móvil" %}
+
+                                        <i class="bi bi-phone-fill"></i>
+
+                                    {% elif sesion.dispositivo == "Tablet" %}
+
+                                        <i class="bi bi-tablet-fill"></i>
+
+                                    {% else %}
+
+                                        <i class="bi bi-laptop-fill"></i>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                    INFORMACIÓN
+                                ========================================== -->
+
+                                <div class="perfil-sesion-info">
+
+
+                                    <div class="perfil-sesion-superior">
+
+                                        <div>
+
+                                            <strong class="perfil-sesion-navegador">
+
+                                                {{ sesion.navegador|default:"Navegador desconocido" }}
+
+                                            </strong>
+
+
+                                            <span class="perfil-sesion-sistema">
+
+                                                {{ sesion.sistema_operativo|default:"Sistema desconocido" }}
+
+                                                ·
+
+                                                {{ sesion.dispositivo|default:"Dispositivo desconocido" }}
+
+                                            </span>
+
+                                        </div>
+
+
+                                        {% if sesion.es_actual %}
+
+                                            <span class="perfil-sesion-actual">
+
+                                                <i class="bi bi-check-circle-fill"></i>
+
+                                                Esta sesión
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+
+                                    <!-- =====================================
+                                        DETALLES
+                                    ====================================== -->
+
+                                    <div class="perfil-sesion-detalles">
+
+
+                                        <div>
+
+                                            <i class="bi bi-globe2"></i>
+
+                                            <span>
+                                                IP
+                                            </span>
+
+                                            <strong>
+                                                {{ sesion.ip|default:"No disponible" }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <i class="bi bi-calendar-check"></i>
+
+                                            <span>
+                                                Inicio
+                                            </span>
+
+                                            <strong>
+
+                                                {{ sesion.fecha_inicio|date:"d/m/Y H:i" }}
+
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <i class="bi bi-clock-history"></i>
+
+                                            <span>
+                                                Última actividad
+                                            </span>
+
+                                            <strong>
+
+                                                {% if sesion.es_actual %}
+
+                                                    Ahora
+
+                                                {% else %}
+
+                                                    Hace
+                                                    {{ sesion.ultima_actividad|timesince }}
+
+                                                {% endif %}
+
+                                            </strong>
+
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                    <!-- =====================================
+                                        ACCIONES
+                                    ====================================== -->
+
+                                    {% if not sesion.es_actual %}
+
+
+                                        <div class="perfil-sesion-acciones">
+
+
+                                            <form
+                                                method="POST"
+                                                action="{% url 'cerrar_sesion_remota' sesion.pk %}"
+                                                onsubmit="
+                                                    return confirm(
+                                                        '¿Seguro que quieres cerrar esta sesión?'
+                                                    );
+                                                "
+                                            >
+
+                                                {% csrf_token %}
+
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn-cerrar-sesion-remota"
+                                                >
+
+                                                    <i class="bi bi-box-arrow-right"></i>
+
+                                                    Cerrar sesión
+
+                                                </button>
+
+
+                                            </form>
+
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        {% empty %}
+
+
+                            <div class="perfil-sesiones-vacio">
+
+                                <i class="bi bi-shield-exclamation"></i>
+
+                                <strong>
+                                    No hay sesiones registradas
+                                </strong>
+
+                                <p>
+                                    No encontramos sesiones activas
+                                    asociadas a tu cuenta.
+                                </p>
+
+                            </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+
+                    <!-- =====================================================
+                        CERRAR TODAS LAS DEMÁS
+                    ====================================================== -->
+
+                    {% if total_otras_sesiones > 0 %}
+
+
+                        <div class="perfil-sesiones-footer">
+
+
+                            <div>
+
+                                <strong>
+                                    ¿No reconoces alguna sesión?
+                                </strong>
+
+                                <p>
+                                    Puedes cerrar todas excepto la que
+                                    estás usando en este momento.
+                                </p>
+
+                            </div>
+
+
+                            <form
+                                method="POST"
+                                action="{% url 'cerrar_otras_sesiones' %}"
+                                onsubmit="
+                                    return confirm(
+                                        '¿Seguro que quieres cerrar todas las demás sesiones?'
+                                    );
+                                "
+                            >
+
+                                {% csrf_token %}
+
+
+                                <button
+                                    type="submit"
+                                    class="btn-cerrar-otras-sesiones"
+                                >
+
+                                    <i class="bi bi-shield-x"></i>
+
+                                    Cerrar todas las demás
+
+                                </button>
+
+
+                            </form>
+
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </article>
+
+
+                <!-- =========================================================
+                    HISTORIAL DE ACCESOS
+                ========================================================== -->
+
+                <article class="perfil-card perfil-card-historial">
+
+                    <!-- =====================================================
+                        HEADER
+                    ====================================================== -->
+
+                    <div class="perfil-card-header">
+
+                        <div class="perfil-card-titulo">
+
+                            <div class="perfil-card-icono">
+
+                                <i class="bi bi-clock-history"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+                                    Actividad reciente
+                                </h3>
+
+                                <p>
+                                    Consulta los últimos eventos de seguridad
+                                    registrados en tu cuenta.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if historial_accesos %}
+
+                            <span class="perfil-historial-contador">
+
+                                Últimos {{ total_historial }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- =====================================================
+                        AVISO
+                    ====================================================== -->
+
+                    <div class="perfil-historial-aviso">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <div>
+
+                            <strong>
+                                Historial de seguridad
+                            </strong>
+
+                            <p>
+                                Revisa periódicamente esta información.
+                                Si encuentras una actividad que no reconoces,
+                                cambia tu contraseña y revisa tus sesiones activas.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =====================================================
+                        HISTORIAL
+                    ====================================================== -->
+
+                    <div class="perfil-historial-lista">
+
+                        {% for registro in historial_accesos %}
+
+                            <div
+                                class="
+                                    perfil-historial-item
+                                    {{ registro.clase_ui }}
+                                "
+                            >
+
+                                <!-- =========================================
+                                    ICONO
+                                ========================================== -->
+
+                                <div class="perfil-historial-icono">
+
+                                    <i class="bi {{ registro.icono_ui }}"></i>
+
+                                </div>
+
+
+                                <!-- =========================================
+                                    INFORMACIÓN
+                                ========================================== -->
+
+                                <div class="perfil-historial-contenido">
+
+                                    <div class="perfil-historial-superior">
+
+                                        <div>
+
+                                            <strong class="perfil-historial-titulo">
+
+                                                {{ registro.titulo_ui }}
+
+                                            </strong>
+
+
+                                            {% if registro.detalle %}
+
+                                                <p class="perfil-historial-detalle">
+
+                                                    {{ registro.detalle }}
+
+                                                </p>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {% if registro.exitoso %}
+
+                                            <span class="perfil-historial-estado exitoso">
+
+                                                <i class="bi bi-check-circle-fill"></i>
+
+                                                Exitoso
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="perfil-historial-estado fallido">
+
+                                                <i class="bi bi-x-circle-fill"></i>
+
+                                                Fallido
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <!-- =====================================
+                                        DISPOSITIVO
+                                    ====================================== -->
+
+                                    <div class="perfil-historial-dispositivo">
+
+                                        <span>
+
+                                            <i class="bi bi-browser-chrome"></i>
+
+                                            {{ registro.navegador|default:"Navegador desconocido" }}
+
+                                        </span>
+
+
+                                        <span>
+
+                                            <i class="bi bi-display"></i>
+
+                                            {{ registro.sistema_operativo|default:"Sistema desconocido" }}
+
+                                        </span>
+
+
+                                        <span>
+
+                                            {% if registro.dispositivo == "Móvil" %}
+
+                                                <i class="bi bi-phone"></i>
+
+                                            {% elif registro.dispositivo == "Tablet" %}
+
+                                                <i class="bi bi-tablet"></i>
+
+                                            {% else %}
+
+                                                <i class="bi bi-laptop"></i>
+
+                                            {% endif %}
+
+                                            {{ registro.dispositivo|default:"Dispositivo desconocido" }}
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <!-- =====================================
+                                        PIE
+                                    ====================================== -->
+
+                                    <div class="perfil-historial-footer">
+
+                                        <div class="perfil-historial-ip">
+
+                                            <i class="bi bi-globe2"></i>
+
+                                            <span>
+                                                IP:
+                                            </span>
+
+                                            <strong>
+                                                {{ registro.ip|default:"No disponible" }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div class="perfil-historial-fecha">
+
+                                            <i class="bi bi-clock"></i>
+
+                                            <span
+                                                title="{{ registro.fecha|date:'d/m/Y H:i:s' }}"
+                                            >
+
+                                                Hace {{ registro.fecha|timesince }}
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+
+                            <!-- =============================================
+                                SIN HISTORIAL
+                            ============================================== -->
+
+                            <div class="perfil-historial-vacio">
+
+                                <i class="bi bi-clock-history"></i>
+
+                                <strong>
+                                    Todavía no hay actividad registrada
+                                </strong>
+
+                                <p>
+                                    Los próximos inicios de sesión y eventos
+                                    de seguridad aparecerán aquí.
+                                </p>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================================================
+                        PIE DE LA TARJETA
+                    ====================================================== -->
+
+                    {% if historial_accesos %}
+
+                        <div class="perfil-historial-nota">
+
+                            <i class="bi bi-info-circle"></i>
+
+                            <span>
+                                Se muestran los últimos
+                                {{ total_historial }} eventos de tu cuenta.
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+                </article>
+
+
             </article>
 
 

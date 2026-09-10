@@ -13,9 +13,11 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse
 from PIL import Image, UnidentifiedImageError
 from django.db import transaction
-from usuarios.models import Configuracion2FA
-from usuarios.services import (obtener_politica_2fa,)
-
+from usuarios.models import Configuracion2FA,HistorialAcceso
+from usuarios.services import (obtener_politica_2fa,obtener_sesiones_activas_usuario,registrar_historial_acceso,sincronizar_session_key,)
+from django.core.validators import validate_email
+from django.contrib.auth import get_user_model
+import re
 
 from dbmicolmena.models import (
     Apicultor,
@@ -8821,26 +8823,42 @@ def actualizar_estado_evento_apicultor(
 def perfil_apicultor(request):
 
     # ========================================================
-    # APICULTOR AUTENTICADO
+    # 1. USUARIO AUTENTICADO
     # ========================================================
-
-    apicultor = get_object_or_404(
-        Apicultor.objects.select_related(
-            "user",
-            "id_rol"
-        ),
-        user=request.user
-    )
-
 
     usuario = request.user
 
 
     # ========================================================
-    # ACTUALIZAR PERFIL
+    # 2. OBTENER PERFIL DEL APICULTOR
+    #
+    # SEGURIDAD:
+    # El perfil siempre se obtiene desde request.user.
+    #
+    # No recibimos el ID del apicultor desde la URL ni
+    # desde el formulario.
+    #
+    # Esto evita que un apicultor pueda intentar editar
+    # el perfil de otro usuario.
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor.objects.select_related(
+            "id_rol"
+        ),
+        user=usuario
+    )
+
+
+    # ========================================================
+    # 3. ACTUALIZAR PERFIL
     # ========================================================
 
     if request.method == "POST":
+
+        # ====================================================
+        # 3.1 OBTENER DATOS DEL FORMULARIO
+        # ====================================================
 
         nombres = (
             request.POST
@@ -8893,21 +8911,13 @@ def perfil_apicultor(request):
         )
 
 
-        experiencia = (
+        experiencia_texto = (
             request.POST
             .get(
                 "experiencia",
                 ""
             )
             .strip()
-        )
-
-
-        nueva_foto = (
-            request.FILES
-            .get(
-                "fotoperfil"
-            )
         )
 
 
@@ -8922,11 +8932,22 @@ def perfil_apicultor(request):
         )
 
 
+        nueva_foto = (
+            request.FILES.get(
+                "fotoperfil"
+            )
+        )
+
+
+        # ====================================================
+        # 3.2 LISTA DE ERRORES
+        # ====================================================
+
         errores = []
 
 
         # ====================================================
-        # NOMBRES
+        # 3.3 VALIDAR NOMBRES
         # ====================================================
 
         if not nombres:
@@ -8935,16 +8956,26 @@ def perfil_apicultor(request):
                 "Debes ingresar tus nombres."
             )
 
-
         elif len(nombres) > 150:
 
             errores.append(
-                "Los nombres no pueden superar los 150 caracteres."
+                "Los nombres no pueden superar "
+                "los 150 caracteres."
+            )
+
+        elif not re.fullmatch(
+            r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ' -]+",
+            nombres
+        ):
+
+            errores.append(
+                "Los nombres solo pueden contener "
+                "letras, espacios, apóstrofes y guiones."
             )
 
 
         # ====================================================
-        # APELLIDOS
+        # 3.4 VALIDAR APELLIDOS
         # ====================================================
 
         if not apellidos:
@@ -8953,16 +8984,26 @@ def perfil_apicultor(request):
                 "Debes ingresar tus apellidos."
             )
 
-
         elif len(apellidos) > 150:
 
             errores.append(
-                "Los apellidos no pueden superar los 150 caracteres."
+                "Los apellidos no pueden superar "
+                "los 150 caracteres."
+            )
+
+        elif not re.fullmatch(
+            r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ' -]+",
+            apellidos
+        ):
+
+            errores.append(
+                "Los apellidos solo pueden contener "
+                "letras, espacios, apóstrofes y guiones."
             )
 
 
         # ====================================================
-        # CORREO
+        # 3.5 VALIDAR CORREO
         # ====================================================
 
         if not correo:
@@ -8971,25 +9012,59 @@ def perfil_apicultor(request):
                 "Debes ingresar un correo electrónico."
             )
 
+        else:
 
-        elif (
-            usuario.__class__.objects
-            .filter(
-                email__iexact=correo
-            )
-            .exclude(
-                pk=usuario.pk
-            )
-            .exists()
-        ):
+            try:
 
-            errores.append(
-                "Ese correo electrónico ya está siendo utilizado."
-            )
+                validate_email(
+                    correo
+                )
+
+            except ValidationError:
+
+                errores.append(
+                    "Ingresa un correo electrónico válido."
+                )
 
 
         # ====================================================
-        # TELÉFONO
+        # 3.6 CORREO ÚNICO
+        # ====================================================
+
+        if correo:
+
+            User = get_user_model()
+
+
+            correo_ocupado = (
+                User.objects
+                .filter(
+                    email__iexact=correo
+                )
+                .exclude(
+                    pk=usuario.pk
+                )
+                .exists()
+            )
+
+
+            if correo_ocupado:
+
+                errores.append(
+                    "Este correo electrónico ya está "
+                    "registrado por otro usuario."
+                )
+
+
+        # ====================================================
+        # 3.7 VALIDAR TELÉFONO
+        #
+        # Opcional.
+        #
+        # Si existe:
+        # - Solo números
+        # - Exactamente 10 dígitos
+        # - Debe iniciar por 3
         # ====================================================
 
         if telefono:
@@ -8997,91 +9072,102 @@ def perfil_apicultor(request):
             if not telefono.isdigit():
 
                 errores.append(
-                    "El teléfono solamente puede contener números."
+                    "El teléfono solo puede contener números."
                 )
 
-
-            elif (
-                len(telefono) < 7
-                or
-                len(telefono) > 20
-            ):
+            elif len(telefono) != 10:
 
                 errores.append(
-                    "El teléfono debe contener entre 7 y 20 números."
+                    "El teléfono debe contener exactamente "
+                    "10 números."
+                )
+
+            elif not telefono.startswith("3"):
+
+                errores.append(
+                    "Ingresa un número de celular válido. "
+                    "Debe comenzar por 3."
                 )
 
 
         # ====================================================
-        # ZONA DE TRABAJO
+        # 3.8 VALIDAR ZONA DE TRABAJO
         # ====================================================
 
         if len(zona_trabajo) > 100:
 
             errores.append(
-                "La zona de trabajo no puede superar los 100 caracteres."
+                "La zona de trabajo no puede superar "
+                "los 100 caracteres."
             )
 
 
         # ====================================================
-        # EXPERIENCIA
+        # 3.9 VALIDAR EXPERIENCIA
         # ====================================================
 
-        experiencia_numero = None
+        experiencia = None
 
 
-        if experiencia:
+        if experiencia_texto:
 
             try:
 
-                experiencia_numero = int(
-                    experiencia
+                experiencia = int(
+                    experiencia_texto
                 )
 
 
-                if experiencia_numero < 0:
+                if (
+                    experiencia < 0
+                    or
+                    experiencia > 80
+                ):
 
                     errores.append(
-                        "Los años de experiencia no pueden ser negativos."
-                    )
-
-
-                elif experiencia_numero > 80:
-
-                    errores.append(
-                        "Los años de experiencia ingresados no son válidos."
+                        "Los años de experiencia deben "
+                        "estar entre 0 y 80."
                     )
 
 
             except ValueError:
 
                 errores.append(
-                    "Los años de experiencia deben ser un número entero."
+                    "Los años de experiencia deben "
+                    "ser un número entero."
                 )
 
 
         # ====================================================
-        # FOTOGRAFÍA
+        # 3.10 VALIDAR FOTOGRAFÍA
         # ====================================================
 
         if nueva_foto:
 
-            formatos_validos = {
+            tipos_permitidos = {
                 "image/jpeg",
                 "image/png",
                 "image/webp",
             }
 
 
+            # ------------------------------------------------
+            # TIPO MIME
+            # ------------------------------------------------
+
             if (
                 nueva_foto.content_type
-                not in formatos_validos
+                not in tipos_permitidos
             ):
 
                 errores.append(
                     "La fotografía debe ser JPG, PNG o WEBP."
                 )
 
+
+            # ------------------------------------------------
+            # TAMAÑO MÁXIMO 5 MB
+            # ------------------------------------------------
 
             if (
                 nueva_foto.size
@@ -9093,6 +9179,10 @@ def perfil_apicultor(request):
                     "La fotografía no puede superar los 5 MB."
                 )
 
+
+            # ------------------------------------------------
+            # VALIDAR CONTENIDO REAL DE LA IMAGEN
+            # ------------------------------------------------
 
             if not errores:
 
@@ -9119,16 +9209,17 @@ def perfil_apicultor(request):
                 except (
                     UnidentifiedImageError,
                     OSError,
-                    ValueError
+                    ValueError,
                 ):
 
                     errores.append(
-                        "El archivo seleccionado no contiene una imagen válida."
+                        "El archivo seleccionado no es "
+                        "una imagen válida."
                     )
 
 
         # ====================================================
-        # MOSTRAR ERRORES
+        # 3.11 MOSTRAR ERRORES
         # ====================================================
 
         if errores:
@@ -9141,120 +9232,168 @@ def perfil_apicultor(request):
                 )
 
 
+        # ====================================================
+        # 3.12 GUARDAR CAMBIOS
+        # ====================================================
+
         else:
 
-            # ================================================
-            # USUARIO DJANGO
-            # ================================================
+            try:
 
-            usuario.first_name = (
-                nombres
-            )
+                with transaction.atomic():
 
+                    # =========================================
+                    # ACTUALIZAR USUARIO DJANGO
+                    # =========================================
 
-            usuario.last_name = (
-                apellidos
-            )
+                    usuario.first_name = (
+                        nombres
+                    )
 
+                    usuario.last_name = (
+                        apellidos
+                    )
 
-            usuario.email = (
-                correo
-            )
-
-
-            usuario.save(
-                update_fields=[
-                    "first_name",
-                    "last_name",
-                    "email",
-                ]
-            )
+                    usuario.email = (
+                        correo
+                    )
 
 
-            # ================================================
-            # APICULTOR
-            # ================================================
-
-            apicultor.telefono = (
-                telefono
-                or
-                None
-            )
+                    usuario.save(
+                        update_fields=[
+                            "first_name",
+                            "last_name",
+                            "email",
+                        ]
+                    )
 
 
-            apicultor.zona_trabajo = (
-                zona_trabajo
-                or
-                None
-            )
+                    # =========================================
+                    # ACTUALIZAR APICULTOR
+                    # =========================================
+
+                    apicultor.telefono = (
+                        telefono
+                        or
+                        None
+                    )
 
 
-            apicultor.experienciaanios = (
-                experiencia_numero
-            )
+                    apicultor.zona_trabajo = (
+                        zona_trabajo
+                        or
+                        None
+                    )
 
 
-            campos_actualizados = [
-                "telefono",
-                "zona_trabajo",
-                "experienciaanios",
-            ]
+                    apicultor.experienciaanios = (
+                        experiencia
+                    )
 
 
-            # ================================================
-            # ELIMINAR FOTO
-            # ================================================
+                    # =========================================
+                    # REEMPLAZAR FOTOGRAFÍA
+                    # =========================================
 
-            if eliminar_foto:
+                    if nueva_foto:
 
-                apicultor.fotoperfil = (
-                    None
+                        if apicultor.fotoperfil:
+
+                            try:
+
+                                apicultor.fotoperfil.delete(
+                                    save=False
+                                )
+
+                            except Exception as error:
+
+                                print(
+                                    "ERROR ELIMINANDO "
+                                    "FOTOGRAFÍA ANTERIOR:",
+                                    error
+                                )
+
+
+                        apicultor.fotoperfil = (
+                            nueva_foto
+                        )
+
+
+                    # =========================================
+                    # ELIMINAR FOTOGRAFÍA
+                    # =========================================
+
+                    elif eliminar_foto:
+
+                        if apicultor.fotoperfil:
+
+                            try:
+
+                                apicultor.fotoperfil.delete(
+                                    save=False
+                                )
+
+                            except Exception as error:
+
+                                print(
+                                    "ERROR ELIMINANDO "
+                                    "FOTOGRAFÍA:",
+                                    error
+                                )
+
+
+                        apicultor.fotoperfil = None
+
+
+                    # =========================================
+                    # GUARDAR APICULTOR
+                    # =========================================
+
+                    apicultor.save()
+
+
+                # =============================================
+                # RESPUESTA EXITOSA
+                # =============================================
+
+                messages.success(
+                    request,
+                    "Tu perfil fue actualizado correctamente."
                 )
 
 
-                campos_actualizados.append(
-                    "fotoperfil"
+                # =============================================
+                # POST / REDIRECT / GET
+                # =============================================
+
+                return redirect(
+                    "perfil_apicultor"
                 )
 
 
-            # ================================================
-            # NUEVA FOTO
-            # ================================================
+            except Exception as error:
 
-            elif nueva_foto:
-
-                apicultor.fotoperfil = (
-                    nueva_foto
+                print(
+                    "ERROR ACTUALIZANDO PERFIL "
+                    "DEL APICULTOR:",
+                    error
                 )
 
 
-                campos_actualizados.append(
-                    "fotoperfil"
+                messages.error(
+                    request,
+                    (
+                        "Ocurrió un error al actualizar "
+                        "la información de tu perfil."
+                    )
                 )
-
-
-            apicultor.save(
-                update_fields=
-                    campos_actualizados
-            )
-
-
-            messages.success(
-                request,
-                "Tu perfil fue actualizado correctamente."
-            )
-
-
-            return redirect(
-                "perfil_apicultor"
-            )
 
 
     # ========================================================
-    # FOTO
+    # 4. FOTOGRAFÍA DEL PERFIL
     # ========================================================
 
-    foto = ""
+    foto = None
 
 
     if apicultor.fotoperfil:
@@ -9269,11 +9408,11 @@ def perfil_apicultor(request):
 
         except ValueError:
 
-            foto = ""
+            foto = None
 
 
     # ========================================================
-    # CONFIGURACIÓN 2FA DEL USUARIO
+    # 5. CONFIGURACIÓN 2FA
     # ========================================================
 
     configuracion_2fa, _ = (
@@ -9285,7 +9424,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # POLÍTICA GLOBAL DE SEGURIDAD 2FA
+    # 6. POLÍTICA GLOBAL 2FA
     # ========================================================
 
     politica_2fa = (
@@ -9312,17 +9451,13 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # ESTADO 2FA
+    # 7. ESTADO 2FA
     # ========================================================
 
     dos_factores_activo = (
         configuracion_2fa.activo
     )
 
-
-    # ========================================================
-    # CORREO DISPONIBLE PARA 2FA
-    # ========================================================
 
     tiene_correo_2fa = bool(
         usuario.email
@@ -9332,38 +9467,293 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # DATOS DEL PERFIL
+    # 8. SESIÓN ACTUAL
+    # ========================================================
+
+    session_key_actual = (
+        request.session.session_key
+    )
+
+
+    # ========================================================
+    # 9. SESIONES ACTIVAS
+    #
+    # El servicio se encarga de:
+    #
+    # - consultar sesiones registradas
+    # - comprobar que sigan existiendo en Django
+    # - descartar sesiones expiradas
+    # - identificar la sesión actual
+    # ========================================================
+
+    sesiones_activas = (
+        obtener_sesiones_activas_usuario(
+            usuario,
+            session_key_actual=session_key_actual
+        )
+    )
+
+
+    # ========================================================
+    # 10. OTRAS SESIONES ACTIVAS
+    # ========================================================
+
+    otras_sesiones_activas = [
+
+        sesion
+
+        for sesion
+        in sesiones_activas
+
+        if not getattr(
+            sesion,
+            "es_actual",
+            False
+        )
+
+    ]
+
+
+    # ========================================================
+    # 11. HISTORIAL DE ACCESOS
+    #
+    # SEGURIDAD:
+    #
+    # Solo se consulta el historial asociado al usuario
+    # actualmente autenticado.
+    #
+    # Mostramos máximo los últimos 15 eventos.
+    # ========================================================
+
+    historial_accesos = list(
+
+        HistorialAcceso.objects
+
+        .filter(
+            usuario=usuario
+        )
+
+        .order_by(
+            "-fecha"
+        )[:15]
+
+    )
+
+
+    # ========================================================
+    # 12. PREPARAR HISTORIAL PARA LA INTERFAZ
+    #
+    # Estos atributos son temporales.
+    #
+    # No se guardan nuevamente en MySQL.
+    # Solo facilitan la presentación en el template.
+    # ========================================================
+
+    for registro in historial_accesos:
+
+        detalle_normalizado = (
+            registro.detalle
+            or
+            ""
+        ).lower()
+
+
+        # ====================================================
+        # LOGIN
+        # ====================================================
+
+        if registro.actividad == "login":
+
+            registro.titulo_ui = (
+                "Inicio de sesión"
+            )
+
+            registro.icono_ui = (
+                "bi-box-arrow-in-right"
+            )
+
+            registro.clase_ui = (
+                "inicio"
+            )
+
+
+        # ====================================================
+        # LOGOUT
+        # ====================================================
+
+        elif registro.actividad == "logout":
+
+            registro.titulo_ui = (
+                "Cierre de sesión"
+            )
+
+            registro.icono_ui = (
+                "bi-box-arrow-right"
+            )
+
+            registro.clase_ui = (
+                "salida"
+            )
+
+
+        # ====================================================
+        # INACTIVIDAD
+        # ====================================================
+
+        elif registro.actividad == "inactividad":
+
+            registro.titulo_ui = (
+                "Sesión cerrada por inactividad"
+            )
+
+            registro.icono_ui = (
+                "bi-clock-history"
+            )
+
+            registro.clase_ui = (
+                "inactividad"
+            )
+
+
+        # ====================================================
+        # CAMBIO DE CONTRASEÑA
+        # ====================================================
+
+        elif registro.actividad == "cambio_password":
+
+            registro.titulo_ui = (
+                "Contraseña actualizada"
+            )
+
+            registro.icono_ui = (
+                "bi-key-fill"
+            )
+
+            registro.clase_ui = (
+                "password"
+            )
+
+
+        # ====================================================
+        # CIERRE REMOTO
+        # ====================================================
+
+        elif registro.actividad == "cierre_remoto":
+
+            registro.titulo_ui = (
+                "Sesión cerrada remotamente"
+            )
+
+            registro.icono_ui = (
+                "bi-shield-x"
+            )
+
+            registro.clase_ui = (
+                "remoto"
+            )
+
+
+        # ====================================================
+        # DESACTIVACIÓN 2FA
+        #
+        # Actualmente el backend registra eventos de 2FA
+        # utilizando actividad="sistema".
+        #
+        # Por eso identificamos el tipo mediante el detalle.
+        # ====================================================
+
+        elif (
+            registro.actividad == "sistema"
+            and
+            "autenticación en dos pasos"
+            in detalle_normalizado
+            and
+            "desactiv"
+            in detalle_normalizado
+        ):
+
+            registro.titulo_ui = (
+                "Verificación en dos pasos desactivada"
+            )
+
+            registro.icono_ui = (
+                "bi-shield-exclamation"
+            )
+
+            registro.clase_ui = (
+                "advertencia"
+            )
+
+
+        # ====================================================
+        # ACTIVACIÓN 2FA
+        # ====================================================
+
+        elif (
+            registro.actividad == "sistema"
+            and
+            "autenticación en dos pasos"
+            in detalle_normalizado
+            and
+            "desactiv"
+            not in detalle_normalizado
+        ):
+
+            registro.titulo_ui = (
+                "Verificación en dos pasos activada"
+            )
+
+            registro.icono_ui = (
+                "bi-shield-check"
+            )
+
+            registro.clase_ui = (
+                "seguridad"
+            )
+
+
+        # ====================================================
+        # OTRA ACTIVIDAD DEL SISTEMA
+        # ====================================================
+
+        else:
+
+            registro.titulo_ui = (
+                registro.get_actividad_display()
+            )
+
+            registro.icono_ui = (
+                "bi-shield-fill-check"
+            )
+
+            registro.clase_ui = (
+                "sistema"
+            )
+
+
+    # ========================================================
+    # 13. CONTEXTO
     # ========================================================
 
     contexto = {
 
-        # ----------------------------------------------------
-        # APICULTOR
-        # ----------------------------------------------------
-
-        "apicultor":
-            apicultor,
-
-
-        # ----------------------------------------------------
+        # ====================================================
         # USUARIO
-        # ----------------------------------------------------
+        # ====================================================
 
         "usuario":
             usuario,
 
 
-        # ----------------------------------------------------
-        # FOTO
-        # ----------------------------------------------------
+        # ====================================================
+        # APICULTOR
+        # ====================================================
+
+        "apicultor":
+            apicultor,
 
         "foto":
             foto,
-
-
-        # ----------------------------------------------------
-        # ROL
-        # ----------------------------------------------------
 
         "rol":
             (
@@ -9373,28 +9763,20 @@ def perfil_apicultor(request):
                 "Apicultor"
             ),
 
-
-        # ----------------------------------------------------
-        # INFORMACIÓN DEL APICULTOR
-        # ----------------------------------------------------
-
         "telefono":
             apicultor.telefono
             or
             "",
-
 
         "identificacion":
             apicultor.identificacion
             or
             "",
 
-
         "zona_trabajo":
             apicultor.zona_trabajo
             or
             "",
-
 
         "experiencia":
             apicultor.experienciaanios,
@@ -9407,27 +9789,57 @@ def perfil_apicultor(request):
         "configuracion_2fa":
             configuracion_2fa,
 
-
         "permitir_2fa":
             permitir_2fa,
-
 
         "segundo_factor_obligatorio":
             segundo_factor_obligatorio,
 
-
         "dos_factores_activo":
             dos_factores_activo,
 
-
         "tiene_correo_2fa":
             tiene_correo_2fa,
+
+
+        # ====================================================
+        # SEGURIDAD - SESIONES
+        # ====================================================
+
+        "sesiones_activas":
+            sesiones_activas,
+
+        "otras_sesiones_activas":
+            otras_sesiones_activas,
+
+        "total_sesiones_activas":
+            len(
+                sesiones_activas
+            ),
+
+        "total_otras_sesiones":
+            len(
+                otras_sesiones_activas
+            ),
+
+
+        # ====================================================
+        # SEGURIDAD - HISTORIAL
+        # ====================================================
+
+        "historial_accesos":
+            historial_accesos,
+
+        "total_historial":
+            len(
+                historial_accesos
+            ),
 
     }
 
 
     # ========================================================
-    # RENDERIZAR PERFIL
+    # 14. RENDERIZAR PERFIL
     # ========================================================
 
     return render(
@@ -9448,28 +9860,43 @@ def perfil_apicultor(request):
 def cambiar_password_apicultor(request):
 
     # ========================================================
-    # 1. OBTENER DATOS
+    # 1. VERIFICAR QUE EL USUARIO SEA APICULTOR
+    #
+    # Evita que un usuario autenticado de otro rol pueda
+    # utilizar directamente esta vista.
+    # ========================================================
+
+    get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # 2. OBTENER DATOS
+    #
+    # No utilizamos .strip() en contraseñas porque los
+    # espacios pueden formar parte legítimamente de ellas.
     # ========================================================
 
     password_actual = (
-        request.POST
-        .get(
+        request.POST.get(
             "password_actual",
             ""
         )
     )
 
+
     password_nueva = (
-        request.POST
-        .get(
+        request.POST.get(
             "password_nueva",
             ""
         )
     )
 
+
     password_confirmacion = (
-        request.POST
-        .get(
+        request.POST.get(
             "password_confirmacion",
             ""
         )
@@ -9477,7 +9904,7 @@ def cambiar_password_apicultor(request):
 
 
     # ========================================================
-    # 2. CAMPOS OBLIGATORIOS
+    # 3. VALIDAR CAMPOS OBLIGATORIOS
     # ========================================================
 
     if (
@@ -9490,7 +9917,10 @@ def cambiar_password_apicultor(request):
 
         messages.error(
             request,
-            "Debes completar todos los campos de contraseña."
+            (
+                "Debes completar todos los "
+                "campos de contraseña."
+            )
         )
 
         return redirect(
@@ -9499,7 +9929,7 @@ def cambiar_password_apicultor(request):
 
 
     # ========================================================
-    # 3. VALIDAR CONTRASEÑA ACTUAL
+    # 4. VALIDAR CONTRASEÑA ACTUAL
     # ========================================================
 
     if not request.user.check_password(
@@ -9517,7 +9947,7 @@ def cambiar_password_apicultor(request):
 
 
     # ========================================================
-    # 4. VALIDAR COINCIDENCIA
+    # 5. VALIDAR QUE LAS CONTRASEÑAS NUEVAS COINCIDAN
     # ========================================================
 
     if (
@@ -9537,7 +9967,7 @@ def cambiar_password_apicultor(request):
 
 
     # ========================================================
-    # 5. NO PERMITIR LA MISMA CONTRASEÑA
+    # 6. NO PERMITIR REUTILIZAR LA CONTRASEÑA ACTUAL
     # ========================================================
 
     if request.user.check_password(
@@ -9547,8 +9977,8 @@ def cambiar_password_apicultor(request):
         messages.warning(
             request,
             (
-                "La nueva contraseña debe ser diferente "
-                "a la contraseña actual."
+                "La nueva contraseña debe ser "
+                "diferente a la contraseña actual."
             )
         )
 
@@ -9558,7 +9988,17 @@ def cambiar_password_apicultor(request):
 
 
     # ========================================================
-    # 6. VALIDADORES DE DJANGO
+    # 7. VALIDADORES DE CONTRASEÑA DE DJANGO
+    #
+    # Aquí se aplican las reglas configuradas en:
+    #
+    # AUTH_PASSWORD_VALIDATORS
+    #
+    # Por ejemplo:
+    # - longitud mínima
+    # - contraseña demasiado común
+    # - contraseña completamente numérica
+    # - similitud con datos del usuario
     # ========================================================
 
     try:
@@ -9567,6 +10007,7 @@ def cambiar_password_apicultor(request):
             password_nueva,
             user=request.user
         )
+
 
     except ValidationError as errores:
 
@@ -9577,38 +10018,137 @@ def cambiar_password_apicultor(request):
                 error
             )
 
+
         return redirect(
             "perfil_apicultor"
         )
 
 
     # ========================================================
-    # 7. CAMBIAR CONTRASEÑA
+    # 8. GUARDAR SESSION KEY ACTUAL
+    #
+    # update_session_auth_hash() puede rotar la session_key
+    # de Django después de cambiar la contraseña.
+    #
+    # Necesitamos conservar la anterior para actualizar
+    # también nuestro modelo SesionUsuario.
     # ========================================================
 
-    request.user.set_password(
-        password_nueva
-    )
-
-    request.user.save(
-        update_fields=[
-            "password"
-        ]
-    )
-
-
-    # ========================================================
-    # 8. MANTENER LA SESIÓN ACTUAL
-    # ========================================================
-
-    update_session_auth_hash(
-        request,
-        request.user
+    session_key_anterior = (
+        request.session.session_key
     )
 
 
     # ========================================================
-    # 9. MENSAJE
+    # 9. CAMBIAR CONTRASEÑA
+    # ========================================================
+
+    try:
+
+        request.user.set_password(
+            password_nueva
+        )
+
+
+        request.user.save(
+            update_fields=[
+                "password"
+            ]
+        )
+
+
+        # ====================================================
+        # 10. MANTENER AUTENTICADA LA SESIÓN ACTUAL
+        #
+        # Sin esta función Django cerraría la sesión actual
+        # después del cambio de contraseña.
+        # ====================================================
+
+        update_session_auth_hash(
+            request,
+            request.user
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR CAMBIANDO CONTRASEÑA "
+            "DEL APICULTOR:",
+            error
+        )
+
+
+        messages.error(
+            request,
+            (
+                "No fue posible actualizar tu contraseña. "
+                "Inténtalo nuevamente."
+            )
+        )
+
+
+        return redirect(
+            "perfil_apicultor"
+        )
+
+
+    # ========================================================
+    # 11. SINCRONIZAR LA SESSION KEY
+    #
+    # Nuestro modelo SesionUsuario guarda la session_key.
+    #
+    # Si Django cambió la clave después de actualizar la
+    # contraseña, debemos actualizar también ese registro
+    # para que Sesiones activas continúe funcionando.
+    # ========================================================
+
+    try:
+
+        sincronizar_session_key(
+            request,
+            session_key_anterior
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR SINCRONIZANDO SESIÓN "
+            "DESPUÉS DEL CAMBIO DE CONTRASEÑA:",
+            error
+        )
+
+
+    # ========================================================
+    # 12. REGISTRAR EN HISTORIAL DE ACCESOS
+    # ========================================================
+
+    try:
+
+        registrar_historial_acceso(
+            request,
+            request.user,
+            actividad="cambio_password",
+            detalle=(
+                "El usuario actualizó su contraseña "
+                "desde el perfil del apicultor."
+            ),
+            exitoso=True
+        )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR REGISTRANDO CAMBIO "
+            "DE CONTRASEÑA EN HISTORIAL:",
+            error
+        )
+
+
+    # ========================================================
+    # 13. MENSAJE DE ÉXITO
     # ========================================================
 
     messages.success(
@@ -9616,6 +10156,10 @@ def cambiar_password_apicultor(request):
         "Tu contraseña fue actualizada correctamente."
     )
 
+
+    # ========================================================
+    # 14. REGRESAR AL PERFIL
+    # ========================================================
 
     return redirect(
         "perfil_apicultor"

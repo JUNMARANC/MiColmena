@@ -4265,3 +4265,1056 @@
     }
 
 }
+
+
+
+/* ============================================================
+   SESIONES ACTIVAS
+============================================================ */
+
+.perfil-card-sesiones {
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   CONTADOR
+============================================================ */
+
+.perfil-sesiones-contador {
+    min-width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 11px;
+
+    border-radius: 12px;
+
+    background: #eef8f2;
+
+    color: #236447;
+
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+
+/* ============================================================
+   AVISO
+============================================================ */
+
+.perfil-sesiones-aviso {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 16px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid #d9ebe1;
+    border-radius: 14px;
+
+    background: #f4fbf7;
+}
+
+
+.perfil-sesiones-aviso > i {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #dff3e7;
+
+    color: #277250;
+
+    font-size: 1rem;
+}
+
+
+.perfil-sesiones-aviso strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #194b35;
+
+    font-size: 0.89rem;
+}
+
+
+.perfil-sesiones-aviso p {
+    margin: 0;
+
+    color: #718078;
+
+    font-size: 0.82rem;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   LISTA
+============================================================ */
+
+.perfil-sesiones-lista {
+    display: flex;
+    flex-direction: column;
+
+    gap: 13px;
+}
+
+
+/* ============================================================
+   SESIÓN
+============================================================ */
+
+.perfil-sesion-item {
+    display: flex;
+
+    gap: 15px;
+
+    padding: 18px;
+
+    border: 1px solid #e1e9e4;
+    border-radius: 15px;
+
+    background: #ffffff;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.perfil-sesion-item:hover {
+    border-color: #c9dcd1;
+
+    box-shadow:
+        0 5px 18px
+        rgba(33, 83, 59, 0.06);
+}
+
+
+.perfil-sesion-item.actual {
+    border-color: #b9dec9;
+
+    background: #fbfefc;
+}
+
+
+/* ============================================================
+   ICONO DISPOSITIVO
+============================================================ */
+
+.perfil-sesion-dispositivo {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #eff6f2;
+
+    color: #296849;
+
+    font-size: 1.2rem;
+}
+
+
+.perfil-sesion-item.actual
+.perfil-sesion-dispositivo {
+    background: #dff3e7;
+
+    color: #23724d;
+}
+
+
+/* ============================================================
+   INFORMACIÓN
+============================================================ */
+
+.perfil-sesion-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.perfil-sesion-superior {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 14px;
+}
+
+
+.perfil-sesion-navegador {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #183f2e;
+
+    font-size: 0.94rem;
+}
+
+
+.perfil-sesion-sistema {
+    color: #7b8881;
+
+    font-size: 0.79rem;
+}
+
+
+/* ============================================================
+   ESTA SESIÓN
+============================================================ */
+
+.perfil-sesion-actual {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background: #e4f5eb;
+
+    color: #217448;
+
+    font-size: 0.74rem;
+    font-weight: 750;
+}
+
+
+/* ============================================================
+   DETALLES
+============================================================ */
+
+.perfil-sesion-detalles {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+
+.perfil-sesion-detalles > div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: #f7f9f8;
+}
+
+
+.perfil-sesion-detalles i {
+    margin-bottom: 2px;
+
+    color: #56806d;
+
+    font-size: 0.82rem;
+}
+
+
+.perfil-sesion-detalles span {
+    color: #8a958f;
+
+    font-size: 0.7rem;
+}
+
+
+.perfil-sesion-detalles strong {
+    overflow: hidden;
+
+    color: #33483e;
+
+    font-size: 0.76rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+}
+
+
+/* ============================================================
+   ACCIONES
+============================================================ */
+
+.perfil-sesion-acciones {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 14px;
+}
+
+
+.btn-cerrar-sesion-remota {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 8px 13px;
+
+    border: 1px solid #edc5c5;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #b74949;
+
+    font-family: inherit;
+
+    font-size: 0.76rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.btn-cerrar-sesion-remota:hover {
+    border-color: #de9d9d;
+
+    background: #fff4f4;
+}
+
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.perfil-sesiones-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding-top: 20px;
+    margin-top: 20px;
+
+    border-top: 1px solid #e3eae6;
+}
+
+
+.perfil-sesiones-footer strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #28473a;
+
+    font-size: 0.86rem;
+}
+
+
+.perfil-sesiones-footer p {
+    margin: 0;
+
+    color: #818c86;
+
+    font-size: 0.76rem;
+}
+
+
+.btn-cerrar-otras-sesiones {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 14px;
+
+    border: 1px solid #d45353;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #b83f3f;
+
+    font-family: inherit;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.btn-cerrar-otras-sesiones:hover {
+    background: #fff2f2;
+}
+
+
+/* ============================================================
+   SIN SESIONES
+============================================================ */
+
+.perfil-sesiones-vacio {
+    padding: 35px 20px;
+
+    text-align: center;
+
+    border: 1px dashed #d3ddd7;
+    border-radius: 14px;
+}
+
+
+.perfil-sesiones-vacio > i {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #769084;
+
+    font-size: 1.7rem;
+}
+
+
+.perfil-sesiones-vacio strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #304a3e;
+}
+
+
+.perfil-sesiones-vacio p {
+    margin: 0;
+
+    color: #879189;
+
+    font-size: 0.8rem;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+
+    .perfil-sesion-detalles {
+        grid-template-columns: 1fr;
+    }
+
+
+    .perfil-sesiones-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+
+    .btn-cerrar-otras-sesiones {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .perfil-sesion-item {
+        flex-direction: column;
+    }
+
+
+    .perfil-sesion-superior {
+        flex-direction: column;
+    }
+
+
+    .perfil-sesion-actual {
+        align-self: flex-start;
+    }
+
+}
+
+
+
+/* ==========================================================
+   HISTORIAL DE ACCESOS
+========================================================== */
+
+.perfil-card-historial {
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   CONTADOR
+========================================================== */
+
+.perfil-historial-contador {
+    flex-shrink: 0;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background: #EFF6F2;
+
+    color: #4E7663;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   AVISO
+========================================================== */
+
+.perfil-historial-aviso {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin:
+        18px
+        20px
+        0;
+
+    padding: 12px;
+
+    border:
+        1px solid
+        #DBE9E0;
+
+    border-radius: 11px;
+
+    background:
+        #F5FAF7;
+}
+
+
+.perfil-historial-aviso > i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color:
+        #4F805F;
+
+    font-size: 13px;
+}
+
+
+.perfil-historial-aviso strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        #315C47;
+
+    font-size: 9px;
+}
+
+
+.perfil-historial-aviso p {
+    margin: 0;
+
+    color:
+        #74827A;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   LISTA
+========================================================== */
+
+.perfil-historial-lista {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0;
+
+    padding:
+        6px
+        20px
+        20px;
+}
+
+
+/* ==========================================================
+   ITEM
+========================================================== */
+
+.perfil-historial-item {
+    position: relative;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding:
+        16px
+        0;
+
+    border-bottom:
+        1px solid
+        #EDF1EE;
+}
+
+
+.perfil-historial-item:last-child {
+    border-bottom: none;
+}
+
+
+/* ==========================================================
+   ICONO
+========================================================== */
+
+.perfil-historial-icono {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        #EFF4F1;
+
+    color:
+        #577268;
+
+    font-size: 13px;
+}
+
+
+/* INICIO */
+
+.perfil-historial-item.inicio
+.perfil-historial-icono {
+    background:
+        #E4F3E8;
+
+    color:
+        #3F7B51;
+}
+
+
+/* SALIDA */
+
+.perfil-historial-item.salida
+.perfil-historial-icono {
+    background:
+        #F2F4F3;
+
+    color:
+        #75817A;
+}
+
+
+/* INACTIVIDAD */
+
+.perfil-historial-item.inactividad
+.perfil-historial-icono {
+    background:
+        #FFF5D9;
+
+    color:
+        #9A741A;
+}
+
+
+/* CONTRASEÑA */
+
+.perfil-historial-item.password
+.perfil-historial-icono {
+    background:
+        #E8F0F7;
+
+    color:
+        #4F718D;
+}
+
+
+/* CIERRE REMOTO */
+
+.perfil-historial-item.remoto
+.perfil-historial-icono {
+    background:
+        #FCE9E6;
+
+    color:
+        #A6534A;
+}
+
+
+/* 2FA */
+
+.perfil-historial-item.seguridad
+.perfil-historial-icono {
+    background:
+        #E4F3E8;
+
+    color:
+        #3F7B51;
+}
+
+
+.perfil-historial-item.advertencia
+.perfil-historial-icono {
+    background:
+        #FFF0DE;
+
+    color:
+        #A46F2D;
+}
+
+
+/* ==========================================================
+   CONTENIDO
+========================================================== */
+
+.perfil-historial-contenido {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.perfil-historial-superior {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+.perfil-historial-titulo {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        #304B3D;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+
+.perfil-historial-detalle {
+    max-width: 580px;
+
+    margin: 0;
+
+    color:
+        #7A8780;
+
+    font-size: 8px;
+
+    line-height: 1.45;
+}
+
+
+/* ==========================================================
+   ESTADO
+========================================================== */
+
+.perfil-historial-estado {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 4px;
+
+    padding:
+        4px
+        7px;
+
+    border-radius: 999px;
+
+    font-size: 7px;
+    font-weight: 800;
+}
+
+
+.perfil-historial-estado.exitoso {
+    background:
+        #E8F5EC;
+
+    color:
+        #47805A;
+}
+
+
+.perfil-historial-estado.fallido {
+    background:
+        #FCE9E6;
+
+    color:
+        #A84D44;
+}
+
+
+/* ==========================================================
+   DISPOSITIVO
+========================================================== */
+
+.perfil-historial-dispositivo {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap:
+        7px
+        12px;
+
+    margin-top: 9px;
+}
+
+
+.perfil-historial-dispositivo span {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    color:
+        #65756C;
+
+    font-size: 7px;
+    font-weight: 600;
+}
+
+
+.perfil-historial-dispositivo i {
+    color:
+        #789487;
+
+    font-size: 8px;
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.perfil-historial-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 9px;
+}
+
+
+.perfil-historial-ip,
+.perfil-historial-fecha {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    color:
+        #8A948E;
+
+    font-size: 7px;
+}
+
+
+.perfil-historial-ip i,
+.perfil-historial-fecha i {
+    color:
+        #84988D;
+
+    font-size: 8px;
+}
+
+
+.perfil-historial-ip strong {
+    color:
+        #65736B;
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================
+   NOTA
+========================================================== */
+
+.perfil-historial-nota {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        11px
+        20px;
+
+    border-top:
+        1px solid
+        #EDF1EE;
+
+    background:
+        #FAFBFA;
+
+    color:
+        #849089;
+
+    font-size: 7px;
+}
+
+
+.perfil-historial-nota i {
+    color:
+        #749080;
+}
+
+
+/* ==========================================================
+   VACÍO
+========================================================== */
+
+.perfil-historial-vacio {
+    padding:
+        32px
+        20px;
+
+    text-align: center;
+}
+
+
+.perfil-historial-vacio > i {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color:
+        #A5B1AA;
+
+    font-size: 22px;
+}
+
+
+.perfil-historial-vacio strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color:
+        #53655B;
+
+    font-size: 9px;
+}
+
+
+.perfil-historial-vacio p {
+    margin: 0;
+
+    color:
+        #89948E;
+
+    font-size: 8px;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 650px) {
+
+    .perfil-historial-superior {
+        flex-direction: column;
+    }
+
+
+    .perfil-historial-estado {
+        align-self: flex-start;
+    }
+
+
+    .perfil-historial-footer {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 6px;
+    }
+
+}
+
+
+@media (max-width: 400px) {
+
+    .perfil-historial-item {
+        gap: 9px;
+    }
+
+
+    .perfil-historial-icono {
+        width: 34px;
+        height: 34px;
+    }
+
+
+    .perfil-historial-dispositivo {
+        flex-direction: column;
+    }
+
+}

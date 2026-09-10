@@ -78,6 +78,10 @@ from usuarios.services import (
 )
 
 
+
+
+
+
 # ============================================================
 # ============================================================
 #
@@ -756,13 +760,12 @@ def cerrar_sesion_remota(
 ):
 
     # ========================================================
-    # PANEL CORRECTO
+    # 1. DETERMINAR PERFIL AL QUE DEBEMOS REGRESAR
     # ========================================================
 
     panel = obtener_panel_seguridad(
         request.user
     )
-
 
     ruta_perfil = panel[
         "ruta_perfil"
@@ -770,7 +773,14 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # BUSCAR SESIÓN
+    # 2. BUSCAR LA SESIÓN
+    #
+    # SEGURIDAD:
+    # La sesión obligatoriamente debe pertenecer
+    # al usuario actualmente autenticado.
+    #
+    # Un usuario no puede cerrar sesiones de otra cuenta
+    # modificando el ID enviado desde el HTML.
     # ========================================================
 
     sesion = get_object_or_404(
@@ -781,13 +791,17 @@ def cerrar_sesion_remota(
     )
 
 
+    # ========================================================
+    # 3. OBTENER SESSION KEY ACTUAL
+    # ========================================================
+
     session_key_actual = (
         request.session.session_key
     )
 
 
     # ========================================================
-    # NO CERRAR LA SESIÓN ACTUAL
+    # 4. IMPEDIR CERRAR LA SESIÓN ACTUAL
     # ========================================================
 
     if (
@@ -799,11 +813,10 @@ def cerrar_sesion_remota(
         messages.warning(
             request,
             (
-                "No puedes cerrar tu sesión actual "
-                "desde esta opción."
+                "No puedes cerrar la sesión "
+                "que estás utilizando actualmente."
             )
         )
-
 
         return redirect(
             ruta_perfil
@@ -811,7 +824,7 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # INFORMACIÓN PARA HISTORIAL
+    # 5. GUARDAR DATOS PARA EL HISTORIAL
     # ========================================================
 
     navegador = (
@@ -836,7 +849,10 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # ELIMINAR SESIÓN REAL DE DJANGO
+    # 6. ELIMINAR LA SESIÓN REAL DE DJANGO
+    #
+    # Al eliminarla de django_session, el navegador remoto
+    # dejará de estar autenticado en su próxima petición.
     # ========================================================
 
     Session.objects.filter(
@@ -845,16 +861,14 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # CERRAR REGISTRO PROPIO
+    # 7. ACTUALIZAR NUESTRO REGISTRO DE SESIÓN
     # ========================================================
 
     sesion.activa = False
 
-
     sesion.fecha_cierre = (
         timezone.now()
     )
-
 
     sesion.motivo_cierre = (
         "cerrada_remotamente"
@@ -871,7 +885,7 @@ def cerrar_sesion_remota(
 
 
     # ========================================================
-    # HISTORIAL
+    # 8. REGISTRAR HISTORIAL DE SEGURIDAD
     # ========================================================
 
     try:
@@ -887,19 +901,35 @@ def cerrar_sesion_remota(
             )
         )
 
+
     except Exception as error:
 
         print(
-            "ERROR REGISTRANDO CIERRE REMOTO:",
+            "ERROR REGISTRANDO "
+            "CIERRE REMOTO:",
             error
         )
 
+
+    # ========================================================
+    # 9. MENSAJE
+    # ========================================================
 
     messages.success(
         request,
         "La sesión fue cerrada correctamente."
     )
 
+
+    # ========================================================
+    # 10. REGRESAR AL PERFIL CORRECTO
+    #
+    # Administrador:
+    # mi_perfil
+    #
+    # Apicultor:
+    # perfil_apicultor
+    # ========================================================
 
     return redirect(
         ruta_perfil
@@ -912,34 +942,61 @@ def cerrar_sesion_remota(
 
 @login_required
 @require_POST
-def cerrar_otras_sesiones(request):
+def cerrar_otras_sesiones(
+    request
+):
+
+    # ========================================================
+    # 1. DETERMINAR PERFIL DE RETORNO
+    # ========================================================
 
     panel = obtener_panel_seguridad(
         request.user
     )
-
 
     ruta_perfil = panel[
         "ruta_perfil"
     ]
 
 
+    # ========================================================
+    # 2. SESSION KEY ACTUAL
+    #
+    # Esta sesión NUNCA se eliminará.
+    # ========================================================
+
     session_key_actual = (
         request.session.session_key
     )
 
 
+    # ========================================================
+    # 3. OBTENER TODAS LAS DEMÁS SESIONES
+    #
+    # Solamente:
+    #
+    # - del usuario autenticado
+    # - activas
+    # - diferentes de la sesión actual
+    # ========================================================
+
     sesiones = (
         SesionUsuario.objects
+
         .filter(
             usuario=request.user,
             activa=True
         )
+
         .exclude(
             session_key=session_key_actual
         )
     )
 
+
+    # ========================================================
+    # 4. OBTENER SESSION KEYS
+    # ========================================================
 
     claves = list(
         sesiones.values_list(
@@ -949,13 +1006,17 @@ def cerrar_otras_sesiones(request):
     )
 
 
+    # ========================================================
+    # 5. CANTIDAD DE SESIONES
+    # ========================================================
+
     cantidad = len(
         claves
     )
 
 
     # ========================================================
-    # NO HAY OTRAS SESIONES
+    # 6. NO HAY OTRAS SESIONES
     # ========================================================
 
     if cantidad == 0:
@@ -965,14 +1026,13 @@ def cerrar_otras_sesiones(request):
             "No tienes otras sesiones activas."
         )
 
-
         return redirect(
             ruta_perfil
         )
 
 
     # ========================================================
-    # ELIMINAR SESIONES DJANGO
+    # 7. ELIMINAR SESIONES REALES DE DJANGO
     # ========================================================
 
     Session.objects.filter(
@@ -981,23 +1041,23 @@ def cerrar_otras_sesiones(request):
 
 
     # ========================================================
-    # ACTUALIZAR REGISTROS PROPIOS
+    # 8. MARCAR SESIONES COMO CERRADAS
     # ========================================================
 
+    fecha_cierre = (
+        timezone.now()
+    )
+
+
     sesiones.update(
-
         activa=False,
-
-        fecha_cierre=
-            timezone.now(),
-
-        motivo_cierre=
-            "cerrada_remotamente",
+        fecha_cierre=fecha_cierre,
+        motivo_cierre="cerrada_remotamente"
     )
 
 
     # ========================================================
-    # HISTORIAL
+    # 9. REGISTRAR HISTORIAL
     # ========================================================
 
     try:
@@ -1012,16 +1072,18 @@ def cerrar_otras_sesiones(request):
             )
         )
 
+
     except Exception as error:
 
         print(
-            "ERROR REGISTRANDO CIERRE DE SESIONES:",
+            "ERROR REGISTRANDO "
+            "CIERRE DE SESIONES:",
             error
         )
 
 
     # ========================================================
-    # MENSAJE
+    # 10. MENSAJE
     # ========================================================
 
     if cantidad == 1:
@@ -1044,6 +1106,10 @@ def cerrar_otras_sesiones(request):
         mensaje
     )
 
+
+    # ========================================================
+    # 11. REGRESAR AL PERFIL CORRECTO
+    # ========================================================
 
     return redirect(
         ruta_perfil
