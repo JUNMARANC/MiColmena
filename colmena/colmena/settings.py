@@ -13,10 +13,23 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+
+
+def required_env(name):
+    value = os.environ.get(name)
+    if not value:
+        raise ImproperlyConfigured(f"Configure {name} in your environment or .env")
+    return value
+
+
 ### borrar esto para el despliegue
 SITE_URL = "https://spent-daycare-sludge.ngrok-free.dev"
 
-DEBUG = True
+DEBUG = os.environ.get("MICOLMENA_DEBUG", "False").lower() in {"1", "true", "yes"}
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -50,10 +63,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6okhrqphwa8zzx0r&o=4st(ovfo2x5#d9*cp9pf%p2d35ba=dm'
+SECRET_KEY = required_env("MICOLMENA_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 
 # Application definition
@@ -111,11 +123,11 @@ WSGI_APPLICATION = 'colmena.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dbmicolmena',
-        'USER' : 'root',
-        'PASSWORD' : '252512',
-        'HOST' : 'localhost',
-        'PORT' : '3306'
+        'NAME': os.environ.get("MICOLMENA_DB_NAME", "dbmicolmena"),
+        'USER' : os.environ.get("MICOLMENA_DB_USER", ""),
+        'PASSWORD' : os.environ.get("MICOLMENA_DB_PASSWORD", ""),
+        'HOST' : os.environ.get("MICOLMENA_DB_HOST", "localhost"),
+        'PORT' : os.environ.get("MICOLMENA_DB_PORT", "3306")
     }
 }
 
@@ -161,13 +173,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 #ejecutaremos las configuraciones del SMTP de GMAIL para el envio de correos
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = (
+    "django.core.mail.backends.console.EmailBackend"
+    if DEBUG
+    else "django.core.mail.backends.smtp.EmailBackend"
+)
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "micolmena690@gmail.com"
-EMAIL_HOST_PASSWORD = "thwbzoouzgbvpnqs"
+EMAIL_HOST_USER = os.environ.get("MICOLMENA_EMAIL_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("MICOLMENA_EMAIL_PASSWORD", "")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_TIMEOUT = 10
 
 LOGIN_URL = "login"
@@ -176,7 +193,7 @@ LOGOUT_REDIRECT_URL = "login"
 
 
 #2FA
-TWO_FA_ENCRYPTION_KEY = 'YDg9IIj1T3uLKQBkD0fx9CpAnS-VmhxYqvHXXUCUd0s='
+TWO_FA_ENCRYPTION_KEY = required_env("MICOLMENA_TWO_FA_ENCRYPTION_KEY")
 
 # La sesión termina al cerrar el navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
