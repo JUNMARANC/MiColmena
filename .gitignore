@@ -3,6 +3,11 @@ __pycache__/
 db.sqlite3
 venv/
 .env
+.env.*
+!.env.example
+.security-local/
+/SEGURIDAD.md
+.venv/
 .vscode/
 
 media/
