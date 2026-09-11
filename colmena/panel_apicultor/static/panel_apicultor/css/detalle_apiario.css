@@ -4827,3 +4827,454 @@ textarea.apiario-input {
     }
 
 }
+
+/* ==========================================================
+   ==========================================================
+   ARREGLO DEL DESBORDE EN CELULAR
+
+   La tabla de colmenas tiene min-width: 850px y su envoltorio
+   .detalle-tabla-responsive ya tenía overflow-x: auto. Aun así
+   la página se desbordaba: medido a 560px, el documento medía
+   582px.
+
+   La causa es un comportamiento poco evidente de flex y grid:
+   sus hijos nacen con min-width: auto, que significa "no te
+   encojas por debajo de tu contenido". Como la tabla mide
+   850px, el envoltorio se estiraba a 850 en vez de recortar y
+   mostrar su scroll, y arrastraba a toda la página.
+
+   Se corrige con min-width: 0 en el envoltorio y en la cadena
+   de contenedores que lo rodea. Es la línea que falta en
+   prácticamente todas las tablas dentro de un grid.
+   ========================================================== */
+
+.detalle-tabla-responsive {
+
+    min-width: 0;
+    max-width: 100%;
+
+    /* El scroll se siente mejor cuando se detiene en cada fila */
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+/* La cadena de contenedores: si uno solo se queda sin
+   min-width: 0, el desborde vuelve. */
+
+.detalle-card,
+.detalle-apiario-page,
+.detalle-resumen-grid,
+.detalle-colmenas-card {
+
+    min-width: 0;
+
+}
+
+
+.detalle-card > * {
+
+    min-width: 0;
+
+}
+
+
+/* ==========================================================
+   PISTA DE QUE LA TABLA SE DESLIZA
+
+   Un degradado en el borde derecho avisa que hay más columnas.
+   Sin él, en celular parece que la tabla está cortada.
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .detalle-tabla-responsive {
+
+        position: relative;
+
+        /* el degradado va pegado al borde y no se mueve con el
+           scroll, porque está en el envoltorio y no dentro */
+        -webkit-mask-image:
+            linear-gradient(
+                to right,
+                #000 calc(100% - 34px),
+                transparent 100%
+            );
+
+        mask-image:
+            linear-gradient(
+                to right,
+                #000 calc(100% - 34px),
+                transparent 100%
+            );
+
+    }
+
+}
+
+
+/* ==========================================================
+   OTROS DESBORDES DE LA MISMA PÁGINA
+========================================================== */
+
+@media (max-width: 560px) {
+
+    /* El modal de colmena es una grilla de dos columnas: en
+       celular no caben. */
+    .modal-colmena-contenido,
+    .modal-colmena-datos,
+    .apiario-informacion-principal {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-colmena {
+        max-width: 100%;
+    }
+
+    /* Los nombres largos de colmena no deben empujar la celda */
+    .tabla-colmena-nombre span {
+        max-width: 100%;
+    }
+
+    /* Red de seguridad: nada dentro del contenido puede ser más
+       ancho que la pantalla. */
+    .detalle-apiario-page img,
+    .detalle-apiario-page canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+}
+
+
+/* ==========================================================
+   EL ENCABEZADO DEL HERO NO ENVOLVÍA
+
+   Medido a 390px: la etiqueta de estado empezaba en x=348 y el
+   botón Gestionar en x=465, o sea fuera de la pantalla. Están
+   en una fila flex que no tenía flex-wrap, así que en vez de
+   bajar a la línea siguiente se salían por la derecha.
+========================================================== */
+
+@media (max-width: 700px) {
+
+    /* Ojo con el nombre: la clase real es .detalle-hero-superior.
+       Primero apunté a .apiario-hero-superior, que existe pero es
+       otra, y por eso el arreglo no surtía efecto por debajo de
+       480px. */
+
+    .detalle-hero-superior,
+    .apiario-hero-superior,
+    .detalle-hero-encabezado,
+    .detalle-titulo-fila,
+    .detalle-acciones {
+
+        flex-wrap: wrap;
+
+    }
+
+    /* El bloque del título debe poder encogerse; si no, empuja al
+       botón fuera de la pantalla. */
+
+    .detalle-hero-superior > div:first-child {
+
+        min-width: 0;
+        flex: 1 1 100%;
+
+    }
+
+    .detalle-hero-etiqueta,
+    .detalle-btn-gestionar,
+    .btn-gestionar-apiario {
+
+        max-width: 100%;
+
+    }
+
+}
+
+
+/* ==========================================================
+   RED DE SEGURIDAD
+
+   Nada dentro de la página puede ser más ancho que la
+   pantalla, salvo la tabla, que desliza sola dentro de su
+   envoltorio.
+
+   Va al final a propósito: es la última barrera, no el primer
+   recurso. Lo correcto es que cada bloque encaje por su
+   cuenta, y eso es lo que resuelven las reglas de arriba.
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .detalle-apiario-page,
+    .detalle-apiario-page > *,
+    .detalle-card,
+    .detalle-card > *:not(.detalle-tabla-responsive) {
+
+        max-width: 100%;
+        min-width: 0;
+
+    }
+
+    /* Las palabras muy largas (un correo, un nombre sin
+       espacios) tampoco deben empujar su caja */
+    .detalle-apiario-page {
+
+        overflow-wrap: break-word;
+
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   LA CAUSA REAL DEL DESBORDE
+
+   El CSS tiene reglas responsive para .apiario-hero,
+   .apiario-hero-imagen, .apiario-hero-contenido y nueve
+   clases más de esa familia.
+
+   Ninguna existe en el HTML. Las clases reales son
+   .detalle-apiario-hero, .detalle-apiario-hero-imagen y
+   .detalle-apiario-hero-info.
+
+   Comprobado: 0 coincidencias de "apiario-hero" en la
+   plantilla. Toda la sección responsive del hero nunca llegó
+   a aplicarse, y por eso en celular la imagen se quedaba con
+   su ancho de escritorio y aplastaba el bloque de texto: a
+   390px el contenedor de la info medía 68px y su contenido se
+   salía por la derecha.
+
+   Aquí van las mismas reglas apuntando a las clases que sí
+   existen.
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+    .detalle-apiario-hero {
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 18px;
+
+    }
+
+
+    .detalle-apiario-hero-imagen {
+
+        width: 100%;
+        max-width: 100%;
+        height: 220px;
+
+        flex: none;
+
+    }
+
+
+    .detalle-apiario-hero-info {
+
+        width: 100%;
+        min-width: 0;
+
+        flex: 1 1 auto;
+
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .detalle-apiario-hero-imagen {
+
+        height: 170px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   LAS ESTADÍSTICAS SE QUEDABAN EN CINCO COLUMNAS
+
+   El bloque de estadísticas está escrito DOS VECES en este
+   archivo, casi idéntico:
+
+       línea 2511   .detalle-estadisticas  repeat(5, ...)
+       línea 2926   → responsive a repeat(3)
+       línea 2975   → responsive a repeat(2)
+       línea 3053   → responsive a 1fr
+       línea 3708   .detalle-estadisticas  repeat(5, ...)   <-- otra vez
+
+   En CSS, a igual especificidad manda la última regla del
+   archivo. Esa segunda copia de la línea 3708 va después de
+   los media queries, así que los anulaba: en celular las cinco
+   tarjetas seguían en cinco columnas, y por eso se veían como
+   columnas altas y flacas con el icono flotando en el medio.
+
+   Lo correcto sería borrar el bloque duplicado, pero eso es
+   tocar 200 líneas que hoy funcionan. Aquí se vuelven a
+   declarar los cortes al final del archivo, que es donde
+   ganan.
+   ========================================================== */
+
+@media (max-width: 1100px) {
+
+    .detalle-estadisticas {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .detalle-estadisticas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 430px) {
+
+    /* Con cinco tarjetas, una sola columna deja la pantalla muy
+       larga. Dos siguen cabiendo hasta los 430px; por debajo, la
+       etiqueta («Colmenas en revisión») ya no entra en una línea
+       y conviene apilar. */
+
+    .detalle-estadisticas {
+        grid-template-columns: 1fr;
+    }
+
+    /* En una columna la tarjeta se vuelve horizontal: el icono a
+       la izquierda y el dato al lado, en vez de una caja alta
+       con el icono en el centro. */
+
+    .detalle-estadistica {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+
+        min-height: 0;
+        padding: 12px 14px;
+    }
+
+}
+
+
+/* La tarjeta nunca debe crecer a lo alto sin contenido que lo
+   justifique: era lo que producía esas columnas vacías. */
+
+.detalle-estadistica {
+
+    align-content: center;
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   LOS BOTONES DE ACCIÓN SE SALÍAN EN PANTALLAS PEQUEÑAS
+
+   .detalle-hero-acciones es una grilla de dos columnas fija,
+   sin ningún corte responsive. En un celular angosto cada
+   columna queda en unos 150px, y «Registrar mantenimiento»
+   necesita más: el texto se desbordaba fuera del botón.
+
+   Aquí estaba también el resto del desborde horizontal de la
+   página, el residuo que no había logrado aislar.
+   ========================================================== */
+
+/* El texto puede partirse en dos líneas dentro del botón, en
+   vez de salirse. Aplica en todos los anchos: una palabra
+   larga nunca debería romper su caja. */
+
+.detalle-hero-accion {
+
+    min-width: 0;
+
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+
+}
+
+
+.detalle-hero-accion span {
+
+    min-width: 0;
+
+    overflow-wrap: break-word;
+
+}
+
+
+.detalle-hero-accion i {
+
+    flex: none;
+
+}
+
+
+/* Por debajo de 560px, un botón por línea. Con dos columnas el
+   texto cabría solo partiéndose en tres líneas, y quedan dos
+   botones altos y estrechos. */
+
+@media (max-width: 560px) {
+
+    .detalle-hero-acciones {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .detalle-hero-accion {
+
+        justify-content: flex-start;
+
+        padding: 11px 14px;
+
+        text-align: left;
+
+    }
+
+}
+
+
+/* Lo mismo para los demás grupos de acciones de la página,
+   que comparten el problema. */
+
+@media (max-width: 560px) {
+
+    .detalle-acciones,
+    .detalle-card-acciones,
+    .modal-colmena-footer {
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 8px;
+
+    }
+
+    .detalle-acciones > *,
+    .detalle-card-acciones > *,
+    .modal-colmena-footer > * {
+
+        width: 100%;
+
+        min-width: 0;
+
+        overflow-wrap: break-word;
+
+    }
+
+}

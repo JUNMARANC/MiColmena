@@ -3333,3 +3333,110 @@ body.sidebar-movil-abierto {
     padding-right: 0;
 
 }
+
+/* ==========================================================
+   ==========================================================
+   EN MÓVIL EL CONTENIDO NO DEBE DEJARLE SITIO AL MENÚ
+
+   Cuando agregué el menú contraíble escribí esto:
+
+       .sidebar-apicultor.contraido ~ .main-apicultor {
+           margin-left: 82px;
+       }
+
+   Sin acotarlo por ancho. Y el estado contraído se guarda en
+   el navegador, así que basta con haber contraído el menú una
+   vez en el computador para que, al abrir desde el celular,
+   el contenido arranque 82px corrido a la derecha. Eso es la
+   franja que se veía a la izquierda.
+
+   No bastaba con que el bloque de 820px pusiera margin-left: 0:
+   ese selector es .main-apicultor a secas (una clase) y el mío
+   lleva dos clases más, así que ganaba por especificidad sin
+   importar el orden. Los media queries no suman especificidad.
+
+   Aquí se repite con la misma especificidad o más, y al final
+   del archivo.
+   ========================================================== */
+
+@media (max-width: 820px) {
+
+    .main-apicultor,
+    .sidebar-apicultor.contraido + .main-apicultor,
+    .sidebar-apicultor.contraido ~ .main-apicultor,
+    .sidebar-apicultor.contraido:hover ~ .main-apicultor {
+
+        margin-left: 0 !important;
+        width: 100%;
+
+    }
+
+
+    /* El menú tampoco debe empujar nada: en móvil se muestra
+       encima del contenido, no al lado. */
+
+    .sidebar-apicultor,
+    .sidebar-apicultor.contraido,
+    .sidebar-apicultor.contraido:hover {
+
+        width: var(--sidebar-width);
+
+    }
+
+
+    /* Contraído no tiene sentido en móvil: el menú se abre y se
+       cierra con la hamburguesa. Se muestra siempre completo. */
+
+    .sidebar-apicultor.contraido .sidebar-logo-texto,
+    .sidebar-apicultor.contraido .sidebar-link span,
+    .sidebar-apicultor.contraido .sidebar-user-info,
+    .sidebar-apicultor.contraido .sidebar-user-arrow,
+    .sidebar-apicultor.contraido .sidebar-user-logout span {
+
+        display: flex;
+
+        max-width: 200px;
+        opacity: 1;
+
+    }
+
+    .sidebar-apicultor.contraido .sidebar-link span,
+    .sidebar-apicultor.contraido .sidebar-user-logout span {
+
+        display: inline-block;
+
+    }
+
+
+    .sidebar-apicultor.contraido .sidebar-link,
+    .sidebar-apicultor.contraido .sidebar-logo,
+    .sidebar-apicultor.contraido .sidebar-user-main,
+    .sidebar-apicultor.contraido .sidebar-user-logout {
+
+        justify-content: flex-start;
+
+        gap: 11px;
+
+        padding-left: 13px;
+        padding-right: 13px;
+
+    }
+
+
+    .sidebar-apicultor.contraido {
+
+        padding-left: 14px;
+        padding-right: 14px;
+
+    }
+
+
+    /* Y el tooltip del menú contraído no debe aparecer */
+
+    .sidebar-apicultor.contraido .sidebar-link::after {
+
+        display: none;
+
+    }
+
+}

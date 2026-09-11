@@ -419,7 +419,7 @@
                 class="btn-filtrar-mantenimientos"
             >
 
-                <i class="bi bi-funnel-fill"></i>
+                <i class="bi bi-search" aria-hidden="true"></i>
 
                 <span>
                     Filtrar
@@ -453,6 +453,34 @@
 
 
     </section>
+
+    {% if mantenimientos %}
+
+        <div class="mantenimientos-barra-vista">
+
+            <!-- Selector de vista. Lo maneja js/vista.js, el mismo
+                 componente de los demás módulos. -->
+
+            <div class="selector-vista" data-vista="mantenimientos"
+                 data-vista-defecto="tabla" role="group"
+                 aria-label="Modo de visualización">
+
+                <button type="button" class="selector-vista-btn" data-vista-modo="tabla"
+                        title="Ver en tabla" aria-pressed="false">
+                    <i class="bi bi-table" aria-hidden="true"></i>
+                </button>
+
+                <button type="button" class="selector-vista-btn" data-vista-modo="tarjetas"
+                        title="Ver en tarjetas" aria-pressed="false">
+                    <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
 
 
 
@@ -525,6 +553,8 @@
 
     {% if mantenimientos %}
 
+
+        <div data-vista-panel="mantenimientos" data-vista-modo="tabla">
 
         <section class="mantenimientos-tabla-card">
 
@@ -876,6 +906,131 @@
 
 
         </section>
+
+        </div>
+
+
+        <!-- =================================================
+             VISTA EN TARJETAS
+
+             Este módulo solo tenía tabla, con siete columnas.
+             Las tarjetas son las que se muestran en celular.
+
+             El botón Completar conserva su formulario POST con
+             el csrf_token y los data- que usa el JS para el
+             modal de confirmación.
+        ================================================== -->
+
+        <div data-vista-panel="mantenimientos" data-vista-modo="tarjetas" hidden>
+
+            <div class="mantenimientos-grid">
+
+                {% for mantenimiento in mantenimientos %}
+
+                    <article class="mantenimiento-card">
+
+                        <div class="mantenimiento-card-top">
+
+                            <span class="mantenimiento-card-id">
+                                #{{ mantenimiento.id_mantenimiento }}
+                            </span>
+
+                            <span class="mantenimiento-card-prioridad prioridad-{{ mantenimiento.prioridad|default:"sin"|lower }}">
+                                {{ mantenimiento.prioridad|default:"Sin definir" }}
+                            </span>
+
+                        </div>
+
+                        <h3 class="mantenimiento-card-titulo">
+                            {{ mantenimiento.tipo }}
+                        </h3>
+
+                        <div class="mantenimiento-card-datos">
+
+                            <p>
+                                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                <span>
+                                    {% if mantenimiento.id_colmena %}
+                                        {{ mantenimiento.id_colmena.id_apiario.nombreapiario }}
+                                    {% else %}
+                                        {{ mantenimiento.id_apiario.nombreapiario|default:"—" }}
+                                    {% endif %}
+                                </span>
+                            </p>
+
+                            {% if mantenimiento.id_colmena %}
+                                <p>
+                                    <i class="bi bi-hexagon" aria-hidden="true"></i>
+                                    <span>{{ mantenimiento.id_colmena.codigocolmena }}</span>
+                                </p>
+                            {% endif %}
+
+                            <p>
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                <span>{{ mantenimiento.fechaejecucion|date:"d/m/Y" }}</span>
+                            </p>
+
+                            <p>
+                                <i class="bi bi-person" aria-hidden="true"></i>
+                                <span>{{ mantenimiento.responsable|default:"Sin responsable" }}</span>
+                            </p>
+
+                        </div>
+
+                        <div class="mantenimiento-card-pie">
+
+                            <span class="mantenimiento-card-estado estado-{{ mantenimiento.estado|default:"sin"|lower }}">
+                                <i class="bi bi-circle-fill" aria-hidden="true"></i>
+                                {{ mantenimiento.estado }}
+                            </span>
+
+                            <div class="mantenimiento-card-acciones">
+
+                                <button type="button" class="btn-ver-mantenimiento"
+                                        data-modal-mantenimiento="modalMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                        title="Ver detalle"
+                                        aria-label="Ver mantenimiento {{ mantenimiento.id_mantenimiento }}">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+
+                                <button type="button" class="btn-editar-mantenimiento"
+                                        data-modal-editar-mantenimiento="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                        title="Editar mantenimiento"
+                                        aria-label="Editar mantenimiento {{ mantenimiento.id_mantenimiento }}">
+                                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                </button>
+
+                                {% if mantenimiento.estado != "Completado" and mantenimiento.estado != "Cancelado" %}
+
+                                    <form method="POST"
+                                          action="{% url 'completar_mantenimiento_apicultor' mantenimiento.id_mantenimiento %}"
+                                          class="form-completar-mantenimiento"
+                                          data-nombre-mantenimiento="{{ mantenimiento.tipo }}"
+                                          data-colmena-mantenimiento="{% if mantenimiento.id_colmena %}Colmena {{ mantenimiento.id_colmena.codigocolmena }}{% elif mantenimiento.id_apiario %}Apiario {{ mantenimiento.id_apiario.nombreapiario }}{% else %}Sin ubicación asociada{% endif %}">
+
+                                        {% csrf_token %}
+
+                                        <button type="submit" class="btn-completar-mantenimiento"
+                                                title="Marcar como completado"
+                                                aria-label="Completar mantenimiento {{ mantenimiento.id_mantenimiento }}">
+                                            <i class="bi bi-check-lg" aria-hidden="true"></i>
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
 
 
 

@@ -362,3 +362,99 @@
     }
 
 }
+
+
+/* ==========================================================
+   SELECTOR DE VISTA — TABLA / TARJETAS
+
+   Compartido por apiarios, colmenas, mantenimientos e
+   incidencias. Lo maneja js/vista.js.
+========================================================== */
+
+.selector-vista {
+
+    display: inline-flex;
+    gap: 4px;
+
+    padding: 4px;
+
+    border: 1px solid var(--ap-borde);
+    border-radius: 12px;
+
+    background: var(--ap-blanco);
+
+}
+
+
+.selector-vista-btn {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 34px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: transparent;
+    color: var(--ap-texto-tenue);
+
+    font-size: 16px;
+    cursor: pointer;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease;
+
+}
+
+
+.selector-vista-btn:hover {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-verde-oscuro);
+
+}
+
+
+.selector-vista-btn.activo {
+
+    background: var(--ap-amarillo);
+    color: var(--ap-verde-oscuro);
+
+}
+
+
+/* El panel oculto usa el atributo hidden, que es más robusto
+   que una clase: si el JS no carga, el navegador igual lo
+   respeta y no se ven las dos vistas a la vez. */
+
+[data-vista-panel][hidden] {
+
+    display: none !important;
+
+}
+
+
+/* En pantallas pequeñas la vista de tarjetas es casi siempre
+   mejor, pero se deja elegir igual: el selector no estorba. */
+
+@media (max-width: 560px) {
+
+    .selector-vista-btn {
+        width: 44px;
+        height: 40px;
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .selector-vista-btn {
+        transition: none !important;
+    }
+
+}

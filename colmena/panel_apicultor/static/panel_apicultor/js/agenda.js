@@ -3524,18 +3524,16 @@ document.addEventListener("DOMContentLoaded", function () {
        41. SELECTS AUTOMÁTICOS
     ====================================================== */
 
-    selectsFiltros.forEach(
-        function (
-            select
-        ) {
+    /* Antes los select filtraban al cambiarlos. Se quitó porque
+       cada filtro provoca una recarga completa de la página: al
+       poner dos o tres filtros seguidos se recargaba dos o tres
+       veces, y perdías el que estabas eligiendo mientras la
+       página se iba.
 
-            select.addEventListener(
-                "change",
-                enviarFiltros
-            );
+       Ahora se elige todo y se aplica una sola vez con el botón
+       Filtrar, o con Enter desde el buscador. */
 
-        }
-    );
+
 
 
 
@@ -3547,10 +3545,7 @@ document.addEventListener("DOMContentLoaded", function () {
         inputFechaFiltro
     ) {
 
-        inputFechaFiltro.addEventListener(
-            "change",
-            enviarFiltros
-        );
+
 
     }
 

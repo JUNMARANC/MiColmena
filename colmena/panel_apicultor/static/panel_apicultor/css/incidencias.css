@@ -3657,3 +3657,398 @@ img {
     }
 
 }
+
+/* ==========================================================
+   ==========================================================
+   VISTA EN TARJETAS
+
+   Este módulo solo tenía tabla, y con siete columnas se aprieta
+   desde tablet. Las tarjetas resuelven eso y son las que se
+   muestran en celular.
+
+   El selector que alterna las vistas vive en animaciones.css y
+   lo maneja js/vista.js, compartido con los demás módulos.
+   ========================================================== */
+
+.incidencias-barra-vista {
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-bottom: 16px;
+
+}
+
+
+.incidencias-grid {
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+
+}
+
+
+/* ---------- LA TARJETA ---------- */
+
+.incidencia-card {
+
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    min-width: 0;
+
+    padding: 18px;
+
+    border: 1px solid rgba(33, 79, 59, .10);
+    border-radius: 18px;
+
+    background: var(--ap-blanco);
+
+    box-shadow: 0 5px 17px rgba(33, 79, 59, .07);
+
+    transition:
+        transform .22s cubic-bezier(.4, 0, .2, 1),
+        box-shadow .22s ease,
+        border-color .22s ease;
+
+}
+
+
+.incidencia-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(33, 79, 59, .20);
+
+    box-shadow: 0 11px 26px rgba(33, 79, 59, .13);
+
+}
+
+
+/* ---------- CABECERA ---------- */
+
+.incidencia-card-top {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+}
+
+
+.incidencia-card-id {
+
+    color: var(--ap-texto-apagado);
+
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+.incidencia-card-prioridad {
+
+    padding: 4px 12px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+
+    white-space: nowrap;
+
+}
+
+
+/* Los nombres de prioridad se pasan a minúscula en la
+   plantilla con el filtro |lower, así que las clases van en
+   minúscula y sin tilde donde no la lleva el valor. */
+
+.incidencia-card-prioridad.prioridad-baja {
+
+    background: var(--ap-verde-fondo);
+    color: #4F7B49;
+
+}
+
+
+.incidencia-card-prioridad.prioridad-media {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.incidencia-card-prioridad.prioridad-alta {
+
+    background: #FFE2D4;
+    color: #B5541F;
+
+}
+
+
+.incidencia-card-prioridad.prioridad-crítica,
+.incidencia-card-prioridad.prioridad-critica {
+
+    background: var(--ap-rojo-fondo);
+    color: var(--ap-rojo);
+
+}
+
+
+.incidencia-card-prioridad.prioridad-sin {
+
+    background: #EDF1EF;
+    color: var(--ap-texto-tenue);
+
+}
+
+
+/* ---------- TÍTULO ---------- */
+
+.incidencia-card-titulo {
+
+    margin: 0;
+
+    color: var(--ap-texto);
+
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    overflow-wrap: break-word;
+
+}
+
+
+/* ---------- DATOS ---------- */
+
+.incidencia-card-datos {
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid rgba(33, 79, 59, .07);
+
+}
+
+
+.incidencia-card-datos p {
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0;
+    min-width: 0;
+
+    color: var(--ap-texto-tenue);
+    font-size: 13px;
+
+}
+
+
+.incidencia-card-datos i {
+
+    flex: none;
+
+    width: 16px;
+
+    color: var(--ap-verde-medio);
+    font-size: 14px;
+
+}
+
+
+.incidencia-card-datos span {
+
+    min-width: 0;
+
+    overflow-wrap: break-word;
+
+}
+
+
+/* ---------- PIE ---------- */
+
+.incidencia-card-pie {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    padding-top: 13px;
+
+    border-top: 1px solid rgba(33, 79, 59, .07);
+
+    margin-top: auto;
+
+}
+
+
+.incidencia-card-estado {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+}
+
+
+.incidencia-card-estado i {
+
+    font-size: 7px;
+
+}
+
+
+.incidencia-card-estado.estado-abierta,
+.incidencia-card-estado.estado-pendiente {
+
+    background: var(--ap-rojo-fondo);
+    color: var(--ap-rojo);
+
+}
+
+
+.incidencia-card-estado.estado-en {
+
+    /* "En proceso" y "En revisión" quedan en "en" tras el
+       |lower y el corte por el espacio */
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.incidencia-card-estado.estado-resuelta,
+.incidencia-card-estado.estado-cerrada {
+
+    background: var(--ap-verde-fondo);
+    color: #4F7B49;
+
+}
+
+
+.incidencia-card-estado.estado-sin {
+
+    background: #EDF1EF;
+    color: var(--ap-texto-tenue);
+
+}
+
+
+/* ---------- ACCIONES ---------- */
+
+.incidencia-card-acciones {
+
+    display: flex;
+    gap: 7px;
+
+}
+
+
+.incidencia-card-acciones .btn-ver-incidencia,
+.incidencia-card-acciones .btn-editar-incidencia {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+    flex: none;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 11px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        filter .2s ease;
+
+}
+
+
+.incidencia-card-acciones .btn-ver-incidencia {
+
+    background: #E4F0FA;
+    color: #3D6FA0;
+
+}
+
+
+.incidencia-card-acciones .btn-editar-incidencia {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.incidencia-card-acciones .btn-ver-incidencia:hover,
+.incidencia-card-acciones .btn-editar-incidencia:hover {
+
+    transform: translateY(-2px);
+    filter: brightness(.95);
+
+}
+
+
+/* ---------- EN CELULAR ---------- */
+
+@media (max-width: 560px) {
+
+    .incidencias-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .incidencia-card,
+    .incidencia-card-acciones .btn-ver-incidencia,
+    .incidencia-card-acciones .btn-editar-incidencia {
+        transition: none !important;
+    }
+
+    .incidencia-card:hover,
+    .incidencia-card-acciones .btn-ver-incidencia:hover,
+    .incidencia-card-acciones .btn-editar-incidencia:hover {
+        transform: none;
+    }
+
+}

@@ -462,23 +462,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       14. FILTRAR AUTOMÁTICAMENTE CON LOS SELECT
+       14. FILTROS: SE APLICAN CON EL BOTÓN
     ====================================================== */
 
-    selectsFiltros.forEach(
-        function (select) {
+    /* Antes los select filtraban al cambiarlos. Se quitó porque
+       cada filtro provoca una recarga completa de la página: al
+       poner dos o tres filtros seguidos se recargaba dos o tres
+       veces, y perdías el que estabas eligiendo mientras la
+       página se iba.
 
-            select.addEventListener(
-                "change",
-                function () {
-
-                    enviarFiltros();
-
-                }
-            );
-
-        }
-    );
+       Ahora se elige todo y se aplica una sola vez con el botón
+       Filtrar, o con Enter desde el buscador. */
 
 
 

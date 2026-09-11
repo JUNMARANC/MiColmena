@@ -5639,3 +5639,414 @@ body.modal-mantenimiento-abierto {
 /* ==========================================================
    FIN ACTUALIZACIÓN MANTENIMIENTOS - PANEL APICULTOR
 ========================================================== */
+
+/* ==========================================================
+   ==========================================================
+   VISTA EN TARJETAS
+
+   Este módulo solo tenía tabla, con siete columnas. Las
+   tarjetas son las que se muestran en celular.
+
+   Mismo diseño que las de incidencias, para que los dos
+   módulos se lean igual.
+   ========================================================== */
+
+.mantenimientos-barra-vista {
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-bottom: 16px;
+
+}
+
+
+.mantenimientos-grid {
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+
+}
+
+
+.mantenimiento-card {
+
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    min-width: 0;
+
+    padding: 18px;
+
+    border: 1px solid rgba(33, 79, 59, .10);
+    border-radius: 18px;
+
+    background: var(--ap-blanco);
+
+    box-shadow: 0 5px 17px rgba(33, 79, 59, .07);
+
+    transition:
+        transform .22s cubic-bezier(.4, 0, .2, 1),
+        box-shadow .22s ease,
+        border-color .22s ease;
+
+}
+
+
+.mantenimiento-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(33, 79, 59, .20);
+
+    box-shadow: 0 11px 26px rgba(33, 79, 59, .13);
+
+}
+
+
+/* ---------- CABECERA ---------- */
+
+.mantenimiento-card-top {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+}
+
+
+.mantenimiento-card-id {
+
+    color: var(--ap-texto-apagado);
+
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+.mantenimiento-card-prioridad {
+
+    padding: 4px 12px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+
+    white-space: nowrap;
+
+}
+
+
+.mantenimiento-card-prioridad.prioridad-baja {
+
+    background: var(--ap-verde-fondo);
+    color: #4F7B49;
+
+}
+
+
+.mantenimiento-card-prioridad.prioridad-media {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.mantenimiento-card-prioridad.prioridad-alta {
+
+    background: #FFE2D4;
+    color: #B5541F;
+
+}
+
+
+.mantenimiento-card-prioridad.prioridad-crítica,
+.mantenimiento-card-prioridad.prioridad-critica {
+
+    background: var(--ap-rojo-fondo);
+    color: var(--ap-rojo);
+
+}
+
+
+.mantenimiento-card-prioridad.prioridad-sin {
+
+    background: #EDF1EF;
+    color: var(--ap-texto-tenue);
+
+}
+
+
+/* ---------- TÍTULO ---------- */
+
+.mantenimiento-card-titulo {
+
+    margin: 0;
+
+    color: var(--ap-texto);
+
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    overflow-wrap: break-word;
+
+}
+
+
+/* ---------- DATOS ---------- */
+
+.mantenimiento-card-datos {
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid rgba(33, 79, 59, .07);
+
+}
+
+
+.mantenimiento-card-datos p {
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0;
+    min-width: 0;
+
+    color: var(--ap-texto-tenue);
+    font-size: 13px;
+
+}
+
+
+.mantenimiento-card-datos i {
+
+    flex: none;
+
+    width: 16px;
+
+    color: var(--ap-verde-medio);
+    font-size: 14px;
+
+}
+
+
+.mantenimiento-card-datos span {
+
+    min-width: 0;
+
+    overflow-wrap: break-word;
+
+}
+
+
+/* ---------- PIE ---------- */
+
+.mantenimiento-card-pie {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    padding-top: 13px;
+
+    border-top: 1px solid rgba(33, 79, 59, .07);
+
+    margin-top: auto;
+
+}
+
+
+.mantenimiento-card-estado {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+}
+
+
+.mantenimiento-card-estado i {
+
+    font-size: 7px;
+
+}
+
+
+.mantenimiento-card-estado.estado-pendiente {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.mantenimiento-card-estado.estado-completado {
+
+    background: var(--ap-verde-fondo);
+    color: #4F7B49;
+
+}
+
+
+.mantenimiento-card-estado.estado-cancelado {
+
+    background: var(--ap-rojo-fondo);
+    color: var(--ap-rojo);
+
+}
+
+
+.mantenimiento-card-estado.estado-sin {
+
+    background: #EDF1EF;
+    color: var(--ap-texto-tenue);
+
+}
+
+
+/* ---------- ACCIONES ----------
+
+   Tres botones: ver, editar y completar. El de completar va
+   dentro de un formulario POST, así que el form tiene que ser
+   inline o rompe la fila.
+------------------------------------------------------- */
+
+.mantenimiento-card-acciones {
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+}
+
+
+.mantenimiento-card-acciones .form-completar-mantenimiento {
+
+    display: inline-flex;
+
+    margin: 0;
+
+}
+
+
+.mantenimiento-card-acciones .btn-ver-mantenimiento,
+.mantenimiento-card-acciones .btn-editar-mantenimiento,
+.mantenimiento-card-acciones .btn-completar-mantenimiento {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+    flex: none;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 11px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        filter .2s ease;
+
+}
+
+
+.mantenimiento-card-acciones .btn-ver-mantenimiento {
+
+    background: #E4F0FA;
+    color: #3D6FA0;
+
+}
+
+
+.mantenimiento-card-acciones .btn-editar-mantenimiento {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.mantenimiento-card-acciones .btn-completar-mantenimiento {
+
+    background: var(--ap-verde-fondo);
+    color: #2F7D4F;
+
+}
+
+
+.mantenimiento-card-acciones .btn-ver-mantenimiento:hover,
+.mantenimiento-card-acciones .btn-editar-mantenimiento:hover,
+.mantenimiento-card-acciones .btn-completar-mantenimiento:hover {
+
+    transform: translateY(-2px);
+    filter: brightness(.95);
+
+}
+
+
+/* ---------- EN CELULAR ---------- */
+
+@media (max-width: 560px) {
+
+    .mantenimientos-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mantenimiento-card,
+    .mantenimiento-card-acciones .btn-ver-mantenimiento,
+    .mantenimiento-card-acciones .btn-editar-mantenimiento,
+    .mantenimiento-card-acciones .btn-completar-mantenimiento {
+        transition: none !important;
+    }
+
+    .mantenimiento-card:hover,
+    .mantenimiento-card-acciones .btn-ver-mantenimiento:hover,
+    .mantenimiento-card-acciones .btn-editar-mantenimiento:hover,
+    .mantenimiento-card-acciones .btn-completar-mantenimiento:hover {
+        transform: none;
+    }
+
+}

@@ -417,7 +417,7 @@
                 class="btn-filtrar-incidencias"
             >
 
-                <i class="bi bi-funnel-fill"></i>
+                <i class="bi bi-search" aria-hidden="true"></i>
 
                 <span>
                     Filtrar
@@ -455,6 +455,34 @@
 
 
     </section>
+
+    {% if incidencias %}
+
+        <div class="incidencias-barra-vista">
+
+            <!-- Selector de vista. Lo maneja js/vista.js, el mismo
+                 componente de apiarios y colmenas. -->
+
+            <div class="selector-vista" data-vista="incidencias"
+                 data-vista-defecto="tabla" role="group"
+                 aria-label="Modo de visualización">
+
+                <button type="button" class="selector-vista-btn" data-vista-modo="tabla"
+                        title="Ver en tabla" aria-pressed="false">
+                    <i class="bi bi-table" aria-hidden="true"></i>
+                </button>
+
+                <button type="button" class="selector-vista-btn" data-vista-modo="tarjetas"
+                        title="Ver en tarjetas" aria-pressed="false">
+                    <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
 
 
 
@@ -520,6 +548,8 @@
 
     {% if incidencias %}
 
+
+        <div data-vista-panel="incidencias" data-vista-modo="tabla">
 
         <section class="incidencias-tabla-card">
 
@@ -890,6 +920,105 @@
 
 
         </section>
+
+        </div>
+
+
+        <!-- =================================================
+             VISTA EN TARJETAS
+
+             Este módulo solo tenía tabla, y con siete columnas
+             se aprieta desde tablet. Las tarjetas resuelven eso
+             y son las que se muestran en celular.
+
+             Los botones apuntan a los mismos modales y URLs que
+             la tabla.
+        ================================================== -->
+
+        <div data-vista-panel="incidencias" data-vista-modo="tarjetas" hidden>
+
+            <div class="incidencias-grid">
+
+                {% for incidencia in incidencias %}
+
+                    <article class="incidencia-card">
+
+                        <div class="incidencia-card-top">
+
+                            <span class="incidencia-card-id">
+                                #{{ incidencia.id_incidencia }}
+                            </span>
+
+                            <span class="incidencia-card-prioridad prioridad-{{ incidencia.prioridad|default:"sin"|lower }}">
+                                {{ incidencia.prioridad|default:"Sin definir" }}
+                            </span>
+
+                        </div>
+
+                        <h3 class="incidencia-card-titulo">
+                            {{ incidencia.titulo }}
+                        </h3>
+
+                        <div class="incidencia-card-datos">
+
+                            <p>
+                                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                <span>{{ incidencia.id_apiario.nombreapiario|default:"—" }}</span>
+                            </p>
+
+                            {% if incidencia.id_colmena %}
+                                <p>
+                                    <i class="bi bi-hexagon" aria-hidden="true"></i>
+                                    <span>{{ incidencia.id_colmena.codigocolmena }}</span>
+                                </p>
+                            {% endif %}
+
+                            <p>
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                <span>{{ incidencia.fechadeteccion|date:"d/m/Y" }}</span>
+                            </p>
+
+                            <p>
+                                <i class="bi bi-person" aria-hidden="true"></i>
+                                <span>{{ incidencia.responsable|default:"Sin responsable" }}</span>
+                            </p>
+
+                        </div>
+
+                        <div class="incidencia-card-pie">
+
+                            <span class="incidencia-card-estado estado-{{ incidencia.estado|default:"sin"|lower }}">
+                                <i class="bi bi-circle-fill" aria-hidden="true"></i>
+                                {{ incidencia.estado|default:"Sin definir" }}
+                            </span>
+
+                            <div class="incidencia-card-acciones">
+
+                                <button type="button" class="btn-ver-incidencia"
+                                        data-modal-incidencia="modalIncidencia{{ incidencia.id_incidencia }}"
+                                        title="Ver detalle"
+                                        aria-label="Ver incidencia {{ incidencia.id_incidencia }}">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+
+                                <a href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
+                                   class="btn-editar-incidencia"
+                                   title="Editar"
+                                   aria-label="Editar incidencia {{ incidencia.id_incidencia }}">
+                                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
 
 
 

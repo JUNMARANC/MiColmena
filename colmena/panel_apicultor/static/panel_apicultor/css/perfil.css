@@ -5549,3 +5549,1015 @@
     }
 
 }
+
+
+/* ==========================================================
+   ==========================================================
+   IDENTIDAD VISUAL DEL APICULTOR
+
+   La portada de la tarjeta de identidad era un degradado
+   verde, el mismo del panel del administrador. Aquí debe ser
+   amarillo: es lo que distingue los dos paneles de un
+   vistazo.
+   ========================================================== */
+
+.perfil-card-identidad::before {
+
+    height: 96px;
+
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(137,104,23,0.13)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(137,104,23,0.13)' stroke-width='1'/%3E%3C/svg%3E"),
+        linear-gradient(
+            135deg,
+            var(--ap-amarillo),
+            var(--ap-dorado)
+        );
+
+    background-repeat: repeat, no-repeat;
+
+}
+
+
+/* Un hexágono decorativo asomando por la esquina, igual que
+   en el encabezado del panel de inicio. */
+
+.perfil-card-identidad {
+
+    position: relative;
+    overflow: hidden;
+
+}
+
+
+.perfil-card-identidad::after {
+
+    content: "";
+
+    position: absolute;
+    top: -38px;
+    right: -30px;
+
+    width: 132px;
+    height: 132px;
+
+    background: var(--ap-blanco);
+
+    clip-path:
+        polygon(
+            25% 3%,
+            75% 3%,
+            100% 50%,
+            75% 97%,
+            25% 97%,
+            0% 50%
+        );
+
+    opacity: .22;
+
+    pointer-events: none;
+
+}
+
+
+/* ---------- EL AVATAR ----------
+
+   Sobre amarillo, el borde blanco lo separa mejor que el
+   verde que tenía.
+------------------------------------------------------- */
+
+.perfil-avatar-principal {
+
+    border: 4px solid var(--ap-blanco);
+
+    box-shadow:
+        0 8px 22px rgba(137, 104, 23, .26);
+
+    transition:
+        transform .35s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .3s ease;
+
+}
+
+
+.perfil-card-identidad:hover .perfil-avatar-principal {
+
+    transform: scale(1.04);
+
+    box-shadow:
+        0 12px 28px rgba(137, 104, 23, .34);
+
+}
+
+
+.perfil-avatar-sin-foto {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+/* ==========================================================
+   ENTRADA DE LA PANTALLA
+
+   Las tres tarjetas de la izquierda y el panel de la derecha
+   aparecen escalonados al cargar.
+========================================================== */
+
+@keyframes perfilEntrada {
+
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.perfil-columna-lateral > *,
+.perfil-contenido-principal > .perfil-tabs-principales,
+.perfil-contenido-principal > .perfil-tab-panel {
+
+    animation: perfilEntrada .45s cubic-bezier(.22, 1, .36, 1) both;
+
+}
+
+
+.perfil-columna-lateral > *:nth-child(1) { animation-delay: .04s; }
+.perfil-columna-lateral > *:nth-child(2) { animation-delay: .10s; }
+.perfil-columna-lateral > *:nth-child(3) { animation-delay: .16s; }
+.perfil-columna-lateral > *:nth-child(n+4) { animation-delay: .20s; }
+
+.perfil-contenido-principal > .perfil-tabs-principales { animation-delay: .08s; }
+.perfil-contenido-principal > .perfil-tab-panel        { animation-delay: .14s; }
+
+
+/* ==========================================================
+   LAS TARJETAS RESPONDEN
+
+   Un realce suave al pasar el mouse, sin moverse: son bloques
+   de lectura, no botones.
+========================================================== */
+
+.perfil-card {
+
+    transition:
+        box-shadow .25s ease,
+        border-color .25s ease;
+
+}
+
+
+.perfil-card:hover {
+
+    border-color: rgba(137, 104, 23, .22);
+
+    box-shadow:
+        0 10px 26px rgba(33, 79, 59, .10);
+
+}
+
+
+/* ==========================================================
+   LOS DATOS DE LA COLUMNA IZQUIERDA
+
+   Cada fila se corre un poco al pasar el mouse y su icono
+   toma color. Ayuda a seguir la línea con la vista.
+========================================================== */
+
+.perfil-dato,
+.perfil-info-item {
+
+    border-radius: 11px;
+
+    transition:
+        background-color .2s ease,
+        transform .2s ease;
+
+}
+
+
+.perfil-dato:hover,
+.perfil-info-item:hover {
+
+    background: var(--ap-amarillo-suave);
+
+    transform: translateX(3px);
+
+}
+
+
+/* ==========================================================
+   LA PESTAÑA ACTIVA SE DESLIZA
+
+   El fondo amarillo del botón activo entra desde abajo en vez
+   de aparecer de golpe.
+========================================================== */
+
+.perfil-tab-btn {
+
+    position: relative;
+    overflow: hidden;
+
+}
+
+
+.perfil-tab-btn::before {
+
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: 11px;
+
+    background: var(--ap-amarillo);
+
+    transform: scaleY(0);
+    transform-origin: bottom center;
+
+    transition: transform .25s cubic-bezier(.4, 0, .2, 1);
+
+    z-index: -1;
+
+}
+
+
+.perfil-tab-btn.activo::before {
+
+    transform: scaleY(1);
+
+}
+
+
+/* ==========================================================
+   CAMPOS DEL FORMULARIO
+
+   Anillo suave al enfocar, en vez del salto seco.
+========================================================== */
+
+.perfil-campo input,
+.perfil-campo select,
+.perfil-campo textarea {
+
+    transition:
+        border-color .22s ease,
+        box-shadow .22s ease,
+        background-color .22s ease;
+
+}
+
+
+.perfil-campo input:focus,
+.perfil-campo select:focus,
+.perfil-campo textarea:focus {
+
+    box-shadow:
+        0 0 0 3px rgba(240, 160, 0, .18);
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .perfil-columna-lateral > *,
+    .perfil-contenido-principal > .perfil-tabs-principales,
+    .perfil-contenido-principal > .perfil-tab-panel {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .perfil-avatar-principal,
+    .perfil-card,
+    .perfil-dato,
+    .perfil-info-item,
+    .perfil-tab-btn::before,
+    .perfil-campo input,
+    .perfil-campo select,
+    .perfil-campo textarea {
+        transition: none !important;
+    }
+
+    .perfil-card-identidad:hover .perfil-avatar-principal,
+    .perfil-dato:hover,
+    .perfil-info-item:hover {
+        transform: none;
+    }
+
+    .perfil-tab-btn.activo::before {
+        transform: scaleY(1);
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   PULIDO DEL APARTADO DE SEGURIDAD
+   ========================================================== */
+
+/* ---------- SUB-PESTAÑAS ----------
+
+   La activa era verde oscuro, el color del administrador.
+   Pasa al ámbar del panel, igual que la pestaña principal,
+   para que los dos niveles se lean como una sola familia.
+------------------------------------------------------- */
+
+.perfil-subtab-btn.activo {
+
+    border-color: var(--ap-miel-oscura);
+
+    background: var(--ap-amarillo);
+    color: var(--ap-texto);
+
+    box-shadow: 0 3px 9px rgba(137, 104, 23, .20);
+
+}
+
+
+.perfil-subtab-btn {
+
+    position: relative;
+
+}
+
+
+/* Un punto ámbar marca la activa cuando la barra se envuelve
+   en varias líneas y cuesta ubicarla */
+
+.perfil-subtab-btn.activo::after {
+
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: var(--ap-miel);
+
+    transform: translateX(-50%);
+
+}
+
+
+/* ---------- EL HISTORIAL NO DEBE ESTIRAR LA PÁGINA ----------
+
+   La lista crece con cada evento. Con treinta registros la
+   pantalla se alarga sin control, justo lo que arreglamos con
+   las pestañas.
+
+   Se le pone alto máximo y scroll propio: la tarjeta mantiene
+   su tamaño y la lista se recorre dentro.
+------------------------------------------------------- */
+
+.perfil-historial-lista {
+
+    max-height: 460px;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--ap-dorado) transparent;
+
+}
+
+
+.perfil-historial-lista::-webkit-scrollbar {
+
+    width: 8px;
+
+}
+
+
+.perfil-historial-lista::-webkit-scrollbar-thumb {
+
+    border-radius: 999px;
+
+    background: var(--ap-dorado);
+
+}
+
+
+.perfil-historial-lista::-webkit-scrollbar-track {
+
+    background: transparent;
+
+}
+
+
+/* ---------- LOS REGISTROS ---------- */
+
+.perfil-historial-item {
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    border-radius: 11px;
+
+    transition: background-color .18s ease;
+
+}
+
+
+.perfil-historial-item:hover {
+
+    background: var(--ap-amarillo-suave);
+
+}
+
+
+/* Entran escalonados al abrir la pestaña */
+
+@keyframes perfilHistorialEntrada {
+
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+.perfil-historial-item {
+
+    animation: perfilHistorialEntrada .32s ease both;
+
+}
+
+.perfil-historial-item:nth-child(1) { animation-delay: .02s; }
+.perfil-historial-item:nth-child(2) { animation-delay: .05s; }
+.perfil-historial-item:nth-child(3) { animation-delay: .08s; }
+.perfil-historial-item:nth-child(4) { animation-delay: .11s; }
+.perfil-historial-item:nth-child(5) { animation-delay: .14s; }
+.perfil-historial-item:nth-child(6) { animation-delay: .17s; }
+
+/* De la séptima en adelante entran juntas: escalonar treinta
+   se vuelve lento de ver */
+.perfil-historial-item:nth-child(n+7) { animation-delay: .19s; }
+
+
+/* ---------- AVISO DE SEGURIDAD ----------
+
+   Era una caja gris más. Con el filete ámbar a la izquierda
+   se lee como lo que es: una advertencia, no un dato.
+------------------------------------------------------- */
+
+.perfil-historial-aviso {
+
+    border-left: 4px solid var(--ap-miel);
+
+    border-radius: 0 13px 13px 0;
+
+    background: var(--ap-amarillo-suave);
+
+}
+
+
+.perfil-historial-aviso i {
+
+    color: var(--ap-miel-oscura);
+
+}
+
+
+/* ---------- CONTADOR ---------- */
+
+.perfil-historial-contador {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+/* ==========================================================
+   MOVIMIENTO REDUCIDO
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .perfil-historial-item {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+        transition: none !important;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   SESIONES Y VERIFICACIÓN EN DOS PASOS
+
+   En pantallas anchas estos dos bloques se estiraban de mala
+   manera: el contenido tiene un ancho natural y la tarjeta lo
+   obligaba a ocupar 1900px.
+   ========================================================== */
+
+/* ---------- EL CONTADOR DE SESIONES ----------
+
+   Es el «4» que salía como una barra gris de lado a lado.
+   .perfil-sesiones-contador tenía min-width: 38px, pero su
+   padre es .perfil-card-header, un flex con align-items por
+   defecto: el hijo se estira a todo el ancho disponible.
+
+   Con margin-left: auto se va a la derecha, que es donde debe
+   estar, y align-self evita que crezca a lo alto.
+------------------------------------------------------- */
+
+/* El padre .perfil-card-header es display: block, no flex, así
+   que margin-left: auto no bastaba: el contador seguía siendo
+   un bloque de ancho completo. Se convierte el header en flex
+   solo para esta tarjeta. */
+
+.perfil-card-sesiones .perfil-card-header,
+.perfil-card-historial .perfil-card-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+}
+
+
+.perfil-sesiones-contador {
+
+    display: inline-flex;
+
+    flex: none;
+    width: auto;
+
+    margin-left: auto;
+    align-self: center;
+
+    background: var(--ap-amarillo);
+    color: var(--ap-texto);
+
+    border-radius: 999px;
+
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+/* ---------- LOS DATOS DE CADA SESIÓN ----------
+
+   Eran tres columnas de 1fr: en una pantalla de 1900px cada
+   caja medía más de 500px para mostrar «127.0.0.1». Ahora se
+   acomodan según el sitio que necesitan y dejan de estirarse
+   más allá de lo razonable.
+------------------------------------------------------- */
+
+.perfil-sesion-detalles {
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(190px, 320px));
+
+    justify-content: start;
+
+}
+
+
+/* ---------- EL BOTÓN DE CERRAR SESIÓN ----------
+
+   Estaba solo, abajo a la derecha, lejos de la sesión a la
+   que pertenece. Sube a la misma línea del navegador, que es
+   donde se espera encontrarlo.
+------------------------------------------------------- */
+
+.perfil-sesion-acciones {
+
+    margin-top: 0;
+
+    align-self: center;
+
+}
+
+
+.perfil-sesion-superior {
+
+    align-items: center;
+
+}
+
+
+@media (max-width: 760px) {
+
+    /* En celular sí conviene abajo: arriba competiría con la
+       etiqueta de "Esta sesión". */
+
+    .perfil-sesion-superior {
+        flex-wrap: wrap;
+    }
+
+    .perfil-sesion-acciones {
+        width: 100%;
+        margin-top: 12px;
+        justify-content: flex-start;
+    }
+
+}
+
+
+/* ---------- EL AVISO ---------- */
+
+.perfil-sesiones-aviso {
+
+    border-left: 4px solid var(--ap-verde-medio);
+    border-radius: 0 13px 13px 0;
+
+    background: var(--ap-verde-fondo);
+
+}
+
+
+.perfil-sesiones-aviso i {
+
+    color: var(--ap-verde-hoja);
+
+}
+
+
+/* ---------- LA SESIÓN ACTUAL SE DISTINGUE ---------- */
+
+.perfil-sesiones-lista > * {
+
+    border-radius: 15px;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.perfil-sesiones-lista > *:hover {
+
+    border-color: rgba(137, 104, 23, .26);
+
+    box-shadow: 0 6px 18px rgba(33, 79, 59, .09);
+
+}
+
+
+/* ==========================================================
+   VERIFICACIÓN EN DOS PASOS
+========================================================== */
+
+/* El bloque de estado eran dos columnas al 50%: en pantalla
+   ancha quedaban dos cajas enormes con dos líneas de texto
+   cada una. */
+
+.perfil-2fa-estado {
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(240px, 380px));
+
+    justify-content: start;
+
+}
+
+
+/* El contenido no necesita 1900px de ancho para leerse */
+
+.perfil-2fa-contenido {
+
+    max-width: 860px;
+
+}
+
+
+/* La explicación gris no pega con el resto del panel */
+
+.perfil-2fa-explicacion {
+
+    border: 1px solid rgba(137, 104, 23, .18);
+    border-left: 4px solid var(--ap-miel);
+    border-radius: 0 13px 13px 0;
+
+    background: var(--ap-amarillo-suave);
+
+}
+
+
+.perfil-2fa-aviso-icono {
+
+    color: var(--ap-miel-oscura);
+
+}
+
+
+/* Las acciones a la izquierda, alineadas con el contenido, en
+   vez de empujadas al borde derecho de la pantalla */
+
+.perfil-2fa-acciones {
+
+    justify-content: flex-start;
+
+}
+
+
+/* ==========================================================
+   EL PANEL NO NECESITA TODO EL ANCHO
+
+   Un formulario y una lista de sesiones se leen mejor con un
+   ancho acotado. Sin esto, en un monitor grande el ojo tiene
+   que recorrer 1900px para pasar de una etiqueta a su dato.
+========================================================== */
+
+@media (min-width: 1500px) {
+
+    .perfil-contenido-principal {
+
+        max-width: 1100px;
+
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .perfil-sesiones-lista > * {
+        transition: none !important;
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   COMPACTAR, COMO EN EL PANEL DEL ADMINISTRADOR
+
+   El problema no era el ancho sino la densidad: el
+   administrador muestra lo mismo en una línea y aquí ocupaba
+   tres cajas grises apiladas.
+   ========================================================== */
+
+/* ---------- SESIONES: LOS DATOS EN UNA LÍNEA ----------
+
+   Eran tres cajas con fondo gris, cada una con su etiqueta
+   arriba y el dato abajo. El administrador los pone seguidos
+   en una sola línea, con el icono y la etiqueta al lado del
+   valor. Ocupa un tercio del espacio y se lee igual.
+------------------------------------------------------- */
+
+.perfil-sesion-detalles {
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px 22px;
+
+    margin-top: 8px;
+
+}
+
+
+.perfil-sesion-detalles > div {
+
+    flex-direction: row;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 0;
+
+    background: transparent;
+    border-radius: 0;
+
+    font-size: 13px;
+
+}
+
+
+.perfil-sesion-detalles > div i {
+
+    color: var(--ap-verde-medio);
+    font-size: 13px;
+
+}
+
+
+/* La etiqueta va delante del dato, en la misma línea */
+
+.perfil-sesion-detalles > div span:first-of-type {
+
+    color: var(--ap-texto-tenue);
+
+}
+
+
+.perfil-sesion-detalles > div strong,
+.perfil-sesion-detalles > div span:last-of-type {
+
+    color: var(--ap-texto);
+    font-weight: 700;
+
+}
+
+
+/* ---------- LA TARJETA DE SESIÓN, MÁS BAJA ---------- */
+
+.perfil-sesiones-lista > * {
+
+    padding: 14px 16px;
+
+}
+
+
+.perfil-sesion-superior {
+
+    align-items: flex-start;
+
+}
+
+
+/* ---------- EL AVISO, UNA LÍNEA ----------
+
+   Era una caja con fondo. El administrador lo pone como texto
+   con un icono delante, sin envase: es una nota, no un bloque.
+------------------------------------------------------- */
+
+.perfil-sesiones-aviso {
+
+    padding: 0 0 4px;
+
+    border: none;
+    border-left: none;
+    border-radius: 0;
+
+    background: transparent;
+
+}
+
+
+.perfil-sesiones-aviso strong {
+
+    font-size: 14px;
+
+}
+
+
+.perfil-sesiones-aviso p {
+
+    margin: 2px 0 0;
+
+    font-size: 13px;
+
+}
+
+
+/* ---------- EL CONTADOR, JUNTO AL TÍTULO ----------
+
+   En el administrador el número va pegado al título, no en el
+   otro extremo de la tarjeta.
+------------------------------------------------------- */
+
+.perfil-card-sesiones .perfil-card-header {
+
+    justify-content: flex-start;
+
+}
+
+
+.perfil-sesiones-contador {
+
+    min-width: 26px;
+    height: 26px;
+
+    margin-left: 0;
+
+    padding: 0 9px;
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================================================
+   VERIFICACIÓN EN DOS PASOS: TODO EN UNA FILA
+
+   El administrador muestra el título, la etiqueta de estado,
+   la explicación y el botón en un solo bloque horizontal.
+   Aquí eran dos tarjetas con borde, una debajo de otra.
+========================================================== */
+
+.perfil-2fa-estado {
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 12px 18px;
+
+}
+
+
+.perfil-2fa-estado > div {
+
+    flex-direction: row;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 0;
+
+    background: transparent;
+
+}
+
+
+.perfil-2fa-etiqueta {
+
+    padding: 3px 11px;
+
+    border-radius: 999px;
+
+    background: #EDF1EF;
+    color: var(--ap-texto-tenue);
+
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+
+}
+
+
+/* La explicación como nota, sin envase */
+
+.perfil-2fa-explicacion {
+
+    padding: 0;
+
+    border: none;
+    border-left: none;
+    border-radius: 0;
+
+    background: transparent;
+
+    font-size: 13px;
+
+}
+
+
+.perfil-2fa-contenido {
+
+    gap: 14px;
+
+}
+
+
+/* El botón de activar, a la derecha de la fila */
+
+.perfil-2fa-acciones {
+
+    justify-content: flex-end;
+
+    margin-left: auto;
+
+}
+
+
+@media (max-width: 700px) {
+
+    .perfil-2fa-acciones {
+
+        justify-content: flex-start;
+
+        margin-left: 0;
+        width: 100%;
+
+    }
+
+}

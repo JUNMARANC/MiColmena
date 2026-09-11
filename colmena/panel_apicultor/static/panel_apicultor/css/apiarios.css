@@ -3384,3 +3384,805 @@ body.modal-apiario-abierto {
     }
 
 }
+
+/* ==========================================================
+   BARRA DE VISTA Y TABLA DE APIARIOS
+
+   Este módulo solo tenía la vista de tarjetas. La tabla es
+   nueva; el selector que las alterna vive en animaciones.css
+   y lo maneja js/vista.js, compartido con los demás módulos.
+========================================================== */
+
+.apiarios-barra-vista {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-bottom: 16px;
+
+}
+
+
+.apiarios-conteo {
+
+    color: var(--ap-texto-tenue);
+    font-size: 14px;
+    font-weight: 600;
+
+}
+
+
+/* ==========================================================
+   TABLA
+
+   El wrapper contiene el scroll: si la tabla no cabe, se
+   desliza ella sola y nunca desborda la página.
+========================================================== */
+
+.apiarios-tabla-wrapper {
+
+    overflow-x: auto;
+
+    border: 1px solid var(--ap-borde);
+    border-radius: 16px;
+
+    background: var(--ap-blanco);
+
+}
+
+
+.apiarios-tabla {
+
+    width: 100%;
+    min-width: 720px;
+
+    border-collapse: collapse;
+
+}
+
+
+.apiarios-tabla thead th {
+
+    padding: 14px 16px;
+
+    border-bottom: 1px solid var(--ap-borde);
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-verde-oscuro);
+
+    font-size: 11px;
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+
+    white-space: nowrap;
+
+}
+
+
+.apiarios-tabla tbody td {
+
+    padding: 14px 16px;
+
+    border-bottom: 1px solid rgba(33, 79, 59, .07);
+
+    color: var(--ap-texto);
+    font-size: 14px;
+
+    vertical-align: middle;
+
+}
+
+
+.apiarios-tabla tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.apiarios-tabla-nombre {
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+}
+
+
+.apiarios-tabla-miniatura {
+
+    width: 42px;
+    height: 42px;
+    flex: none;
+
+    object-fit: cover;
+    border-radius: 11px;
+
+}
+
+
+.apiarios-tabla-miniatura-vacia {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--ap-verde-fondo);
+    color: var(--ap-verde-medio);
+
+    font-size: 18px;
+
+}
+
+
+.apiarios-tabla-capacidad {
+
+    color: var(--ap-texto-apagado);
+    font-size: 12px;
+
+}
+
+
+.apiarios-tabla-estado {
+
+    display: inline-block;
+
+    padding: 4px 12px;
+
+    border-radius: 999px;
+
+    background: var(--ap-verde-fondo);
+    color: var(--ap-verde-hoja);
+
+    font-size: 12px;
+    font-weight: 700;
+
+}
+
+
+.apiarios-tabla-col-acciones {
+
+    white-space: nowrap;
+
+}
+
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+    min-width: 0;
+    flex: none;
+
+    padding: 0;
+    margin: 0 3px 0 0;
+
+    font-size: 15px;
+
+}
+
+
+/* Los botones con texto ensanchaban tanto la columna que
+   aplastaban las demás. En la tabla van solo con icono: el
+   nombre está en el title, y en la vista de tarjetas siguen
+   con texto, que es donde hay sitio. */
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario span,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario span {
+
+    display: none;
+
+}
+
+
+/* Anchos: el nombre se lleva el espacio sobrante en vez de
+   repartirse parejo entre las cinco columnas */
+
+.apiarios-tabla-col-acciones {
+
+    width: 1%;
+
+}
+
+.apiarios-tabla th:nth-child(2) { width: 24%; }
+.apiarios-tabla th:nth-child(3) { width: 120px; }
+.apiarios-tabla th:nth-child(4) { width: 120px; }
+
+
+/* ==========================================================
+   NOTA SOBRE EL CELULAR
+
+   Aquí había un bloque que convertía cada fila de la tabla en
+   una ficha por debajo de 760px. Quedaba peor que la tarjeta
+   que este módulo ya tiene: repetía la misma información con
+   menos espacio, sin la foto y con el texto desbordándose.
+
+   Se quitó. Ahora js/vista.js fuerza la vista de tarjetas en
+   pantallas angostas y oculta el selector, que es reutilizar
+   lo que ya está bien hecho en vez de imitarlo peor.
+   ========================================================== */
+
+
+/* ==========================================================
+   PULIDO DE LA TABLA DE APIARIOS
+========================================================== */
+
+/* ---------- ESTADO CON COLOR ----------
+
+   Antes la pastilla era siempre verde, dijera lo que dijera.
+   Ahora usa los mismos colores que la tarjeta, para que las
+   dos vistas se lean igual. El punto de color de la izquierda
+   deja ver el estado sin tener que leer la palabra. */
+
+.apiarios-tabla-estado {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+}
+
+
+.apiarios-tabla-estado i {
+
+    font-size: 7px;
+
+}
+
+
+.apiarios-tabla-estado.bueno {
+
+    background: var(--ap-verde-fondo);
+    color: #4F7B49;
+
+}
+
+
+.apiarios-tabla-estado.precaucion {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.apiarios-tabla-estado.deficiente {
+
+    background: var(--ap-rojo-fondo);
+    color: var(--ap-rojo);
+
+}
+
+
+/* ---------- FILAS ---------- */
+
+/* Filas alternas: en una tabla de cinco columnas ayuda a no
+   perder el renglón a media lectura. */
+
+.apiarios-tabla tbody tr:nth-child(even) {
+
+    background: rgba(255, 253, 240, .55);
+
+}
+
+
+/* Al pasar el mouse, la fila se resalta y aparece una guía de
+   color a la izquierda. Los botones, que están al 55% para no
+   competir con el contenido, se ven completos. */
+
+.apiarios-tabla tbody tr {
+
+    position: relative;
+
+    transition: background-color .18s ease;
+
+}
+
+
+.apiarios-tabla tbody tr:hover {
+
+    background: var(--ap-amarillo-suave);
+
+}
+
+
+.apiarios-tabla tbody td:first-child {
+
+    position: relative;
+
+}
+
+
+.apiarios-tabla tbody td:first-child::before {
+
+    content: "";
+
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+
+    width: 3px;
+
+    border-radius: 0 3px 3px 0;
+
+    background: var(--ap-miel);
+
+    opacity: 0;
+
+    transition:
+        opacity .18s ease,
+        transform .25s cubic-bezier(.34, 1.56, .64, 1);
+
+    transform: scaleY(.4);
+
+}
+
+
+.apiarios-tabla tbody tr:hover td:first-child::before {
+
+    opacity: 1;
+    transform: scaleY(1);
+
+}
+
+
+/* ---------- LA MINIATURA RESPIRA ---------- */
+
+.apiarios-tabla-miniatura {
+
+    transition: transform .3s cubic-bezier(.4, 0, .2, 1);
+
+}
+
+
+.apiarios-tabla tbody tr:hover .apiarios-tabla-miniatura {
+
+    transform: scale(1.07);
+
+}
+
+
+/* ---------- BOTONES DE ACCIÓN ---------- */
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario {
+
+    opacity: .55;
+
+    transition:
+        opacity .18s ease,
+        transform .22s cubic-bezier(.34, 1.56, .64, 1);
+
+}
+
+
+.apiarios-tabla tbody tr:hover .btn-detalle-apiario,
+.apiarios-tabla tbody tr:hover .btn-gestionar-apiario,
+.apiarios-tabla-col-acciones .btn-detalle-apiario:focus-visible,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario:focus-visible {
+
+    opacity: 1;
+
+}
+
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario:hover,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario:hover {
+
+    transform: translateY(-2px) scale(1.06);
+
+}
+
+
+/* ---------- ENCABEZADO ---------- */
+
+/* Una línea miel bajo el encabezado lo separa del cuerpo sin
+   necesidad de un borde duro. */
+
+.apiarios-tabla thead th {
+
+    position: relative;
+
+    border-bottom: none;
+
+}
+
+
+.apiarios-tabla thead::after {
+
+    content: "";
+
+    display: block;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--ap-miel),
+            var(--ap-amarillo)
+        );
+
+}
+
+
+/* ---------- EL NÚMERO DE COLMENAS ---------- */
+
+.apiarios-tabla td[data-titulo="Colmenas"] {
+
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   EN FICHA (menos de 760px)
+
+   Los botones se ven completos, sin el efecto de opacidad que
+   no tiene sentido sin mouse.
+========================================================== */
+
+/* Entre 760 y 900px la tabla sigue disponible pero con poco
+   sitio: la barra de vista se apila para no apretar el conteo
+   contra el selector. */
+
+@media (max-width: 900px) {
+
+    .apiarios-barra-vista {
+        align-items: flex-start;
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .apiarios-tabla tbody tr,
+    .apiarios-tabla tbody td:first-child::before,
+    .apiarios-tabla-miniatura,
+    .apiarios-tabla-col-acciones .btn-detalle-apiario,
+    .apiarios-tabla-col-acciones .btn-gestionar-apiario {
+        transition: none !important;
+    }
+
+    .apiarios-tabla tbody tr:hover .apiarios-tabla-miniatura,
+    .apiarios-tabla-col-acciones .btn-detalle-apiario:hover,
+    .apiarios-tabla-col-acciones .btn-gestionar-apiario:hover {
+        transform: none;
+    }
+
+    .apiarios-tabla tbody td:first-child::before {
+        transform: scaleY(1);
+    }
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   TABLA AL ESTILO DEL PANEL DEL ADMINISTRADOR
+
+   Tomado de cómo se ve la tabla de apiarios del administrador:
+   imagen en columna propia, filas blancas con separadores
+   suaves, y los botones de acción como cuadros de color en
+   vez de pastillas con texto.
+
+   Este bloque va al final, así que manda sobre lo anterior.
+   ========================================================== */
+
+/* ---------- CONTENEDOR ---------- */
+
+.apiarios-tabla-wrapper {
+
+    padding: 8px;
+
+    border: 1px solid rgba(33, 79, 59, .09);
+    border-radius: 20px;
+
+    box-shadow: 0 6px 20px rgba(33, 79, 59, .06);
+
+}
+
+
+/* ---------- ENCABEZADO ---------- */
+
+.apiarios-tabla thead th {
+
+    padding: 16px 18px;
+
+    background: transparent;
+
+    border-bottom: 2px solid var(--ap-verde-fondo);
+
+    color: var(--ap-verde-oscuro);
+    font-size: 11px;
+    letter-spacing: .7px;
+
+}
+
+/* la línea miel del bloque anterior sobra: el borde ya separa */
+.apiarios-tabla thead::after {
+
+    display: none;
+
+}
+
+
+/* ---------- FILAS ---------- */
+
+/* Sin filas alternas: el administrador las deja blancas y se ve
+   más limpio con pocos registros. */
+
+.apiarios-tabla tbody tr:nth-child(even) {
+
+    background: transparent;
+
+}
+
+.apiarios-tabla tbody tr:hover {
+
+    background: rgba(255, 253, 240, .85);
+
+}
+
+.apiarios-tabla tbody td {
+
+    padding: 16px 18px;
+
+    border-bottom: 1px solid rgba(33, 79, 59, .06);
+
+}
+
+
+/* ---------- COLUMNA DE IMAGEN ---------- */
+
+.apiarios-tabla-col-img {
+
+    width: 90px;
+
+}
+
+.apiarios-tabla-miniatura {
+
+    width: 56px;
+    height: 56px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 3px 10px rgba(33, 79, 59, .14);
+
+}
+
+.apiarios-tabla-miniatura-vacia {
+
+    border-radius: 14px;
+
+}
+
+
+/* ---------- NOMBRE ---------- */
+
+.apiarios-tabla-nombre {
+
+    display: block;
+
+    color: var(--ap-texto);
+    font-size: 14px;
+    font-weight: 600;
+
+}
+
+
+/* ---------- ACCIONES COMO CUADROS DE COLOR ----------
+
+   Cada acción con su tinte: ver en azul, gestionar en ámbar.
+   El administrador tiene tres porque incluye eliminar; aquí
+   son dos, que son las que existen en este panel.
+------------------------------------------------------- */
+
+.apiarios-tabla-col-acciones {
+
+    text-align: right;
+
+}
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario {
+
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 11px;
+
+    opacity: 1;
+
+    box-shadow: none;
+
+    transition:
+        transform .2s cubic-bezier(.34, 1.56, .64, 1),
+        filter .2s ease;
+
+}
+
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario {
+
+    background: #E4F0FA;
+    color: #3D6FA0;
+
+}
+
+
+.apiarios-tabla-col-acciones .btn-gestionar-apiario {
+
+    background: var(--ap-amarillo-suave);
+    color: var(--ap-miel-oscura);
+
+}
+
+
+.apiarios-tabla-col-acciones .btn-detalle-apiario:hover,
+.apiarios-tabla-col-acciones .btn-gestionar-apiario:hover {
+
+    transform: translateY(-2px);
+    filter: brightness(.95);
+
+}
+
+
+/* ---------- ANCHOS ----------
+
+   Con la imagen aparte, las columnas se recalculan.
+------------------------------------------------------- */
+
+.apiarios-tabla th:nth-child(2) { width: auto; }   /* Apiario   */
+.apiarios-tabla th:nth-child(3) { width: 24%; }    /* Ubicación */
+.apiarios-tabla th:nth-child(4) { width: 120px; }  /* Colmenas  */
+.apiarios-tabla th:nth-child(5) { width: 140px; }  /* Estado    */
+
+
+/* La guía lateral al pasar el mouse va en la primera celda,
+   que ahora es la de la imagen. */
+
+.apiarios-tabla tbody td:first-child::before {
+
+    left: -8px;
+
+}
+
+
+/* ==========================================================
+   BARRA DE OCUPACIÓN EN LA TABLA
+
+   Tomada de la tarjeta del panel del administrador. La cifra
+   sola («15 de 20») obliga a hacer la cuenta mentalmente en
+   cada fila; la barra deja ver de un vistazo cuáles están al
+   tope y cuáles tienen sitio.
+========================================================== */
+
+.apiarios-tabla-ocupacion {
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    min-width: 120px;
+
+}
+
+
+.apiarios-tabla-ocupacion-cifra {
+
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+.apiarios-tabla-ocupacion-cifra strong {
+
+    color: var(--ap-verde-oscuro);
+    font-size: 16px;
+    font-weight: 800;
+
+}
+
+
+.apiarios-tabla-barra {
+
+    position: relative;
+
+    height: 7px;
+    width: 100%;
+
+    border-radius: 999px;
+
+    background: rgba(33, 79, 59, .09);
+
+    overflow: hidden;
+
+}
+
+
+.apiarios-tabla-barra span {
+
+    display: block;
+    height: 100%;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--ap-dorado),
+            var(--ap-miel)
+        );
+
+    /* Crece desde cero al cargar la fila: acompaña la entrada
+       escalonada que ya tienen las tablas. */
+    animation: apiariosCrecerBarra .8s cubic-bezier(.4, 0, .2, 1) both;
+
+    transform-origin: left center;
+
+}
+
+
+@keyframes apiariosCrecerBarra {
+
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+
+}
+
+
+/* La barra se engrosa un poco al pasar por la fila */
+
+.apiarios-tabla-barra {
+
+    transition: height .2s ease;
+
+}
+
+.apiarios-tabla tbody tr:hover .apiarios-tabla-barra {
+
+    height: 9px;
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .apiarios-tabla-barra span {
+        animation: none !important;
+    }
+
+    .apiarios-tabla-barra {
+        transition: none !important;
+    }
+
+}
