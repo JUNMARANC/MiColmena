@@ -35,6 +35,11 @@ from panel_apicultor.views import (
     actualizar_estado_evento_apicultor,
     perfil_apicultor,
     cambiar_password_apicultor,
+
+    # Notificaciones
+    notificaciones_apicultor,
+    marcar_notificacion_leida_apicultor,
+    marcar_todas_notificaciones_leidas_apicultor,
 )
 
 
@@ -211,4 +216,27 @@ urlpatterns = [
 
     path("perfil/",perfil_apicultor,name="perfil_apicultor",),
     path("perfil/cambiar-password/",cambiar_password_apicultor,name="cambiar_password_apicultor"),
+
+
+    # ============================================================
+    # NOTIFICACIONES
+    # ============================================================
+
+    path(
+        "notificaciones/",
+        notificaciones_apicultor,
+        name="notificaciones_apicultor",
+    ),
+
+    path(
+        "notificaciones/<int:id_notificacion>/leer/",
+        marcar_notificacion_leida_apicultor,
+        name="marcar_notificacion_leida_apicultor",
+    ),
+
+    path(
+        "notificaciones/marcar-todas-leidas/",
+        marcar_todas_notificaciones_leidas_apicultor,
+        name="marcar_todas_notificaciones_leidas_apicultor",
+    ),
 ]

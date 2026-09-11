@@ -345,6 +345,626 @@ def notificar_incidencia_creada(
 
 
 # ============================================================
+# OBTENER APICULTOR RELACIONADO CON UNA INCIDENCIA
+# ============================================================
+
+def obtener_apicultor_incidencia(
+    incidencia
+):
+
+    # ========================================================
+    # 1. INCIDENCIA DIRECTAMENTE SOBRE UN APICULTOR
+    # ========================================================
+
+    apicultor = getattr(
+        incidencia,
+        "id_apicultor",
+        None
+    )
+
+
+    if apicultor:
+
+        return apicultor
+
+
+    # ========================================================
+    # 2. INCIDENCIA SOBRE UN APIARIO
+    # ========================================================
+
+    apiario = getattr(
+        incidencia,
+        "id_apiario",
+        None
+    )
+
+
+    if apiario:
+
+        apicultor = getattr(
+            apiario,
+            "id_apicultor",
+            None
+        )
+
+
+        if apicultor:
+
+            return apicultor
+
+
+    # ========================================================
+    # 3. INCIDENCIA SOBRE UNA COLMENA
+    # ========================================================
+
+    colmena = getattr(
+        incidencia,
+        "id_colmena",
+        None
+    )
+
+
+    if colmena:
+
+        apiario_colmena = getattr(
+            colmena,
+            "id_apiario",
+            None
+        )
+
+
+        if apiario_colmena:
+
+            apicultor = getattr(
+                apiario_colmena,
+                "id_apicultor",
+                None
+            )
+
+
+            if apicultor:
+
+                return apicultor
+
+
+    # ========================================================
+    # SIN APICULTOR RELACIONADO
+    # ========================================================
+
+    return None
+
+
+# ============================================================
+# NOTIFICAR NUEVA INCIDENCIA AL APICULTOR
+# ============================================================
+
+def notificar_incidencia_apicultor(
+    incidencia
+):
+
+    # ========================================================
+    # 1. CONFIGURACIÓN GLOBAL
+    # ========================================================
+
+    if not notificaciones_activas(
+        "incidencia"
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # 2. APICULTOR RELACIONADO
+    # ========================================================
+
+    apicultor = (
+        obtener_apicultor_incidencia(
+            incidencia
+        )
+    )
+
+
+    if not apicultor:
+
+        return 0
+
+
+    # ========================================================
+    # 3. USUARIO
+    # ========================================================
+
+    usuario = getattr(
+        apicultor,
+        "user",
+        None
+    )
+
+
+    if (
+        not usuario
+        or
+        not usuario.is_active
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # 4. DATOS
+    # ========================================================
+
+    titulo_incidencia = (
+        incidencia.titulo
+        or
+        "Incidencia"
+    )
+
+
+    prioridad = (
+        incidencia.prioridad
+        or
+        "Sin prioridad"
+    )
+
+
+    estado = (
+        incidencia.estado
+        or
+        "Pendiente"
+    )
+
+
+    fecha = (
+        incidencia.fechadeteccion
+    )
+
+
+    fecha_texto = (
+        fecha.strftime(
+            "%d/%m/%Y"
+        )
+        if fecha
+        else "Sin fecha"
+    )
+
+
+    # ========================================================
+    # 5. APIARIO
+    # ========================================================
+
+    apiario = getattr(
+        incidencia,
+        "id_apiario",
+        None
+    )
+
+
+    # Si la incidencia es de una colmena,
+    # podemos obtener el apiario desde ella.
+
+    if (
+        not apiario
+        and
+        incidencia.id_colmena
+    ):
+
+        apiario = (
+            incidencia
+            .id_colmena
+            .id_apiario
+        )
+
+
+    nombre_apiario = ""
+
+
+    if apiario:
+
+        nombre_apiario = (
+            apiario.nombreapiario
+            or
+            ""
+        )
+
+
+    # ========================================================
+    # 6. COLMENA
+    # ========================================================
+
+    codigo_colmena = ""
+
+
+    if incidencia.id_colmena:
+
+        codigo_colmena = (
+            incidencia
+            .id_colmena
+            .codigocolmena
+            or
+            ""
+        )
+
+
+    # ========================================================
+    # 7. MENSAJE
+    # ========================================================
+
+    partes = [
+
+        (
+            f'Se registró la incidencia '
+            f'"{titulo_incidencia}" '
+            f'relacionada contigo o con uno '
+            f'de tus apiarios.'
+        ),
+
+        (
+            f"Fecha: "
+            f"{fecha_texto}."
+        ),
+
+        (
+            f"Prioridad: "
+            f"{prioridad}."
+        ),
+
+        (
+            f"Estado: "
+            f"{estado}."
+        ),
+
+    ]
+
+
+    if nombre_apiario:
+
+        partes.append(
+            f"Apiario: {nombre_apiario}."
+        )
+
+
+    if codigo_colmena:
+
+        partes.append(
+            f"Colmena: {codigo_colmena}."
+        )
+
+
+    mensaje = " ".join(
+        partes
+    )
+
+
+    # ========================================================
+    # 8. URL DEL PANEL APICULTOR
+    # ========================================================
+
+    url = reverse(
+        "incidencias_apicultor"
+    )
+
+
+    # ========================================================
+    # 9. REFERENCIA
+    #
+    # Evita duplicar la notificación inicial.
+    # ========================================================
+
+    referencia = (
+
+        f"incidencia:"
+        f"{incidencia.pk}:"
+        f"creada:"
+        f"{usuario.pk}"
+
+    )
+
+
+    # ========================================================
+    # 10. CREAR
+    # ========================================================
+
+    notificacion, creada = (
+        Notificacion.objects.get_or_create(
+
+            usuario=
+                usuario,
+
+            referencia=
+                referencia,
+
+            defaults={
+
+                "tipo":
+                    "incidencia",
+
+                "titulo":
+                    "Nueva incidencia registrada",
+
+                "mensaje":
+                    mensaje,
+
+                "url":
+                    url,
+
+            }
+
+        )
+    )
+
+
+    return (
+        1
+        if creada
+        else 0
+    )
+
+
+
+# ============================================================
+# NOTIFICAR ACTUALIZACIÓN DE INCIDENCIA AL APICULTOR
+# ============================================================
+
+def notificar_actualizacion_incidencia_apicultor(
+    incidencia,
+    estado_anterior,
+    apicultor_anterior_id=None
+):
+
+    # ========================================================
+    # CONFIGURACIÓN
+    # ========================================================
+
+    if not notificaciones_activas(
+        "incidencia"
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # APICULTOR ACTUAL
+    # ========================================================
+
+    apicultor_actual = (
+        obtener_apicultor_incidencia(
+            incidencia
+        )
+    )
+
+
+    if not apicultor_actual:
+
+        return 0
+
+
+    usuario = getattr(
+        apicultor_actual,
+        "user",
+        None
+    )
+
+
+    if (
+        not usuario
+        or
+        not usuario.is_active
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # DETECTAR CAMBIOS
+    # ========================================================
+
+    estado_actual = (
+        incidencia.estado
+        or
+        ""
+    )
+
+
+    cambio_estado = (
+        estado_anterior
+        !=
+        estado_actual
+    )
+
+
+    cambio_apicultor = (
+
+        apicultor_anterior_id
+        !=
+        apicultor_actual.pk
+
+    )
+
+
+    # No hubo ningún cambio importante.
+    if (
+        not cambio_estado
+        and
+        not cambio_apicultor
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    titulo_incidencia = (
+        incidencia.titulo
+        or
+        "Incidencia"
+    )
+
+
+    prioridad = (
+        incidencia.prioridad
+        or
+        "Sin prioridad"
+    )
+
+
+    partes = []
+
+
+    # ========================================================
+    # REASIGNACIÓN
+    # ========================================================
+
+    if cambio_apicultor:
+
+        partes.append(
+            (
+                f'Se te asignó la incidencia '
+                f'"{titulo_incidencia}".'
+            )
+        )
+
+
+    # ========================================================
+    # CAMBIO DE ESTADO
+    # ========================================================
+
+    if cambio_estado:
+
+        partes.append(
+            (
+                f'La incidencia "{titulo_incidencia}" '
+                f'cambió de "{estado_anterior}" '
+                f'a "{estado_actual}".'
+            )
+        )
+
+
+    partes.append(
+        f"Prioridad: {prioridad}."
+    )
+
+
+    # ========================================================
+    # APIARIO
+    # ========================================================
+
+    apiario = getattr(
+        incidencia,
+        "id_apiario",
+        None
+    )
+
+
+    if (
+        not apiario
+        and
+        incidencia.id_colmena
+    ):
+
+        apiario = (
+            incidencia
+            .id_colmena
+            .id_apiario
+        )
+
+
+    if apiario:
+
+        partes.append(
+            (
+                f"Apiario: "
+                f"{apiario.nombreapiario}."
+            )
+        )
+
+
+    # ========================================================
+    # COLMENA
+    # ========================================================
+
+    if incidencia.id_colmena:
+
+        partes.append(
+            (
+                f"Colmena: "
+                f"{incidencia.id_colmena.codigocolmena}."
+            )
+        )
+
+
+    mensaje = " ".join(
+        partes
+    )
+
+
+    # ========================================================
+    # TÍTULO
+    # ========================================================
+
+    if (
+        cambio_apicultor
+        and
+        cambio_estado
+    ):
+
+        titulo_notificacion = (
+            "Incidencia asignada y actualizada"
+        )
+
+
+    elif cambio_apicultor:
+
+        titulo_notificacion = (
+            "Nueva incidencia asignada"
+        )
+
+
+    else:
+
+        titulo_notificacion = (
+            "Estado de incidencia actualizado"
+        )
+
+
+    # ========================================================
+    # CREAR NOTIFICACIÓN
+    # ========================================================
+
+    Notificacion.objects.create(
+
+        usuario=
+            usuario,
+
+        tipo=
+            "incidencia",
+
+        titulo=
+            titulo_notificacion,
+
+        mensaje=
+            mensaje,
+
+        url=
+            reverse(
+                "incidencias_apicultor"
+            ),
+
+        referencia=(
+            f"incidencia:"
+            f"{incidencia.pk}:"
+            f"actualizacion:"
+            f"{usuario.pk}:"
+            f"{timezone.now().strftime('%Y%m%d%H%M%S%f')}"
+        ),
+
+    )
+
+
+    return 1
+
+# ============================================================
 # NOTIFICAR MANTENIMIENTO CREADO
 # ============================================================
 
@@ -555,6 +1175,275 @@ def notificar_mantenimiento_creado(
 
 
     return creadas
+
+
+
+# ============================================================
+# NOTIFICAR MANTENIMIENTO ASIGNADO A APICULTOR
+# ============================================================
+
+def notificar_mantenimiento_asignado_apicultor(
+    mantenimiento,
+    apicultor,
+    reasignacion=False
+):
+
+    # ========================================================
+    # CONFIGURACIÓN
+    # ========================================================
+
+    if not notificaciones_activas(
+        "mantenimiento"
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # VALIDAR APICULTOR
+    # ========================================================
+
+    if not apicultor:
+
+        return 0
+
+
+    usuario = getattr(
+        apicultor,
+        "user",
+        None
+    )
+
+
+    if (
+        not usuario
+        or
+        not usuario.is_active
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # DATOS
+    # ========================================================
+
+    tipo = (
+        mantenimiento.tipo
+        or
+        "Mantenimiento"
+    )
+
+
+    prioridad = (
+        mantenimiento.prioridad
+        or
+        "Sin prioridad"
+    )
+
+
+    fecha = (
+        mantenimiento.fechaejecucion
+    )
+
+
+    fecha_texto = (
+        fecha.strftime(
+            "%d/%m/%Y"
+        )
+        if fecha
+        else "Sin fecha"
+    )
+
+
+    # ========================================================
+    # APIARIO
+    # ========================================================
+
+    nombre_apiario = ""
+
+
+    if mantenimiento.id_apiario:
+
+        nombre_apiario = (
+            mantenimiento
+            .id_apiario
+            .nombreapiario
+            or
+            ""
+        )
+
+
+    # ========================================================
+    # COLMENA
+    # ========================================================
+
+    codigo_colmena = ""
+
+
+    if mantenimiento.id_colmena:
+
+        codigo_colmena = (
+            mantenimiento
+            .id_colmena
+            .codigocolmena
+            or
+            ""
+        )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    if reasignacion:
+
+        encabezado = (
+            f'Se te reasignó el mantenimiento '
+            f'"{tipo}".'
+        )
+
+        titulo_notificacion = (
+            "Mantenimiento reasignado"
+        )
+
+    else:
+
+        encabezado = (
+            f'Se te asignó el mantenimiento '
+            f'"{tipo}".'
+        )
+
+        titulo_notificacion = (
+            "Nuevo mantenimiento asignado"
+        )
+
+
+    partes = [
+
+        encabezado,
+
+        (
+            f"Fecha programada: "
+            f"{fecha_texto}."
+        ),
+
+        (
+            f"Prioridad: "
+            f"{prioridad}."
+        ),
+
+    ]
+
+
+    if nombre_apiario:
+
+        partes.append(
+            f"Apiario: {nombre_apiario}."
+        )
+
+
+    if codigo_colmena:
+
+        partes.append(
+            f"Colmena: {codigo_colmena}."
+        )
+
+
+    mensaje = " ".join(
+        partes
+    )
+
+
+    # ========================================================
+    # URL
+    # ========================================================
+
+    url = reverse(
+        "mantenimientos_apicultor"
+    )
+
+
+    # ========================================================
+    # REFERENCIA
+    # ========================================================
+
+    if reasignacion:
+
+        # Cada reasignación real debe poder generar
+        # una nueva notificación.
+
+        momento = (
+            timezone.now()
+            .strftime(
+                "%Y%m%d%H%M%S%f"
+            )
+        )
+
+
+        referencia = (
+
+            f"mantenimiento:"
+            f"{mantenimiento.pk}:"
+            f"reasignacion:"
+            f"{usuario.pk}:"
+            f"{momento}"
+
+        )
+
+
+    else:
+
+        # La notificación inicial sí debe ser única.
+
+        referencia = (
+
+            f"mantenimiento:"
+            f"{mantenimiento.pk}:"
+            f"asignacion:"
+            f"{usuario.pk}"
+
+        )
+
+
+    # ========================================================
+    # CREAR
+    # ========================================================
+
+    notificacion, creada = (
+        Notificacion.objects.get_or_create(
+
+            usuario=
+                usuario,
+
+            referencia=
+                referencia,
+
+            defaults={
+
+                "tipo":
+                    "mantenimiento",
+
+                "titulo":
+                    titulo_notificacion,
+
+                "mensaje":
+                    mensaje,
+
+                "url":
+                    url,
+
+            }
+
+        )
+    )
+
+
+    return (
+        1
+        if creada
+        else 0
+    )
 
 
 
@@ -1220,11 +2109,6 @@ def crear_notificacion_agenda(
     )
 
 
-    url = (
-        f"{reverse('agenda_admin')}"
-        f"?mes={mes_evento}"
-    )
-
 
     # ========================================================
     # DESTINATARIOS
@@ -1241,6 +2125,48 @@ def crear_notificacion_agenda(
 
 
     for id_usuario in usuarios_ids:
+
+
+        # ====================================================
+        # URL SEGÚN EL TIPO DE DESTINATARIO
+        # ====================================================
+
+        responsable_user_id = None
+
+
+        if (
+            evento.responsable
+            and
+            evento.responsable.user
+        ):
+
+            responsable_user_id = (
+                evento.responsable.user_id
+            )
+
+
+        # APICULTOR
+
+        if (
+            responsable_user_id
+            and
+            id_usuario == responsable_user_id
+        ):
+
+            url = (
+                f"{reverse('agenda_apicultor')}"
+                f"?mes={mes_evento}"
+            )
+
+
+        # ADMINISTRADOR
+
+        else:
+
+            url = (
+                f"{reverse('agenda_admin')}"
+                f"?mes={mes_evento}"
+            )
 
         notificacion, creada = (
             Notificacion.objects.get_or_create(
@@ -1634,6 +2560,250 @@ def revisar_alertas_agenda():
             total_manana,
 
     }
+
+
+# ============================================================
+# NOTIFICAR EVENTO ASIGNADO A UN APICULTOR
+# ============================================================
+
+def notificar_evento_asignado_apicultor(
+    evento
+):
+
+    # ========================================================
+    # 1. VERIFICAR CONFIGURACIÓN GLOBAL
+    # ========================================================
+
+    if not notificaciones_activas(
+        "agenda"
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # 2. RESPONSABLE
+    # ========================================================
+
+    responsable = getattr(
+        evento,
+        "responsable",
+        None
+    )
+
+
+    if not responsable:
+
+        return 0
+
+
+    # ========================================================
+    # 3. USUARIO DEL APICULTOR
+    # ========================================================
+
+    usuario = getattr(
+        responsable,
+        "user",
+        None
+    )
+
+
+    if (
+        not usuario
+        or
+        not usuario.is_active
+    ):
+
+        return 0
+
+
+    # ========================================================
+    # 4. FECHA DEL EVENTO
+    # ========================================================
+
+    if not evento.fecha:
+
+        return 0
+
+
+    fecha_texto = (
+        evento.fecha.strftime(
+            "%d/%m/%Y"
+        )
+    )
+
+
+    mes_evento = (
+        evento.fecha.strftime(
+            "%Y-%m"
+        )
+    )
+
+
+    # ========================================================
+    # 5. HORA
+    # ========================================================
+
+    hora_texto = ""
+
+
+    if evento.hora:
+
+        hora_texto = (
+            evento.hora.strftime(
+                "%I:%M %p"
+            )
+        )
+
+
+    # ========================================================
+    # 6. APIARIO
+    # ========================================================
+
+    nombre_apiario = (
+        evento.id_apiario.nombreapiario
+        if evento.id_apiario
+        else ""
+    )
+
+
+    # ========================================================
+    # 7. COLMENA
+    # ========================================================
+
+    codigo_colmena = (
+        evento.id_colmena.codigocolmena
+        if evento.id_colmena
+        else ""
+    )
+
+
+    # ========================================================
+    # 8. CONSTRUIR MENSAJE
+    # ========================================================
+
+    partes = [
+
+        (
+            f'Se te asignó el evento '
+            f'"{evento.titulo}".'
+        ),
+
+        (
+            f"Fecha: "
+            f"{fecha_texto}."
+        ),
+
+    ]
+
+
+    if hora_texto:
+
+        partes.append(
+            f"Hora: {hora_texto}."
+        )
+
+
+    if nombre_apiario:
+
+        partes.append(
+            (
+                f"Apiario: "
+                f"{nombre_apiario}."
+            )
+        )
+
+
+    if codigo_colmena:
+
+        partes.append(
+            (
+                f"Colmena: "
+                f"{codigo_colmena}."
+            )
+        )
+
+
+    mensaje = " ".join(
+        partes
+    )
+
+
+    # ========================================================
+    # 9. URL DEL PANEL APICULTOR
+    # ========================================================
+
+    url = (
+        f"{reverse('agenda_apicultor')}"
+        f"?mes={mes_evento}"
+    )
+
+
+    # ========================================================
+    # 10. REFERENCIA ÚNICA
+    #
+    # fecha_actualizacion permite distinguir una asignación
+    # nueva de otra realizada posteriormente.
+    # ========================================================
+
+    fecha_actualizacion = (
+        evento.fecha_actualizacion
+    )
+
+
+    referencia = (
+
+        f"agenda:"
+        f"{evento.pk}:"
+        f"asignacion:"
+        f"{usuario.pk}:"
+        f"{fecha_actualizacion.isoformat()}"
+
+    )
+
+
+    # ========================================================
+    # 11. CREAR NOTIFICACIÓN
+    # ========================================================
+
+    notificacion, creada = (
+        Notificacion.objects.get_or_create(
+
+            usuario=
+                usuario,
+
+            referencia=
+                referencia,
+
+            defaults={
+
+                "tipo":
+                    "agenda",
+
+                "titulo":
+                    "Nueva actividad asignada",
+
+                "mensaje":
+                    mensaje,
+
+                "url":
+                    url,
+
+            }
+
+        )
+    )
+
+
+    # ========================================================
+    # 12. RESULTADO
+    # ========================================================
+
+    return (
+        1
+        if creada
+        else 0
+    )
 
 
 # ============================================================

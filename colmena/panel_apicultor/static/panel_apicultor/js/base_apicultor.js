@@ -383,3 +383,181 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
+
+/* ==========================================================
+   NOTIFICACIONES - PANEL APICULTOR
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const contenedor = (
+            document.getElementById(
+                "notificacionesApicultor"
+            )
+        );
+
+
+        const boton = (
+            document.getElementById(
+                "btnNotificacionesApicultor"
+            )
+        );
+
+
+        const panel = (
+            document.getElementById(
+                "panelNotificacionesApicultor"
+            )
+        );
+
+
+        if (
+            !contenedor ||
+            !boton ||
+            !panel
+        ) {
+
+            return;
+
+        }
+
+
+        /* ==================================================
+           ABRIR
+        ================================================== */
+
+        function abrirNotificaciones() {
+
+            panel.classList.add(
+                "activo"
+            );
+
+
+            panel.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+
+            boton.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+        }
+
+
+        /* ==================================================
+           CERRAR
+        ================================================== */
+
+        function cerrarNotificaciones() {
+
+            panel.classList.remove(
+                "activo"
+            );
+
+
+            panel.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+            boton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+
+        /* ==================================================
+           ABRIR / CERRAR CAMPANA
+        ================================================== */
+
+        boton.addEventListener(
+            "click",
+            function (evento) {
+
+                evento.stopPropagation();
+
+
+                const abierto = (
+                    panel.classList.contains(
+                        "activo"
+                    )
+                );
+
+
+                if (abierto) {
+
+                    cerrarNotificaciones();
+
+                } else {
+
+                    abrirNotificaciones();
+
+                }
+
+            }
+        );
+
+
+        /* ==================================================
+           NO CERRAR AL HACER CLIC DENTRO
+        ================================================== */
+
+        panel.addEventListener(
+            "click",
+            function (evento) {
+
+                evento.stopPropagation();
+
+            }
+        );
+
+
+        /* ==================================================
+           CERRAR AL HACER CLIC AFUERA
+        ================================================== */
+
+        document.addEventListener(
+            "click",
+            function () {
+
+                cerrarNotificaciones();
+
+            }
+        );
+
+
+        /* ==================================================
+           CERRAR CON ESCAPE
+        ================================================== */
+
+        document.addEventListener(
+            "keydown",
+            function (evento) {
+
+                if (
+                    evento.key
+                    ===
+                    "Escape"
+                ) {
+
+                    cerrarNotificaciones();
+
+
+                    boton.focus();
+
+                }
+
+            }
+        );
+
+    }
+);

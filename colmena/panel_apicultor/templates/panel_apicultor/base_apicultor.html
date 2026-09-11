@@ -559,39 +559,287 @@
             <div class="header-derecha">
 
 
-                <!-- =========================================
-                     NOTIFICACIONES
-                ========================================== -->
+                <!-- =====================================================
+                    NOTIFICACIONES
+                ====================================================== -->
 
-                <button
-                    type="button"
-                    class="header-icon-btn"
-                    aria-label="Notificaciones"
-                    title="Notificaciones"
+                <div
+                    class="notificaciones-apicultor"
+                    id="notificacionesApicultor"
                 >
 
-                    <i class="bi bi-bell-fill"></i>
+                    <!-- =================================================
+                        CAMPANA
+                    ================================================== -->
 
-                </button>
+                    <button
+                        type="button"
+                        class="header-icon-btn notificaciones-apicultor-boton"
+                        id="btnNotificacionesApicultor"
+                        aria-label="Abrir notificaciones"
+                        aria-controls="panelNotificacionesApicultor"
+                        aria-expanded="false"
+                        title="Notificaciones"
+                    >
+
+                        <i class="bi bi-bell-fill"></i>
 
 
+                        <!-- =============================================
+                            CONTADOR
+                        ============================================== -->
 
-                <!-- =========================================
-                     VER TODAS LAS NOTIFICACIONES
-                ========================================== -->
+                        {% if notificaciones_no_leidas > 0 %}
 
-                <a
-                    href="#"
-                    class="header-notificaciones-enlace"
-                >
+                            <span
+                                class="notificaciones-apicultor-contador"
+                                id="contadorNotificacionesApicultor"
+                            >
 
-                    <span>
-                        Ver todas las notificaciones
-                    </span>
+                                {% if notificaciones_no_leidas > 99 %}
 
-                    <i class="bi bi-arrow-right"></i>
+                                    99+
 
-                </a>
+                                {% else %}
+
+                                    {{ notificaciones_no_leidas }}
+
+                                {% endif %}
+
+                            </span>
+
+                        {% endif %}
+
+                    </button>
+
+
+                    <!-- =================================================
+                        PANEL DESPLEGABLE
+                    ================================================== -->
+
+                    <div
+                        class="notificaciones-apicultor-panel"
+                        id="panelNotificacionesApicultor"
+                        aria-hidden="true"
+                    >
+
+                        <!-- =============================================
+                            HEADER
+                        ============================================== -->
+
+                        <div class="notificaciones-apicultor-header">
+
+                            <div>
+
+                                <h3>
+                                    Notificaciones
+                                </h3>
+
+
+                                <p>
+
+                                    {% if notificaciones_no_leidas == 0 %}
+
+                                        No tienes notificaciones nuevas
+
+                                    {% elif notificaciones_no_leidas == 1 %}
+
+                                        1 notificación sin leer
+
+                                    {% else %}
+
+                                        {{ notificaciones_no_leidas }}
+                                        notificaciones sin leer
+
+                                    {% endif %}
+
+                                </p>
+
+                            </div>
+
+
+                            <div class="notificaciones-apicultor-header-icono">
+
+                                <i class="bi bi-bell"></i>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =============================================
+                            LISTADO
+                        ============================================== -->
+
+                        <div class="notificaciones-apicultor-lista">
+
+                            {% if notificaciones_recientes %}
+
+                                {% for notificacion in notificaciones_recientes %}
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'marcar_notificacion_leida_apicultor' notificacion.id %}"
+                                        class="notificacion-apicultor-form"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                notificacion-apicultor-item
+
+                                                {% if not notificacion.leida %}
+                                                    no-leida
+                                                {% endif %}
+                                            "
+                                        >
+
+                                            <!-- =================================
+                                                ICONO
+                                            ================================== -->
+
+                                            <div
+                                                class="
+                                                    notificacion-apicultor-icono
+                                                    tipo-{{ notificacion.tipo }}
+                                                "
+                                            >
+
+                                                {% if notificacion.tipo == "incidencia" %}
+
+                                                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                                {% elif notificacion.tipo == "mantenimiento" %}
+
+                                                    <i class="bi bi-tools"></i>
+
+                                                {% elif notificacion.tipo == "colmena" %}
+
+                                                    <i class="bi bi-hexagon-fill"></i>
+
+                                                {% elif notificacion.tipo == "agenda" %}
+
+                                                    <i class="bi bi-calendar-event-fill"></i>
+
+                                                {% elif notificacion.tipo == "seguridad" %}
+
+                                                    <i class="bi bi-shield-exclamation"></i>
+
+                                                {% else %}
+
+                                                    <i class="bi bi-bell-fill"></i>
+
+                                                {% endif %}
+
+                                            </div>
+
+
+                                            <!-- =================================
+                                                CONTENIDO
+                                            ================================== -->
+
+                                            <div class="notificacion-apicultor-contenido">
+
+                                                <div class="notificacion-apicultor-titulo">
+
+                                                    <strong>
+                                                        {{ notificacion.titulo }}
+                                                    </strong>
+
+
+                                                    {% if not notificacion.leida %}
+
+                                                        <span
+                                                            class="notificacion-apicultor-punto"
+                                                            title="Sin leer"
+                                                        ></span>
+
+                                                    {% endif %}
+
+                                                </div>
+
+
+                                                <p>
+                                                    {{ notificacion.mensaje|truncatechars:100 }}
+                                                </p>
+
+
+                                                <span class="notificacion-apicultor-fecha">
+
+                                                    <i class="bi bi-clock"></i>
+
+                                                    Hace
+                                                    {{ notificacion.fecha_creacion|timesince }}
+
+                                                </span>
+
+                                            </div>
+
+                                        </button>
+
+                                    </form>
+
+                                {% endfor %}
+
+
+                            {% else %}
+
+                                <!-- =====================================
+                                    SIN NOTIFICACIONES
+                                ====================================== -->
+
+                                <div class="notificaciones-apicultor-vacio">
+
+                                    <div class="notificaciones-apicultor-vacio-icono">
+
+                                        <i class="bi bi-bell-slash"></i>
+
+                                    </div>
+
+
+                                    <strong>
+                                        Todo está al día
+                                    </strong>
+
+
+                                    <p>
+                                        Cuando tengas nuevas actividades o avisos,
+                                        aparecerán aquí.
+                                    </p>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- =============================================
+                            FOOTER
+                        ============================================== -->
+
+                        <div class="notificaciones-apicultor-footer">
+
+                            <a
+                                href="{% url 'notificaciones_apicultor' %}"
+                                class="notificaciones-apicultor-ver-todas"
+                            >
+
+                                <span>
+                                    Ver todas las notificaciones
+                                </span>
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
 
             </div>

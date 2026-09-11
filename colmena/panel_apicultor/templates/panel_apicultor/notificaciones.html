@@ -1,0 +1,815 @@
+{% extends "panel_apicultor/base_apicultor.html" %}
+{% load static %}
+
+
+{% block title %}
+Mis notificaciones | Mi Colmena
+{% endblock %}
+
+
+{% block page_title %}
+Mis notificaciones
+{% endblock %}
+
+
+{% block page_subtitle %}
+Consulta tus actividades, alertas y novedades
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'panel_apicultor/css/notificaciones.css' %}?v=1"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="notificaciones-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <section class="notificaciones-page-header">
+
+        <div class="notificaciones-page-header-info">
+
+            <span class="notificaciones-page-eyebrow">
+
+                <i class="bi bi-bell"></i>
+
+                Centro de notificaciones
+
+            </span>
+
+
+            <h2>
+                Mantente al día
+            </h2>
+
+
+            <p>
+                Consulta los avisos relacionados con tus
+                apiarios, colmenas, mantenimientos,
+                incidencias y actividades programadas.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             MARCAR TODAS COMO LEÍDAS
+        ================================================== -->
+
+        {% if total_no_leidas > 0 %}
+
+            <form
+                method="POST"
+                action="{% url 'marcar_todas_notificaciones_leidas_apicultor' %}"
+                class="notificaciones-marcar-todas-form"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn-marcar-todas-notificaciones"
+                >
+
+                    <i class="bi bi-check2-all"></i>
+
+                    <span>
+                        Marcar todas como leídas
+                    </span>
+
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESUMEN
+    ====================================================== -->
+
+    <section class="notificaciones-resumen">
+
+
+        <!-- =================================================
+             TODAS
+        ================================================== -->
+
+        <a
+            href="?estado=todas{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}"
+            class="
+                notificaciones-resumen-card
+
+                {% if estado_seleccionado == 'todas' %}
+                    activo
+                {% endif %}
+            "
+        >
+
+            <div class="notificaciones-resumen-icono">
+
+                <i class="bi bi-bell"></i>
+
+            </div>
+
+
+            <div class="notificaciones-resumen-info">
+
+                <span>
+                    Todas
+                </span>
+
+                <strong>
+                    {{ total_notificaciones }}
+                </strong>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- =================================================
+             NO LEÍDAS
+        ================================================== -->
+
+        <a
+            href="?estado=no_leidas{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}"
+            class="
+                notificaciones-resumen-card
+
+                {% if estado_seleccionado == 'no_leidas' %}
+                    activo
+                {% endif %}
+            "
+        >
+
+            <div class="notificaciones-resumen-icono pendiente">
+
+                <i class="bi bi-circle-fill"></i>
+
+            </div>
+
+
+            <div class="notificaciones-resumen-info">
+
+                <span>
+                    No leídas
+                </span>
+
+                <strong>
+                    {{ total_no_leidas }}
+                </strong>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- =================================================
+             LEÍDAS
+        ================================================== -->
+
+        <a
+            href="?estado=leidas{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}"
+            class="
+                notificaciones-resumen-card
+
+                {% if estado_seleccionado == 'leidas' %}
+                    activo
+                {% endif %}
+            "
+        >
+
+            <div class="notificaciones-resumen-icono leida">
+
+                <i class="bi bi-check2-circle"></i>
+
+            </div>
+
+
+            <div class="notificaciones-resumen-info">
+
+                <span>
+                    Leídas
+                </span>
+
+                <strong>
+                    {{ total_leidas }}
+                </strong>
+
+            </div>
+
+        </a>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <section class="notificaciones-filtros">
+
+        <div class="notificaciones-filtros-titulo">
+
+            <div class="notificaciones-filtros-icono">
+
+                <i class="bi bi-funnel"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Filtrar notificaciones
+                </strong>
+
+                <span>
+                    Selecciona el tipo de aviso que deseas consultar.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <form
+            method="GET"
+            class="notificaciones-filtros-form"
+        >
+
+            <input
+                type="hidden"
+                name="estado"
+                value="{{ estado_seleccionado }}"
+            >
+
+
+            <div class="notificaciones-campo-filtro">
+
+                <label for="filtroTipoNotificacion">
+
+                    Tipo de notificación
+
+                </label>
+
+
+                <select
+                    id="filtroTipoNotificacion"
+                    name="tipo"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Todos los tipos
+                    </option>
+
+
+                    <option
+                        value="agenda"
+                        {% if tipo_seleccionado == "agenda" %}
+                            selected
+                        {% endif %}
+                    >
+                        Agenda
+                    </option>
+
+
+                    <option
+                        value="mantenimiento"
+                        {% if tipo_seleccionado == "mantenimiento" %}
+                            selected
+                        {% endif %}
+                    >
+                        Mantenimiento
+                    </option>
+
+
+                    <option
+                        value="incidencia"
+                        {% if tipo_seleccionado == "incidencia" %}
+                            selected
+                        {% endif %}
+                    >
+                        Incidencia
+                    </option>
+
+
+                    <option
+                        value="colmena"
+                        {% if tipo_seleccionado == "colmena" %}
+                            selected
+                        {% endif %}
+                    >
+                        Colmena
+                    </option>
+
+
+                    <option
+                        value="seguridad"
+                        {% if tipo_seleccionado == "seguridad" %}
+                            selected
+                        {% endif %}
+                    >
+                        Seguridad
+                    </option>
+
+
+                    <option
+                        value="sistema"
+                        {% if tipo_seleccionado == "sistema" %}
+                            selected
+                        {% endif %}
+                    >
+                        Sistema
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            {% if tipo_seleccionado %}
+
+                <a
+                    href="?estado={{ estado_seleccionado }}"
+                    class="btn-limpiar-filtro-notificaciones"
+                >
+
+                    <i class="bi bi-x-circle"></i>
+
+                    Limpiar filtro
+
+                </a>
+
+            {% endif %}
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         LISTADO
+    ====================================================== -->
+
+    <section class="notificaciones-listado">
+
+
+        {% for notificacion in notificaciones %}
+
+            <article
+                class="
+                    notificacion-page-card
+
+                    {% if not notificacion.leida %}
+                        no-leida
+                    {% endif %}
+                "
+            >
+
+
+                <!-- =========================================
+                     ICONO
+                ========================================== -->
+
+                <div
+                    class="
+                        notificacion-page-icono
+                        tipo-{{ notificacion.tipo }}
+                    "
+                >
+
+                    {% if notificacion.tipo == "incidencia" %}
+
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    {% elif notificacion.tipo == "mantenimiento" %}
+
+                        <i class="bi bi-tools"></i>
+
+                    {% elif notificacion.tipo == "agenda" %}
+
+                        <i class="bi bi-calendar-event-fill"></i>
+
+                    {% elif notificacion.tipo == "colmena" %}
+
+                        <i class="bi bi-hexagon-fill"></i>
+
+                    {% elif notificacion.tipo == "seguridad" %}
+
+                        <i class="bi bi-shield-lock-fill"></i>
+
+                    {% else %}
+
+                        <i class="bi bi-bell-fill"></i>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- =========================================
+                     CONTENIDO
+                ========================================== -->
+
+                <div class="notificacion-page-contenido">
+
+
+                    <!-- =====================================
+                         CABECERA
+                    ====================================== -->
+
+                    <div class="notificacion-page-superior">
+
+                        <div class="notificacion-page-titulo-wrap">
+
+
+                            {% if not notificacion.leida %}
+
+                                <span
+                                    class="notificacion-page-punto"
+                                    title="Notificación sin leer"
+                                ></span>
+
+                            {% endif %}
+
+
+                            <h3>
+
+                                {{ notificacion.titulo }}
+
+                            </h3>
+
+                        </div>
+
+
+                        <span class="notificacion-page-fecha">
+
+                            <i class="bi bi-clock"></i>
+
+                            {{ notificacion.fecha_creacion|date:"d/m/Y H:i" }}
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         TIPO
+                    ====================================== -->
+
+                    <span
+                        class="
+                            notificacion-page-tipo
+                            tipo-{{ notificacion.tipo }}
+                        "
+                    >
+
+                        {{ notificacion.get_tipo_display }}
+
+                    </span>
+
+
+
+                    <!-- =====================================
+                         MENSAJE
+                    ====================================== -->
+
+                    <p class="notificacion-page-mensaje">
+
+                        {{ notificacion.mensaje }}
+
+                    </p>
+
+
+
+                    <!-- =====================================
+                         ESTADO Y ACCIONES
+                    ====================================== -->
+
+                    <div class="notificacion-page-footer">
+
+
+                        <!-- =============================
+                             ESTADO
+                        ============================== -->
+
+                        <div class="notificacion-page-estado">
+
+                            {% if notificacion.leida %}
+
+                                <span class="estado-leida">
+
+                                    <i class="bi bi-check2-circle"></i>
+
+                                    Leída
+
+                                </span>
+
+
+                                {% if notificacion.fecha_lectura %}
+
+                                    <small>
+
+                                        {{ notificacion.fecha_lectura|date:"d/m/Y H:i" }}
+
+                                    </small>
+
+                                {% endif %}
+
+
+                            {% else %}
+
+                                <span class="estado-no-leida">
+
+                                    <i class="bi bi-circle-fill"></i>
+
+                                    Sin leer
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- =============================
+                             ACCIÓN
+                        ============================== -->
+
+                        <form
+                            method="POST"
+                            action="{% url 'marcar_notificacion_leida_apicultor' notificacion.id %}"
+                        >
+
+                            {% csrf_token %}
+
+
+                            <button
+                                type="submit"
+                                class="
+                                    btn-abrir-notificacion
+
+                                    {% if not notificacion.leida %}
+                                        principal
+                                    {% endif %}
+                                "
+                            >
+
+                                {% if notificacion.url %}
+
+                                    <i class="bi bi-arrow-up-right-square"></i>
+
+                                    {% if notificacion.leida %}
+
+                                        Abrir
+
+                                    {% else %}
+
+                                        Ver y marcar como leída
+
+                                    {% endif %}
+
+
+                                {% else %}
+
+                                    <i class="bi bi-check2"></i>
+
+                                    {% if notificacion.leida %}
+
+                                        Leída
+
+                                    {% else %}
+
+                                        Marcar como leída
+
+                                    {% endif %}
+
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+        {% empty %}
+
+            <!-- =============================================
+                 ESTADO VACÍO
+            ============================================== -->
+
+            <div class="notificaciones-vacio">
+
+                <div class="notificaciones-vacio-icono">
+
+                    <i class="bi bi-bell-slash"></i>
+
+                </div>
+
+
+                <h3>
+                    No encontramos notificaciones
+                </h3>
+
+
+                <p>
+
+                    {% if estado_seleccionado == "no_leidas" %}
+
+                        No tienes notificaciones pendientes por leer.
+
+                    {% elif estado_seleccionado == "leidas" %}
+
+                        Todavía no tienes notificaciones leídas.
+
+                    {% elif tipo_seleccionado %}
+
+                        No existen notificaciones de este tipo.
+
+                    {% else %}
+
+                        Cuando tengas nuevos avisos,
+                        aparecerán en esta sección.
+
+                    {% endif %}
+
+                </p>
+
+
+                {% if tipo_seleccionado or estado_seleccionado != "todas" %}
+
+                    <a
+                        href="{% url 'notificaciones_apicultor' %}"
+                        class="btn-ver-todas-vacio"
+                    >
+
+                        <i class="bi bi-arrow-counterclockwise"></i>
+
+                        Ver todas
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PAGINACIÓN
+    ====================================================== -->
+
+    {% if notificaciones.paginator.num_pages > 1 %}
+
+        <nav
+            class="notificaciones-paginacion"
+            aria-label="Paginación de notificaciones"
+        >
+
+
+            <!-- =============================================
+                 ANTERIOR
+            ============================================== -->
+
+            {% if notificaciones.has_previous %}
+
+                <a
+                    href="
+                        ?page={{ notificaciones.previous_page_number }}
+                        &estado={{ estado_seleccionado }}
+                        {% if tipo_seleccionado %}
+                            &tipo={{ tipo_seleccionado }}
+                        {% endif %}
+                    "
+                    class="notificaciones-pagina-btn"
+                >
+
+                    <i class="bi bi-chevron-left"></i>
+
+                    Anterior
+
+                </a>
+
+            {% else %}
+
+                <span
+                    class="
+                        notificaciones-pagina-btn
+                        deshabilitado
+                    "
+                >
+
+                    <i class="bi bi-chevron-left"></i>
+
+                    Anterior
+
+                </span>
+
+            {% endif %}
+
+
+
+            <!-- =============================================
+                 INFORMACIÓN
+            ============================================== -->
+
+            <span class="notificaciones-pagina-info">
+
+                Página
+
+                <strong>
+                    {{ notificaciones.number }}
+                </strong>
+
+                de
+
+                <strong>
+                    {{ notificaciones.paginator.num_pages }}
+                </strong>
+
+            </span>
+
+
+
+            <!-- =============================================
+                 SIGUIENTE
+            ============================================== -->
+
+            {% if notificaciones.has_next %}
+
+                <a
+                    href="
+                        ?page={{ notificaciones.next_page_number }}
+                        &estado={{ estado_seleccionado }}
+                        {% if tipo_seleccionado %}
+                            &tipo={{ tipo_seleccionado }}
+                        {% endif %}
+                    "
+                    class="notificaciones-pagina-btn"
+                >
+
+                    Siguiente
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </a>
+
+            {% else %}
+
+                <span
+                    class="
+                        notificaciones-pagina-btn
+                        deshabilitado
+                    "
+                >
+
+                    Siguiente
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </span>
+
+            {% endif %}
+
+        </nav>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

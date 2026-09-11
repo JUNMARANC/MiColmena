@@ -67,13 +67,18 @@ from panel_admin.permisos import (
 from panel_admin.notificaciones import (
     notificar_incidencia_creada,
     notificar_mantenimiento_creado,
-    revisar_alertas_mantenimientos,
+    notificar_mantenimiento_asignado_apicultor,
     revisar_alertas_mantenimientos,
     revisar_alertas_agenda,
     revisar_evento_agenda,
+    notificar_evento_asignado_apicultor,
     notificar_colmena_en_riesgo,
     revisar_cambio_estado_colmena,
     notificar_cambio_password,
+    notificar_incidencia_apicultor,
+    notificar_actualizacion_incidencia_apicultor,
+    obtener_apicultor_incidencia,
+    notificar_actualizacion_incidencia_apicultor,
 )
 
 
@@ -3385,7 +3390,6 @@ def mantenimientos_admin(request):
 )
 def crear_mantenimiento(request):
 
-
     # ========================================================
     # 1. SOLO POST
     # ========================================================
@@ -3419,7 +3423,7 @@ def crear_mantenimiento(request):
 
 
     # ========================================================
-    # 3. DATOS GENERALES
+    # 3. DATOS DEL FORMULARIO
     # ========================================================
 
     entidad = (
@@ -3529,19 +3533,29 @@ def crear_mantenimiento(request):
 
 
     # ========================================================
-    # 5. VALIDACIONES
+    # 5. VALIDACIONES GENERALES
     # ========================================================
 
     errores = []
 
 
+    # ========================================================
+    # ENTIDAD
+    # ========================================================
+
     if entidad not in entidades_validas:
 
         errores.append(
-            "Selecciona si el mantenimiento corresponde "
-            "a un Apiario o a una Colmena."
+            (
+                "Selecciona si el mantenimiento corresponde "
+                "a un Apiario o a una Colmena."
+            )
         )
 
+
+    # ========================================================
+    # TIPO
+    # ========================================================
 
     if not tipo:
 
@@ -3553,10 +3567,16 @@ def crear_mantenimiento(request):
     elif len(tipo) > 100:
 
         errores.append(
-            "El tipo de mantenimiento no puede superar "
-            "los 100 caracteres."
+            (
+                "El tipo de mantenimiento no puede superar "
+                "los 100 caracteres."
+            )
         )
 
+
+    # ========================================================
+    # FECHA
+    # ========================================================
 
     if not fecha_ejecucion:
 
@@ -3565,6 +3585,10 @@ def crear_mantenimiento(request):
         )
 
 
+    # ========================================================
+    # PRIORIDAD
+    # ========================================================
+
     if prioridad not in prioridades_validas:
 
         errores.append(
@@ -3572,11 +3596,17 @@ def crear_mantenimiento(request):
         )
 
 
+    # ========================================================
+    # OBSERVACIONES
+    # ========================================================
+
     if len(observaciones) > 255:
 
         errores.append(
-            "Las observaciones no pueden superar "
-            "los 255 caracteres."
+            (
+                "Las observaciones no pueden superar "
+                "los 255 caracteres."
+            )
         )
 
 
@@ -3587,8 +3617,10 @@ def crear_mantenimiento(request):
     if len(todas_evidencias) > MAX_EVIDENCIAS:
 
         errores.append(
-            "Un mantenimiento puede tener un máximo de "
-            f"{MAX_EVIDENCIAS} fotografías en total."
+            (
+                "Un mantenimiento puede tener un máximo de "
+                f"{MAX_EVIDENCIAS} fotografías en total."
+            )
         )
 
 
@@ -3623,6 +3655,10 @@ def crear_mantenimiento(request):
     colmena = None
 
 
+    # ========================================================
+    # MANTENIMIENTO DE APIARIO
+    # ========================================================
+
     if entidad == "Apiario":
 
         if not id_apiario_form:
@@ -3630,6 +3666,7 @@ def crear_mantenimiento(request):
             errores.append(
                 "Debes seleccionar un apiario."
             )
+
 
         else:
 
@@ -3651,6 +3688,10 @@ def crear_mantenimiento(request):
                     "El apiario seleccionado no existe."
                 )
 
+
+    # ========================================================
+    # MANTENIMIENTO DE COLMENA
+    # ========================================================
 
     elif entidad == "Colmena":
 
@@ -3676,17 +3717,14 @@ def crear_mantenimiento(request):
 
             colmena = (
                 Colmena.objects
-
                 .select_related(
                     "id_apiario",
                     "id_apiario__id_apicultor"
                 )
-
                 .filter(
                     pk=id_colmena_form,
                     id_apiario_id=id_apiario_form
                 )
-
                 .first()
             )
 
@@ -3694,8 +3732,10 @@ def crear_mantenimiento(request):
             if not colmena:
 
                 errores.append(
-                    "La colmena seleccionada no pertenece "
-                    "al apiario indicado."
+                    (
+                        "La colmena seleccionada no pertenece "
+                        "al apiario indicado."
+                    )
                 )
 
 
@@ -3731,19 +3771,19 @@ def crear_mantenimiento(request):
     )
 
 
+    apicultor_responsable = None
+
+
     if responsable_id:
 
         apicultor_responsable = (
             Apicultor.objects
-
             .select_related(
                 "user"
             )
-
             .filter(
                 pk=responsable_id
             )
-
             .first()
         )
 
@@ -3755,7 +3795,17 @@ def crear_mantenimiento(request):
             )
 
 
-        elif apicultor_responsable.user:
+        elif not apicultor_responsable.user:
+
+            errores.append(
+                (
+                    "El apicultor seleccionado no tiene "
+                    "un usuario asociado."
+                )
+            )
+
+
+        else:
 
             responsable = (
                 apicultor_responsable
@@ -3803,6 +3853,9 @@ def crear_mantenimiento(request):
 
         with transaction.atomic():
 
+            # =================================================
+            # MANTENIMIENTO
+            # =================================================
 
             mantenimiento = (
                 Mantenimiento.objects.create(
@@ -3848,6 +3901,7 @@ def crear_mantenimiento(request):
 
                 archivo.seek(0)
 
+
                 EvidenciaMantenimiento.objects.create(
 
                     id_mantenimiento=
@@ -3876,6 +3930,7 @@ def crear_mantenimiento(request):
 
                 archivo.seek(0)
 
+
                 EvidenciaMantenimiento.objects.create(
 
                     id_mantenimiento=
@@ -3903,6 +3958,7 @@ def crear_mantenimiento(request):
             for archivo in evidencias_despues:
 
                 archivo.seek(0)
+
 
                 EvidenciaMantenimiento.objects.create(
 
@@ -3934,8 +3990,10 @@ def crear_mantenimiento(request):
 
         messages.error(
             request,
-            "Ocurrió un error al crear el mantenimiento "
-            "o guardar las fotografías."
+            (
+                "Ocurrió un error al crear el mantenimiento "
+                "o guardar las fotografías."
+            )
         )
 
 
@@ -3945,7 +4003,7 @@ def crear_mantenimiento(request):
 
 
     # ========================================================
-    # 12. NOTIFICACIÓN
+    # 12. NOTIFICACIÓN PARA ADMINISTRADORES
     # ========================================================
 
     try:
@@ -3954,16 +4012,68 @@ def crear_mantenimiento(request):
             mantenimiento
         )
 
+
     except Exception as error:
 
         print(
-            "ERROR GENERANDO NOTIFICACIÓN DE MANTENIMIENTO:",
+            (
+                "ERROR GENERANDO NOTIFICACIÓN "
+                "DE MANTENIMIENTO:"
+            ),
             error
         )
 
 
     # ========================================================
-    # 13. MENSAJE
+    # 13. NOTIFICACIÓN PARA APICULTOR RESPONSABLE
+    # ========================================================
+
+    if apicultor_responsable:
+
+        try:
+
+            resultado_notificacion_apicultor = (
+                notificar_mantenimiento_asignado_apicultor(
+                    mantenimiento,
+                    apicultor_responsable
+                )
+            )
+
+
+            # ================================================
+            # TEMPORAL:
+            # Dejamos este print mientras comprobamos
+            # que la integración funciona correctamente.
+            # Después lo podemos retirar.
+            # ================================================
+
+            print(
+                (
+                    "NOTIFICACIÓN MANTENIMIENTO APICULTOR:"
+                ),
+                resultado_notificacion_apicultor,
+                "| usuario:",
+                (
+                    apicultor_responsable.user.username
+                    if apicultor_responsable.user
+                    else "sin usuario"
+                )
+            )
+
+
+        except Exception as error:
+
+            print(
+                (
+                    "ERROR NOTIFICANDO MANTENIMIENTO "
+                    "AL APICULTOR:"
+                ),
+                error
+            )
+
+
+    # ========================================================
+    # 14. MENSAJE DE ÉXITO
     # ========================================================
 
     cantidad_fotos = len(
@@ -3975,10 +4085,13 @@ def crear_mantenimiento(request):
 
         messages.success(
             request,
-            "Mantenimiento creado correctamente. "
-            f"Se guardaron {cantidad_fotos} "
-            "evidencia(s) fotográfica(s)."
+            (
+                "Mantenimiento creado correctamente. "
+                f"Se guardaron {cantidad_fotos} "
+                "evidencia(s) fotográfica(s)."
+            )
         )
+
 
     else:
 
@@ -3987,6 +4100,10 @@ def crear_mantenimiento(request):
             "Mantenimiento creado correctamente."
         )
 
+
+    # ========================================================
+    # 15. REDIRECCIÓN
+    # ========================================================
 
     return redirect(
         "mantenimientos_admin"
@@ -4010,7 +4127,6 @@ def editar_mantenimiento(
     id
 ):
 
-
     # ========================================================
     # 1. MANTENIMIENTO
     # ========================================================
@@ -4029,7 +4145,28 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 2. CONFIGURACIÓN
+    # 2. GUARDAR RESPONSABLE ORIGINAL
+    #
+    # Debemos hacerlo ANTES de modificar el mantenimiento.
+    # ========================================================
+
+    responsable_original = (
+        mantenimiento.responsable
+        or
+        "Sin Responsable"
+    )
+
+
+    responsable_original_normalizado = (
+        " ".join(
+            responsable_original.split()
+        )
+        .casefold()
+    )
+
+
+    # ========================================================
+    # 3. CONFIGURACIÓN
     # ========================================================
 
     MAX_EVIDENCIAS = 6
@@ -4057,13 +4194,15 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 3. FORMULARIO
+    # 4. DATOS DEL FORMULARIO
     # ========================================================
 
     entidad = (
         request.POST.get(
             "entidad_mantenimiento",
-            mantenimiento.entidadmantenimiento or ""
+            mantenimiento.entidadmantenimiento
+            or
+            ""
         )
         .strip()
     )
@@ -4133,12 +4272,13 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 4. RESPONSABLE
+    # 5. RESPONSABLE
     #
-    # Soporta:
+    # responsable_id:
+    # formulario actual.
     #
-    # responsable_id -> formulario nuevo.
-    # responsable    -> formulario antiguo.
+    # responsable:
+    # compatibilidad con formulario antiguo.
     # ========================================================
 
     responsable_id = (
@@ -4160,7 +4300,7 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 5. NUEVAS EVIDENCIAS
+    # 6. NUEVAS EVIDENCIAS
     # ========================================================
 
     evidencias_antes = (
@@ -4194,7 +4334,7 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 6. EVIDENCIAS EXISTENTES
+    # 7. EVIDENCIAS EXISTENTES
     # ========================================================
 
     cantidad_actual = (
@@ -4205,12 +4345,14 @@ def editar_mantenimiento(
     total_despues = (
         cantidad_actual
         +
-        len(nuevas_evidencias)
+        len(
+            nuevas_evidencias
+        )
     )
 
 
     # ========================================================
-    # 7. VALIDACIONES
+    # 8. VALIDACIONES
     # ========================================================
 
     errores = []
@@ -4261,13 +4403,15 @@ def editar_mantenimiento(
     if len(observaciones) > 255:
 
         errores.append(
-            "Las observaciones no pueden superar "
-            "los 255 caracteres."
+            (
+                "Las observaciones no pueden superar "
+                "los 255 caracteres."
+            )
         )
 
 
     # ========================================================
-    # 8. LÍMITE FOTOGRÁFICO
+    # 9. LÍMITE FOTOGRÁFICO
     # ========================================================
 
     if total_despues > MAX_EVIDENCIAS:
@@ -4281,14 +4425,17 @@ def editar_mantenimiento(
 
 
         errores.append(
-            "Un mantenimiento puede tener un máximo "
-            f"de {MAX_EVIDENCIAS} fotografías. "
-            f"Actualmente puedes agregar {disponibles} más."
+            (
+                "Un mantenimiento puede tener un máximo "
+                f"de {MAX_EVIDENCIAS} fotografías. "
+                f"Actualmente puedes agregar "
+                f"{disponibles} más."
+            )
         )
 
 
     # ========================================================
-    # 9. VALIDAR IMÁGENES
+    # 10. VALIDAR IMÁGENES
     # ========================================================
 
     if total_despues <= MAX_EVIDENCIAS:
@@ -4310,13 +4457,17 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 10. APIARIO / COLMENA
+    # 11. APIARIO / COLMENA
     # ========================================================
 
     apiario = None
 
     colmena = None
 
+
+    # ========================================================
+    # APIARIO
+    # ========================================================
 
     if entidad == "Apiario":
 
@@ -4326,15 +4477,14 @@ def editar_mantenimiento(
                 "Debes seleccionar un apiario."
             )
 
+
         else:
 
             apiario = (
                 Apiario.objects
-
                 .filter(
                     pk=id_apiario_form
                 )
-
                 .first()
             )
 
@@ -4345,6 +4495,10 @@ def editar_mantenimiento(
                     "El apiario seleccionado no existe."
                 )
 
+
+    # ========================================================
+    # COLMENA
+    # ========================================================
 
     elif entidad == "Colmena":
 
@@ -4363,16 +4517,13 @@ def editar_mantenimiento(
 
             colmena = (
                 Colmena.objects
-
                 .select_related(
                     "id_apiario"
                 )
-
                 .filter(
                     pk=id_colmena_form,
                     id_apiario_id=id_apiario_form
                 )
-
                 .first()
             )
 
@@ -4380,18 +4531,21 @@ def editar_mantenimiento(
             if not colmena:
 
                 errores.append(
-                    "La colmena seleccionada no pertenece "
-                    "al apiario indicado."
+                    (
+                        "La colmena seleccionada no pertenece "
+                        "al apiario indicado."
+                    )
                 )
 
 
             else:
 
                 # =============================================
-                # ¿ES LA COLMENA QUE YA TENÍA EL MANTENIMIENTO?
+                # COLMENA ACTUAL
                 # =============================================
 
                 es_colmena_actual = (
+
                     mantenimiento.id_colmena_id
                     is not None
 
@@ -4404,11 +4558,12 @@ def editar_mantenimiento(
                     str(
                         colmena.id_colmena
                     )
+
                 )
 
 
                 # =============================================
-                # NO PERMITIR CAMBIAR HACIA OTRA INACTIVA
+                # NO CAMBIAR A OTRA COLMENA INACTIVA
                 # =============================================
 
                 if (
@@ -4423,7 +4578,8 @@ def editar_mantenimiento(
 
                     errores.append(
                         (
-                            f"La colmena «{colmena.codigocolmena}» "
+                            f"La colmena "
+                            f"«{colmena.codigocolmena}» "
                             "está Inactiva y no puede recibir "
                             "este mantenimiento. "
                             "Debes cambiar primero su estado."
@@ -4432,7 +4588,7 @@ def editar_mantenimiento(
 
 
                 # =============================================
-                # NO REABRIR TRABAJO EN COLMENA INACTIVA
+                # NO REABRIR EN COLMENA INACTIVA
                 # =============================================
 
                 elif (
@@ -4449,8 +4605,8 @@ def editar_mantenimiento(
 
                     errores.append(
                         (
-                            f"No puedes dejar el mantenimiento "
-                            f"como Pendiente porque la colmena "
+                            "No puedes dejar el mantenimiento "
+                            "como Pendiente porque la colmena "
                             f"«{colmena.codigocolmena}» "
                             "está Inactiva. "
                             "Reactiva primero la colmena."
@@ -4466,7 +4622,7 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 11. RESPONSABLE
+    # 12. RESOLVER RESPONSABLE
     # ========================================================
 
     responsable = (
@@ -4476,19 +4632,19 @@ def editar_mantenimiento(
     )
 
 
+    apicultor_responsable = None
+
+
     if responsable_id:
 
         apicultor_responsable = (
             Apicultor.objects
-
             .select_related(
                 "user"
             )
-
             .filter(
                 pk=responsable_id
             )
-
             .first()
         )
 
@@ -4500,7 +4656,17 @@ def editar_mantenimiento(
             )
 
 
-        elif apicultor_responsable.user:
+        elif not apicultor_responsable.user:
+
+            errores.append(
+                (
+                    "El apicultor seleccionado no tiene "
+                    "un usuario asociado."
+                )
+            )
+
+
+        else:
 
             responsable = (
                 apicultor_responsable
@@ -4529,7 +4695,28 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 12. SI HAY ERRORES
+    # 13. COMPROBAR SI CAMBIÓ EL RESPONSABLE
+    # ========================================================
+
+    responsable_nuevo_normalizado = (
+        " ".join(
+            responsable.split()
+        )
+        .casefold()
+    )
+
+
+    responsable_cambio = (
+
+        responsable_original_normalizado
+        !=
+        responsable_nuevo_normalizado
+
+    )
+
+
+    # ========================================================
+    # 14. SI HAY ERRORES
     # ========================================================
 
     if errores:
@@ -4548,13 +4735,12 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 13. ACTUALIZAR
+    # 15. ACTUALIZAR
     # ========================================================
 
     try:
 
         with transaction.atomic():
-
 
             mantenimiento.entidadmantenimiento = (
                 entidad
@@ -4607,12 +4793,13 @@ def editar_mantenimiento(
 
 
             # =================================================
-            # ANTES
+            # EVIDENCIAS ANTES
             # =================================================
 
             for archivo in evidencias_antes:
 
                 archivo.seek(0)
+
 
                 EvidenciaMantenimiento.objects.create(
 
@@ -4635,12 +4822,13 @@ def editar_mantenimiento(
 
 
             # =================================================
-            # DURANTE
+            # EVIDENCIAS DURANTE
             # =================================================
 
             for archivo in evidencias_durante:
 
                 archivo.seek(0)
+
 
                 EvidenciaMantenimiento.objects.create(
 
@@ -4663,12 +4851,13 @@ def editar_mantenimiento(
 
 
             # =================================================
-            # DESPUÉS
+            # EVIDENCIAS DESPUÉS
             # =================================================
 
             for archivo in evidencias_despues:
 
                 archivo.seek(0)
+
 
                 EvidenciaMantenimiento.objects.create(
 
@@ -4710,17 +4899,64 @@ def editar_mantenimiento(
 
 
     # ========================================================
-    # 14. MENSAJE
+    # 16. NOTIFICAR REASIGNACIÓN
+    #
+    # Solo se ejecuta cuando realmente cambió el responsable
+    # y el nuevo responsable corresponde a un Apicultor real.
+    # ========================================================
+
+    if (
+        responsable_cambio
+        and
+        apicultor_responsable
+    ):
+
+        try:
+
+            resultado_notificacion = (
+                notificar_mantenimiento_asignado_apicultor(
+                    mantenimiento,
+                    apicultor_responsable,
+                    reasignacion=True
+                )
+            )
+
+
+            print(
+                "NOTIFICACIÓN REASIGNACIÓN MANTENIMIENTO:",
+                resultado_notificacion,
+                "| usuario:",
+                apicultor_responsable.user.username
+            )
+
+
+        except Exception as error:
+
+            print(
+                (
+                    "ERROR NOTIFICANDO REASIGNACIÓN "
+                    "DE MANTENIMIENTO:"
+                ),
+                error
+            )
+
+
+    # ========================================================
+    # 17. MENSAJE
     # ========================================================
 
     if nuevas_evidencias:
 
         messages.success(
             request,
-            "Mantenimiento actualizado correctamente. "
-            f"Se agregaron {len(nuevas_evidencias)} "
-            "evidencia(s) fotográfica(s)."
+            (
+                "Mantenimiento actualizado correctamente. "
+                f"Se agregaron "
+                f"{len(nuevas_evidencias)} "
+                "evidencia(s) fotográfica(s)."
+            )
         )
+
 
     else:
 
@@ -4729,6 +4965,10 @@ def editar_mantenimiento(
             "Mantenimiento actualizado correctamente."
         )
 
+
+    # ========================================================
+    # 18. REDIRECCIÓN
+    # ========================================================
 
     return redirect(
         "mantenimientos_admin"
@@ -5437,58 +5677,238 @@ def incidencias_admin(request):
         contexto
     )
 
-#CREAR INCIDENCIA 
+# ============================================================
+# CREAR INCIDENCIA
+# PANEL ADMINISTRADOR
+# ============================================================
 
 @administrador_requerido
-@permiso_requerido("ir",redireccion="incidencias_admin")
+@permiso_requerido(
+    "ir",
+    redireccion="incidencias_admin"
+)
 def crear_incidencia(request):
+
+    # ========================================================
+    # 1. SOLO POST
+    # ========================================================
+
     if request.method != "POST":
-        return redirect("incidencias_admin")
 
-    entidad = request.POST.get("entidadincidencia", "").strip()
-    titulo = request.POST.get("titulo", "").strip()
-    prioridad = request.POST.get("prioridad", "").strip()
-    fecha_deteccion = request.POST.get("fechadeteccion", "").strip()
-    estado = "Pendiente"  # toda incidencia nace como Pendiente, sin importar el POST
-    observaciones = request.POST.get("observaciones", "").strip()
-    responsable = request.POST.get("responsable", "").strip()
-    imagen = request.FILES.get("imagen")
+        return redirect(
+            "incidencias_admin"
+        )
 
-    id_apicultor = request.POST.get("id_apicultor")
-    id_apiario = request.POST.get("id_apiario")
-    id_colmena = request.POST.get("id_colmena")
 
-    entidades_validas = ["Apicultor", "Apiario", "Colmena"]
-    prioridades_validas = ["Baja", "Media", "Alta", "Crítica"]
-    estados_validos = ["Pendiente", "En proceso", "Resuelta"]
+    # ========================================================
+    # 2. CONFIGURACIÓN
+    # ========================================================
+
+    entidades_validas = [
+        "Apicultor",
+        "Apiario",
+        "Colmena",
+    ]
+
+
+    prioridades_validas = [
+        "Baja",
+        "Media",
+        "Alta",
+        "Crítica",
+    ]
+
+
+    # ========================================================
+    # 3. DATOS DEL FORMULARIO
+    # ========================================================
+
+    entidad = (
+        request.POST.get(
+            "entidadincidencia",
+            ""
+        )
+        .strip()
+    )
+
+
+    titulo = (
+        request.POST.get(
+            "titulo",
+            ""
+        )
+        .strip()
+    )
+
+
+    prioridad = (
+        request.POST.get(
+            "prioridad",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # FECHA DE DETECCIÓN
+    # ========================================================
+
+    fecha_deteccion_texto = (
+        request.POST.get(
+            "fechadeteccion",
+            ""
+        )
+        .strip()
+    )
+
+
+    fecha_deteccion = (
+        parse_date(
+            fecha_deteccion_texto
+        )
+        if fecha_deteccion_texto
+        else None
+    )
+
+
+    observaciones = (
+        request.POST.get(
+            "observaciones",
+            ""
+        )
+        .strip()
+    )
+
+
+    responsable = (
+        request.POST.get(
+            "responsable",
+            ""
+        )
+        .strip()
+    )
+
+
+    imagen = (
+        request.FILES.get(
+            "imagen"
+        )
+    )
+
+
+    id_apicultor = (
+        request.POST.get(
+            "id_apicultor",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_apiario = (
+        request.POST.get(
+            "id_apiario",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_colmena = (
+        request.POST.get(
+            "id_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # TODA INCIDENCIA NUEVA NACE COMO PENDIENTE
+    # ========================================================
+
+    estado = "Pendiente"
+
+
+    # ========================================================
+    # 4. VALIDACIONES GENERALES
+    # ========================================================
+
+    errores = []
+
+
+    # ========================================================
+    # ENTIDAD
+    # ========================================================
 
     if entidad not in entidades_validas:
-        messages.error(
-            request,
+
+        errores.append(
             "Debes seleccionar una entidad válida."
         )
-        return redirect("incidencias_admin")
 
-    if not titulo or not fecha_deteccion:
-        messages.error(
-            request,
-            "El título y la fecha de detección son obligatorios."
+
+    # ========================================================
+    # TÍTULO
+    # ========================================================
+
+    if not titulo:
+
+        errores.append(
+            "El título de la incidencia es obligatorio."
         )
-        return redirect("incidencias_admin")
+
+
+    elif len(titulo) > 100:
+
+        errores.append(
+            "El título no puede superar los 100 caracteres."
+        )
+
+
+    # ========================================================
+    # VALIDAR FECHA
+    # ========================================================
+
+    if not fecha_deteccion_texto:
+
+        errores.append(
+            "La fecha de detección es obligatoria."
+        )
+
+
+    elif not fecha_deteccion:
+
+        errores.append(
+            "La fecha de detección no tiene un formato válido."
+        )
+
+
+    # ========================================================
+    # PRIORIDAD
+    # ========================================================
 
     if prioridad not in prioridades_validas:
-        messages.error(
-            request,
+
+        errores.append(
             "La prioridad seleccionada no es válida."
         )
-        return redirect("incidencias_admin")
 
-    if estado not in estados_validos:
-        messages.error(
-            request,
-            "El estado seleccionado no es válido."
+
+    # ========================================================
+    # OBSERVACIONES
+    # ========================================================
+
+    if len(observaciones) > 255:
+
+        errores.append(
+            (
+                "Las observaciones no pueden superar "
+                "los 255 caracteres."
+            )
         )
-        return redirect("incidencias_admin")
+
 
     # ========================================================
     # RESPONSABLE
@@ -5503,144 +5923,385 @@ def crear_incidencia(request):
         )
     ):
 
-        messages.error(
-            request,
+        errores.append(
             (
                 "El responsable debe contener un nombre válido "
                 "de máximo 150 caracteres."
             )
         )
 
+
+    # ========================================================
+    # 5. RESOLVER ENTIDAD RELACIONADA
+    # ========================================================
+
+    apicultor = None
+    apiario = None
+    colmena = None
+
+
+    # ========================================================
+    # INCIDENCIA SOBRE APICULTOR
+    # ========================================================
+
+    if entidad == "Apicultor":
+
+        if not id_apicultor:
+
+            errores.append(
+                "Debes seleccionar un apicultor."
+            )
+
+
+        else:
+
+            apicultor = (
+                Apicultor.objects
+                .select_related(
+                    "user"
+                )
+                .filter(
+                    pk=id_apicultor
+                )
+                .first()
+            )
+
+
+            if not apicultor:
+
+                errores.append(
+                    "El apicultor seleccionado no existe."
+                )
+
+
+    # ========================================================
+    # INCIDENCIA SOBRE APIARIO
+    # ========================================================
+
+    elif entidad == "Apiario":
+
+        if not id_apiario:
+
+            errores.append(
+                "Debes seleccionar un apiario."
+            )
+
+
+        else:
+
+            apiario = (
+                Apiario.objects
+                .select_related(
+                    "id_apicultor",
+                    "id_apicultor__user"
+                )
+                .filter(
+                    pk=id_apiario
+                )
+                .first()
+            )
+
+
+            if not apiario:
+
+                errores.append(
+                    "El apiario seleccionado no existe."
+                )
+
+
+    # ========================================================
+    # INCIDENCIA SOBRE COLMENA
+    # ========================================================
+
+    elif entidad == "Colmena":
+
+        if not id_apiario:
+
+            errores.append(
+                "Debes seleccionar un apiario."
+            )
+
+
+        if not id_colmena:
+
+            errores.append(
+                "Debes seleccionar una colmena."
+            )
+
+
+        if (
+            id_apiario
+            and
+            id_colmena
+        ):
+
+            colmena = (
+                Colmena.objects
+                .select_related(
+                    "id_apiario",
+                    "id_apiario__id_apicultor",
+                    "id_apiario__id_apicultor__user"
+                )
+                .filter(
+                    pk=id_colmena,
+                    id_apiario_id=id_apiario
+                )
+                .first()
+            )
+
+
+            if not colmena:
+
+                errores.append(
+                    (
+                        "La colmena seleccionada no pertenece "
+                        "al apiario indicado."
+                    )
+                )
+
+
+            elif (
+                colmena.estadocolmena
+                ==
+                "Inactiva"
+            ):
+
+                errores.append(
+                    (
+                        f"La colmena «{colmena.codigocolmena}» "
+                        "está Inactiva y no puede recibir "
+                        "nuevas incidencias. "
+                        "Debes cambiar primero su estado."
+                    )
+                )
+
+
+            else:
+
+                apiario = (
+                    colmena.id_apiario
+                )
+
+
+    # ========================================================
+    # 6. SI HAY ERRORES
+    # ========================================================
+
+    if errores:
+
+        for error in errores:
+
+            messages.error(
+                request,
+                error
+            )
+
+
         return redirect(
             "incidencias_admin"
         )
 
-    incidencia = Incidencia(
-        entidadincidencia=entidad,
-        titulo=titulo,
-        prioridad=prioridad,
-        fechadeteccion=fecha_deteccion,
-        estado=estado,
-        observaciones=observaciones or None,
-        responsable=responsable or None,
-        imagen=imagen,
-    )
 
-    # Limpiamos las relaciones para evitar que una incidencia
-    # quede relacionada con varias entidades al mismo tiempo.
-    incidencia.id_apicultor = None
-    incidencia.id_apiario = None
-    incidencia.id_colmena = None
-
-    if entidad == "Apicultor":
-        if not id_apicultor:
-            messages.error(
-                request,
-                "Debes seleccionar un apicultor."
-            )
-            return redirect("incidencias_admin")
-
-        incidencia.id_apicultor = get_object_or_404(
-            Apicultor,
-            pk=id_apicultor
-        )
-
-    elif entidad == "Apiario":
-        if not id_apiario:
-            messages.error(
-                request,
-                "Debes seleccionar un apiario."
-            )
-            return redirect("incidencias_admin")
-
-        incidencia.id_apiario = get_object_or_404(
-            Apiario,
-            pk=id_apiario
-        )
-
-    elif entidad == "Colmena":
-        if not id_apiario or not id_colmena:
-            messages.error(
-                request,
-                "Debes seleccionar el apiario y la colmena."
-            )
-            return redirect("incidencias_admin")
-
-        colmena = get_object_or_404(
-            Colmena,
-            pk=id_colmena,
-            id_apiario_id=id_apiario
-        )
-
-
-        # ====================================================
-        # NO PERMITIR INCIDENCIAS NUEVAS EN COLMENA INACTIVA
-        # ====================================================
-
-        if (
-            colmena.estadocolmena
-            ==
-            "Inactiva"
-        ):
-
-            messages.error(
-                request,
-                (
-                    f"La colmena «{colmena.codigocolmena}» "
-                    "está Inactiva y no puede recibir "
-                    "nuevas incidencias. "
-                    "Debes cambiar primero su estado."
-                )
-            )
-
-            return redirect(
-                "incidencias_admin"
-            )
-
-
-        # ====================================================
-        # ASIGNAR COLMENA
-        # ====================================================
-
-        incidencia.id_colmena = (
-            colmena
-        )
-
-        incidencia.id_apiario = (
-            colmena.id_apiario
-        )
-
-    incidencia.save()
-
-
-    # ============================================================
-    # GENERAR NOTIFICACIÓN AUTOMÁTICA
-    # ============================================================
+    # ========================================================
+    # 7. CREAR INCIDENCIA
+    # ========================================================
 
     try:
 
-        notificar_incidencia_creada(
-            incidencia
-        )
+        with transaction.atomic():
+
+            incidencia = Incidencia(
+
+                entidadincidencia=
+                    entidad,
+
+                titulo=
+                    titulo,
+
+                prioridad=
+                    prioridad,
+
+                fechadeteccion=
+                    fecha_deteccion,
+
+                estado=
+                    estado,
+
+                observaciones=
+                    observaciones
+                    or
+                    None,
+
+                responsable=
+                    responsable
+                    or
+                    None,
+
+                imagen=
+                    imagen,
+
+            )
+
+
+            # =================================================
+            # LIMPIAR RELACIONES
+            #
+            # Evita que una incidencia quede relacionada
+            # simultáneamente con varias entidades.
+            # =================================================
+
+            incidencia.id_apicultor = None
+            incidencia.id_apiario = None
+            incidencia.id_colmena = None
+
+
+            # =================================================
+            # ASIGNAR APICULTOR
+            # =================================================
+
+            if entidad == "Apicultor":
+
+                incidencia.id_apicultor = (
+                    apicultor
+                )
+
+
+            # =================================================
+            # ASIGNAR APIARIO
+            # =================================================
+
+            elif entidad == "Apiario":
+
+                incidencia.id_apiario = (
+                    apiario
+                )
+
+
+            # =================================================
+            # ASIGNAR COLMENA
+            #
+            # Conservamos también el apiario porque facilita
+            # filtros, consultas y notificaciones.
+            # =================================================
+
+            elif entidad == "Colmena":
+
+                incidencia.id_colmena = (
+                    colmena
+                )
+
+
+                incidencia.id_apiario = (
+                    apiario
+                )
+
+
+            # =================================================
+            # GUARDAR
+            # =================================================
+
+            incidencia.save()
+
 
     except Exception as error:
 
         print(
-            "ERROR GENERANDO NOTIFICACIÓN DE INCIDENCIA:",
+            "ERROR CREANDO INCIDENCIA:",
             error
         )
 
 
-    # ============================================================
-    # MENSAJE DE ÉXITO
-    # ============================================================
+        messages.error(
+            request,
+            (
+                "Ocurrió un error al registrar "
+                "la incidencia."
+            )
+        )
+
+
+        return redirect(
+            "incidencias_admin"
+        )
+
+
+    # ========================================================
+    # 8. NOTIFICACIÓN PARA ADMINISTRADORES
+    # ========================================================
+
+    try:
+
+        resultado_admin = (
+            notificar_incidencia_creada(
+                incidencia
+            )
+        )
+
+
+        print(
+            "NOTIFICACIONES INCIDENCIA ADMIN:",
+            resultado_admin
+        )
+
+
+    except Exception as error:
+
+        print(
+            (
+                "ERROR GENERANDO NOTIFICACIÓN "
+                "DE INCIDENCIA PARA ADMINISTRADORES:"
+            ),
+            error
+        )
+
+
+    # ========================================================
+    # 9. NOTIFICACIÓN PARA APICULTOR RELACIONADO
+    # ========================================================
+
+    try:
+
+        resultado_apicultor = (
+            notificar_incidencia_apicultor(
+                incidencia
+            )
+        )
+
+
+        print(
+            "NOTIFICACIÓN INCIDENCIA APICULTOR:",
+            resultado_apicultor
+        )
+
+
+    except Exception as error:
+
+        print(
+            (
+                "ERROR NOTIFICANDO INCIDENCIA "
+                "AL APICULTOR:"
+            ),
+            error
+        )
+
+
+    # ========================================================
+    # 10. MENSAJE DE ÉXITO
+    # ========================================================
 
     messages.success(
         request,
         "La incidencia fue registrada correctamente."
     )
 
-    return redirect("incidencias_admin")
+
+    # ========================================================
+    # 11. REDIRECCIÓN
+    # ========================================================
+
+    return redirect(
+        "incidencias_admin"
+    )
 
 # ============================================================
 # EDITAR INCIDENCIA
@@ -5657,9 +6318,8 @@ def editar_incidencia(
     id_incidencia
 ):
 
-
     # ========================================================
-    # INCIDENCIA
+    # 1. OBTENER INCIDENCIA
     # ========================================================
 
     incidencia = get_object_or_404(
@@ -5669,7 +6329,38 @@ def editar_incidencia(
 
 
     # ========================================================
-    # SOLO POST
+    # 2. GUARDAR DATOS ORIGINALES
+    #
+    # Debemos hacerlo ANTES de modificar la incidencia.
+    # Se usarán después para saber si cambió:
+    #
+    # - El estado.
+    # - El apicultor relacionado.
+    # ========================================================
+
+    estado_original = (
+        incidencia.estado
+        or
+        ""
+    )
+
+
+    apicultor_original = (
+        obtener_apicultor_incidencia(
+            incidencia
+        )
+    )
+
+
+    apicultor_original_id = (
+        apicultor_original.pk
+        if apicultor_original
+        else None
+    )
+
+
+    # ========================================================
+    # 3. SOLO POST
     # ========================================================
 
     if request.method != "POST":
@@ -5680,7 +6371,7 @@ def editar_incidencia(
 
 
     # ========================================================
-    # CONFIGURACIÓN
+    # 4. CONFIGURACIÓN
     # ========================================================
 
     MAX_EVIDENCIAS_PROBLEMA = 6
@@ -5711,68 +6402,120 @@ def editar_incidencia(
 
 
     # ========================================================
-    # DATOS DEL FORMULARIO
+    # 5. DATOS DEL FORMULARIO
     # ========================================================
 
-    entidad = request.POST.get(
-        "entidadincidencia",
-        ""
-    ).strip()
-
-
-    titulo = request.POST.get(
-        "titulo",
-        ""
-    ).strip()
-
-
-    prioridad = request.POST.get(
-        "prioridad",
-        ""
-    ).strip()
-
-
-    fecha_deteccion = request.POST.get(
-        "fechadeteccion",
-        ""
-    ).strip()
-
-
-    estado = request.POST.get(
-        "estado",
-        ""
-    ).strip()
-
-
-    observaciones = request.POST.get(
-        "observaciones",
-        ""
-    ).strip()
-
-
-    responsable = request.POST.get(
-        "responsable",
-        ""
-    ).strip()
-
-
-    id_apicultor = request.POST.get(
-        "id_apicultor"
+    entidad = (
+        request.POST.get(
+            "entidadincidencia",
+            ""
+        )
+        .strip()
     )
 
 
-    id_apiario = request.POST.get(
-        "id_apiario"
+    titulo = (
+        request.POST.get(
+            "titulo",
+            ""
+        )
+        .strip()
     )
 
 
-    id_colmena = request.POST.get(
-        "id_colmena"
+    prioridad = (
+        request.POST.get(
+            "prioridad",
+            ""
+        )
+        .strip()
     )
 
 
     # ========================================================
-    # NUEVAS EVIDENCIAS
+    # FECHA
+    #
+    # El formulario envía texto:
+    #
+    # "2026-09-11"
+    #
+    # Lo convertimos a date antes de guardarlo.
+    # ========================================================
+
+    fecha_deteccion_texto = (
+        request.POST.get(
+            "fechadeteccion",
+            ""
+        )
+        .strip()
+    )
+
+
+    fecha_deteccion = (
+        parse_date(
+            fecha_deteccion_texto
+        )
+        if fecha_deteccion_texto
+        else None
+    )
+
+
+    estado = (
+        request.POST.get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
+
+
+    observaciones = (
+        request.POST.get(
+            "observaciones",
+            ""
+        )
+        .strip()
+    )
+
+
+    responsable = (
+        request.POST.get(
+            "responsable",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_apicultor = (
+        request.POST.get(
+            "id_apicultor",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_apiario = (
+        request.POST.get(
+            "id_apiario",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_colmena = (
+        request.POST.get(
+            "id_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # 6. NUEVAS EVIDENCIAS
     # ========================================================
 
     nuevas_evidencias_problema = (
@@ -5790,11 +6533,15 @@ def editar_incidencia(
 
 
     # ========================================================
-    # VALIDACIONES BÁSICAS
+    # 7. VALIDACIONES BÁSICAS
     # ========================================================
 
     errores = []
 
+
+    # ========================================================
+    # ENTIDAD
+    # ========================================================
 
     if entidad not in entidades_validas:
 
@@ -5803,6 +6550,10 @@ def editar_incidencia(
         )
 
 
+    # ========================================================
+    # TÍTULO
+    # ========================================================
+
     if not titulo:
 
         errores.append(
@@ -5810,12 +6561,27 @@ def editar_incidencia(
         )
 
 
-    if not fecha_deteccion:
+    # ========================================================
+    # FECHA
+    # ========================================================
+
+    if not fecha_deteccion_texto:
 
         errores.append(
             "La fecha es obligatoria."
         )
 
+
+    elif not fecha_deteccion:
+
+        errores.append(
+            "La fecha no tiene un formato válido."
+        )
+
+
+    # ========================================================
+    # PRIORIDAD
+    # ========================================================
 
     if prioridad not in prioridades_validas:
 
@@ -5824,11 +6590,16 @@ def editar_incidencia(
         )
 
 
+    # ========================================================
+    # ESTADO
+    # ========================================================
+
     if estado not in estados_validos:
 
         errores.append(
             "El estado seleccionado no es válido."
         )
+
 
     # ========================================================
     # RESPONSABLE
@@ -5852,37 +6623,47 @@ def editar_incidencia(
 
 
     # ========================================================
-    # EVIDENCIAS EXISTENTES
+    # 8. EVIDENCIAS EXISTENTES
     # ========================================================
 
     cantidad_problema_actual = (
-        incidencia.evidencias.filter(
-            tipo=EvidenciaIncidencia
-            .TipoEvidencia
-            .PROBLEMA
-        ).count()
+        incidencia.evidencias
+        .filter(
+            tipo=(
+                EvidenciaIncidencia
+                .TipoEvidencia
+                .PROBLEMA
+            )
+        )
+        .count()
     )
 
 
     cantidad_solucion_actual = (
-        incidencia.evidencias.filter(
-            tipo=EvidenciaIncidencia
-            .TipoEvidencia
-            .SOLUCION
-        ).count()
+        incidencia.evidencias
+        .filter(
+            tipo=(
+                EvidenciaIncidencia
+                .TipoEvidencia
+                .SOLUCION
+            )
+        )
+        .count()
     )
 
 
     # ========================================================
-    # COMPATIBILIDAD CON INCIDENCIA.IMAGEN ANTIGUA
+    # 9. COMPATIBILIDAD CON INCIDENCIA.IMAGEN ANTIGUA
     #
-    # Si todavía no tiene EvidenciaIncidencia de problema,
-    # pero sí tiene la antigua imagen, contamos esa foto como
-    # una evidencia del problema.
+    # Si tiene imagen antigua pero todavía no existe
+    # EvidenciaIncidencia de tipo PROBLEMA, contamos esa
+    # imagen dentro del límite.
     # ========================================================
 
     tiene_imagen_legacy = (
-        bool(incidencia.imagen)
+        bool(
+            incidencia.imagen
+        )
         and
         cantidad_problema_actual == 0
     )
@@ -5900,45 +6681,53 @@ def editar_incidencia(
 
 
     # ========================================================
-    # LÍMITE PROBLEMA
+    # 10. LÍMITE DE FOTOS DEL PROBLEMA
     # ========================================================
 
     if (
         cantidad_problema_para_limite
         +
-        len(nuevas_evidencias_problema)
+        len(
+            nuevas_evidencias_problema
+        )
         >
         MAX_EVIDENCIAS_PROBLEMA
     ):
 
         errores.append(
-            "Solo se permiten hasta "
-            f"{MAX_EVIDENCIAS_PROBLEMA} fotografías "
-            "del problema."
+            (
+                "Solo se permiten hasta "
+                f"{MAX_EVIDENCIAS_PROBLEMA} fotografías "
+                "del problema."
+            )
         )
 
 
     # ========================================================
-    # LÍMITE SOLUCIÓN
+    # 11. LÍMITE DE FOTOS DE SOLUCIÓN
     # ========================================================
 
     if (
         cantidad_solucion_actual
         +
-        len(nuevas_evidencias_solucion)
+        len(
+            nuevas_evidencias_solucion
+        )
         >
         MAX_EVIDENCIAS_SOLUCION
     ):
 
         errores.append(
-            "Solo se permiten hasta "
-            f"{MAX_EVIDENCIAS_SOLUCION} fotografías "
-            "de la solución."
+            (
+                "Solo se permiten hasta "
+                f"{MAX_EVIDENCIAS_SOLUCION} fotografías "
+                "de la solución."
+            )
         )
 
 
     # ========================================================
-    # VALIDAR FOTOS DEL PROBLEMA
+    # 12. VALIDAR FOTOS DEL PROBLEMA
     # ========================================================
 
     for archivo in nuevas_evidencias_problema:
@@ -5958,7 +6747,7 @@ def editar_incidencia(
 
 
     # ========================================================
-    # VALIDAR FOTOS DE SOLUCIÓN
+    # 13. VALIDAR FOTOS DE SOLUCIÓN
     # ========================================================
 
     for archivo in nuevas_evidencias_solucion:
@@ -5978,13 +6767,15 @@ def editar_incidencia(
 
 
     # ========================================================
-    # RESUELTA REQUIERE SOLUCIÓN
+    # 14. RESUELTA REQUIERE FOTO DE SOLUCIÓN
     # ========================================================
 
     total_soluciones_despues = (
         cantidad_solucion_actual
         +
-        len(nuevas_evidencias_solucion)
+        len(
+            nuevas_evidencias_solucion
+        )
     )
 
 
@@ -5995,14 +6786,16 @@ def editar_incidencia(
     ):
 
         errores.append(
-            "Para marcar la incidencia como Resuelta "
-            "debes agregar al menos una fotografía "
-            "que evidencie la solución."
+            (
+                "Para marcar la incidencia como Resuelta "
+                "debes agregar al menos una fotografía "
+                "que evidencie la solución."
+            )
         )
 
 
     # ========================================================
-    # MOSTRAR ERRORES
+    # 15. MOSTRAR ERRORES GENERALES
     # ========================================================
 
     if errores:
@@ -6021,10 +6814,10 @@ def editar_incidencia(
 
 
     # ========================================================
-    # VALIDAR RELACIONES
+    # 16. RESOLVER RELACIONES
     #
-    # Las resolvemos antes de guardar para evitar dejar una
-    # incidencia parcialmente modificada.
+    # Se calculan antes de guardar para evitar dejar
+    # información parcialmente modificada.
     # ========================================================
 
     apicultor_seleccionado = None
@@ -6035,11 +6828,10 @@ def editar_incidencia(
 
 
     # ========================================================
-    # APICULTOR
+    # INCIDENCIA DE APICULTOR
     # ========================================================
 
     if entidad == "Apicultor":
-
 
         if not id_apicultor:
 
@@ -6048,25 +6840,42 @@ def editar_incidencia(
                 "Debes seleccionar un apicultor."
             )
 
+
             return redirect(
                 "incidencias_admin"
             )
 
 
         apicultor_seleccionado = (
-            get_object_or_404(
-                Apicultor,
+            Apicultor.objects
+            .select_related(
+                "user"
+            )
+            .filter(
                 pk=id_apicultor
             )
+            .first()
         )
 
 
+        if not apicultor_seleccionado:
+
+            messages.error(
+                request,
+                "El apicultor seleccionado no existe."
+            )
+
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
     # ========================================================
-    # APIARIO
+    # INCIDENCIA DE APIARIO
     # ========================================================
 
     elif entidad == "Apiario":
-
 
         if not id_apiario:
 
@@ -6075,21 +6884,40 @@ def editar_incidencia(
                 "Debes seleccionar un apiario."
             )
 
+
             return redirect(
                 "incidencias_admin"
             )
 
 
         apiario_seleccionado = (
-            get_object_or_404(
-                Apiario,
+            Apiario.objects
+            .select_related(
+                "id_apicultor",
+                "id_apicultor__user"
+            )
+            .filter(
                 pk=id_apiario
             )
+            .first()
         )
 
 
+        if not apiario_seleccionado:
+
+            messages.error(
+                request,
+                "El apiario seleccionado no existe."
+            )
+
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
         # ====================================================
-        # EL APICULTOR PROPIETARIO SIGUE ASIGNADO
+        # APICULTOR PROPIETARIO DEL APIARIO
         # ====================================================
 
         apicultor_seleccionado = (
@@ -6098,11 +6926,10 @@ def editar_incidencia(
 
 
     # ========================================================
-    # COLMENA
+    # INCIDENCIA DE COLMENA
     # ========================================================
 
     elif entidad == "Colmena":
-
 
         if (
             not id_apiario
@@ -6112,8 +6939,12 @@ def editar_incidencia(
 
             messages.error(
                 request,
-                "Debes seleccionar el apiario y la colmena."
+                (
+                    "Debes seleccionar el apiario "
+                    "y la colmena."
+                )
             )
+
 
             return redirect(
                 "incidencias_admin"
@@ -6121,16 +6952,38 @@ def editar_incidencia(
 
 
         colmena_seleccionada = (
-            get_object_or_404(
-                Colmena,
+            Colmena.objects
+            .select_related(
+                "id_apiario",
+                "id_apiario__id_apicultor",
+                "id_apiario__id_apicultor__user"
+            )
+            .filter(
                 pk=id_colmena,
                 id_apiario_id=id_apiario
             )
+            .first()
         )
 
 
+        if not colmena_seleccionada:
+
+            messages.error(
+                request,
+                (
+                    "La colmena seleccionada no pertenece "
+                    "al apiario indicado."
+                )
+            )
+
+
+            return redirect(
+                "incidencias_admin"
+            )
+
+
         # ====================================================
-        # ¿ES LA COLMENA QUE YA TENÍA LA INCIDENCIA?
+        # ¿ES LA COLMENA ACTUAL DE LA INCIDENCIA?
         # ====================================================
 
         es_colmena_actual = (
@@ -6174,6 +7027,7 @@ def editar_incidencia(
                 )
             )
 
+
             return redirect(
                 "incidencias_admin"
             )
@@ -6207,10 +7061,15 @@ def editar_incidencia(
                 )
             )
 
+
             return redirect(
                 "incidencias_admin"
             )
 
+
+        # ====================================================
+        # APIARIO DE LA COLMENA
+        # ====================================================
 
         apiario_seleccionado = (
             colmena_seleccionada.id_apiario
@@ -6218,7 +7077,7 @@ def editar_incidencia(
 
 
         # ====================================================
-        # CONSERVAR ASIGNACIÓN AL APICULTOR
+        # APICULTOR PROPIETARIO
         # ====================================================
 
         apicultor_seleccionado = (
@@ -6227,191 +7086,285 @@ def editar_incidencia(
 
 
     # ========================================================
-    # GUARDAR TODO
+    # 17. GUARDAR TODO
     # ========================================================
 
-    with transaction.atomic():
+    try:
 
+        with transaction.atomic():
 
-        # ====================================================
-        # DATOS GENERALES
-        # ====================================================
+            # =================================================
+            # DATOS GENERALES
+            # =================================================
 
-        incidencia.entidadincidencia = (
-            entidad
-        )
-
-        incidencia.titulo = (
-            titulo
-        )
-
-        incidencia.prioridad = (
-            prioridad
-        )
-
-        incidencia.fechadeteccion = (
-            fecha_deteccion
-        )
-
-        incidencia.estado = (
-            estado
-        )
-
-        incidencia.observaciones = (
-            observaciones
-            or
-            None
-        )
-
-        incidencia.responsable = (
-            responsable
-            or
-            None
-        )
-
-
-        # ====================================================
-        # RELACIONES
-        # ====================================================
-
-        incidencia.id_apicultor = (
-            apicultor_seleccionado
-        )
-
-        incidencia.id_apiario = (
-            apiario_seleccionado
-        )
-
-        incidencia.id_colmena = (
-            colmena_seleccionada
-        )
-
-
-        incidencia.save()
-
-
-        # ====================================================
-        # MIGRAR FOTO ANTIGUA A EVIDENCIAINCIDENCIA
-        #
-        # Solo si estamos agregando nuevas fotos del problema.
-        #
-        # No duplicamos físicamente el archivo: usamos el
-        # mismo nombre almacenado.
-        # ====================================================
-
-        if (
-            tiene_imagen_legacy
-            and
-            nuevas_evidencias_problema
-        ):
-
-
-            evidencia_legacy = (
-                EvidenciaIncidencia(
-                    id_incidencia=incidencia,
-                    tipo=(
-                        EvidenciaIncidencia
-                        .TipoEvidencia
-                        .PROBLEMA
-                    ),
-                    subido_por=None,
-                )
+            incidencia.entidadincidencia = (
+                entidad
             )
 
 
-            evidencia_legacy.imagen.name = (
-                incidencia.imagen.name
+            incidencia.titulo = (
+                titulo
             )
 
 
-            evidencia_legacy.save()
-
-
-        # ====================================================
-        # NUEVAS FOTOS DEL PROBLEMA
-        # ====================================================
-
-        primera_nueva_problema = None
-
-
-        for archivo in nuevas_evidencias_problema:
-
-
-            evidencia = (
-                EvidenciaIncidencia.objects.create(
-                    id_incidencia=incidencia,
-                    tipo=(
-                        EvidenciaIncidencia
-                        .TipoEvidencia
-                        .PROBLEMA
-                    ),
-                    imagen=archivo,
-                    subido_por=request.user,
-                )
+            incidencia.prioridad = (
+                prioridad
             )
 
 
-            if primera_nueva_problema is None:
+            incidencia.fechadeteccion = (
+                fecha_deteccion
+            )
 
-                primera_nueva_problema = (
-                    evidencia
+
+            incidencia.estado = (
+                estado
+            )
+
+
+            incidencia.observaciones = (
+                observaciones
+                or
+                None
+            )
+
+
+            incidencia.responsable = (
+                responsable
+                or
+                None
+            )
+
+
+            # =================================================
+            # RELACIONES
+            # =================================================
+
+            incidencia.id_apicultor = (
+                apicultor_seleccionado
+            )
+
+
+            incidencia.id_apiario = (
+                apiario_seleccionado
+            )
+
+
+            incidencia.id_colmena = (
+                colmena_seleccionada
+            )
+
+
+            incidencia.save()
+
+
+            # =================================================
+            # 17.1 MIGRAR FOTO ANTIGUA
+            #
+            # Solo cuando se agregan nuevas fotografías
+            # del problema.
+            # =================================================
+
+            if (
+                tiene_imagen_legacy
+                and
+                nuevas_evidencias_problema
+            ):
+
+                evidencia_legacy = (
+                    EvidenciaIncidencia(
+
+                        id_incidencia=
+                            incidencia,
+
+                        tipo=(
+                            EvidenciaIncidencia
+                            .TipoEvidencia
+                            .PROBLEMA
+                        ),
+
+                        subido_por=
+                            None,
+
+                    )
                 )
 
 
-        # ====================================================
-        # COMPATIBILIDAD CON INCIDENCIA.IMAGEN
-        #
-        # Si era una incidencia sin imagen antigua, hacemos
-        # que el campo legacy apunte a la primera foto.
-        # ====================================================
+                evidencia_legacy.imagen.name = (
+                    incidencia.imagen.name
+                )
 
-        if (
-            not incidencia.imagen
-            and
-            primera_nueva_problema
-        ):
 
-            incidencia.imagen.name = (
+                evidencia_legacy.save()
+
+
+            # =================================================
+            # 17.2 NUEVAS FOTOS DEL PROBLEMA
+            # =================================================
+
+            primera_nueva_problema = None
+
+
+            for archivo in nuevas_evidencias_problema:
+
+                evidencia = (
+                    EvidenciaIncidencia.objects.create(
+
+                        id_incidencia=
+                            incidencia,
+
+                        tipo=(
+                            EvidenciaIncidencia
+                            .TipoEvidencia
+                            .PROBLEMA
+                        ),
+
+                        imagen=
+                            archivo,
+
+                        subido_por=
+                            request.user,
+
+                    )
+                )
+
+
+                if primera_nueva_problema is None:
+
+                    primera_nueva_problema = (
+                        evidencia
+                    )
+
+
+            # =================================================
+            # 17.3 COMPATIBILIDAD CON INCIDENCIA.IMAGEN
+            #
+            # Si la incidencia no tenía imagen legacy,
+            # apuntamos el campo antiguo a la primera
+            # evidencia nueva del problema.
+            # =================================================
+
+            if (
+                not incidencia.imagen
+                and
                 primera_nueva_problema
-                .imagen
-                .name
+            ):
+
+                incidencia.imagen.name = (
+                    primera_nueva_problema
+                    .imagen
+                    .name
+                )
+
+
+                incidencia.save(
+                    update_fields=[
+                        "imagen"
+                    ]
+                )
+
+
+            # =================================================
+            # 17.4 NUEVAS FOTOS DE SOLUCIÓN
+            # =================================================
+
+            for archivo in nuevas_evidencias_solucion:
+
+                EvidenciaIncidencia.objects.create(
+
+                    id_incidencia=
+                        incidencia,
+
+                    tipo=(
+                        EvidenciaIncidencia
+                        .TipoEvidencia
+                        .SOLUCION
+                    ),
+
+                    imagen=
+                        archivo,
+
+                    subido_por=
+                        request.user,
+
+                )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR EDITANDO INCIDENCIA:",
+            type(error).__name__,
+            error
+        )
+
+
+        messages.error(
+            request,
+            (
+                "Ocurrió un error al actualizar "
+                "la incidencia."
             )
+        )
 
 
-            incidencia.save(
-                update_fields=[
-                    "imagen"
-                ]
-            )
-
-
-        # ====================================================
-        # NUEVAS FOTOS DE SOLUCIÓN
-        # ====================================================
-
-        for archivo in nuevas_evidencias_solucion:
-
-
-            EvidenciaIncidencia.objects.create(
-                id_incidencia=incidencia,
-                tipo=(
-                    EvidenciaIncidencia
-                    .TipoEvidencia
-                    .SOLUCION
-                ),
-                imagen=archivo,
-                subido_por=request.user,
-            )
+        return redirect(
+            "incidencias_admin"
+        )
 
 
     # ========================================================
-    # MENSAJE
+    # 18. NOTIFICAR CAMBIOS AL APICULTOR
+    #
+    # La función internamente detectará si:
+    #
+    # - Cambió el estado.
+    # - Cambió el apicultor.
+    #
+    # Si no cambió ninguno de los dos, devuelve 0.
+    # ========================================================
+
+    try:
+
+        resultado_notificacion = (
+            notificar_actualizacion_incidencia_apicultor(
+                incidencia,
+                estado_original,
+                apicultor_original_id
+            )
+        )
+
+
+        print(
+            "NOTIFICACIÓN ACTUALIZACIÓN INCIDENCIA:",
+            resultado_notificacion
+        )
+
+
+    except Exception as error:
+
+        print(
+            (
+                "ERROR NOTIFICANDO ACTUALIZACIÓN "
+                "DE INCIDENCIA:"
+            ),
+            type(error).__name__,
+            error
+        )
+
+
+    # ========================================================
+    # 19. MENSAJE DE ÉXITO
     # ========================================================
 
     total_nuevas = (
-        len(nuevas_evidencias_problema)
+        len(
+            nuevas_evidencias_problema
+        )
         +
-        len(nuevas_evidencias_solucion)
+        len(
+            nuevas_evidencias_solucion
+        )
     )
 
 
@@ -6419,10 +7372,13 @@ def editar_incidencia(
 
         messages.success(
             request,
-            "La incidencia fue actualizada correctamente. "
-            f"Se agregaron {total_nuevas} "
-            "evidencia(s) fotográfica(s)."
+            (
+                "La incidencia fue actualizada correctamente. "
+                f"Se agregaron {total_nuevas} "
+                "evidencia(s) fotográfica(s)."
+            )
         )
+
 
     else:
 
@@ -6431,6 +7387,10 @@ def editar_incidencia(
             "La incidencia fue actualizada correctamente."
         )
 
+
+    # ========================================================
+    # 20. REDIRECCIÓN
+    # ========================================================
 
     return redirect(
         "incidencias_admin"
@@ -9419,6 +10379,26 @@ def crear_evento_agenda(request):
 
         evento.save()
 
+        # =====================================================
+        # NOTIFICAR AL APICULTOR RESPONSABLE
+        # =====================================================
+
+        try:
+
+            notificar_evento_asignado_apicultor(
+                evento
+            )
+
+        except Exception as error:
+
+            print(
+                (
+                    "ERROR NOTIFICANDO EVENTO "
+                    "AL APICULTOR:"
+                ),
+                error
+            )
+
 
         # =====================================================
         # GENERAR RECORDATORIO SI ES HOY O MAÑANA
@@ -9497,6 +10477,18 @@ def editar_evento_agenda(
         evento.id_colmena_id
     )
 
+    # ========================================================
+    # RESPONSABLE ORIGINAL
+    #
+    # Debe guardarse antes de validar el ModelForm porque
+    # Django puede modificar la instancia durante la
+    # validación.
+    # ========================================================
+
+    responsable_original_id = (
+        evento.responsable_id
+    )
+
 
     formulario = EventoAgendaForm(
         request.POST,
@@ -9569,6 +10561,45 @@ def editar_evento_agenda(
         # ====================================================
 
         evento = formulario.save()
+
+        # ====================================================
+        # COMPROBAR SI CAMBIÓ EL RESPONSABLE
+        # ====================================================
+
+        responsable_cambio = (
+
+            evento.responsable_id
+            !=
+            responsable_original_id
+
+        )
+
+
+        # ====================================================
+        # NOTIFICAR AL NUEVO RESPONSABLE
+        # ====================================================
+
+        if (
+            responsable_cambio
+            and
+            evento.responsable_id
+        ):
+
+            try:
+
+                notificar_evento_asignado_apicultor(
+                    evento
+                )
+
+            except Exception as error:
+
+                print(
+                    (
+                        "ERROR NOTIFICANDO REASIGNACIÓN "
+                        "DE EVENTO:"
+                    ),
+                    error
+                )
 
 
         messages.success(
