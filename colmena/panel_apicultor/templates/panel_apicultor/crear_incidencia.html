@@ -140,6 +140,18 @@
 
         {% csrf_token %}
 
+        <input
+            type="hidden"
+            name="origen"
+            value="{% if request.POST.origen %}{{ request.POST.origen }}{% else %}{{ request.GET.origen|default:'' }}{% endif %}"
+        >
+
+        <input
+            type="hidden"
+            name="id_apiario_origen"
+            value="{% if request.POST.id_apiario_origen %}{{ request.POST.id_apiario_origen }}{% else %}{{ request.GET.id_apiario_origen|default:'' }}{% endif %}"
+        >
+
 
 
         <!-- =================================================

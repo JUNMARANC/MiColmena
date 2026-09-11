@@ -7,6 +7,7 @@ from panel_apicultor.views import (
     # Apiarios
     mis_apiarios,
     detalle_apiario_apicultor,
+    datos_detalle_apiario_apicultor,
     editar_apiario_apicultor,
 
     # Colmenas
@@ -83,6 +84,12 @@ urlpatterns = [
         "apiarios/<int:id_apiario>/",
         detalle_apiario_apicultor,
         name="detalle_apiario_apicultor",
+    ),
+
+    path(
+        "apiarios/<int:id_apiario>/datos/",
+        datos_detalle_apiario_apicultor,
+        name="datos_detalle_apiario_apicultor",
     ),
 
 

@@ -89,6 +89,17 @@ document.addEventListener("DOMContentLoaded", function () {
             "formCrearMantenimiento"
         );
 
+    const origenCrearMantenimiento =
+        document.getElementById(
+            "origenCrearMantenimiento"
+        );
+
+
+    const apiarioOrigenCrearMantenimiento =
+        document.getElementById(
+            "apiarioOrigenCrearMantenimiento"
+        );
+
 
     const botonesCerrarCrear =
         document.querySelectorAll(
@@ -4522,7 +4533,7 @@ document.addEventListener("DOMContentLoaded", function () {
                ABRIR DESDE APIARIOS / COLMENAS
             ============================================== */
 
-            prepararMantenimientoDesdeColmena();
+            prepararMantenimientoDesdeOrigen();
 
 
         }
@@ -4584,6 +4595,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 "colmena_nueva"
             );
 
+        const origen =
+            parametros.get(
+                "origen"
+            );
+
+
+        const idApiarioOrigen =
+            parametros.get(
+                "id_apiario_origen"
+            );
+
 
         // ==================================================
         // SOLO ABRIR SI nuevo=1
@@ -4607,6 +4629,33 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
+
+        }
+
+        // ==================================================
+        // CONSERVAR PÁGINA DE ORIGEN
+        // ==================================================
+
+        if (origenCrearMantenimiento) {
+
+            origenCrearMantenimiento.value =
+                origen === "detalle_apiario"
+                    ? "detalle_apiario"
+                    : "";
+
+        }
+
+
+        if (apiarioOrigenCrearMantenimiento) {
+
+            apiarioOrigenCrearMantenimiento.value =
+                (
+                    origen === "detalle_apiario"
+                    &&
+                    idApiarioOrigen
+                )
+                    ? idApiarioOrigen
+                    : "";
 
         }
 
@@ -4677,7 +4726,7 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (radioColmena) {
+        if (radioAlcance) {
 
             radioAlcance.checked =
                 true;
@@ -4771,8 +4820,5 @@ document.addEventListener("DOMContentLoaded", function () {
 /* ======================================================
    EJECUTAR PRESELECCIÓN
 ====================================================== */
-
-prepararMantenimientoDesdeOrigen();
-
 
 });

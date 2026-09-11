@@ -9,7 +9,7 @@ from django.db.models import Q, Prefetch, Count
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.urls import reverse
 from PIL import Image, UnidentifiedImageError
 from django.db import transaction
@@ -1775,7 +1775,141 @@ def detalle_apiario_apicultor(
         contexto
     )
 
+# ============================================================
+# DATOS DINÁMICOS DEL DETALLE DE APIARIO
+# ============================================================
 
+@login_required
+@require_GET
+def datos_detalle_apiario_apicultor(
+    request,
+    id_apiario
+):
+
+    # ========================================================
+    # APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = (
+        Apicultor.objects
+        .filter(
+            user=request.user
+        )
+        .first()
+    )
+
+
+    if not apicultor:
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": (
+                    "El usuario no tiene un "
+                    "perfil de apicultor."
+                ),
+            },
+            status=403
+        )
+
+
+    # ========================================================
+    # APIARIO DEL APICULTOR
+    # ========================================================
+
+    apiario = get_object_or_404(
+        Apiario,
+        id_apiario=id_apiario,
+        id_apicultor=apicultor
+    )
+
+
+    # ========================================================
+    # RESUMEN DE COLMENAS
+    #
+    # Se calcula todo en una sola consulta.
+    # ========================================================
+
+    resumen = (
+        Colmena.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .aggregate(
+
+            total=
+                Count(
+                    "id_colmena"
+                ),
+
+            activas=
+                Count(
+                    "id_colmena",
+                    filter=Q(
+                        estadocolmena__iexact=
+                            "Activa"
+                    )
+                ),
+
+            revision=
+                Count(
+                    "id_colmena",
+                    filter=Q(
+                        estadocolmena__iexact=
+                            "Revisión"
+                    )
+                ),
+
+            riesgo=
+                Count(
+                    "id_colmena",
+                    filter=Q(
+                        estadocolmena__iexact=
+                            "Riesgo"
+                    )
+                ),
+
+            inactivas=
+                Count(
+                    "id_colmena",
+                    filter=Q(
+                        estadocolmena__iexact=
+                            "Inactiva"
+                    )
+                ),
+
+        )
+    )
+
+
+    # ========================================================
+    # RESPUESTA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "ok": True,
+
+            "resumen": {
+
+                "total":
+                    resumen["total"],
+
+                "activas":
+                    resumen["activas"],
+
+                "revision":
+                    resumen["revision"],
+
+                "riesgo":
+                    resumen["riesgo"],
+
+                "inactivas":
+                    resumen["inactivas"],
+
+            },
+        }
+    )
 
 # ============================================================
 # VALIDAR SI UNA COLMENA ADMITE NUEVAS ACTIVIDADES
@@ -3869,6 +4003,50 @@ def crear_mantenimiento_apicultor(request):
         user=request.user
     )
 
+    # ========================================================
+    # PÁGINA DE ORIGEN
+    # ========================================================
+
+    origen = (
+        request.POST
+        .get(
+            "origen",
+            ""
+        )
+        .strip()
+    )
+
+
+    id_apiario_origen = (
+        request.POST
+        .get(
+            "id_apiario_origen",
+            ""
+        )
+        .strip()
+    )
+
+
+    apiario_origen = None
+
+
+    if (
+        origen == "detalle_apiario"
+        and
+        id_apiario_origen.isdigit()
+    ):
+
+        apiario_origen = (
+            Apiario.objects
+            .filter(
+                id_apiario=int(
+                    id_apiario_origen
+                ),
+                id_apicultor=apicultor
+            )
+            .first()
+        )
+
 
     # ========================================================
     # 3. DATOS DEL FORMULARIO
@@ -4538,8 +4716,25 @@ def crear_mantenimiento_apicultor(request):
 
 
     # ========================================================
-    # 19. REGRESAR AL LISTADO
+    # 19. REGRESAR A LA PÁGINA DE ORIGEN
     # ========================================================
+
+    if (
+        apiario_origen
+        and
+        apiario
+        and
+        apiario_origen.id_apiario
+        ==
+        apiario.id_apiario
+    ):
+
+        return redirect(
+            "detalle_apiario_apicultor",
+            id_apiario=
+                apiario_origen.id_apiario
+        )
+
 
     return redirect(
         "mantenimientos_apicultor"
@@ -6069,6 +6264,72 @@ def crear_incidencia_apicultor(request):
         )
     )
 
+    # ========================================================
+    # PÁGINA DE ORIGEN
+    # ========================================================
+
+    if request.method == "POST":
+
+        origen = (
+            request.POST
+            .get(
+                "origen",
+                ""
+            )
+            .strip()
+        )
+
+
+        id_apiario_origen = (
+            request.POST
+            .get(
+                "id_apiario_origen",
+                ""
+            )
+            .strip()
+        )
+
+    else:
+
+        origen = (
+            request.GET
+            .get(
+                "origen",
+                ""
+            )
+            .strip()
+        )
+
+
+        id_apiario_origen = (
+            request.GET
+            .get(
+                "id_apiario_origen",
+                ""
+            )
+            .strip()
+        )
+
+
+    apiario_origen = None
+
+
+    if (
+        origen == "detalle_apiario"
+        and
+        id_apiario_origen.isdigit()
+    ):
+
+        apiario_origen = (
+            apiarios
+            .filter(
+                id_apiario=int(
+                    id_apiario_origen
+                )
+            )
+            .first()
+        )
+
 
     # ========================================================
     # 3. TODAS LAS COLMENAS DEL APICULTOR
@@ -6873,8 +7134,25 @@ def crear_incidencia_apicultor(request):
 
 
         # ====================================================
-        # 20. REGRESAR AL LISTADO
+        # 20. REGRESAR A LA PÁGINA DE ORIGEN
         # ====================================================
+
+        if (
+            apiario_origen
+            and
+            apiario
+            and
+            apiario_origen.id_apiario
+            ==
+            apiario.id_apiario
+        ):
+
+            return redirect(
+                "detalle_apiario_apicultor",
+                id_apiario=
+                    apiario_origen.id_apiario
+            )
+
 
         return redirect(
             "incidencias_apicultor"

@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 2. DATOS DE ESTADO DE LAS COLMENAS
     // =========================================================
 
-    const colmenasActivas =
+    let colmenasActivas =
         convertirNumero(
             leerJsonScript(
                 "detalle-colmenas-activas",
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const colmenasRevision =
+    let colmenasRevision =
         convertirNumero(
             leerJsonScript(
                 "detalle-colmenas-revision",
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const colmenasRiesgo =
+    let colmenasRiesgo =
         convertirNumero(
             leerJsonScript(
                 "detalle-colmenas-riesgo",
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const colmenasInactivas =
+    let colmenasInactivas =
         convertirNumero(
             leerJsonScript(
                 "detalle-colmenas-inactivas",
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const totalColmenas = (
+    let totalColmenas = (
         colmenasActivas
         +
         colmenasRevision
@@ -160,6 +160,67 @@ document.addEventListener("DOMContentLoaded", function () {
         colmenasInactivas
     );
 
+
+    // =========================================================
+    // ELEMENTOS DE LAS TARJETAS
+    // =========================================================
+
+    const contadorTotal =
+        document.getElementById(
+            "detalleTotalColmenas"
+        );
+
+
+    const contadorActivas =
+        document.getElementById(
+            "detalleColmenasActivas"
+        );
+
+
+    const contadorRevision =
+        document.getElementById(
+            "detalleColmenasRevision"
+        );
+
+
+    const contadorRiesgo =
+        document.getElementById(
+            "detalleColmenasRiesgo"
+        );
+
+
+    const contadorInactivas =
+        document.getElementById(
+            "detalleColmenasInactivas"
+        );
+
+
+    // =========================================================
+    // ELEMENTOS DE LA LEYENDA
+    // =========================================================
+
+    const leyendaActivas =
+        document.getElementById(
+            "leyendaColmenasActivas"
+        );
+
+
+    const leyendaRevision =
+        document.getElementById(
+            "leyendaColmenasRevision"
+        );
+
+
+    const leyendaRiesgo =
+        document.getElementById(
+            "leyendaColmenasRiesgo"
+        );
+
+
+    const leyendaInactivas =
+        document.getElementById(
+            "leyendaColmenasInactivas"
+        );
 
 
     // =========================================================
@@ -172,360 +233,693 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+    let graficaEstadoApiario =
+        null;
+
+
+    // =========================================================
+    // CONFIGURACIÓN ACTUAL DE LA GRÁFICA
+    // =========================================================
+
+    function obtenerDatosGraficaApiario() {
+
+        const sinDatos =
+            totalColmenas === 0;
+
+
+        return {
+
+            sinDatos:
+                sinDatos,
+
+
+            datos:
+                sinDatos
+
+                    ? [
+                        1
+                    ]
+
+                    : [
+                        colmenasActivas,
+                        colmenasRevision,
+                        colmenasRiesgo,
+                        colmenasInactivas
+                    ],
+
+
+            etiquetas:
+                sinDatos
+
+                    ? [
+                        "Sin colmenas"
+                    ]
+
+                    : [
+                        "Activas",
+                        "Revisión",
+                        "Riesgo",
+                        "Inactivas"
+                    ],
+
+
+            colores:
+                sinDatos
+
+                    ? [
+                        "#E7E9DF"
+                    ]
+
+                    : [
+                        "#78A965",
+                        "#F2C94C",
+                        "#F08A6A",
+                        "#BFC7C2"
+                    ],
+
+        };
+
+    }
+
+
+    // =========================================================
+    // TEXTO CENTRAL DE LA DONA
+    // =========================================================
+
+    const textoCentroApiario = {
+
+        id:
+            "textoCentroApiario",
+
+
+        afterDraw(
+            chart
+        ) {
+
+            const meta =
+                chart.getDatasetMeta(
+                    0
+                );
+
+
+            if (
+                !meta
+                ||
+                !meta.data
+                ||
+                meta.data.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            const arco =
+                meta.data[0];
+
+
+            if (!arco) {
+
+                return;
+
+            }
+
+
+            const ctx =
+                chart.ctx;
+
+
+            ctx.save();
+
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.textBaseline =
+                "middle";
+
+
+            ctx.fillStyle =
+                "#214F3B";
+
+
+            ctx.font =
+                '800 24px "Montserrat Alternates"';
+
+
+            ctx.fillText(
+                totalColmenas,
+                arco.x,
+                arco.y - 7
+            );
+
+
+            ctx.fillStyle =
+                "#68776E";
+
+
+            ctx.font =
+                '600 9px "Montserrat Alternates"';
+
+
+            ctx.fillText(
+
+                totalColmenas === 1
+                    ? "Colmena"
+                    : "Colmenas",
+
+                arco.x,
+
+                arco.y + 15
+
+            );
+
+
+            ctx.restore();
+
+        }
+
+    };
+
+
+    // =========================================================
+    // CREAR GRÁFICA
+    // =========================================================
+
+    function crearGraficaEstadoApiario() {
+
+        if (
+            !canvasEstadoApiario
+            ||
+            typeof Chart === "undefined"
+        ) {
+
+            return;
+
+        }
+
+
+        const configuracion =
+            obtenerDatosGraficaApiario();
+
+
+        graficaEstadoApiario =
+            new Chart(
+                canvasEstadoApiario,
+                {
+
+                    type:
+                        "doughnut",
+
+
+                    data: {
+
+                        labels:
+                            configuracion.etiquetas,
+
+
+                        datasets: [
+
+                            {
+
+                                data:
+                                    configuracion.datos,
+
+
+                                backgroundColor:
+                                    configuracion.colores,
+
+
+                                borderColor:
+                                    "#FFFFFF",
+
+
+                                borderWidth:
+                                    3,
+
+
+                                hoverOffset:
+                                    configuracion.sinDatos
+                                        ? 0
+                                        : 6
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive:
+                            true,
+
+
+                        maintainAspectRatio:
+                            false,
+
+
+                        cutout:
+                            "67%",
+
+
+                        interaction: {
+
+                            intersect:
+                                true,
+
+
+                            mode:
+                                "nearest"
+
+                        },
+
+
+                        plugins: {
+
+
+                            legend: {
+
+                                display:
+                                    false
+
+                            },
+
+
+                            tooltip: {
+
+                                enabled:
+                                    !configuracion.sinDatos,
+
+
+                                backgroundColor:
+                                    "#214F3B",
+
+
+                                titleColor:
+                                    "#FFFFFF",
+
+
+                                bodyColor:
+                                    "#FFFFFF",
+
+
+                                padding:
+                                    12,
+
+
+                                cornerRadius:
+                                    10,
+
+
+                                callbacks: {
+
+                                    label:
+                                        function (
+                                            context
+                                        ) {
+
+                                            const valor =
+                                                Number(
+                                                    context.raw
+                                                );
+
+
+                                            const porcentaje =
+                                                totalColmenas > 0
+
+                                                    ? (
+                                                        (
+                                                            valor
+                                                            /
+                                                            totalColmenas
+                                                        )
+                                                        *
+                                                        100
+                                                    ).toFixed(
+                                                        1
+                                                    )
+
+                                                    : 0;
+
+
+                                            return (
+                                                context.label
+                                                +
+                                                ": "
+                                                +
+                                                valor
+                                                +
+                                                " ("
+                                                +
+                                                porcentaje
+                                                +
+                                                "%)"
+                                            );
+
+                                        }
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+
+
+                    plugins: [
+
+                        textoCentroApiario
+
+                    ]
+
+                }
+            );
+
+    }
+
+
+    // =========================================================
+    // ACTUALIZAR TARJETAS Y LEYENDA
+    // =========================================================
+
+    function actualizarContadoresDetalleApiario() {
+
+        if (contadorTotal) {
+
+            contadorTotal.textContent =
+                totalColmenas;
+
+        }
+
+
+        if (contadorActivas) {
+
+            contadorActivas.textContent =
+                colmenasActivas;
+
+        }
+
+
+        if (contadorRevision) {
+
+            contadorRevision.textContent =
+                colmenasRevision;
+
+        }
+
+
+        if (contadorRiesgo) {
+
+            contadorRiesgo.textContent =
+                colmenasRiesgo;
+
+        }
+
+
+        if (contadorInactivas) {
+
+            contadorInactivas.textContent =
+                colmenasInactivas;
+
+        }
+
+
+        if (leyendaActivas) {
+
+            leyendaActivas.textContent =
+                colmenasActivas;
+
+        }
+
+
+        if (leyendaRevision) {
+
+            leyendaRevision.textContent =
+                colmenasRevision;
+
+        }
+
+
+        if (leyendaRiesgo) {
+
+            leyendaRiesgo.textContent =
+                colmenasRiesgo;
+
+        }
+
+
+        if (leyendaInactivas) {
+
+            leyendaInactivas.textContent =
+                colmenasInactivas;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // ACTUALIZAR DONA EXISTENTE
+    // =========================================================
+
+    function actualizarGraficaEstadoApiario() {
+
+        if (!graficaEstadoApiario) {
+
+            return;
+
+        }
+
+
+        const configuracion =
+            obtenerDatosGraficaApiario();
+
+
+        graficaEstadoApiario.data.labels =
+            configuracion.etiquetas;
+
+
+        graficaEstadoApiario
+            .data
+            .datasets[0]
+            .data =
+                configuracion.datos;
+
+
+        graficaEstadoApiario
+            .data
+            .datasets[0]
+            .backgroundColor =
+                configuracion.colores;
+
+
+        graficaEstadoApiario
+            .data
+            .datasets[0]
+            .hoverOffset =
+                configuracion.sinDatos
+                    ? 0
+                    : 6;
+
+
+        graficaEstadoApiario
+            .options
+            .plugins
+            .tooltip
+            .enabled =
+                !configuracion.sinDatos;
+
+
+        graficaEstadoApiario.update();
+
+    }
+
+
+    // =========================================================
+    // APLICAR DATOS DEL SERVIDOR
+    // =========================================================
+
+    function aplicarResumenDetalleApiario(
+        resumen
+    ) {
+
+        if (!resumen) {
+
+            return;
+
+        }
+
+
+        totalColmenas =
+            convertirNumero(
+                resumen.total
+            );
+
+
+        colmenasActivas =
+            convertirNumero(
+                resumen.activas
+            );
+
+
+        colmenasRevision =
+            convertirNumero(
+                resumen.revision
+            );
+
+
+        colmenasRiesgo =
+            convertirNumero(
+                resumen.riesgo
+            );
+
+
+        colmenasInactivas =
+            convertirNumero(
+                resumen.inactivas
+            );
+
+
+        actualizarContadoresDetalleApiario();
+
+
+        actualizarGraficaEstadoApiario();
+
+    }
+
+
+    // =========================================================
+    // CARGAR DATOS DINÁMICOS
+    // =========================================================
+
+    let cargandoDatosDetalle =
+        false;
+
+
+    async function cargarDatosDetalleApiario() {
+
+        if (
+            typeof URL_DATOS_DETALLE_APIARIO
+            ===
+            "undefined"
+            ||
+            !URL_DATOS_DETALLE_APIARIO
+        ) {
+
+            return;
+
+        }
+
+
+        if (cargandoDatosDetalle) {
+
+            return;
+
+        }
+
+
+        cargandoDatosDetalle =
+            true;
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    URL_DATOS_DETALLE_APIARIO,
+                    {
+
+                        method:
+                            "GET",
+
+                        headers: {
+
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+
+                        },
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible actualizar "
+                    +
+                    "el resumen del apiario."
+                );
+
+            }
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (
+                !datos
+                ||
+                datos.ok !== true
+            ) {
+
+                throw new Error(
+                    datos?.error
+                    ||
+                    "Respuesta inválida del servidor."
+                );
+
+            }
+
+
+            aplicarResumenDetalleApiario(
+                datos.resumen
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "No se pudieron actualizar "
+                +
+                "los datos del detalle del apiario:",
+                error
+            );
+
+        } finally {
+
+            cargandoDatosDetalle =
+                false;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // INICIALIZACIÓN DE LA GRÁFICA
+    // =========================================================
+
     if (
         canvasEstadoApiario
         &&
         typeof Chart !== "undefined"
     ) {
 
-        const sinDatos =
-            totalColmenas === 0;
+        crearGraficaEstadoApiario();
 
-
-        const datosGrafica =
-            sinDatos
-
-                ? [
-                    1
-                ]
-
-                : [
-                    colmenasActivas,
-                    colmenasRevision,
-                    colmenasRiesgo,
-                    colmenasInactivas
-                ];
-
-
-        const etiquetasGrafica =
-            sinDatos
-
-                ? [
-                    "Sin colmenas"
-                ]
-
-                : [
-                    "Activas",
-                    "Revisión",
-                    "Riesgo",
-                    "Inactivas"
-                ];
-
-
-        const coloresGrafica =
-            sinDatos
-
-                ? [
-                    "#E7E9DF"
-                ]
-
-                : [
-                    "#78A965",
-                    "#F2C94C",
-                    "#F08A6A",
-                    "#BFC7C2"
-                ];
-
-
-
-        // =====================================================
-        // TEXTO CENTRAL
-        // =====================================================
-
-        const textoCentroApiario = {
-
-            id:
-                "textoCentroApiario",
-
-
-            afterDraw(
-                chart
-            ) {
-
-                const meta =
-                    chart.getDatasetMeta(
-                        0
-                    );
-
-
-                if (
-                    !meta
-                    ||
-                    !meta.data
-                    ||
-                    meta.data.length === 0
-                ) {
-
-                    return;
-
-                }
-
-
-                const arco =
-                    meta.data[0];
-
-
-                if (!arco) {
-
-                    return;
-
-                }
-
-
-                const ctx =
-                    chart.ctx;
-
-
-                ctx.save();
-
-
-                ctx.textAlign =
-                    "center";
-
-
-                ctx.textBaseline =
-                    "middle";
-
-
-                // =============================================
-                // NÚMERO TOTAL
-                // =============================================
-
-                ctx.fillStyle =
-                    "#214F3B";
-
-
-                ctx.font =
-                    '800 24px "Montserrat Alternates"';
-
-
-                ctx.fillText(
-                    totalColmenas,
-                    arco.x,
-                    arco.y - 7
-                );
-
-
-                // =============================================
-                // TEXTO
-                // =============================================
-
-                ctx.fillStyle =
-                    "#68776E";
-
-
-                ctx.font =
-                    '600 9px "Montserrat Alternates"';
-
-
-                ctx.fillText(
-
-                    totalColmenas === 1
-                        ? "Colmena"
-                        : "Colmenas",
-
-                    arco.x,
-
-                    arco.y + 15
-
-                );
-
-
-                ctx.restore();
-
-            }
-
-        };
-
-
-
-        // =====================================================
-        // CREAR GRÁFICA
-        // =====================================================
-
-        new Chart(
-            canvasEstadoApiario,
-            {
-
-                type:
-                    "doughnut",
-
-
-                data: {
-
-                    labels:
-                        etiquetasGrafica,
-
-
-                    datasets: [
-
-                        {
-
-                            data:
-                                datosGrafica,
-
-
-                            backgroundColor:
-                                coloresGrafica,
-
-
-                            borderColor:
-                                "#FFFFFF",
-
-
-                            borderWidth:
-                                3,
-
-
-                            hoverOffset:
-                                sinDatos
-                                    ? 0
-                                    : 6
-
-                        }
-
-                    ]
-
-                },
-
-
-                options: {
-
-                    responsive:
-                        true,
-
-
-                    maintainAspectRatio:
-                        false,
-
-
-                    cutout:
-                        "67%",
-
-
-                    interaction: {
-
-                        intersect:
-                            true,
-
-
-                        mode:
-                            "nearest"
-
-                    },
-
-
-                    plugins: {
-
-
-                        legend: {
-
-                            display:
-                                false
-
-                        },
-
-
-                        tooltip: {
-
-                            enabled:
-                                !sinDatos,
-
-
-                            backgroundColor:
-                                "#214F3B",
-
-
-                            titleColor:
-                                "#FFFFFF",
-
-
-                            bodyColor:
-                                "#FFFFFF",
-
-
-                            padding:
-                                12,
-
-
-                            cornerRadius:
-                                10,
-
-
-                            callbacks: {
-
-                                label:
-                                    function (
-                                        context
-                                    ) {
-
-                                        const valor =
-                                            Number(
-                                                context.raw
-                                            );
-
-
-                                        const porcentaje =
-                                            totalColmenas > 0
-
-                                                ? (
-                                                    (
-                                                        valor
-                                                        /
-                                                        totalColmenas
-                                                    )
-                                                    *
-                                                    100
-                                                ).toFixed(
-                                                    1
-                                                )
-
-                                                : 0;
-
-
-                                        return (
-                                            context.label
-                                            +
-                                            ": "
-                                            +
-                                            valor
-                                            +
-                                            " ("
-                                            +
-                                            porcentaje
-                                            +
-                                            "%)"
-                                        );
-
-                                    }
-
-                            }
-
-                        }
-
-                    }
-
-                },
-
-
-                plugins: [
-
-                    textoCentroApiario
-
-                ]
-
-            }
-        );
-
-    }
-
-
-
-    // =========================================================
-    // CHART.JS NO DISPONIBLE
-    // =========================================================
-
-    else if (
+    } else if (
         canvasEstadoApiario
         &&
         typeof Chart === "undefined"
@@ -538,6 +932,53 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
+
+
+    // =========================================================
+    // PRIMERA SINCRONIZACIÓN CON EL SERVIDOR
+    // =========================================================
+
+    cargarDatosDetalleApiario();
+
+
+    // =========================================================
+    // ACTUALIZACIÓN AUTOMÁTICA
+    // CADA 10 SEGUNDOS
+    // =========================================================
+
+    const intervaloDetalleApiario =
+        window.setInterval(
+            function () {
+
+                if (
+                    document.visibilityState
+                    ===
+                    "visible"
+                ) {
+
+                    cargarDatosDetalleApiario();
+
+                }
+
+            },
+            10000
+        );
+
+
+    // =========================================================
+    // LIMPIAR INTERVALO AL SALIR
+    // =========================================================
+
+    window.addEventListener(
+        "pagehide",
+        function () {
+
+            window.clearInterval(
+                intervaloDetalleApiario
+            );
+
+        }
+    );
 
 
 

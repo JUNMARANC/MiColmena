@@ -5278,3 +5278,915 @@ textarea.apiario-input {
     }
 
 }
+
+/* ==========================================================
+   ==========================================================
+   PASO 1 - HERO COMPACTO DEL DETALLE DEL APIARIO
+   ==========================================================
+========================================================== */
+
+
+/* ==========================================================
+   CONTENEDOR PRINCIPAL
+========================================================== */
+
+.detalle-apiario-hero {
+
+    width: 100%;
+
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(240px, 300px)
+        minmax(0, 1fr);
+
+    align-items: stretch;
+
+    overflow: hidden;
+
+}
+
+
+/* ==========================================================
+   FOTOGRAFÍA
+========================================================== */
+
+.detalle-apiario-hero-imagen {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 290px;
+
+    height: auto;
+
+    overflow: hidden;
+
+}
+
+
+.detalle-apiario-foto-btn {
+
+    width: 100%;
+
+    height: 100%;
+
+    position: absolute;
+
+    inset: 0;
+
+}
+
+
+.detalle-apiario-foto-btn img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+/* ==========================================================
+   SIN FOTOGRAFÍA
+========================================================== */
+
+.detalle-apiario-sin-foto {
+
+    width: 100%;
+
+    height: 100%;
+
+    min-height: 290px;
+
+    padding: 24px;
+
+}
+
+
+/* ==========================================================
+   INFORMACIÓN DEL HERO
+========================================================== */
+
+.detalle-apiario-hero-info {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    padding: 22px;
+
+}
+
+
+/* ==========================================================
+   CABECERA
+========================================================== */
+
+.detalle-hero-superior {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 16px;
+
+}
+
+
+.detalle-hero-superior > div:first-child {
+
+    min-width: 0;
+
+}
+
+
+.detalle-hero-superior h2 {
+
+    margin: 0;
+
+}
+
+
+/* ==========================================================
+   GRID DE DATOS
+========================================================== */
+
+.detalle-hero-datos-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+
+}
+
+
+/* ==========================================================
+   DATO INDIVIDUAL
+========================================================== */
+
+.detalle-hero-datos-grid
+.detalle-hero-dato {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 12px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.08);
+
+    border-radius: 11px;
+
+    background:
+        #FFF8F7;
+
+}
+
+
+.detalle-hero-datos-grid
+.detalle-hero-dato
+strong {
+
+    overflow: visible;
+
+    text-overflow: initial;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* ==========================================================
+   OBSERVACIONES
+========================================================== */
+
+.detalle-hero-observaciones {
+
+    margin-top: 12px;
+
+}
+
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .detalle-apiario-hero {
+
+        display: grid;
+
+        grid-template-columns:
+            230px
+            minmax(0, 1fr);
+
+        gap: 0;
+
+    }
+
+
+    .detalle-apiario-hero-imagen {
+
+        width: 100%;
+
+        height: auto;
+
+        min-height: 280px;
+
+    }
+
+
+    .detalle-apiario-hero-info {
+
+        width: 100%;
+
+        padding: 20px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   MÓVIL
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .detalle-apiario-hero {
+
+        display: flex;
+
+        flex-direction: column;
+
+    }
+
+
+    .detalle-apiario-hero-imagen {
+
+        width: 100%;
+
+        height: 210px;
+
+        min-height: 210px;
+
+    }
+
+
+    .detalle-apiario-sin-foto {
+
+        min-height: 210px;
+
+    }
+
+
+    .detalle-apiario-hero-info {
+
+        padding: 18px;
+
+    }
+
+
+    .detalle-hero-superior {
+
+        align-items: center;
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .detalle-hero-datos-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+}
+
+
+/* ==========================================================
+   MÓVIL PEQUEÑO
+========================================================== */
+
+@media (max-width: 480px) {
+
+    .detalle-apiario-hero-imagen {
+
+        height: 180px;
+
+        min-height: 180px;
+
+    }
+
+
+    .detalle-apiario-sin-foto {
+
+        min-height: 180px;
+
+    }
+
+
+    .detalle-hero-datos-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .detalle-btn-gestionar {
+
+        width: 100%;
+
+    }
+
+}
+
+/* ==========================================================
+   CORRECCIÓN BOTÓN GESTIONAR DEL HERO
+========================================================== */
+
+.detalle-apiario-hero
+.btn-gestionar-apiario.detalle-btn-gestionar {
+
+    width: auto;
+
+    min-width: 110px;
+
+    max-width: none;
+
+    flex:
+        0
+        0
+        auto;
+
+    align-self:
+        flex-start;
+
+    padding:
+        9px
+        14px;
+
+}
+
+
+/* ==========================================================
+   CABECERA DEL HERO
+========================================================== */
+
+.detalle-apiario-hero
+.detalle-hero-superior {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.detalle-apiario-hero
+.detalle-hero-superior
+> div:first-child {
+
+    min-width: 0;
+
+    flex:
+        1
+        1
+        auto;
+
+}
+
+
+.detalle-apiario-hero
+.detalle-hero-etiqueta {
+
+    width: auto;
+
+    max-width: 100%;
+
+    white-space: normal;
+
+}
+
+
+.detalle-apiario-hero
+.detalle-hero-superior h2 {
+
+    width: auto;
+
+    max-width: 100%;
+
+    overflow-wrap: normal;
+
+    word-break: normal;
+
+}
+
+@media (max-width: 480px) {
+
+    .detalle-apiario-hero
+    .btn-gestionar-apiario.detalle-btn-gestionar {
+
+        width: 100%;
+
+        min-width: 0;
+
+    }
+
+}
+
+/* ==========================================================
+   ==========================================================
+   ESTADO DEL APIARIO
+   DONA IZQUIERDA + TARJETAS DERECHA
+   ==========================================================
+========================================================== */
+
+
+/* ==========================================================
+   LAYOUT PRINCIPAL
+========================================================== */
+
+.detalle-estado-layout {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(360px, 0.85fr)
+        minmax(0, 1.15fr);
+
+    align-items: stretch;
+
+    gap: 18px;
+
+}
+
+
+/* ==========================================================
+   TARJETA DE LA DONA
+========================================================== */
+
+.detalle-estado-layout
+.estado-colmenas-detalle-card {
+
+    width: 100%;
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    padding: 20px;
+
+}
+
+
+/* ==========================================================
+   DONA
+========================================================== */
+
+.detalle-estado-layout
+.detalle-dona-contenedor {
+
+    width: 100%;
+
+    height: 230px;
+
+    max-width: 300px;
+
+    margin:
+        0
+        auto;
+
+}
+
+
+/* ==========================================================
+   LEYENDA
+========================================================== */
+
+.detalle-estado-layout
+.detalle-leyenda-estados {
+
+    width: 100%;
+
+    max-width: 320px;
+
+    margin:
+        12px
+        auto
+        0;
+
+}
+
+
+/* ==========================================================
+   CONTENEDOR DERECHO
+========================================================== */
+
+.detalle-estadisticas-contenedor {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* ==========================================================
+   GRID DE TARJETAS
+========================================================== */
+
+.detalle-estadisticas.detalle-estadisticas-lateral {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 14px;
+
+}
+
+
+/* ==========================================================
+   TARJETAS
+========================================================== */
+
+.detalle-estadisticas-lateral
+.detalle-estadistica {
+
+    width: 100%;
+
+    min-height: 100px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 13px;
+
+    padding:
+        17px
+        18px;
+
+}
+
+
+/* ==========================================================
+   QUINTA TARJETA CENTRADA
+========================================================== */
+
+.detalle-estadisticas-lateral
+.detalle-estadistica:last-child {
+
+    grid-column:
+        1
+        /
+        -1;
+
+    width:
+        calc(
+            50%
+            -
+            7px
+        );
+
+    justify-self:
+        center;
+
+}
+
+
+/* ==========================================================
+   ICONOS
+========================================================== */
+
+.detalle-estadisticas-lateral
+.detalle-estadistica-icono {
+
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+}
+
+
+/* ==========================================================
+   NÚMERO
+========================================================== */
+
+.detalle-estadisticas-lateral
+.detalle-estadistica strong {
+
+    font-size: 21px;
+
+}
+
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 1050px) {
+
+    .detalle-estado-layout {
+
+        grid-template-columns:
+            minmax(310px, 0.9fr)
+            minmax(0, 1.1fr);
+
+        gap: 14px;
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica {
+
+        min-height: 92px;
+
+        padding:
+            14px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   TABLET PEQUEÑA
+========================================================== */
+
+@media (max-width: 820px) {
+
+    .detalle-estado-layout {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .detalle-estado-layout
+    .estado-colmenas-detalle-card {
+
+        width: 100%;
+
+    }
+
+
+    .detalle-estado-layout
+    .detalle-dona-contenedor {
+
+        height: 220px;
+
+        max-width: 280px;
+
+    }
+
+
+    .detalle-estadisticas.detalle-estadisticas-lateral {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica:last-child {
+
+        width:
+            calc(
+                50%
+                -
+                7px
+            );
+
+    }
+
+}
+
+
+/* ==========================================================
+   MÓVIL
+========================================================== */
+
+@media (max-width: 560px) {
+
+    .detalle-estado-layout {
+
+        gap: 12px;
+
+    }
+
+
+    .detalle-estadisticas.detalle-estadisticas-lateral {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+        gap: 10px;
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica {
+
+        min-height: 82px;
+
+        gap: 9px;
+
+        padding:
+            12px;
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica-icono {
+
+        width: 37px;
+
+        height: 37px;
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica strong {
+
+        font-size: 18px;
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica:last-child {
+
+        width:
+            calc(
+                50%
+                -
+                5px
+            );
+
+    }
+
+}
+
+
+/* ==========================================================
+   MÓVIL MUY PEQUEÑO
+========================================================== */
+
+@media (max-width: 410px) {
+
+    .detalle-estadisticas.detalle-estadisticas-lateral {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .detalle-estadisticas-lateral
+    .detalle-estadistica:last-child {
+
+        grid-column:
+            auto;
+
+        width:
+            100%;
+
+    }
+
+}
+
+/* ==========================================================
+   ESTADO DEL APIARIO EN EL ENCABEZADO
+========================================================== */
+
+.detalle-titulo
+.detalle-estado-apiario {
+
+    margin-top: 4px;
+
+}
+
+
+@media (max-width: 560px) {
+
+    .detalle-titulo {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .detalle-titulo
+    .detalle-estado-apiario {
+
+        margin-top: 0;
+
+    }
+
+}
+
+/* ==========================================================
+   MODAL VER COLMENA
+   FOOTER SIMPLIFICADO
+========================================================== */
+
+.modal-colmena-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+}
+
+
+.modal-colmena-footer
+.btn-modal-cerrar {
+
+    min-width: 110px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+}

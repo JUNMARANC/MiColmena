@@ -1246,6 +1246,18 @@
 
             {% csrf_token %}
 
+            <input
+                type="hidden"
+                name="origen"
+                value="{{ request.GET.origen|default:'' }}"
+            >
+
+            <input
+                type="hidden"
+                name="id_apiario_origen"
+                value="{{ request.GET.id_apiario_origen|default:'' }}"
+            >
+
 
 
             <!-- =================================================
@@ -2646,7 +2658,6 @@
             >
 
                 {% csrf_token %}
-
 
 
                 <!-- HEADER -->
