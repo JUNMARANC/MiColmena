@@ -1794,12 +1794,545 @@ def colmenas_admin(request):
 
 
 
+# ============================================================
+# GENERACIÓN DE CÓDIGOS DE COLMENA
+# ============================================================
+
+PALABRAS_IGNORADAS_CODIGO_APIARIO = {
+    "de",
+    "del",
+    "la",
+    "las",
+    "el",
+    "los",
+    "y",
+    "en",
+    "apiario",
+}
+
+
+def obtener_palabras_codigo_apiario(nombre_apiario):
+    """
+    Convierte el nombre del apiario en palabras útiles
+    para construir su prefijo.
+
+    Ejemplo:
+    Prado del Sol -> ["prado", "sol"]
+    """
+
+    nombre_normalizado = slugify(
+        nombre_apiario or ""
+    )
+
+    palabras_originales = [
+        palabra
+        for palabra in nombre_normalizado.split("-")
+        if palabra
+    ]
+
+    palabras = [
+        palabra
+        for palabra in palabras_originales
+        if palabra
+        not in PALABRAS_IGNORADAS_CODIGO_APIARIO
+    ]
+
+    # Si por alguna razón todas las palabras fueron
+    # ignoradas, utilizamos las originales.
+    if not palabras:
+        palabras = palabras_originales
+
+    return palabras
+
+
+def obtener_prefijos_candidatos_apiario(apiario):
+    """
+    Genera posibles prefijos a partir del nombre.
+
+    Ejemplos:
+    Prado del Sol -> PS
+    Monte Verde   -> MV
+    Mirador       -> MI
+
+    Si PS ya está ocupado:
+    Pinar Sur podría utilizar PIS.
+    """
+
+    palabras = obtener_palabras_codigo_apiario(
+        apiario.nombreapiario
+    )
+
+    candidatos = []
+
+
+    def agregar(candidato):
+
+        candidato = re.sub(
+            r"[^A-Z]",
+            "",
+            (candidato or "").upper()
+        )
+
+        # Máximo razonable para mantener códigos cortos.
+        candidato = candidato[:8]
+
+        if len(candidato) < 2:
+            return
+
+        # CM queda reservado para el sistema antiguo.
+        if candidato == "CM":
+            return
+
+        if candidato not in candidatos:
+            candidatos.append(
+                candidato
+            )
+
+
+    # ========================================================
+    # NOMBRE DE VARIAS PALABRAS
+    # ========================================================
+
+    if len(palabras) >= 2:
+
+        # Prado + Sol -> PS
+        agregar(
+            "".join(
+                palabra[0]
+                for palabra in palabras
+            )
+        )
+
+        # Pinar + Sur -> PIS
+        agregar(
+            palabras[0][:2]
+            +
+            "".join(
+                palabra[0]
+                for palabra in palabras[1:]
+            )
+        )
+
+        # Prado + Sol -> PSO
+        agregar(
+            palabras[0][0]
+            +
+            palabras[1][:2]
+            +
+            "".join(
+                palabra[0]
+                for palabra in palabras[2:]
+            )
+        )
+
+        # Alternativa adicional.
+        agregar(
+            palabras[0][:3]
+            +
+            "".join(
+                palabra[0]
+                for palabra in palabras[1:]
+            )
+        )
+
+        # Última alternativa basada en el nombre completo.
+        agregar(
+            "".join(
+                palabras
+            )[:8]
+        )
+
+
+    # ========================================================
+    # NOMBRE DE UNA SOLA PALABRA
+    # ========================================================
+
+    elif len(palabras) == 1:
+
+        palabra = palabras[0]
+
+        for longitud in range(
+            2,
+            min(
+                len(palabra),
+                8
+            ) + 1
+        ):
+
+            agregar(
+                palabra[:longitud]
+            )
+
+
+    # ========================================================
+    # RESPALDO
+    # ========================================================
+
+    if not candidatos:
+
+        candidatos.append(
+            "AP"
+        )
+
+    return candidatos
+
+
+def prefijo_usado_por_otro_apiario(
+    prefijo,
+    apiario
+):
+    """
+    Revisa si otro apiario ya utiliza este prefijo.
+
+    PS01, PS02, etc.
+    """
+
+    codigos = (
+        Colmena.objects
+        .exclude(
+            id_apiario=apiario
+        )
+        .filter(
+            codigocolmena__istartswith=prefijo
+        )
+        .values_list(
+            "codigocolmena",
+            flat=True
+        )
+    )
+
+    patron = re.compile(
+        rf"^{re.escape(prefijo)}\d+$",
+        re.IGNORECASE
+    )
+
+    for codigo in codigos:
+
+        if not codigo:
+            continue
+
+        if patron.fullmatch(
+            codigo.strip()
+        ):
+
+            return True
+
+    return False
+
+
+def obtener_prefijo_existente_apiario(apiario):
+    """
+    Si el apiario ya tiene códigos del nuevo sistema,
+    conserva ese mismo prefijo.
+
+    Esto permite que aunque el apiario cambie de nombre,
+    sus códigos sigan siendo:
+
+    PS01
+    PS02
+    PS03
+    """
+
+    codigos = (
+        Colmena.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .exclude(
+            codigocolmena__isnull=True
+        )
+        .exclude(
+            codigocolmena=""
+        )
+        .order_by(
+            "id_colmena"
+        )
+        .values_list(
+            "codigocolmena",
+            flat=True
+        )
+    )
+
+    patron = re.compile(
+        r"^([A-Z]{2,8})(\d+)$",
+        re.IGNORECASE
+    )
+
+    for codigo in codigos:
+
+        codigo = (
+            codigo
+            .strip()
+            .upper()
+        )
+
+        coincidencia = patron.fullmatch(
+            codigo
+        )
+
+        if not coincidencia:
+            continue
+
+        prefijo = (
+            coincidencia
+            .group(1)
+            .upper()
+        )
+
+        # CM00000001 pertenece al sistema antiguo.
+        if prefijo == "CM":
+            continue
+
+        return prefijo
+
+    return None
+
+
+def numero_a_letras(numero):
+    """
+    Convierte un número en letras para utilizarlo
+    únicamente como último mecanismo de desempate.
+
+    1  -> A
+    2  -> B
+    27 -> AA
+    """
+
+    resultado = ""
+
+    numero = max(
+        int(numero or 1),
+        1
+    )
+
+    while numero:
+
+        numero, resto = divmod(
+            numero - 1,
+            26
+        )
+
+        resultado = (
+            chr(
+                65 + resto
+            )
+            +
+            resultado
+        )
+
+    return resultado
+
+
+def obtener_prefijo_apiario(apiario):
+    """
+    Obtiene el prefijo definitivo del apiario.
+    """
+
+    # ========================================================
+    # SI YA TIENE PREFIJO, CONSERVARLO
+    # ========================================================
+
+    prefijo_existente = (
+        obtener_prefijo_existente_apiario(
+            apiario
+        )
+    )
+
+    if prefijo_existente:
+
+        return prefijo_existente
+
+
+    # ========================================================
+    # GENERAR PREFIJO NUEVO
+    # ========================================================
+
+    candidatos = (
+        obtener_prefijos_candidatos_apiario(
+            apiario
+        )
+    )
+
+
+    for prefijo in candidatos:
+
+        if not prefijo_usado_por_otro_apiario(
+            prefijo,
+            apiario
+        ):
+
+            return prefijo
+
+
+    # ========================================================
+    # ÚLTIMO MECANISMO DE DESEMPATE
+    # ========================================================
+
+    prefijo_base = candidatos[0]
+
+    sufijo = numero_a_letras(
+        apiario.id_apiario
+    )
+
+    prefijo = (
+        f"{prefijo_base}{sufijo}"
+    )[:8]
+
+
+    while prefijo_usado_por_otro_apiario(
+        prefijo,
+        apiario
+    ):
+
+        prefijo = (
+            f"{prefijo}X"
+        )[:8]
+
+
+    return prefijo
+
+
+def generar_codigo_colmena(apiario):
+    """
+    Genera el siguiente código disponible para un apiario.
+
+    Ejemplo:
+
+    Prado del Sol:
+        PS01
+        PS02
+        PS03
+
+    Si PS02 fue eliminado:
+        siguiente -> PS04
+
+    No se reutilizan códigos.
+    """
+
+    prefijo = obtener_prefijo_apiario(
+        apiario
+    )
+
+
+    # ========================================================
+    # CÓDIGOS ACTUALES DEL APIARIO
+    # ========================================================
+
+    codigos = list(
+        Colmena.objects
+        .filter(
+            id_apiario=apiario
+        )
+        .values_list(
+            "codigocolmena",
+            flat=True
+        )
+    )
+
+
+    patron = re.compile(
+        rf"^{re.escape(prefijo)}(\d+)$",
+        re.IGNORECASE
+    )
+
+
+    numeros_utilizados = []
+
+
+    for codigo in codigos:
+
+        if not codigo:
+            continue
+
+        coincidencia = patron.fullmatch(
+            codigo.strip()
+        )
+
+        if coincidencia:
+
+            numeros_utilizados.append(
+                int(
+                    coincidencia.group(1)
+                )
+            )
+
+
+    # ========================================================
+    # SIGUIENTE NÚMERO
+    #
+    # También tomamos en cuenta la cantidad de colmenas
+    # existentes con códigos antiguos CM...
+    #
+    # Ejemplo:
+    #
+    # 3 colmenas antiguas existentes
+    # -> la siguiente nueva será PS04.
+    # ========================================================
+
+    numero_mayor = max(
+        numeros_utilizados,
+        default=0
+    )
+
+    cantidad_existente = len(
+        codigos
+    )
+
+    siguiente_numero = (
+        max(
+            numero_mayor,
+            cantidad_existente
+        )
+        +
+        1
+    )
+
+
+    codigo = (
+        f"{prefijo}"
+        f"{siguiente_numero:02d}"
+    )
+
+
+    # ========================================================
+    # PROTECCIÓN ADICIONAL CONTRA DUPLICADOS
+    # ========================================================
+
+    while (
+        Colmena.objects
+        .filter(
+            codigocolmena__iexact=codigo
+        )
+        .exists()
+    ):
+
+        siguiente_numero += 1
+
+        codigo = (
+            f"{prefijo}"
+            f"{siguiente_numero:02d}"
+        )
+
+
+    return codigo
+
+
+
+# ============================================================
+# CREAR COLMENA
+# PANEL ADMINISTRADOR
+# ============================================================
+
 @administrador_requerido
 @permiso_requerido(
     "cg",
     redireccion="colmenas_admin"
 )
 def crear_colmena(request):
+
+    # ========================================================
+    # 1. SOLO POST
+    # ========================================================
 
     if request.method != "POST":
 
@@ -1809,13 +2342,16 @@ def crear_colmena(request):
 
 
     # ========================================================
-    # OBTENER APIARIO
+    # 2. OBTENER APIARIO
     # ========================================================
 
     id_apiario = (
-        request.POST.get(
-            "id_apiario"
+        request.POST
+        .get(
+            "id_apiario",
+            ""
         )
+        .strip()
     )
 
 
@@ -1832,276 +2368,384 @@ def crear_colmena(request):
 
 
     # ========================================================
-    # TRANSACCIÓN
+    # 3. VALIDAR ID
     # ========================================================
 
-    with transaction.atomic():
+    if not id_apiario.isdigit():
 
-        # Bloqueamos temporalmente el apiario para evitar
-        # registros simultáneos que superen la capacidad.
+        messages.error(
+            request,
+            "El apiario seleccionado no es válido."
+        )
 
-        apiario = (
-            Apiario.objects
-            .select_for_update()
-            .filter(
-                id_apiario=id_apiario
-            )
-            .first()
+        return redirect(
+            "colmenas_admin"
         )
 
 
-        if not apiario:
+    # ========================================================
+    # 4. DATOS DEL FORMULARIO
+    # ========================================================
 
-            messages.error(
-                request,
-                "El apiario seleccionado no existe."
+    fecha_registro_texto = (
+        request.POST
+        .get(
+            "fecha_registro",
+            ""
+        )
+        .strip()
+    )
+
+
+    estado_colmena = (
+        request.POST
+        .get(
+            "estado_colmena",
+            ""
+        )
+        .strip()
+    )
+
+
+    descripcion = (
+        request.POST
+        .get(
+            "descripcion",
+            ""
+        )
+        .strip()
+    )
+
+
+    imagen = (
+        request.FILES
+        .get(
+            "imagen"
+        )
+    )
+
+
+    # ========================================================
+    # 5. VALIDAR FECHA OBLIGATORIA
+    # ========================================================
+
+    if not fecha_registro_texto:
+
+        messages.error(
+            request,
+            (
+                "La fecha de registro de la colmena "
+                "es obligatoria."
             )
+        )
 
-            return redirect(
-                "colmenas_admin"
-            )
-
-        # ====================================================
-        # FECHA DE REGISTRO DE LA COLMENA
-        # ====================================================
-
-        fecha_registro_texto = (
-            request.POST.get(
-                "fecha_registro",
-                ""
-            )
-            .strip()
+        return redirect(
+            "colmenas_admin"
         )
 
 
-        # ====================================================
-        # FECHA OBLIGATORIA
-        # ====================================================
+    # ========================================================
+    # 6. CONVERTIR FECHA
+    # ========================================================
 
-        if not fecha_registro_texto:
+    fecha_registro = parse_date(
+        fecha_registro_texto
+    )
 
-            messages.error(
-                request,
-                "La fecha de registro de la colmena es obligatoria."
+
+    if not fecha_registro:
+
+        messages.error(
+            request,
+            (
+                "La fecha de registro de la colmena "
+                "no es válida."
             )
+        )
 
-            return redirect(
-                "colmenas_admin"
-            )
-
-
-        # ====================================================
-        # CONVERTIR FECHA
-        # ====================================================
-
-        fecha_registro = parse_date(
-            fecha_registro_texto
+        return redirect(
+            "colmenas_admin"
         )
 
 
-        if not fecha_registro:
+    # ========================================================
+    # 7. NO PERMITIR FECHA FUTURA
+    # ========================================================
 
-            messages.error(
-                request,
-                "La fecha de registro de la colmena no es válida."
+    hoy = timezone.localdate()
+
+
+    if fecha_registro > hoy:
+
+        messages.error(
+            request,
+            (
+                "La fecha de registro de la colmena "
+                "no puede ser futura."
             )
+        )
 
-            return redirect(
-                "colmenas_admin"
-            )
-
-
-        # ====================================================
-        # NO PERMITIR FECHA FUTURA
-        # ====================================================
-
-        hoy = timezone.localdate()
-
-
-        if fecha_registro > hoy:
-
-            messages.error(
-                request,
-                "La fecha de registro de la colmena no puede ser futura."
-            )
-
-            return redirect(
-                "colmenas_admin"
-            )
-
-
-        # ====================================================
-        # FECHA DEL APIARIO
-        # ====================================================
-
-        fecha_apiario = (
-            apiario.fechaeclosionapiario
+        return redirect(
+            "colmenas_admin"
         )
 
 
-        if not fecha_apiario:
+    # ========================================================
+    # 8. TRANSACCIÓN
+    #
+    # Se bloquea el apiario mientras se crea la colmena.
+    #
+    # Esto evita:
+    #
+    # - superar su capacidad;
+    # - generar dos códigos iguales simultáneamente.
+    # ========================================================
 
-            messages.error(
-                request,
-                (
-                    f"El apiario «{apiario.nombreapiario}» "
-                    "no tiene una fecha de registro válida."
-                )
-            )
+    try:
 
-            return redirect(
-                "colmenas_admin"
-            )
+        with transaction.atomic():
 
+            # =================================================
+            # 8.1 BLOQUEAR Y OBTENER APIARIO
+            # =================================================
 
-        # ====================================================
-        # LA COLMENA NO PUEDE SER ANTERIOR AL APIARIO
-        # ====================================================
-
-        if fecha_registro < fecha_apiario:
-
-            messages.error(
-                request,
-                (
-                    f"La colmena no puede registrarse con una fecha "
-                    f"anterior al apiario «{apiario.nombreapiario}». "
-                    f"El apiario fue registrado el "
-                    f"{fecha_apiario.strftime('%d/%m/%Y')}."
-                )
-            )
-
-            return redirect(
-                "colmenas_admin"
-            )
-
-
-        # ====================================================
-        # CAPACIDAD MÁXIMA
-        # ====================================================
-
-        try:
-
-            capacidad_maxima = int(
-                apiario.cantidadcolmenas
-                or 0
-            )
-
-        except (
-            TypeError,
-            ValueError
-        ):
-
-            capacidad_maxima = 0
-
-
-        # ====================================================
-        # CANTIDAD REAL ACTUAL
-        # ====================================================
-
-        cantidad_actual = (
-            Colmena.objects
-            .filter(
-                id_apiario=apiario
-            )
-            .count()
-        )
-
-
-        # ====================================================
-        # VALIDAR CAPACIDAD
-        # ====================================================
-
-        if (
-            cantidad_actual
-            >=
-            capacidad_maxima
-        ):
-
-            messages.warning(
-                request,
-                (
-                    f"No se puede registrar otra colmena "
-                    f"en «{apiario.nombreapiario}». "
-                    f"El apiario ya alcanzó su capacidad "
-                    f"máxima de {capacidad_maxima} "
-                    f"colmena(s)."
-                )
-            )
-
-
-            return redirect(
-                "colmenas_admin"
-            )
-
-
-        # ====================================================
-        # GENERAR CÓDIGO
-        # ====================================================
-
-        ultima_colmena = (
-            Colmena.objects
-            .order_by(
-                "-id_colmena"
-            )
-            .first()
-        )
-
-
-        if ultima_colmena:
-
-            nuevo_numero = (
-                ultima_colmena.id_colmena
-                +
-                1
-            )
-
-        else:
-
-            nuevo_numero = 1
-
-
-        codigo = (
-            f"CM{nuevo_numero:08d}"
-        )
-
-
-        # ====================================================
-        # CREAR COLMENA
-        # ====================================================
-
-        colmena = (
-            Colmena.objects
-            .create(
-
-                id_apiario=
-                    apiario,
-
-                codigocolmena=
-                    codigo,
-
-                estadocolmena=
-                    request.POST.get(
-                        "estado_colmena"
-                    ),
-
-                fecharegistro=
-                    fecha_registro,
-
-                descripcion=
-                    request.POST.get(
-                        "descripcion"
-                    ),
-
-                imagen=
-                    request.FILES.get(
-                        "imagen"
+            apiario = (
+                Apiario.objects
+                .select_for_update()
+                .filter(
+                    id_apiario=int(
+                        id_apiario
                     )
+                )
+                .first()
             )
+
+
+            if not apiario:
+
+                messages.error(
+                    request,
+                    (
+                        "El apiario seleccionado "
+                        "no existe."
+                    )
+                )
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
+
+            # =================================================
+            # 8.2 VALIDAR NOMBRE DEL APIARIO
+            #
+            # Es necesario porque el código depende
+            # inicialmente del nombre.
+            # =================================================
+
+            nombre_apiario = (
+                apiario.nombreapiario
+                or ""
+            ).strip()
+
+
+            if not nombre_apiario:
+
+                messages.error(
+                    request,
+                    (
+                        "El apiario seleccionado no tiene "
+                        "un nombre válido para generar "
+                        "el código de la colmena."
+                    )
+                )
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
+
+            # =================================================
+            # 8.3 FECHA DEL APIARIO
+            # =================================================
+
+            fecha_apiario = (
+                apiario.fechaeclosionapiario
+            )
+
+
+            if not fecha_apiario:
+
+                messages.error(
+                    request,
+                    (
+                        f"El apiario «{nombre_apiario}» "
+                        "no tiene una fecha de registro válida."
+                    )
+                )
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
+
+            # =================================================
+            # 8.4 LA COLMENA NO PUEDE SER ANTERIOR AL APIARIO
+            # =================================================
+
+            if fecha_registro < fecha_apiario:
+
+                messages.error(
+                    request,
+                    (
+                        "La colmena no puede registrarse "
+                        "con una fecha anterior al apiario "
+                        f"«{nombre_apiario}». "
+                        "El apiario fue registrado el "
+                        f"{fecha_apiario.strftime('%d/%m/%Y')}."
+                    )
+                )
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
+
+            # =================================================
+            # 8.5 CAPACIDAD MÁXIMA DEL APIARIO
+            # =================================================
+
+            try:
+
+                capacidad_maxima = int(
+                    apiario.cantidadcolmenas
+                    or 0
+                )
+
+            except (
+                TypeError,
+                ValueError
+            ):
+
+                capacidad_maxima = 0
+
+
+            # =================================================
+            # 8.6 CANTIDAD REAL ACTUAL
+            # =================================================
+
+            cantidad_actual = (
+                Colmena.objects
+                .filter(
+                    id_apiario=apiario
+                )
+                .count()
+            )
+
+
+            # =================================================
+            # 8.7 VALIDAR CAPACIDAD
+            # =================================================
+
+            if (
+                cantidad_actual
+                >=
+                capacidad_maxima
+            ):
+
+                messages.warning(
+                    request,
+                    (
+                        "No se puede registrar otra colmena "
+                        f"en «{nombre_apiario}». "
+                        "El apiario ya alcanzó su capacidad "
+                        f"máxima de {capacidad_maxima} "
+                        "colmena(s)."
+                    )
+                )
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
+
+            # =================================================
+            # 8.8 GENERAR CÓDIGO AUTOMÁTICO
+            #
+            # Ejemplo:
+            #
+            # Prado del Sol
+            #
+            # PS01
+            # PS02
+            # PS03
+            # =================================================
+
+            codigo = (
+                generar_codigo_colmena(
+                    apiario
+                )
+            )
+
+
+            # =================================================
+            # 8.9 CREAR COLMENA
+            # =================================================
+
+            colmena = (
+                Colmena.objects
+                .create(
+
+                    id_apiario=
+                        apiario,
+
+                    codigocolmena=
+                        codigo,
+
+                    estadocolmena=
+                        estado_colmena,
+
+                    fecharegistro=
+                        fecha_registro,
+
+                    descripcion=
+                        descripcion,
+
+                    imagen=
+                        imagen,
+
+                )
+            )
+
+
+    # ========================================================
+    # ERROR DE BASE DE DATOS / CREACIÓN
+    # ========================================================
+
+    except Exception as error:
+
+        print(
+            "ERROR CREANDO COLMENA:",
+            type(error).__name__,
+            error
+        )
+
+
+        messages.error(
+            request,
+            (
+                "No fue posible registrar la colmena. "
+                "Inténtalo nuevamente."
+            )
+        )
+
+        return redirect(
+            "colmenas_admin"
         )
 
 
     # ========================================================
-    # NOTIFICAR SI NACE EN RIESGO
+    # 9. NOTIFICAR SI NACE EN RIESGO
     # ========================================================
 
     try:
@@ -2115,19 +2759,27 @@ def crear_colmena(request):
 
         print(
             "ERROR GENERANDO ALERTA DE COLMENA:",
+            type(error).__name__,
             error
         )
 
+
+    # ========================================================
+    # 10. MENSAJE DE ÉXITO
+    # ========================================================
 
     messages.success(
         request,
         (
             f"La colmena «{codigo}» fue registrada "
-            f"correctamente en "
-            f"«{apiario.nombreapiario}»."
+            f"correctamente en «{apiario.nombreapiario}»."
         )
     )
 
+
+    # ========================================================
+    # 11. REGRESAR AL LISTADO
+    # ========================================================
 
     return redirect(
         "colmenas_admin"
