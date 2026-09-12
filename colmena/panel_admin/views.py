@@ -6433,14 +6433,30 @@ def crear_incidencia(request):
     )
 
 
-    responsable = (
-        request.POST.get(
-            "responsable",
-            ""
-        )
-        .strip()
-    )
+    # ========================================================
+    # RESPONSABLE
+    #
+    # El responsable NO se toma del formulario.
+    #
+    # Siempre corresponde al usuario autenticado
+    # que está registrando la incidencia.
+    #
+    # Primero intentamos obtener nombre y apellido.
+    #
+    # Si el usuario no tiene nombre completo configurado,
+    # usamos su username.
+    # ========================================================
 
+    responsable = (
+        request.user.get_full_name().strip()
+        or
+        request.user.username
+    )[:150]
+
+
+    # ========================================================
+    # IMAGEN LEGACY
+    # ========================================================
 
     imagen = (
         request.FILES.get(
@@ -6448,6 +6464,10 @@ def crear_incidencia(request):
         )
     )
 
+
+    # ========================================================
+    # IDs DE LAS ENTIDADES
+    # ========================================================
 
     id_apicultor = (
         request.POST.get(
@@ -6520,7 +6540,7 @@ def crear_incidencia(request):
 
 
     # ========================================================
-    # VALIDAR FECHA
+    # FECHA
     # ========================================================
 
     if not fecha_deteccion_texto:
@@ -6563,32 +6583,13 @@ def crear_incidencia(request):
 
 
     # ========================================================
-    # RESPONSABLE
-    # ========================================================
-
-    if (
-        responsable
-        and
-        not validar_nombre_persona(
-            responsable,
-            maximo=150
-        )
-    ):
-
-        errores.append(
-            (
-                "El responsable debe contener un nombre válido "
-                "de máximo 150 caracteres."
-            )
-        )
-
-
-    # ========================================================
     # 5. RESOLVER ENTIDAD RELACIONADA
     # ========================================================
 
     apicultor = None
+
     apiario = None
+
     colmena = None
 
 
@@ -6803,7 +6804,9 @@ def crear_incidencia(request):
             # =================================================
 
             incidencia.id_apicultor = None
+
             incidencia.id_apiario = None
+
             incidencia.id_colmena = None
 
 
@@ -6854,6 +6857,10 @@ def crear_incidencia(request):
 
             incidencia.save()
 
+
+    # ========================================================
+    # ERROR AL CREAR
+    # ========================================================
 
     except Exception as error:
 
@@ -6943,7 +6950,10 @@ def crear_incidencia(request):
 
     messages.success(
         request,
-        "La incidencia fue registrada correctamente."
+        (
+            "La incidencia fue registrada correctamente. "
+            f"Responsable: {responsable}."
+        )
     )
 
 
@@ -7130,13 +7140,14 @@ def editar_incidencia(
     )
 
 
-    responsable = (
-        request.POST.get(
-            "responsable",
-            ""
-        )
-        .strip()
-    )
+    # ========================================================
+    # RESPONSABLE
+    #
+    # No se recibe desde el formulario.
+    #
+    # El responsable original de la incidencia se conserva
+    # y no puede ser modificado desde esta vista.
+    # ========================================================
 
 
     id_apicultor = (
@@ -7255,23 +7266,11 @@ def editar_incidencia(
 
     # ========================================================
     # RESPONSABLE
+    #
+    # No se valida desde POST porque no es un dato editable.
+    # Se conserva el responsable original guardado en la
+    # incidencia.
     # ========================================================
-
-    if (
-        responsable
-        and
-        not validar_nombre_persona(
-            responsable,
-            maximo=150
-        )
-    ):
-
-        errores.append(
-            (
-                "El responsable debe contener un nombre válido "
-                "de máximo 150 caracteres."
-            )
-        )
 
 
     # ========================================================
@@ -7781,11 +7780,20 @@ def editar_incidencia(
             )
 
 
-            incidencia.responsable = (
-                responsable
-                or
-                None
-            )
+            # =================================================
+            # RESPONSABLE
+            #
+            # IMPORTANTE:
+            #
+            # No se asigna incidencia.responsable aquí.
+            #
+            # De esa manera se conserva exactamente la persona
+            # que registró originalmente la incidencia.
+            #
+            # Aunque alguien modifique el HTML usando DevTools
+            # y envíe otro nombre en el POST, esta vista lo
+            # ignora completamente.
+            # =================================================
 
 
             # =================================================
@@ -7941,6 +7949,10 @@ def editar_incidencia(
 
                 )
 
+
+    # ========================================================
+    # ERROR AL EDITAR
+    # ========================================================
 
     except Exception as error:
 

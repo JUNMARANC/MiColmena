@@ -1804,14 +1804,14 @@
 
 
 <!-- =========================================================
-     MODALES POR MANTENIMIENTO
+    MODALES POR MANTENIMIENTO
 ========================================================= -->
 
 {% for mantenimiento in mantenimientos %}
 
 
     <!-- =====================================================
-         DETALLE DEL MANTENIMIENTO
+        DETALLE DEL MANTENIMIENTO
     ====================================================== -->
 
     <div
@@ -2733,18 +2733,34 @@
 
                             <div class="col-md-6">
 
-                                <label class="form-label">
+                                <label
+                                    for="responsableMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                    class="form-label"
+                                >
                                     Responsable
                                 </label>
 
 
                                 <input
                                     type="text"
+                                    id="responsableMantenimiento{{ mantenimiento.id_mantenimiento }}"
                                     name="responsable"
                                     class="form-control"
-                                    maxlength="100"
-                                    value="{{ mantenimiento.responsable|default:'' }}"
+                                    value="{{ mantenimiento.responsable|default:'Sin Responsable' }}"
+                                    readonly
+                                    aria-readonly="true"
+                                    title="El responsable no puede modificarse desde este mantenimiento."
                                 >
+
+
+                                <div class="form-text">
+
+                                    <i class="bi bi-lock-fill me-1"></i>
+
+                                    El responsable se conserva según la asignación
+                                    original del mantenimiento.
+
+                                </div>
 
                             </div>
 

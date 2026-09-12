@@ -806,19 +806,30 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label>Responsable</label>
+
+                            <label>
+                                Responsable
+                            </label>
 
                             <input
                                 type="text"
                                 name="responsable"
                                 class="form-control responsable-incidencia"
-                                maxlength="150"
-                                autocomplete="name">
+                                value="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}"
+                                readonly
+                                aria-readonly="true"
+                                title="El responsable se asigna automáticamente según el usuario que registra la incidencia."
+                            >
 
-                            <small
-                                class="form-text mensaje-responsable-incidencia d-none"
-                                aria-live="polite"
-                            ></small>
+                            <div class="form-text">
+
+                                <i class="bi bi-lock-fill me-1"></i>
+
+                                Se asigna automáticamente a la persona
+                                que registra la incidencia.
+
+                            </div>
+
                         </div>
 
                         <div class="col-12">
@@ -1644,20 +1655,30 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label>Responsable</label>
+
+                                <label>
+                                    Responsable
+                                </label>
 
                                 <input
                                     type="text"
                                     name="responsable"
                                     class="form-control responsable-incidencia"
-                                    value="{{ incidencia.responsable|default:'' }}"
-                                    maxlength="150"
-                                    autocomplete="name">
+                                    value="{{ incidencia.responsable|default:'Sin responsable' }}"
+                                    readonly
+                                    aria-readonly="true"
+                                    title="El responsable original de la incidencia no puede modificarse."
+                                >
 
-                                <small
-                                    class="form-text mensaje-responsable-incidencia d-none"
-                                    aria-live="polite"
-                                ></small>
+                                <div class="form-text">
+
+                                    <i class="bi bi-lock-fill me-1"></i>
+
+                                    El responsable corresponde a la persona
+                                    que registró originalmente la incidencia.
+
+                                </div>
+
                             </div>
 
                             <div class="col-12">
