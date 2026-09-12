@@ -21,6 +21,7 @@ from panel_apicultor.views import (
     crear_mantenimiento_apicultor,
     editar_mantenimiento_apicultor,
     completar_mantenimiento_apicultor,
+    cancelar_mantenimiento_apicultor,
     actualizar_observacion_mantenimiento_apicultor,
 
     # Incidencias
@@ -159,6 +160,12 @@ urlpatterns = [
         "mantenimientos/<int:id_mantenimiento>/completar/",
         completar_mantenimiento_apicultor,
         name="completar_mantenimiento_apicultor",
+    ),
+
+    path(
+        "mantenimientos/<int:id_mantenimiento>/cancelar/",
+        cancelar_mantenimiento_apicultor,
+        name="cancelar_mantenimiento_apicultor",
     ),
 
     path(
