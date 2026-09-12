@@ -12192,6 +12192,11 @@ PERMISOS_APICULTOR_DEFAULT = {
     "perfil",
 }
 
+# ============================================================
+# USUARIOS, ROLES Y PERMISOS
+# PANEL ADMINISTRADOR
+# ============================================================
+
 @administrador_requerido
 @alguno_permiso_requerido(
     "ug",
@@ -12200,7 +12205,7 @@ PERMISOS_APICULTOR_DEFAULT = {
 def usuarios_roles_admin(request):
 
     # ========================================================
-    # 1. USUARIOS DJANGO
+    # 1. OBTENER USUARIOS DJANGO
     # ========================================================
 
     usuarios_django = (
@@ -12215,47 +12220,67 @@ def usuarios_roles_admin(request):
 
 
     # ========================================================
-    # 2. PERFILES ADMINISTRADORES
+    # 2. OBTENER PERFILES DE ADMINISTRADORES
+    #
+    # Se crea un diccionario:
+    #
+    # {
+    #     user_id: Administrador(...)
+    # }
+    #
+    # Esto evita hacer una consulta nueva por cada usuario.
     # ========================================================
 
     administradores = {
-        administrador.user_id: administrador
+
+        administrador.user_id:
+            administrador
 
         for administrador in (
+
             Administrador.objects
+
             .select_related(
                 "user",
                 "id_rol"
             )
+
             .exclude(
                 user__isnull=True
             )
+
         )
     }
 
 
     # ========================================================
-    # 3. PERFILES APICULTORES
+    # 3. OBTENER PERFILES DE APICULTORES
     # ========================================================
 
     apicultores = {
-        apicultor.user_id: apicultor
+
+        apicultor.user_id:
+            apicultor
 
         for apicultor in (
+
             Apicultor.objects
+
             .select_related(
                 "user",
                 "id_rol"
             )
+
             .exclude(
                 user__isnull=True
             )
+
         )
     }
 
 
     # ========================================================
-    # 4. CONSTRUIR LISTA DE USUARIOS
+    # 4. CONSTRUIR LISTADO DE USUARIOS
     # ========================================================
 
     usuarios = []
@@ -12263,9 +12288,9 @@ def usuarios_roles_admin(request):
 
     for usuario in usuarios_django:
 
-        # ----------------------------------------------------
-        # Valores por defecto
-        # ----------------------------------------------------
+        # ====================================================
+        # 4.1 VALORES POR DEFECTO
+        # ====================================================
 
         perfil = None
 
@@ -12283,14 +12308,16 @@ def usuarios_roles_admin(request):
 
 
         # ====================================================
-        # ADMINISTRADOR
+        # 4.2 ADMINISTRADOR
         # ====================================================
 
         if usuario.id in administradores:
 
-            perfil = administradores[
-                usuario.id
-            ]
+            perfil = (
+                administradores[
+                    usuario.id
+                ]
+            )
 
             tipo_perfil = (
                 "administrador"
@@ -12298,14 +12325,15 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Rol
+            # ROL
             # ------------------------------------------------
 
             if perfil.id_rol:
 
                 rol_nombre = (
                     perfil.id_rol.nombrerol
-                    or "Administrador"
+                    or
+                    "Administrador"
                 )
 
             else:
@@ -12316,20 +12344,30 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Datos propios del Administrador
+            # CELULAR
             # ------------------------------------------------
 
             celular = (
                 perfil.celular
-                or ""
+                or
+                ""
             )
 
+
+            # ------------------------------------------------
+            # NIVEL DE ACCESO
+            # ------------------------------------------------
 
             nivel_acceso = (
                 perfil.nivelacceso
-                or "Alto"
+                or
+                "Alto"
             )
 
+
+            # ------------------------------------------------
+            # FOTO
+            # ------------------------------------------------
 
             if perfil.fotoperfil:
 
@@ -12344,24 +12382,24 @@ def usuarios_roles_admin(request):
                     foto = ""
 
 
-            
-            # Este usuario sí tiene registro en la tabla
-            # Administrador, por lo tanto puede utilizar
-            # editar_administrador().
-            
+            # ------------------------------------------------
+            # PUEDE EDITARSE DESDE ESTE MÓDULO
+            # ------------------------------------------------
 
             puede_editar_administrador = True
 
 
         # ====================================================
-        # APICULTOR
+        # 4.3 APICULTOR
         # ====================================================
 
         elif usuario.id in apicultores:
 
-            perfil = apicultores[
-                usuario.id
-            ]
+            perfil = (
+                apicultores[
+                    usuario.id
+                ]
+            )
 
             tipo_perfil = (
                 "apicultor"
@@ -12369,14 +12407,15 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Rol
+            # ROL
             # ------------------------------------------------
 
             if perfil.id_rol:
 
                 rol_nombre = (
                     perfil.id_rol.nombrerol
-                    or "Apicultor"
+                    or
+                    "Apicultor"
                 )
 
             else:
@@ -12387,14 +12426,19 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Datos propios del Apicultor
+            # TELÉFONO
             # ------------------------------------------------
 
             celular = (
                 perfil.telefono
-                or ""
+                or
+                ""
             )
 
+
+            # ------------------------------------------------
+            # FOTO
+            # ------------------------------------------------
 
             if perfil.fotoperfil:
 
@@ -12410,7 +12454,7 @@ def usuarios_roles_admin(request):
 
 
         # ====================================================
-        # SUPERUSUARIO SIN PERFIL ADMINISTRADOR
+        # 4.4 SUPERUSUARIO SIN PERFIL ADMINISTRADOR
         # ====================================================
 
         elif usuario.is_superuser:
@@ -12423,36 +12467,34 @@ def usuarios_roles_admin(request):
                 "Administrador"
             )
 
-            # 
-            # Se muestra como Administrador en la tabla,
-            # pero si no tiene un registro en Administrador
-            # no podemos enviarlo a editar_administrador(),
-            # porque esa vista trabaja con ese perfil.
-            # 
+            # No tiene un registro real en Administrador,
+            # por lo tanto no debe enviarse a
+            # editar_administrador().
 
             puede_editar_administrador = False
 
 
         # ====================================================
-        # NOMBRE COMPLETO
+        # 4.5 NOMBRE COMPLETO
         # ====================================================
 
         nombre_completo = (
             usuario
             .get_full_name()
             .strip()
-            or usuario.username
+            or
+            usuario.username
         )
 
 
         # ====================================================
-        # DATOS PARA EL TEMPLATE
+        # 4.6 DATOS PARA EL TEMPLATE
         # ====================================================
 
         usuarios.append({
 
             # ------------------------------------------------
-            # Identificación
+            # IDENTIFICACIÓN
             # ------------------------------------------------
 
             "id":
@@ -12460,7 +12502,7 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Información visible
+            # INFORMACIÓN GENERAL
             # ------------------------------------------------
 
             "nombre":
@@ -12472,7 +12514,8 @@ def usuarios_roles_admin(request):
             "correo":
                 (
                     usuario.email
-                    or "Sin correo"
+                    or
+                    "Sin correo"
                 ),
 
             "rol":
@@ -12483,25 +12526,28 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Datos para formularios de edición
+            # DATOS PARA EDICIÓN
             # ------------------------------------------------
 
             "nombres":
                 (
                     usuario.first_name
-                    or ""
+                    or
+                    ""
                 ),
 
             "apellidos":
                 (
                     usuario.last_name
-                    or ""
+                    or
+                    ""
                 ),
 
             "correo_editar":
                 (
                     usuario.email
-                    or ""
+                    or
+                    ""
                 ),
 
             "celular":
@@ -12515,7 +12561,7 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Estado del usuario
+            # ESTADO
             # ------------------------------------------------
 
             "activo":
@@ -12529,7 +12575,7 @@ def usuarios_roles_admin(request):
 
 
             # ------------------------------------------------
-            # Seguridad / tipo de cuenta
+            # SEGURIDAD
             # ------------------------------------------------
 
             "es_superusuario":
@@ -12540,9 +12586,9 @@ def usuarios_roles_admin(request):
 
         })
 
+
     # ========================================================
-    # PAGINACIÓN DE USUARIOS
-    # 8 REGISTROS POR PÁGINA
+    # 5. PAGINACIÓN DE USUARIOS
     # ========================================================
 
     paginador_usuarios = Paginator(
@@ -12559,14 +12605,15 @@ def usuarios_roles_admin(request):
 
 
     usuarios = (
-        paginador_usuarios.get_page(
+        paginador_usuarios
+        .get_page(
             numero_pagina_usuarios
         )
     )
 
 
     # ========================================================
-    # 5. ROLES
+    # 6. OBTENER ROLES
     # ========================================================
 
     roles_queryset = (
@@ -12581,26 +12628,33 @@ def usuarios_roles_admin(request):
     roles = []
 
 
-    # --------------------------------------------------------
-    # Permisos que un Apicultor nunca puede activar
-    # --------------------------------------------------------
+    # ========================================================
+    # 7. PERMISOS QUE EL APICULTOR NUNCA PUEDE ACTIVAR
+    #
+    # Estos permisos se muestran bloqueados en la interfaz.
+    # También se vuelven a validar al guardar.
+    # ========================================================
 
     permisos_no_permitidos_apicultor = {
-        "ag",
-        "cg",
-        "mg",
-        "ig",
-        "rv",
-        "rg",
-        "ug",
-        "roles",
-        "cfg",
+        "ag",      # Administrar apiarios
+        "cg",      # Crear / editar colmenas
+        "mg",      # Gestionar mantenimientos administrativos
+        "ig",      # Gestionar incidencias administrativas
+        "rv",      # Ver reportes
+        "rg",      # Generar reportes
+        "exp",     # Exportaciones
+        "ug",      # Administrar usuarios
+        "roles",   # Administrar roles
+        "cfg",     # Configuración del sistema
     }
 
 
-    # --------------------------------------------------------
-    # Nombres antiguos guardados en BD
-    # --------------------------------------------------------
+    # ========================================================
+    # 8. NOMBRES ANTIGUOS DE PERMISOS
+    #
+    # Se conservan solamente para compatibilidad con registros
+    # creados antes del sistema actual de códigos.
+    # ========================================================
 
     permisos_legacy = {
         "gestión completa",
@@ -12610,15 +12664,20 @@ def usuarios_roles_admin(request):
     }
 
 
+    # ========================================================
+    # 9. CONSTRUIR ROLES Y PERMISOS
+    # ========================================================
+
     for rol in roles_queryset:
 
         # ====================================================
-        # INFORMACIÓN DEL ROL
+        # 9.1 INFORMACIÓN DEL ROL
         # ====================================================
 
         nombre_rol = (
             rol.nombrerol
-            or "Sin nombre"
+            or
+            "Sin nombre"
         )
 
 
@@ -12642,32 +12701,58 @@ def usuarios_roles_admin(request):
 
 
         # ====================================================
-        # PERMISOS GUARDADOS EN BD
+        # 9.2 PERMISOS GUARDADOS EN BASE DE DATOS
         # ====================================================
 
         permisos_guardados = {
+
             codigo.strip()
 
             for codigo in (
                 rol.permisos
-                or ""
+                or
+                ""
             ).split(",")
 
             if codigo.strip()
+
         }
 
 
         # ====================================================
-        # COMPATIBILIDAD CON PERMISOS ANTIGUOS
+        # 9.3 COMPATIBILIDAD CON REGISTROS ANTIGUOS
+        #
+        # MUY IMPORTANTE:
+        #
+        # rol.permisos is None
+        #
+        # significa que el rol nunca recibió una configuración
+        # moderna y podemos usar permisos predeterminados.
+        #
+        #
+        # rol.permisos == ""
+        #
+        # significa que el administrador decidió dejar el rol
+        # SIN permisos.
+        #
+        # En ese caso NO debemos volver a marcar permisos.
         # ====================================================
 
         usar_permisos_default = False
 
 
-        if not permisos_guardados:
+        # ----------------------------------------------------
+        # NUNCA CONFIGURADO
+        # ----------------------------------------------------
+
+        if rol.permisos is None:
 
             usar_permisos_default = True
 
+
+        # ----------------------------------------------------
+        # PERMISO LEGACY
+        # ----------------------------------------------------
 
         elif len(
             permisos_guardados
@@ -12688,6 +12773,10 @@ def usuarios_roles_admin(request):
                 usar_permisos_default = True
 
 
+        # ====================================================
+        # 9.4 USAR DEFAULT SOLAMENTE SI REALMENTE CORRESPONDE
+        # ====================================================
+
         if usar_permisos_default:
 
             if es_administrador:
@@ -12707,7 +12796,7 @@ def usuarios_roles_admin(request):
 
 
         # ====================================================
-        # CONSTRUIR PERMISOS PARA EL TEMPLATE
+        # 9.5 CONSTRUIR PERMISOS PARA EL TEMPLATE
         # ====================================================
 
         permisos_rol = []
@@ -12725,9 +12814,9 @@ def usuarios_roles_admin(request):
             )
 
 
-            # ------------------------------------------------
-            # Nombres especiales para Apicultor
-            # ------------------------------------------------
+            # =================================================
+            # NOMBRES ESPECIALES PARA APICULTOR
+            # =================================================
 
             if es_apicultor:
 
@@ -12735,6 +12824,15 @@ def usuarios_roles_admin(request):
 
                     "av":
                         "Ver apiarios asignados",
+
+                    "cv":
+                        "Ver colmenas",
+
+                    "mr":
+                        "Registrar mantenimientos",
+
+                    "ir":
+                        "Reportar incidencias",
 
                     "agenda":
                         "Ver agenda",
@@ -12754,40 +12852,42 @@ def usuarios_roles_admin(request):
 
 
             # =================================================
-            # PERMISO BLOQUEADO
+            # 9.6 DETERMINAR SI ESTÁ BLOQUEADO
             # =================================================
 
             bloqueado = False
 
 
             # ------------------------------------------------
-            # Restricciones del Apicultor
+            # RESTRICCIONES DEL APICULTOR
             # ------------------------------------------------
 
             if (
                 es_apicultor
-                and codigo_permiso
-                in permisos_no_permitidos_apicultor
+                and
+                codigo_permiso
+                in
+                permisos_no_permitidos_apicultor
             ):
 
                 bloqueado = True
 
 
             # ------------------------------------------------
-            # Administrador siempre conserva "roles"
+            # EL ADMINISTRADOR SIEMPRE CONSERVA "roles"
             # ------------------------------------------------
 
             if (
                 es_administrador
-                and codigo_permiso
-                == "roles"
+                and
+                codigo_permiso == "roles"
             ):
 
                 bloqueado = True
 
 
             # =================================================
-            # AGREGAR PERMISO
+            # 9.7 AGREGAR PERMISO AL ROL
             # =================================================
 
             permisos_rol.append({
@@ -12801,7 +12901,8 @@ def usuarios_roles_admin(request):
                 "activo":
                     (
                         codigo_permiso
-                        in permisos_guardados
+                        in
+                        permisos_guardados
                     ),
 
                 "bloqueado":
@@ -12811,7 +12912,7 @@ def usuarios_roles_admin(request):
 
 
         # ====================================================
-        # AGREGAR ROL
+        # 9.8 AGREGAR ROL AL CONTEXTO
         # ====================================================
 
         roles.append({
@@ -12825,13 +12926,15 @@ def usuarios_roles_admin(request):
             "descripcion":
                 (
                     rol.descripcion
-                    or ""
+                    or
+                    ""
                 ),
 
             "nivel_acceso":
                 (
                     rol.nivelacceso
-                    or ""
+                    or
+                    ""
                 ),
 
             "activo":
@@ -12847,12 +12950,14 @@ def usuarios_roles_admin(request):
 
 
     # ========================================================
-    # 6. PESTAÑA ACTIVA
+    # 10. PESTAÑA ACTIVA
     # ========================================================
 
-    tab_activa = request.GET.get(
-        "tab",
-        "usuarios"
+    tab_activa = (
+        request.GET.get(
+            "tab",
+            "usuarios"
+        )
     )
 
 
@@ -12873,7 +12978,7 @@ def usuarios_roles_admin(request):
 
 
     # ========================================================
-    # 7. CONTEXTO
+    # 11. CONTEXTO
     # ========================================================
 
     contexto = {
@@ -12891,7 +12996,7 @@ def usuarios_roles_admin(request):
 
 
     # ========================================================
-    # 8. RENDER
+    # 12. RENDER
     # ========================================================
 
     return render(
@@ -12900,13 +13005,21 @@ def usuarios_roles_admin(request):
         contexto
     )
 
+# ============================================================
+# GUARDAR PERMISOS DE ROLES
+# PANEL ADMINISTRADOR
+# ============================================================
+
 @administrador_requerido
-@permiso_requerido("roles",redireccion="usuarios_roles_admin")
+@permiso_requerido(
+    "roles",
+    redireccion="usuarios_roles_admin"
+)
 @require_POST
 def guardar_permisos_roles(request):
 
     # ========================================================
-    # PERMISOS VÁLIDOS DEL SISTEMA
+    # 1. PERMISOS VÁLIDOS DEL SISTEMA
     # ========================================================
 
     permisos_validos = {
@@ -12914,99 +13027,196 @@ def guardar_permisos_roles(request):
         for permiso in PERMISOS_SISTEMA
     }
 
+
     # ========================================================
-    # PERMISOS QUE EL APICULTOR NUNCA DEBE TENER
+    # 2. PERMISOS QUE UN APICULTOR NUNCA PUEDE TENER
+    #
+    # Aunque alguien manipule manualmente el formulario HTML,
+    # estos permisos serán eliminados antes de guardar.
     # ========================================================
 
     permisos_prohibidos_apicultor = {
         "ag",      # Administrar apiarios
         "cg",      # Crear / editar colmenas
-        "mg",      # Gestionar mantenimientos
-        "ig",      # Gestionar incidencias
+        "mg",      # Gestionar mantenimientos administrativos
+        "ig",      # Gestionar incidencias administrativas
         "rv",      # Ver reportes administrativos
         "rg",      # Generar reportes administrativos
         "exp",     # Exportar base de datos
         "ug",      # Administrar usuarios
         "roles",   # Administrar roles
-        "cfg",     # Configuración general
+        "cfg",     # Configuración del sistema
     }
 
-    roles = Rol.objects.all()
 
-    for rol in roles:
+    # ========================================================
+    # 3. OBTENER TODOS LOS ROLES
+    # ========================================================
 
-        nombre_rol = (
-            rol.nombrerol
-            or ""
-        ).strip().lower()
+    roles = (
+        Rol.objects
+        .all()
+        .order_by(
+            "id_rol"
+        )
+    )
 
-        nombre_campo = (
-            f"permisos_{rol.id_rol}"
+
+    # ========================================================
+    # 4. GUARDAR CAMBIOS
+    # ========================================================
+
+    try:
+
+        with transaction.atomic():
+
+            for rol in roles:
+
+                # =============================================
+                # NOMBRE DEL ROL
+                # =============================================
+
+                nombre_rol = (
+                    rol.nombrerol
+                    or ""
+                ).strip().lower()
+
+
+                # =============================================
+                # NOMBRE DEL CAMPO HTML
+                #
+                # Ejemplo:
+                #
+                # permisos_1
+                # permisos_2
+                # =============================================
+
+                nombre_campo = (
+                    f"permisos_{rol.id_rol}"
+                )
+
+
+                # =============================================
+                # PERMISOS MARCADOS POR EL ADMINISTRADOR
+                # =============================================
+
+                permisos_recibidos = set(
+                    request.POST.getlist(
+                        nombre_campo
+                    )
+                )
+
+
+                # =============================================
+                # SOLO ACEPTAR PERMISOS CONOCIDOS
+                # =============================================
+
+                permisos_recibidos = (
+                    permisos_recibidos
+                    &
+                    permisos_validos
+                )
+
+
+                # =============================================
+                # 5. REGLA DEL ADMINISTRADOR
+                #
+                # Un administrador debe conservar siempre
+                # la posibilidad de administrar roles.
+                # =============================================
+
+                if "admin" in nombre_rol:
+
+                    permisos_recibidos.add(
+                        "roles"
+                    )
+
+
+                # =============================================
+                # 6. REGLA DEL APICULTOR
+                #
+                # IMPORTANTE:
+                #
+                # Aquí únicamente eliminamos permisos que
+                # jamás puede tener un apicultor.
+                #
+                # NO volvemos a agregar av, cv, mr, ir,
+                # agenda ni perfil.
+                #
+                # Si el administrador los desmarca,
+                # deben permanecer desmarcados.
+                # =============================================
+
+                if "apicult" in nombre_rol:
+
+                    permisos_recibidos -= (
+                        permisos_prohibidos_apicultor
+                    )
+
+
+                # =============================================
+                # 7. GUARDAR PERMISOS
+                #
+                # Si no tiene ninguno permitido:
+                #
+                # rol.permisos = ""
+                # =============================================
+
+                rol.permisos = ",".join(
+                    sorted(
+                        permisos_recibidos
+                    )
+                )
+
+
+                rol.save(
+                    update_fields=[
+                        "permisos"
+                    ]
+                )
+
+
+    except Exception as error:
+
+        print(
+            "ERROR GUARDANDO PERMISOS DE ROLES:",
+            type(error).__name__,
+            error
         )
 
-        permisos_recibidos = set(
-            request.POST.getlist(
-                nombre_campo
+        messages.error(
+            request,
+            (
+                "No fue posible actualizar los permisos "
+                "de los roles."
             )
         )
 
-        # Solo aceptar códigos conocidos.
-        permisos_recibidos = (
-            permisos_recibidos
-            & permisos_validos
+        url = reverse(
+            "usuarios_roles_admin"
+        )
+
+        return redirect(
+            f"{url}?tab=roles"
         )
 
 
-        # ====================================================
-        # REGLA DEL ADMINISTRADOR
-        # ====================================================
-
-        if "admin" in nombre_rol:
-
-            # Siempre debe existir al menos la capacidad
-            # de administrar los roles.
-            permisos_recibidos.add(
-                "roles"
-            )
-        # ====================================================
-        # REGLA ESPECIAL DEL APICULTOR
-        # ====================================================
-
-        if "apicult" in nombre_rol:
-
-            permisos_recibidos -= (
-                permisos_prohibidos_apicultor
-            )
-
-            # Estos permisos mínimos sí corresponden
-            # al funcionamiento normal del apicultor.
-            permisos_recibidos.update({
-                "av",
-                "cv",
-                "mr",
-                "ir",
-                "agenda",
-                "perfil",
-            })
-
-        # ====================================================
-        # GUARDAR
-        # ====================================================
-
-        rol.permisos = ",".join(
-            sorted(
-                permisos_recibidos
-            )
-        )
-
-        rol.save(
-            update_fields=["permisos"]
-        )
+    # ========================================================
+    # 8. MENSAJE DE ÉXITO
+    # ========================================================
 
     messages.success(
         request,
-        "Los permisos de los roles se actualizaron correctamente."
+        (
+            "Los permisos de los roles "
+            "se actualizaron correctamente."
+        )
     )
+
+
+    # ========================================================
+    # 9. REGRESAR A ROLES
+    # ========================================================
 
     url = reverse(
         "usuarios_roles_admin"

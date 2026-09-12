@@ -37,7 +37,10 @@ from panel_admin.notificaciones import (
     notificar_mantenimiento_creado,
 )
 
-
+from panel_admin.permisos import (
+    permiso_requerido,
+    obtener_permisos_usuario,
+)
 
 
 # ============================================================
@@ -264,6 +267,17 @@ def dashboard_apicultor(request):
 
 
     # ========================================================
+    # PERMISOS DEL ROL
+    # ========================================================
+
+    permisos_usuario = (
+        obtener_permisos_usuario(
+            request.user
+        )
+    )
+
+
+    # ========================================================
     # APIARIOS DEL APICULTOR
     # ========================================================
 
@@ -453,55 +467,124 @@ def dashboard_apicultor(request):
     # CONTEXTO
     # ========================================================
 
+    tiene_actividad_visible = (
+        "agenda" in permisos_usuario
+        or
+        "mr" in permisos_usuario
+        or
+        "ir" in permisos_usuario
+    )
+
+
     contexto = {
 
         "apicultor":
             apicultor,
 
         "total_apiarios":
-            apiarios.count(),
+            (
+                apiarios.count()
+                if "av" in permisos_usuario
+                else 0
+            ),
 
         "total_colmenas":
-            colmenas.count(),
+            (
+                colmenas.count()
+                if "cv" in permisos_usuario
+                else 0
+            ),
 
         "colmenas_activas":
-            colmenas_activas,
+            (
+                colmenas_activas
+                if "cv" in permisos_usuario
+                else 0
+            ),
 
         "colmenas_riesgo":
-            colmenas_riesgo,
+            (
+                colmenas_riesgo
+                if "cv" in permisos_usuario
+                else 0
+            ),
 
         "colmenas_revision":
-            colmenas_revision,
+            (
+                colmenas_revision
+                if "cv" in permisos_usuario
+                else 0
+            ),
 
         "colmenas_inactivas":
-            colmenas_inactivas,
+            (
+                colmenas_inactivas
+                if "cv" in permisos_usuario
+                else 0
+            ),
 
         "mantenimientos_pendientes":
-            mantenimientos_pendientes,
+            (
+                mantenimientos_pendientes
+                if "mr" in permisos_usuario
+                else 0
+            ),
 
         "incidencias_abiertas":
-            incidencias_abiertas,
+            (
+                incidencias_abiertas
+                if "ir" in permisos_usuario
+                else 0
+            ),
 
         "proximos_eventos":
-            proximos_eventos,
+            (
+                proximos_eventos
+                if "agenda" in permisos_usuario
+                else []
+            ),
 
         "ultimas_incidencias":
-            ultimas_incidencias,
+            (
+                ultimas_incidencias
+                if "ir" in permisos_usuario
+                else []
+            ),
 
         "actividad_labels":
-            actividad["labels"],
+            (
+                actividad["labels"]
+                if tiene_actividad_visible
+                else []
+            ),
 
         "actividad_revisiones":
-            actividad["revisiones"],
+            (
+                actividad["revisiones"]
+                if "agenda" in permisos_usuario
+                else []
+            ),
 
         "actividad_mantenimientos":
-            actividad["mantenimientos"],
+            (
+                actividad["mantenimientos"]
+                if "mr" in permisos_usuario
+                else []
+            ),
 
         "actividad_incidencias":
-            actividad["incidencias"],
+            (
+                actividad["incidencias"]
+                if "ir" in permisos_usuario
+                else []
+            ),
 
         "revisiones_mes":
-            revisiones_mes,
+            (
+                revisiones_mes
+                if "agenda" in permisos_usuario
+                else 0
+            ),
     }
 
 
@@ -542,6 +625,17 @@ def datos_dashboard_apicultor(
             },
             status=403
         )
+
+
+    # ========================================================
+    # PERMISOS DEL ROL
+    # ========================================================
+
+    permisos_usuario = (
+        obtener_permisos_usuario(
+            request.user
+        )
+    )
 
 
     # ========================================================
@@ -844,6 +938,48 @@ def datos_dashboard_apicultor(
     # RESPUESTA
     # ========================================================
 
+    tiene_actividad_visible = (
+        "agenda" in permisos_usuario
+        or
+        "mr" in permisos_usuario
+        or
+        "ir" in permisos_usuario
+    )
+
+
+    actividad_filtrada = {
+
+        "labels":
+            (
+                actividad["labels"]
+                if tiene_actividad_visible
+                else []
+            ),
+
+        "revisiones":
+            (
+                actividad["revisiones"]
+                if "agenda" in permisos_usuario
+                else []
+            ),
+
+        "mantenimientos":
+            (
+                actividad["mantenimientos"]
+                if "mr" in permisos_usuario
+                else []
+            ),
+
+        "incidencias":
+            (
+                actividad["incidencias"]
+                if "ir" in permisos_usuario
+                else []
+            ),
+
+    }
+
+
     return JsonResponse(
         {
 
@@ -853,39 +989,79 @@ def datos_dashboard_apicultor(
             "resumen": {
 
                 "total_apiarios":
-                    total_apiarios,
+                    (
+                        total_apiarios
+                        if "av" in permisos_usuario
+                        else 0
+                    ),
 
                 "colmenas_activas":
-                    colmenas_activas,
+                    (
+                        colmenas_activas
+                        if "cv" in permisos_usuario
+                        else 0
+                    ),
 
                 "colmenas_riesgo":
-                    colmenas_riesgo,
+                    (
+                        colmenas_riesgo
+                        if "cv" in permisos_usuario
+                        else 0
+                    ),
 
                 "colmenas_revision":
-                    colmenas_revision,
+                    (
+                        colmenas_revision
+                        if "cv" in permisos_usuario
+                        else 0
+                    ),
 
                 "colmenas_inactivas":
-                    colmenas_inactivas,
+                    (
+                        colmenas_inactivas
+                        if "cv" in permisos_usuario
+                        else 0
+                    ),
 
                 "mantenimientos_pendientes":
-                    mantenimientos_pendientes,
+                    (
+                        mantenimientos_pendientes
+                        if "mr" in permisos_usuario
+                        else 0
+                    ),
 
                 "incidencias_abiertas":
-                    incidencias_abiertas,
+                    (
+                        incidencias_abiertas
+                        if "ir" in permisos_usuario
+                        else 0
+                    ),
 
                 "revisiones_mes":
-                    revisiones_mes,
+                    (
+                        revisiones_mes
+                        if "agenda" in permisos_usuario
+                        else 0
+                    ),
 
             },
 
             "actividad":
-                actividad,
+                actividad_filtrada,
 
             "proximos_eventos":
-                proximos_eventos_json,
+                (
+                    proximos_eventos_json
+                    if "agenda" in permisos_usuario
+                    else []
+                ),
 
             "incidencias":
-                incidencias_json,
+                (
+                    incidencias_json
+                    if "ir" in permisos_usuario
+                    else []
+                ),
 
         }
     )
@@ -896,6 +1072,10 @@ def datos_dashboard_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "av",
+    redireccion="dashboard_apicultor"
+)
 def mis_apiarios(request):
 
     # ========================================================
@@ -1217,6 +1397,10 @@ def validar_imagen_apiario(archivo):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "av",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def editar_apiario_apicultor(
     request,
@@ -1546,6 +1730,10 @@ def editar_apiario_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "av",
+    redireccion="dashboard_apicultor"
+)
 def detalle_apiario_apicultor(
     request,
     id_apiario
@@ -1780,6 +1968,10 @@ def detalle_apiario_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "av",
+    redireccion="dashboard_apicultor"
+)
 @require_GET
 def datos_detalle_apiario_apicultor(
     request,
@@ -2002,6 +2194,10 @@ def obtener_resumen_colmenas_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "cv",
+    redireccion="dashboard_apicultor"
+)
 def mis_colmenas(request):
 
     # ========================================================
@@ -2418,6 +2614,10 @@ def mis_colmenas(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "cv",
+    redireccion="dashboard_apicultor"
+)
 @require_GET
 def datos_colmenas_apicultor(
     request
@@ -2627,6 +2827,10 @@ def validar_imagen_colmena(archivo):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "cv",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def editar_colmena_apicultor(
     request,
@@ -3228,6 +3432,10 @@ def validar_imagen_mantenimiento(archivo):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
 def registrar_mantenimiento_apicultor(
     request,
     id_colmena
@@ -3772,6 +3980,10 @@ def registrar_mantenimiento_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "ir",
+    redireccion="dashboard_apicultor"
+)
 def reportar_incidencia_apicultor(
     request,
     id_colmena
@@ -3848,6 +4060,10 @@ def reportar_incidencia_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
 def mantenimientos_apicultor(request):
 
 
@@ -4405,6 +4621,10 @@ def mantenimientos_apicultor(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def crear_mantenimiento_apicultor(request):
 
@@ -5169,6 +5389,10 @@ def crear_mantenimiento_apicultor(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def editar_mantenimiento_apicultor(
     request,
@@ -5795,6 +6019,10 @@ def editar_mantenimiento_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def completar_mantenimiento_apicultor(
     request,
@@ -5891,6 +6119,10 @@ def completar_mantenimiento_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def actualizar_observacion_mantenimiento_apicultor(
     request,
@@ -5985,6 +6217,10 @@ def actualizar_observacion_mantenimiento_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "ir",
+    redireccion="dashboard_apicultor"
+)
 def incidencias_apicultor(request):
 
     # ========================================================
@@ -6659,6 +6895,10 @@ def validar_imagen_evidencia(archivo):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "ir",
+    redireccion="dashboard_apicultor"
+)
 def crear_incidencia_apicultor(request):
 
     # ========================================================
@@ -7632,6 +7872,10 @@ def crear_incidencia_apicultor(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "ir",
+    redireccion="dashboard_apicultor"
+)
 def editar_incidencia_apicultor(
     request,
     id_incidencia
@@ -8466,6 +8710,10 @@ def editar_incidencia_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "agenda",
+    redireccion="dashboard_apicultor"
+)
 def agenda_apicultor(request):
 
     # ========================================================
@@ -8977,6 +9225,10 @@ def agenda_apicultor(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "agenda",
+    redireccion="dashboard_apicultor"
+)
 def crear_evento_apicultor(request):
 
     # ========================================================
@@ -9653,6 +9905,10 @@ def crear_evento_apicultor(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "agenda",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def actualizar_estado_evento_apicultor(
     request,
@@ -9877,6 +10133,10 @@ def actualizar_estado_evento_apicultor(
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_apicultor"
+)
 def perfil_apicultor(request):
 
     # ========================================================
@@ -10913,6 +11173,10 @@ def perfil_apicultor(request):
 # ============================================================
 
 @login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_apicultor"
+)
 @require_POST
 def cambiar_password_apicultor(request):
 

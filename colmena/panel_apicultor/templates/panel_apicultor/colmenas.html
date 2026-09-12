@@ -1436,40 +1436,45 @@
 
                     <!-- =================================================
                         MANTENIMIENTO
+                        Permiso: mr
                     ================================================== -->
 
-                    {% if colmena.permite_nuevas_actividades %}
+                    {% if "mr" in permisos_usuario %}
 
-                        <a
-                            href="{% url 'registrar_mantenimiento_apicultor' colmena.id_colmena %}"
-                            class="btn-modal-mantenimiento"
-                        >
+                        {% if colmena.permite_nuevas_actividades %}
 
-                            <i class="bi bi-tools"></i>
+                            <a
+                                href="{% url 'registrar_mantenimiento_apicultor' colmena.id_colmena %}"
+                                class="btn-modal-mantenimiento"
+                            >
 
-                            <span>
-                                Registrar mantenimiento
-                            </span>
+                                <i class="bi bi-tools"></i>
 
-                        </a>
+                                <span>
+                                    Registrar mantenimiento
+                                </span>
 
-                    {% else %}
+                            </a>
 
-                        <button
-                            type="button"
-                            class="btn-modal-mantenimiento"
-                            disabled
-                            aria-disabled="true"
-                            title="La colmena está inactiva"
-                        >
+                        {% else %}
 
-                            <i class="bi bi-tools"></i>
+                            <button
+                                type="button"
+                                class="btn-modal-mantenimiento"
+                                disabled
+                                aria-disabled="true"
+                                title="La colmena está inactiva"
+                            >
 
-                            <span>
-                                Registrar mantenimiento
-                            </span>
+                                <i class="bi bi-tools"></i>
 
-                        </button>
+                                <span>
+                                    Registrar mantenimiento
+                                </span>
+
+                            </button>
+
+                        {% endif %}
 
                     {% endif %}
 
@@ -1477,40 +1482,45 @@
 
                     <!-- =================================================
                         INCIDENCIA
+                        Permiso: ir
                     ================================================== -->
 
-                    {% if colmena.permite_nuevas_actividades %}
+                    {% if "ir" in permisos_usuario %}
 
-                        <a
-                            href="{% url 'reportar_incidencia_apicultor' colmena.id_colmena %}"
-                            class="btn-modal-incidencia"
-                        >
+                        {% if colmena.permite_nuevas_actividades %}
 
-                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <a
+                                href="{% url 'reportar_incidencia_apicultor' colmena.id_colmena %}"
+                                class="btn-modal-incidencia"
+                            >
 
-                            <span>
-                                Reportar incidencia
-                            </span>
+                                <i class="bi bi-exclamation-triangle-fill"></i>
 
-                        </a>
+                                <span>
+                                    Reportar incidencia
+                                </span>
 
-                    {% else %}
+                            </a>
 
-                        <button
-                            type="button"
-                            class="btn-modal-incidencia"
-                            disabled
-                            aria-disabled="true"
-                            title="La colmena está inactiva"
-                        >
+                        {% else %}
 
-                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <button
+                                type="button"
+                                class="btn-modal-incidencia"
+                                disabled
+                                aria-disabled="true"
+                                title="La colmena está inactiva"
+                            >
 
-                            <span>
-                                Reportar incidencia
-                            </span>
+                                <i class="bi bi-exclamation-triangle-fill"></i>
 
-                        </button>
+                                <span>
+                                    Reportar incidencia
+                                </span>
+
+                            </button>
+
+                        {% endif %}
 
                     {% endif %}
 
@@ -1526,18 +1536,27 @@
                 <div class="colmena-modal-acciones-secundarias">
 
 
-                    <a
-                        href="{% url 'detalle_apiario_apicultor' colmena.id_apiario.id_apiario %}"
-                        class="btn-modal-ver-apiario"
-                    >
+                    <!-- =================================================
+                         VER APIARIO
+                         Permiso: av
+                    ================================================== -->
 
-                        <i class="bi bi-flower1"></i>
+                    {% if "av" in permisos_usuario %}
 
-                        <span>
-                            Ver apiario
-                        </span>
+                        <a
+                            href="{% url 'detalle_apiario_apicultor' colmena.id_apiario.id_apiario %}"
+                            class="btn-modal-ver-apiario"
+                        >
 
-                    </a>
+                            <i class="bi bi-flower1"></i>
+
+                            <span>
+                                Ver apiario
+                            </span>
+
+                        </a>
+
+                    {% endif %}
 
 
 

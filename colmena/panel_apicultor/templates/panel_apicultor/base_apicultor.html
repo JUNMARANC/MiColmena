@@ -192,136 +192,161 @@
 
             <!-- =============================================
                  MIS APIARIOS
+                 Permiso: av
             ============================================== -->
 
-            <a
-                href="{% url 'apiarios_apicultor' %}"
-                data-tooltip="Mis Apiarios"
-                {% if request.resolver_match.url_name == 'apiarios_apicultor' %}aria-current="page"{% endif %}
-                class="
-                    sidebar-link
+            {% if "av" in permisos_usuario %}
 
-                    {% if request.resolver_match.url_name == 'apiarios_apicultor' %}
-                        active
-                    {% endif %}
-                "
-            >
+                <a
+                    href="{% url 'apiarios_apicultor' %}"
+                    data-tooltip="Mis Apiarios"
+                    {% if request.resolver_match.url_name == 'apiarios_apicultor' or request.resolver_match.url_name == 'detalle_apiario_apicultor' or request.resolver_match.url_name == 'editar_apiario_apicultor' %}aria-current="page"{% endif %}
+                    class="
+                        sidebar-link
 
-                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        {% if request.resolver_match.url_name == 'apiarios_apicultor' or request.resolver_match.url_name == 'detalle_apiario_apicultor' or request.resolver_match.url_name == 'editar_apiario_apicultor' %}
+                            active
+                        {% endif %}
+                    "
+                >
 
-                <span>
-                    Mis Apiarios
-                </span>
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
 
-            </a>
+                    <span>
+                        Mis Apiarios
+                    </span>
+
+                </a>
+
+            {% endif %}
 
 
 
             <!-- =============================================
-                MIS COLMENAS
+                 MIS COLMENAS
+                 Permiso: cv
             ============================================== -->
 
-            <a
-                href="{% url 'colmenas_apicultor' %}"
-                data-tooltip="Mis Colmenas"
-                {% if request.resolver_match.url_name == 'colmenas_apicultor' %}aria-current="page"{% endif %}
-                class="
-                    sidebar-link
+            {% if "cv" in permisos_usuario %}
 
-                    {% if request.resolver_match.url_name == 'colmenas_apicultor' %}
-                        active
-                    {% endif %}
-                "
-            >
+                <a
+                    href="{% url 'colmenas_apicultor' %}"
+                    data-tooltip="Mis Colmenas"
+                    {% if request.resolver_match.url_name == 'colmenas_apicultor' or request.resolver_match.url_name == 'editar_colmena_apicultor' %}aria-current="page"{% endif %}
+                    class="
+                        sidebar-link
 
-                <i class="bi bi-hexagon-fill" aria-hidden="true"></i>
+                        {% if request.resolver_match.url_name == 'colmenas_apicultor' or request.resolver_match.url_name == 'editar_colmena_apicultor' %}
+                            active
+                        {% endif %}
+                    "
+                >
 
-                <span>
-                    Mis Colmenas
-                </span>
+                    <i class="bi bi-hexagon-fill" aria-hidden="true"></i>
 
-            </a>
+                    <span>
+                        Mis Colmenas
+                    </span>
+
+                </a>
+
+            {% endif %}
 
 
 
             <!-- =============================================
                  MANTENIMIENTOS
+                 Permiso: mr
             ============================================== -->
 
-            <a
-                href="{% url 'mantenimientos_apicultor' %}"
-                data-tooltip="Mantenimientos"
-                {% if request.resolver_match.url_name == 'mantenimientos_apicultor' %}aria-current="page"{% endif %}
-                class="
-                    sidebar-link
+            {% if "mr" in permisos_usuario %}
 
-                    {% if request.resolver_match.url_name == 'mantenimientos_apicultor' or request.resolver_match.url_name == 'registrar_mantenimiento_apicultor' %}
-                        active
-                    {% endif %}
-                "
-            >
+                <a
+                    href="{% url 'mantenimientos_apicultor' %}"
+                    data-tooltip="Mantenimientos"
+                    {% if request.resolver_match.url_name == 'mantenimientos_apicultor' or request.resolver_match.url_name == 'registrar_mantenimiento_apicultor' or request.resolver_match.url_name == 'crear_mantenimiento_apicultor' or request.resolver_match.url_name == 'editar_mantenimiento_apicultor' or request.resolver_match.url_name == 'completar_mantenimiento_apicultor' %}aria-current="page"{% endif %}
+                    class="
+                        sidebar-link
 
-                <i class="bi bi-tools" aria-hidden="true"></i>
+                        {% if request.resolver_match.url_name == 'mantenimientos_apicultor' or request.resolver_match.url_name == 'registrar_mantenimiento_apicultor' or request.resolver_match.url_name == 'crear_mantenimiento_apicultor' or request.resolver_match.url_name == 'editar_mantenimiento_apicultor' or request.resolver_match.url_name == 'completar_mantenimiento_apicultor' %}
+                            active
+                        {% endif %}
+                    "
+                >
 
-                <span>
-                    Mantenimientos
-                </span>
+                    <i class="bi bi-tools" aria-hidden="true"></i>
 
-            </a>
+                    <span>
+                        Mantenimientos
+                    </span>
+
+                </a>
+
+            {% endif %}
 
 
 
             <!-- =============================================
                  INCIDENCIAS
+                 Permiso: ir
             ============================================== -->
 
-            <a
-                href="{% url 'incidencias_apicultor' %}"
-                data-tooltip="Incidencias"
-                {% if request.resolver_match.url_name == 'incidencias_apicultor' %}aria-current="page"{% endif %}
-                class="
-                    sidebar-link
+            {% if "ir" in permisos_usuario %}
 
-                    {% if request.resolver_match.url_name == 'incidencias_apicultor' or request.resolver_match.url_name == 'reportar_incidencia_apicultor' %}
-                        active
-                    {% endif %}
-                "
-            >
+                <a
+                    href="{% url 'incidencias_apicultor' %}"
+                    data-tooltip="Incidencias"
+                    {% if request.resolver_match.url_name == 'incidencias_apicultor' or request.resolver_match.url_name == 'reportar_incidencia_apicultor' or request.resolver_match.url_name == 'crear_incidencia_apicultor' or request.resolver_match.url_name == 'editar_incidencia_apicultor' %}aria-current="page"{% endif %}
+                    class="
+                        sidebar-link
 
-                <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                        {% if request.resolver_match.url_name == 'incidencias_apicultor' or request.resolver_match.url_name == 'reportar_incidencia_apicultor' or request.resolver_match.url_name == 'crear_incidencia_apicultor' or request.resolver_match.url_name == 'editar_incidencia_apicultor' %}
+                            active
+                        {% endif %}
+                    "
+                >
 
-                <span>
-                    Incidencias
-                </span>
+                    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
 
-            </a>
+                    <span>
+                        Incidencias
+                    </span>
+
+                </a>
+
+            {% endif %}
 
 
 
             <!-- =============================================
                  AGENDA
+                 Permiso: agenda
             ============================================== -->
 
-            <a
-                href="{% url 'agenda_apicultor' %}"
-                data-tooltip="Agenda"
-                {% if request.resolver_match.url_name == 'agenda_apicultor' %}aria-current="page"{% endif %}
-                class="
-                    sidebar-link
+            {% if "agenda" in permisos_usuario %}
 
-                    {% if request.resolver_match.url_name == 'agenda_apicultor' %}
-                        active
-                    {% endif %}
-                "
-            >
+                <a
+                    href="{% url 'agenda_apicultor' %}"
+                    data-tooltip="Agenda"
+                    {% if request.resolver_match.url_name == 'agenda_apicultor' or request.resolver_match.url_name == 'crear_evento_apicultor' or request.resolver_match.url_name == 'actualizar_estado_evento_apicultor' %}aria-current="page"{% endif %}
+                    class="
+                        sidebar-link
 
-                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                        {% if request.resolver_match.url_name == 'agenda_apicultor' or request.resolver_match.url_name == 'crear_evento_apicultor' or request.resolver_match.url_name == 'actualizar_estado_evento_apicultor' %}
+                            active
+                        {% endif %}
+                    "
+                >
 
-                <span>
-                    Agenda
-                </span>
+                    <i class="bi bi-calendar3" aria-hidden="true"></i>
 
-            </a>
+                    <span>
+                        Agenda
+                    </span>
+
+                </a>
+
+            {% endif %}
 
 
         </nav>
@@ -352,7 +377,13 @@
             ============================================== -->
 
             <a
-                href="{% url 'perfil_apicultor' %}"
+                {% if "perfil" in permisos_usuario %}
+                    href="{% url 'perfil_apicultor' %}"
+                    title="Abrir mi perfil"
+                {% else %}
+                    aria-disabled="true"
+                    title="No tienes permiso para acceder al perfil"
+                {% endif %}
                 class="sidebar-user-main"
             >
 
@@ -435,11 +466,15 @@
 
                 <!-- FLECHA -->
 
-                <div class="sidebar-user-arrow">
+                {% if "perfil" in permisos_usuario %}
 
-                    <i class="bi bi-chevron-right"></i>
+                    <div class="sidebar-user-arrow">
 
-                </div>
+                        <i class="bi bi-chevron-right"></i>
+
+                    </div>
+
+                {% endif %}
 
 
             </a>
