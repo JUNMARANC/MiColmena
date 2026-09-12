@@ -74,196 +74,224 @@
 
         <!-- =================================================
              APIARIOS
+             Permiso: av
         ================================================== -->
 
-        <a
-            href="{% url 'apiarios_apicultor' %}"
-            class="resumen-card resumen-card--apiarios"
-            aria-label="Apiarios asignados. Ir al módulo"
-        >
+        {% if "av" in permisos_usuario %}
 
-            <div class="resumen-card-icono">
+            <a
+                href="{% url 'apiarios_apicultor' %}"
+                class="resumen-card resumen-card--apiarios"
+                aria-label="Apiarios asignados. Ir al módulo"
+            >
 
-                <i class="bi bi-geo-alt-fill"></i>
+                <div class="resumen-card-icono">
 
-            </div>
+                    <i class="bi bi-geo-alt-fill"></i>
 
-
-            <div class="resumen-card-contenido">
-
-                <strong
-                    class="resumen-numero"
-                    id="contadorApiariosAsignados"
-                >
-
-                    {{ total_apiarios|default:0 }}
-
-                </strong>
+                </div>
 
 
-                <span>
-                    Apiarios asignados
-                </span>
+                <div class="resumen-card-contenido">
 
-            </div>
+                    <strong
+                        class="resumen-numero"
+                        id="contadorApiariosAsignados"
+                    >
 
-        </a>
+                        {{ total_apiarios|default:0 }}
+
+                    </strong>
+
+
+                    <span>
+                        Apiarios asignados
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% endif %}
 
 
 
         <!-- =================================================
              COLMENAS ACTIVAS
+             Permiso: cv
         ================================================== -->
 
-        <a
-            href="{% url 'colmenas_apicultor' %}"
-            class="resumen-card resumen-card--colmenas"
-            aria-label="Colmenas activas. Ir al módulo"
-        >
+        {% if "cv" in permisos_usuario %}
 
-            <div class="resumen-card-icono">
+            <a
+                href="{% url 'colmenas_apicultor' %}"
+                class="resumen-card resumen-card--colmenas"
+                aria-label="Colmenas activas. Ir al módulo"
+            >
 
-                <i class="bi bi-hexagon-fill"></i>
+                <div class="resumen-card-icono">
 
-            </div>
+                    <i class="bi bi-hexagon-fill"></i>
 
-
-            <div class="resumen-card-contenido">
-
-                <strong
-                    class="resumen-numero"
-                    id="contadorColmenasActivas"
-                >
-
-                    {{ colmenas_activas|default:0 }}
-
-                </strong>
+                </div>
 
 
-                <span>
-                    Colmenas activas
-                </span>
+                <div class="resumen-card-contenido">
 
-            </div>
+                    <strong
+                        class="resumen-numero"
+                        id="contadorColmenasActivas"
+                    >
 
-        </a>
+                        {{ colmenas_activas|default:0 }}
+
+                    </strong>
+
+
+                    <span>
+                        Colmenas activas
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% endif %}
 
 
 
         <!-- =================================================
              MANTENIMIENTOS
+             Permiso: mr
         ================================================== -->
 
-        <a
-            href="{% url 'mantenimientos_apicultor' %}"
-            class="resumen-card resumen-card--mantenimientos"
-            aria-label="Mantenimientos pendientes. Ir al módulo"
-        >
+        {% if "mr" in permisos_usuario %}
 
-            <div class="resumen-card-icono">
+            <a
+                href="{% url 'mantenimientos_apicultor' %}"
+                class="resumen-card resumen-card--mantenimientos"
+                aria-label="Mantenimientos pendientes. Ir al módulo"
+            >
 
-                <i class="bi bi-tools"></i>
+                <div class="resumen-card-icono">
 
-            </div>
+                    <i class="bi bi-tools"></i>
 
-
-            <div class="resumen-card-contenido">
-
-                <strong
-                    class="resumen-numero"
-                    id="contadorMantenimientosPendientes"
-                >
-
-                    {{ mantenimientos_pendientes|default:0 }}
-
-                </strong>
+                </div>
 
 
-                <span>
-                    Mantenimientos pendientes
-                </span>
+                <div class="resumen-card-contenido">
 
-            </div>
+                    <strong
+                        class="resumen-numero"
+                        id="contadorMantenimientosPendientes"
+                    >
 
-        </a>
+                        {{ mantenimientos_pendientes|default:0 }}
+
+                    </strong>
+
+
+                    <span>
+                        Mantenimientos pendientes
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% endif %}
 
 
 
         <!-- =================================================
              INCIDENCIAS
+             Permiso: ir
         ================================================== -->
 
-        <a
-            href="{% url 'incidencias_apicultor' %}"
-            class="resumen-card resumen-card--incidencias"
-            aria-label="Incidencias activas. Ir al módulo"
-        >
+        {% if "ir" in permisos_usuario %}
 
-            <div class="resumen-card-icono">
+            <a
+                href="{% url 'incidencias_apicultor' %}"
+                class="resumen-card resumen-card--incidencias"
+                aria-label="Incidencias activas. Ir al módulo"
+            >
 
-                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div class="resumen-card-icono">
 
-            </div>
+                    <i class="bi bi-exclamation-triangle-fill"></i>
 
-
-            <div class="resumen-card-contenido">
-
-                <strong
-                    class="resumen-numero"
-                    id="contadorIncidenciasActivas"
-                >
-
-                    {{ incidencias_abiertas|default:0 }}
-
-                </strong>
+                </div>
 
 
-                <span>
-                    Incidencias activas
-                </span>
+                <div class="resumen-card-contenido">
 
-            </div>
+                    <strong
+                        class="resumen-numero"
+                        id="contadorIncidenciasActivas"
+                    >
 
-        </a>
+                        {{ incidencias_abiertas|default:0 }}
+
+                    </strong>
+
+
+                    <span>
+                        Incidencias activas
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% endif %}
 
 
 
         <!-- =================================================
              REVISIONES
+             Permiso: agenda
+
+             Las revisiones del dashboard provienen de EventoAgenda,
+             por eso este acceso pertenece al permiso de Agenda.
         ================================================== -->
 
-        <a
-            href="{% url 'mantenimientos_apicultor' %}"
-            class="resumen-card resumen-card--revisiones"
-            aria-label="Revisiones este mes. Ir al módulo"
-        >
+        {% if "agenda" in permisos_usuario %}
 
-            <div class="resumen-card-icono">
+            <a
+                href="{% url 'agenda_apicultor' %}"
+                class="resumen-card resumen-card--revisiones"
+                aria-label="Revisiones este mes. Ir a la agenda"
+            >
 
-                <i class="bi bi-clipboard2-check-fill"></i>
+                <div class="resumen-card-icono">
 
-            </div>
+                    <i class="bi bi-clipboard2-check-fill"></i>
 
-
-            <div class="resumen-card-contenido">
-
-                <strong
-                    class="resumen-numero"
-                    id="contadorRevisionesMes"
-                >
-
-                    {{ revisiones_mes|default:0 }}
-
-                </strong>
+                </div>
 
 
-                <span>
-                    Revisiones este mes
-                </span>
+                <div class="resumen-card-contenido">
 
-            </div>
+                    <strong
+                        class="resumen-numero"
+                        id="contadorRevisionesMes"
+                    >
 
-        </a>
+                        {{ revisiones_mes|default:0 }}
+
+                    </strong>
+
+
+                    <span>
+                        Revisiones este mes
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% endif %}
 
 
     </section>
@@ -279,7 +307,10 @@
 
         <!-- =================================================
              ACTIVIDAD DEL APICULTOR
+             Permisos relacionados: agenda, mr, ir
         ================================================== -->
+
+        {% if "agenda" in permisos_usuario or "mr" in permisos_usuario or "ir" in permisos_usuario %}
 
         <article class="dashboard-card actividad-card">
 
@@ -321,11 +352,16 @@
 
         </article>
 
+        {% endif %}
+
 
 
         <!-- =================================================
              ESTADO DE COLMENAS
+             Permiso: cv
         ================================================== -->
+
+        {% if "cv" in permisos_usuario %}
 
         <article class="dashboard-card estado-colmenas-card">
 
@@ -417,6 +453,8 @@
 
         </article>
 
+        {% endif %}
+
 
     </section>
 
@@ -431,7 +469,10 @@
 
         <!-- =================================================
              PRÓXIMAS ACTIVIDADES
+             Permiso: agenda
         ================================================== -->
+
+        {% if "agenda" in permisos_usuario %}
 
         <article class="dashboard-card proximas-card">
 
@@ -576,11 +617,16 @@
 
         </article>
 
+        {% endif %}
+
 
 
         <!-- =================================================
              ACCIONES RÁPIDAS
+             Permisos relacionados: mr, ir, agenda
         ================================================== -->
+
+        {% if "mr" in permisos_usuario or "ir" in permisos_usuario or "agenda" in permisos_usuario %}
 
         <article class="dashboard-card acciones-card">
 
@@ -618,7 +664,10 @@
 
                 <!-- =========================================
                      REGISTRAR MANTENIMIENTO
+                     Permiso: mr
                 ========================================== -->
+
+                {% if "mr" in permisos_usuario %}
 
                 <a
                     href="{% url 'mantenimientos_apicultor' %}?abrir=crear"
@@ -653,11 +702,16 @@
 
                 </a>
 
+                {% endif %}
+
 
 
                 <!-- =========================================
                      REPORTAR INCIDENCIA
+                     Permiso: ir
                 ========================================== -->
+
+                {% if "ir" in permisos_usuario %}
 
                 <a
                     href="{% url 'crear_incidencia_apicultor' %}"
@@ -692,11 +746,16 @@
 
                 </a>
 
+                {% endif %}
+
 
 
                 <!-- =========================================
                      AGENDA
+                     Permiso: agenda
                 ========================================== -->
+
+                {% if "agenda" in permisos_usuario %}
 
                 <a
                     href="{% url 'agenda_apicultor' %}"
@@ -730,11 +789,15 @@
 
                 </a>
 
+                {% endif %}
+
 
             </div>
 
 
         </article>
+
+        {% endif %}
 
 
     </section>
@@ -743,7 +806,10 @@
 
     <!-- =====================================================
          ÚLTIMAS INCIDENCIAS
+         Permiso: ir
     ====================================================== -->
+
+    {% if "ir" in permisos_usuario %}
 
     <section class="dashboard-card incidencias-card">
 
@@ -1010,6 +1076,8 @@
 
 
     </section>
+
+    {% endif %}
 
 
 

@@ -133,11 +133,11 @@ document.addEventListener("DOMContentLoaded", function () {
        8. CONFIGURACIÓN GENERAL
     ====================================================== */
 
-    const MAX_TITULO = 150;
+    const MAX_TITULO = 100;
 
     const MIN_TITULO = 3;
 
-    const MAX_OBSERVACIONES = 1000;
+    const MAX_OBSERVACIONES = 255;
 
 
     /* ======================================================

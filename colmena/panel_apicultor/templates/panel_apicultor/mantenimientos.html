@@ -824,24 +824,26 @@
 
 
 
-                                        <!-- EDITAR -->
+                                        <!-- GESTIÓN DEL MANTENIMIENTO -->
 
-                                        <button
-                                            type="button"
-                                            class="btn-editar-mantenimiento"
-                                            data-modal-editar-mantenimiento="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
-                                            title="Editar mantenimiento"
-                                        >
-
-                                            <i class="bi bi-pencil-square"></i>
-
-                                        </button>
+                                        {% if mantenimiento.estado == "Pendiente" %}
 
 
+                                            <!-- EDITAR -->
 
-                                        <!-- COMPLETAR -->
+                                            <button
+                                                type="button"
+                                                class="btn-editar-mantenimiento"
+                                                data-modal-editar-mantenimiento="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                                                title="Editar mantenimiento"
+                                            >
 
-                                        {% if mantenimiento.estado != "Completado" and mantenimiento.estado != "Cancelado" %}
+                                                <i class="bi bi-pencil-square"></i>
+
+                                            </button>
+
+
+                                            <!-- COMPLETAR -->
 
                                             <form
                                                 method="POST"
@@ -863,7 +865,6 @@
 
                                                 {% csrf_token %}
 
-
                                                 <button
                                                     type="submit"
                                                     class="btn-completar-mantenimiento"
@@ -878,8 +879,47 @@
 
                                                 </button>
 
+                                            </form>
+
+
+                                            <!-- CANCELAR -->
+
+                                            <form
+                                                method="POST"
+                                                action="{% url 'cancelar_mantenimiento_apicultor' mantenimiento.id_mantenimiento %}"
+                                                class="form-cancelar-mantenimiento"
+
+                                                data-nombre-mantenimiento="{{ mantenimiento.tipo }}"
+
+                                                data-colmena-mantenimiento="
+                                                    {% if mantenimiento.id_colmena %}
+                                                        Colmena {{ mantenimiento.id_colmena.codigocolmena }}
+                                                    {% elif mantenimiento.id_apiario %}
+                                                        Apiario {{ mantenimiento.id_apiario.nombreapiario }}
+                                                    {% else %}
+                                                        Sin ubicación asociada
+                                                    {% endif %}
+                                                "
+                                            >
+
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn-cancelar-mantenimiento"
+                                                    title="Cancelar mantenimiento"
+                                                >
+
+                                                    <i class="bi bi-x-lg"></i>
+
+                                                    <span>
+                                                        Cancelar
+                                                    </span>
+
+                                                </button>
 
                                             </form>
+
 
                                         {% endif %}
 
@@ -993,30 +1033,87 @@
                                     <i class="bi bi-eye" aria-hidden="true"></i>
                                 </button>
 
-                                <button type="button" class="btn-editar-mantenimiento"
+                                {% if mantenimiento.estado == "Pendiente" %}
+
+                                    <!-- EDITAR -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-editar-mantenimiento"
                                         data-modal-editar-mantenimiento="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
                                         title="Editar mantenimiento"
-                                        aria-label="Editar mantenimiento {{ mantenimiento.id_mantenimiento }}">
-                                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
-                                </button>
+                                        aria-label="Editar mantenimiento {{ mantenimiento.id_mantenimiento }}"
+                                    >
 
-                                {% if mantenimiento.estado != "Completado" and mantenimiento.estado != "Cancelado" %}
+                                        <i
+                                            class="bi bi-pencil-square"
+                                            aria-hidden="true"
+                                        ></i>
 
-                                    <form method="POST"
-                                          action="{% url 'completar_mantenimiento_apicultor' mantenimiento.id_mantenimiento %}"
-                                          class="form-completar-mantenimiento"
-                                          data-nombre-mantenimiento="{{ mantenimiento.tipo }}"
-                                          data-colmena-mantenimiento="{% if mantenimiento.id_colmena %}Colmena {{ mantenimiento.id_colmena.codigocolmena }}{% elif mantenimiento.id_apiario %}Apiario {{ mantenimiento.id_apiario.nombreapiario }}{% else %}Sin ubicación asociada{% endif %}">
+                                    </button>
+
+
+                                    <!-- COMPLETAR -->
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'completar_mantenimiento_apicultor' mantenimiento.id_mantenimiento %}"
+                                        class="form-completar-mantenimiento"
+
+                                        data-nombre-mantenimiento="{{ mantenimiento.tipo }}"
+
+                                        data-colmena-mantenimiento="{% if mantenimiento.id_colmena %}Colmena {{ mantenimiento.id_colmena.codigocolmena }}{% elif mantenimiento.id_apiario %}Apiario {{ mantenimiento.id_apiario.nombreapiario }}{% else %}Sin ubicación asociada{% endif %}"
+                                    >
 
                                         {% csrf_token %}
 
-                                        <button type="submit" class="btn-completar-mantenimiento"
-                                                title="Marcar como completado"
-                                                aria-label="Completar mantenimiento {{ mantenimiento.id_mantenimiento }}">
-                                            <i class="bi bi-check-lg" aria-hidden="true"></i>
+                                        <button
+                                            type="submit"
+                                            class="btn-completar-mantenimiento"
+                                            title="Marcar como completado"
+                                            aria-label="Completar mantenimiento {{ mantenimiento.id_mantenimiento }}"
+                                        >
+
+                                            <i
+                                                class="bi bi-check-lg"
+                                                aria-hidden="true"
+                                            ></i>
+
                                         </button>
 
                                     </form>
+
+
+                                    <!-- CANCELAR -->
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'cancelar_mantenimiento_apicultor' mantenimiento.id_mantenimiento %}"
+                                        class="form-cancelar-mantenimiento"
+
+                                        data-nombre-mantenimiento="{{ mantenimiento.tipo }}"
+
+                                        data-colmena-mantenimiento="{% if mantenimiento.id_colmena %}Colmena {{ mantenimiento.id_colmena.codigocolmena }}{% elif mantenimiento.id_apiario %}Apiario {{ mantenimiento.id_apiario.nombreapiario }}{% else %}Sin ubicación asociada{% endif %}"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn-cancelar-mantenimiento"
+                                            title="Cancelar mantenimiento"
+                                            aria-label="Cancelar mantenimiento {{ mantenimiento.id_mantenimiento }}"
+                                        >
+
+                                            <i
+                                                class="bi bi-x-lg"
+                                                aria-hidden="true"
+                                            ></i>
+
+                                        </button>
+
+                                    </form>
+
 
                                 {% endif %}
 
@@ -1224,6 +1321,7 @@
 <div
     class="mantenimiento-form-overlay"
     id="modalCrearMantenimiento"
+    data-url-cancelar="{{ url_cancelar_mantenimiento }}"
     aria-hidden="true"
 >
 
@@ -1248,14 +1346,16 @@
 
             <input
                 type="hidden"
+                id="origenCrearMantenimiento"
                 name="origen"
-                value="{{ request.GET.origen|default:'' }}"
+                value="{{ origen|default:'' }}"
             >
 
             <input
                 type="hidden"
+                id="apiarioOrigenCrearMantenimiento"
                 name="id_apiario_origen"
-                value="{{ request.GET.id_apiario_origen|default:'' }}"
+                value="{{ id_apiario_origen|default:'' }}"
             >
 
 
@@ -1289,16 +1389,28 @@
                 </div>
 
 
-                <button
-                    type="button"
-                    class="mantenimiento-form-cerrar"
-                    data-cerrar-crear-mantenimiento
-                    aria-label="Cerrar"
-                >
+                {% if origen == "detalle_apiario" or origen == "colmenas" %}
 
-                    <i class="bi bi-x-lg"></i>
+                    <a
+                        href="{{ url_cancelar_mantenimiento }}"
+                        class="mantenimiento-form-cerrar"
+                        aria-label="Cerrar"
+                    >
+                        <i class="bi bi-x-lg"></i>
+                    </a>
 
-                </button>
+                {% else %}
+
+                    <button
+                        type="button"
+                        class="mantenimiento-form-cerrar"
+                        data-cerrar-crear-mantenimiento
+                        aria-label="Cerrar"
+                    >
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+
+                {% endif %}
 
 
             </div>
@@ -1518,7 +1630,7 @@
                             </option>
 
 
-                            {% for colmena in colmenas %}
+                            {% for colmena in colmenas_operativas %}
 
                                 <option
                                     value="{{ colmena.id_colmena }}"
@@ -1560,10 +1672,15 @@
                                 type="text"
                                 id="tipoCrearMantenimiento"
                                 name="tipo"
+                                class="campo-contador-caracteres"
                                 maxlength="100"
                                 required
                                 placeholder="Ej: Limpieza general"
                             >
+
+                            <small class="contador-caracteres">
+                                100 caracteres disponibles
+                            </small>
 
                         </div>
 
@@ -1673,14 +1790,15 @@
                         <textarea
                             id="observacionesCrearMantenimiento"
                             name="observaciones"
+                            class="campo-contador-caracteres"
                             maxlength="255"
                             rows="4"
                             placeholder="Describe detalles importantes del mantenimiento..."
                         ></textarea>
 
 
-                        <small>
-                            Máximo 255 caracteres.
+                        <small class="contador-caracteres">
+                            255 caracteres disponibles
                         </small>
 
                     </div>
@@ -1841,15 +1959,26 @@
             <div class="mantenimiento-form-footer">
 
 
-                <button
-                    type="button"
-                    class="btn-cancelar-form-mantenimiento"
-                    data-cerrar-crear-mantenimiento
-                >
+                {% if origen == "detalle_apiario" or origen == "colmenas" %}
 
-                    Cancelar
+                    <a
+                        href="{{ url_cancelar_mantenimiento }}"
+                        class="btn-cancelar-form-mantenimiento"
+                    >
+                        Cancelar
+                    </a>
 
-                </button>
+                {% else %}
+
+                    <button
+                        type="button"
+                        class="btn-cancelar-form-mantenimiento"
+                        data-cerrar-crear-mantenimiento
+                    >
+                        Cancelar
+                    </button>
+
+                {% endif %}
 
 
                 <button
@@ -2422,19 +2551,23 @@
                         </div>
 
 
-                        <button
-                            type="button"
-                            class="btn-editar-observacion"
-                            data-editar-observacion="editarObservacion{{ mantenimiento.id_mantenimiento }}"
-                        >
+                        {% if mantenimiento.estado == "Pendiente" %}
 
-                            <i class="bi bi-pencil-square"></i>
+                            <button
+                                type="button"
+                                class="btn-editar-observacion"
+                                data-editar-observacion="editarObservacion{{ mantenimiento.id_mantenimiento }}"
+                            >
 
-                            <span>
-                                Editar
-                            </span>
+                                <i class="bi bi-pencil-square"></i>
 
-                        </button>
+                                <span>
+                                    Editar
+                                </span>
+
+                            </button>
+
+                        {% endif %}
 
 
                     </div>
@@ -2465,6 +2598,7 @@
                     </div>
 
 
+                {% if mantenimiento.estado == "Pendiente" %}
 
                     <form
                         method="POST"
@@ -2486,6 +2620,7 @@
                         <textarea
                             id="observacionMantenimiento{{ mantenimiento.id_mantenimiento }}"
                             name="observaciones"
+                            class="campo-contador-caracteres"
                             maxlength="255"
                             rows="5"
                             placeholder="Escribe una observación o novedad..."
@@ -2495,8 +2630,8 @@
                         <div class="editar-observacion-footer">
 
 
-                            <span class="contador-observacion">
-                                Máximo 255 caracteres
+                            <span class="contador-observacion contador-caracteres">
+                                255 caracteres disponibles
                             </span>
 
 
@@ -2532,6 +2667,8 @@
 
                     </form>
 
+                {% endif %}
+
 
                 </div>
 
@@ -2547,25 +2684,26 @@
             <div class="mantenimiento-modal-footer">
 
 
-                <!-- EDITAR -->
-
-                <button
-                    type="button"
-                    class="btn-editar-modal-mantenimiento"
-                    data-modal-editar-mantenimiento="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
-                    data-cerrar-modal-actual
-                >
-
-                    <i class="bi bi-pencil-square"></i>
-
-                    Editar mantenimiento
-
-                </button>
+                {% if mantenimiento.estado == "Pendiente" %}
 
 
+                    <!-- EDITAR -->
 
-                {% if mantenimiento.estado != "Completado" and mantenimiento.estado != "Cancelado" %}
+                    <button
+                        type="button"
+                        class="btn-editar-modal-mantenimiento"
+                        data-modal-editar-mantenimiento="modalEditarMantenimiento{{ mantenimiento.id_mantenimiento }}"
+                        data-cerrar-modal-actual
+                    >
 
+                        <i class="bi bi-pencil-square"></i>
+
+                        Editar mantenimiento
+
+                    </button>
+
+
+                    <!-- COMPLETAR -->
 
                     <form
                         method="POST"
@@ -2587,7 +2725,6 @@
 
                         {% csrf_token %}
 
-
                         <button
                             type="submit"
                             class="btn-completar-modal"
@@ -2601,6 +2738,43 @@
 
                         </button>
 
+                    </form>
+
+
+                    <!-- CANCELAR -->
+
+                    <form
+                        method="POST"
+                        action="{% url 'cancelar_mantenimiento_apicultor' mantenimiento.id_mantenimiento %}"
+                        class="form-cancelar-modal"
+
+                        data-nombre-mantenimiento="{{ mantenimiento.tipo }}"
+
+                        data-colmena-mantenimiento="
+                            {% if mantenimiento.id_colmena %}
+                                Colmena {{ mantenimiento.id_colmena.codigocolmena }}
+                            {% elif mantenimiento.id_apiario %}
+                                Apiario {{ mantenimiento.id_apiario.nombreapiario }}
+                            {% else %}
+                                Sin ubicación asociada
+                            {% endif %}
+                        "
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="btn-cancelar-mantenimiento"
+                        >
+
+                            <i class="bi bi-x-circle-fill"></i>
+
+                            <span>
+                                Cancelar mantenimiento
+                            </span>
+
+                        </button>
 
                     </form>
 
@@ -2608,6 +2782,7 @@
                 {% endif %}
 
 
+                <!-- CERRAR -->
 
                 <button
                     type="button"
@@ -2628,7 +2803,7 @@
 
     </div>
 
-
+{% if mantenimiento.estado == "Pendiente" %}
 
     <!-- =====================================================
          =====================================================
@@ -2879,6 +3054,7 @@
                                 <select
                                     name="id_colmena"
                                     class="colmena-editar-mantenimiento"
+                                    data-colmena-original="{{ mantenimiento.id_colmena_id|default:'' }}"
                                 >
 
                                     <option value="">
@@ -2891,6 +3067,7 @@
                                         <option
                                             value="{{ colmena.id_colmena }}"
                                             data-apiario="{{ colmena.id_apiario_id }}"
+                                            data-estado="{{ colmena.estadocolmena|default:''|lower }}"
 
                                             {% if mantenimiento.id_colmena_id == colmena.id_colmena %}
                                                 selected
@@ -2898,6 +3075,10 @@
                                         >
 
                                             {{ colmena.codigocolmena }}
+
+                                            {% if colmena.estadocolmena|lower == "inactiva" and mantenimiento.id_colmena_id == colmena.id_colmena %}
+                                                — Inactiva (actual)
+                                            {% endif %}
 
                                         </option>
 
@@ -2930,9 +3111,14 @@
                                     type="text"
                                     name="tipo"
                                     value="{{ mantenimiento.tipo }}"
+                                    class="campo-contador-caracteres"
                                     maxlength="100"
                                     required
                                 >
+
+                                <small class="contador-caracteres">
+                                    100 caracteres disponibles
+                                </small>
 
                             </div>
 
@@ -2957,61 +3143,6 @@
                                 >
 
                             </div>
-
-
-
-                            <!-- ESTADO -->
-
-                            <div class="mantenimiento-campo">
-
-                                <label>
-                                    Estado
-                                    <span>*</span>
-                                </label>
-
-
-                                <select
-                                    name="estado"
-                                    required
-                                >
-
-                                    <option
-                                        value="Pendiente"
-
-                                        {% if mantenimiento.estado == "Pendiente" %}
-                                            selected
-                                        {% endif %}
-                                    >
-                                        Pendiente
-                                    </option>
-
-
-                                    <option
-                                        value="Completado"
-
-                                        {% if mantenimiento.estado == "Completado" %}
-                                            selected
-                                        {% endif %}
-                                    >
-                                        Completado
-                                    </option>
-
-
-                                    <option
-                                        value="Cancelado"
-
-                                        {% if mantenimiento.estado == "Cancelado" %}
-                                            selected
-                                        {% endif %}
-                                    >
-                                        Cancelado
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
 
                             <!-- PRIORIDAD -->
 
@@ -3091,13 +3222,14 @@
 
                             <textarea
                                 name="observaciones"
+                                class="campo-contador-caracteres"
                                 maxlength="255"
                                 rows="4"
                             >{{ mantenimiento.observaciones|default:"" }}</textarea>
 
 
-                            <small>
-                                Máximo 255 caracteres.
+                            <small class="contador-caracteres">
+                                255 caracteres disponibles
                             </small>
 
                         </div>
@@ -3370,6 +3502,8 @@
 
     </div>
 
+    {% endif %}
+
 
 {% endfor %}
 
@@ -3566,8 +3700,17 @@
 
 {% block extra_js %}
 
+
+{% if formulario_mantenimiento_error %}
+
+    {{ formulario_mantenimiento_error|json_script:"mantenimientoFormularioError" }}
+
+{% endif %}
+
+
 <script
-    src="{% static 'panel_apicultor/js/mantenimientos.js' %}?v=8"
+    src="{% static 'panel_apicultor/js/mantenimientos.js' %}?v=9"
 ></script>
+
 
 {% endblock %}

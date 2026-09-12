@@ -734,7 +734,10 @@
 
     <!-- =====================================================
          COLMENAS DEL APIARIO
+         Permiso: cv
     ====================================================== -->
+
+    {% if "cv" in permisos_usuario %}
 
     <section class="detalle-card colmenas-apiario-card">
 
@@ -936,13 +939,13 @@
 
                             <td>
 
-                                {% if item.ultimo_mantenimiento %}
+                                {% if item.ultimo_mantenimiento_fecha %}
 
                                     <div class="tabla-fecha">
 
                                         <i class="bi bi-calendar-check"></i>
 
-                                        {{ item.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                        {{ item.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
 
                                     </div>
 
@@ -1041,46 +1044,64 @@
                                     {% if item.colmena.permite_nuevas_actividades %}
 
 
-                                        <!-- MANTENIMIENTO -->
+                                        <!-- =================================
+                                             MANTENIMIENTO
+                                             Permiso: mr
+                                        ================================== -->
 
-                                        <a
-                                            href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ item.colmena.id_apiario.id_apiario }}&colmena_nueva={{ item.colmena.id_colmena }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
-                                            class="btn-accion-colmena-detalle mantenimiento"
-                                            title="Registrar mantenimiento"
-                                        >
+                                        {% if "mr" in permisos_usuario %}
 
-                                            <i class="bi bi-tools"></i>
+                                            <a
+                                                href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ item.colmena.id_apiario.id_apiario }}&colmena_nueva={{ item.colmena.id_colmena }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
+                                                class="btn-accion-colmena-detalle mantenimiento"
+                                                title="Registrar mantenimiento"
+                                            >
 
-                                        </a>
+                                                <i class="bi bi-tools"></i>
+
+                                            </a>
+
+                                        {% endif %}
 
 
 
-                                        <!-- INCIDENCIA -->
+                                        <!-- =================================
+                                             INCIDENCIA
+                                             Permiso: ir
+                                        ================================== -->
 
-                                        <a
-                                            href="{% url 'crear_incidencia_apicultor' %}?colmena={{ item.colmena.id_colmena }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
-                                            class="btn-accion-colmena-detalle incidencia"
-                                            title="Reportar incidencia"
-                                        >
+                                        {% if "ir" in permisos_usuario %}
 
-                                            <i class="bi bi-exclamation-triangle"></i>
+                                            <a
+                                                href="{% url 'crear_incidencia_apicultor' %}?colmena={{ item.colmena.id_colmena }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
+                                                class="btn-accion-colmena-detalle incidencia"
+                                                title="Reportar incidencia"
+                                            >
 
-                                        </a>
+                                                <i class="bi bi-exclamation-triangle"></i>
+
+                                            </a>
+
+                                        {% endif %}
 
 
                                     {% else %}
 
 
-                                        <button
-                                            type="button"
-                                            class="btn-accion-colmena-detalle bloqueado"
-                                            disabled
-                                            title="La colmena está inactiva"
-                                        >
+                                        {% if "mr" in permisos_usuario or "ir" in permisos_usuario %}
 
-                                            <i class="bi bi-lock-fill"></i>
+                                            <button
+                                                type="button"
+                                                class="btn-accion-colmena-detalle bloqueado"
+                                                disabled
+                                                title="La colmena está inactiva"
+                                            >
 
-                                        </button>
+                                                <i class="bi bi-lock-fill"></i>
+
+                                            </button>
+
+                                        {% endif %}
 
 
                                     {% endif %}
@@ -1139,44 +1160,119 @@
 
     </section>
 
+    {% else %}
+
+        <section class="detalle-card colmenas-apiario-card">
+
+            <div class="detalle-card-header">
+
+                <div>
+
+                    <h2>
+                        Colmenas del apiario
+                    </h2>
+
+                    <p>
+                        No tienes permiso para consultar el detalle
+                        de las colmenas asignadas.
+                    </p>
+
+                </div>
+
+
+                <div class="detalle-card-icono">
+
+                    <i class="bi bi-shield-lock-fill"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="tabla-colmenas-vacia">
+
+                <div>
+
+                    <i class="bi bi-lock-fill"></i>
+
+                    <strong>
+                        Acceso restringido
+                    </strong>
+
+                    <span>
+                        El administrador debe habilitar el permiso
+                        "Ver colmenas" para consultar esta información.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
 
 
     <!-- =====================================================
          ACCIONES DEL APIARIO
     ====================================================== -->
 
-    <section class="detalle-acciones">
+    {% if "mr" in permisos_usuario or "ir" in permisos_usuario %}
+
+        <section class="detalle-acciones">
 
 
-        <a
-            href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ apiario.id_apiario }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
-            class="btn-accion-apiario mantenimiento"
-        >
+            <!-- =================================================
+                 REGISTRAR MANTENIMIENTO
+                 Permiso: mr
+            ================================================== -->
 
-            <i class="bi bi-tools"></i>
+            {% if "mr" in permisos_usuario %}
 
-            <span>
-                Registrar mantenimiento
-            </span>
+                <a
+                    href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ apiario.id_apiario }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
+                    class="btn-accion-apiario mantenimiento"
+                >
 
-        </a>
+                    <i class="bi bi-tools"></i>
+
+                    <span>
+                        Registrar mantenimiento
+                    </span>
+
+                </a>
+
+            {% endif %}
 
 
 
-        <a
-            href="{% url 'crear_incidencia_apicultor' %}?apiario={{ apiario.id_apiario }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
-            class="btn-accion-apiario incidencia"
-        >
+            <!-- =================================================
+                 REPORTAR INCIDENCIA
+                 Permiso: ir
+            ================================================== -->
 
-            <i class="bi bi-exclamation-triangle-fill"></i>
+            {% if "ir" in permisos_usuario %}
 
-            <span>
-                Reportar incidencia
-            </span>
+                <a
+                    href="{% url 'crear_incidencia_apicultor' %}?apiario={{ apiario.id_apiario }}&origen=detalle_apiario&id_apiario_origen={{ apiario.id_apiario }}"
+                    class="btn-accion-apiario incidencia"
+                >
 
-        </a>
+                    <i class="bi bi-exclamation-triangle-fill"></i>
 
-    </section>
+                    <span>
+                        Reportar incidencia
+                    </span>
+
+                </a>
+
+            {% endif %}
+
+
+        </section>
+
+    {% endif %}
 
 
 
@@ -1201,7 +1297,10 @@
 
 <!-- =========================================================
      MODALES DE COLMENAS
+     Permiso: cv
 ========================================================= -->
+
+{% if "cv" in permisos_usuario %}
 
 {% for item in colmenas_detalle %}
 
@@ -1364,9 +1463,9 @@
 
                             <strong>
 
-                                {% if item.ultimo_mantenimiento %}
+                                {% if item.ultimo_mantenimiento_fecha %}
 
-                                    {{ item.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                    {{ item.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
 
                                 {% else %}
 
@@ -1554,6 +1653,22 @@
                     action="{% url 'editar_colmena_apicultor' item.colmena.id_colmena %}"
                     enctype="multipart/form-data"
                     class="form-editar-colmena-detalle"
+
+                    data-tiene-mantenimiento-pendiente="
+                        {% if item.colmena.tiene_mantenimiento_pendiente %}
+                            1
+                        {% else %}
+                            0
+                        {% endif %}
+                    "
+
+                    data-tiene-incidencia-abierta="
+                        {% if item.colmena.tiene_incidencia_abierta %}
+                            1
+                        {% else %}
+                            0
+                        {% endif %}
+                    "
                 >
 
                     {% csrf_token %}
@@ -1711,6 +1826,8 @@
 
 
 {% endfor %}
+
+{% endif %}
 
 
 

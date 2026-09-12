@@ -6050,3 +6050,364 @@ body.modal-mantenimiento-abierto {
     }
 
 }
+
+/* ==========================================================
+   ==========================================================
+   CANCELAR MANTENIMIENTO
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   FORMULARIOS
+========================================================== */
+
+.form-cancelar-mantenimiento,
+.form-cancelar-modal {
+
+    margin: 0;
+
+}
+
+
+/* ==========================================================
+   BOTÓN CANCELAR - TABLA
+========================================================== */
+
+.btn-cancelar-mantenimiento {
+
+    min-height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        6px
+        10px;
+
+    border:
+        1px solid
+        #F0C7C2;
+
+    border-radius: 9px;
+
+    background:
+        var(--ap-rojo-fondo);
+
+    color:
+        var(--ap-rojo);
+
+    font-family:
+        inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.btn-cancelar-mantenimiento:hover {
+
+    border-color:
+        #E7ADA6;
+
+    background:
+        #F8DAD6;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   BOTÓN CANCELAR - TARJETAS
+========================================================== */
+
+.mantenimiento-card-acciones
+.form-cancelar-mantenimiento {
+
+    display: inline-flex;
+
+    margin: 0;
+
+}
+
+
+.mantenimiento-card-acciones
+.btn-cancelar-mantenimiento {
+
+    width: 38px;
+
+    height: 38px;
+
+    min-height: 38px;
+
+    flex: none;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background:
+        var(--ap-rojo-fondo);
+
+    color:
+        var(--ap-rojo);
+
+    font-size: 15px;
+
+}
+
+
+.mantenimiento-card-acciones
+.btn-cancelar-mantenimiento:hover {
+
+    background:
+        #F8DAD6;
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* ==========================================================
+   BOTÓN CANCELAR - MODAL DETALLE
+========================================================== */
+
+.form-cancelar-modal {
+
+    display: inline-flex;
+
+}
+
+
+.form-cancelar-modal
+.btn-cancelar-mantenimiento {
+
+    min-height: 40px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #F0C7C2;
+
+    border-radius: 10px;
+
+    background:
+        var(--ap-rojo-fondo);
+
+    color:
+        var(--ap-rojo);
+
+    font-size: 12px;
+
+}
+
+
+/* ==========================================================
+   CONFIRMACIÓN DE CANCELACIÓN
+========================================================== */
+
+.confirmar-cancelacion-overlay
+.confirmar-completado-icono {
+
+    background:
+        var(--ap-rojo-fondo);
+
+    color:
+        var(--ap-rojo);
+
+}
+
+
+.confirmar-cancelacion-overlay
+.confirmar-completado-etiqueta {
+
+    background:
+        var(--ap-rojo-fondo);
+
+    color:
+        var(--ap-rojo);
+
+}
+
+
+/* AVISO */
+
+.confirmar-cancelacion-overlay
+.confirmar-completado-aviso {
+
+    border-color:
+        #F0C7C2;
+
+    background:
+        rgba(228, 116, 103, 0.09);
+
+}
+
+
+.confirmar-cancelacion-overlay
+.confirmar-completado-aviso > i {
+
+    color:
+        var(--ap-rojo);
+
+}
+
+
+/* BOTÓN VOLVER */
+
+.confirmar-cancelacion-overlay
+#btnVolverCancelacion {
+
+    border:
+        1px solid
+        var(--ap-borde);
+
+    background:
+        var(--ap-blanco);
+
+    color:
+        var(--ap-texto-tenue);
+
+}
+
+
+.confirmar-cancelacion-overlay
+#btnVolverCancelacion:hover {
+
+    background:
+        #F4F6F4;
+
+}
+
+
+/* CONFIRMAR CANCELACIÓN */
+
+.confirmar-cancelacion-overlay
+#btnConfirmarCancelacion {
+
+    border:
+        1px solid
+        var(--ap-rojo);
+
+    background:
+        var(--ap-rojo);
+
+    color:
+        #FFFFFF;
+
+}
+
+
+.confirmar-cancelacion-overlay
+#btnConfirmarCancelacion:hover {
+
+    background:
+        #B94F45;
+
+    border-color:
+        #B94F45;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.confirmar-cancelacion-overlay
+#btnConfirmarCancelacion:disabled {
+
+    opacity: 0.65;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .form-cancelar-modal {
+
+        width: 100%;
+
+    }
+
+
+    .form-cancelar-modal
+    .btn-cancelar-mantenimiento {
+
+        width: 100%;
+
+    }
+
+}
+
+/* ==========================================================
+   CONTADORES DE CARACTERES
+========================================================== */
+
+.contador-caracteres {
+
+    transition:
+        color 0.2s ease;
+
+}
+
+
+/* ==========================================================
+   QUEDAN 20 O MENOS
+========================================================== */
+
+.contador-caracteres.limite-cercano {
+
+    color:
+        #A47A12;
+
+    font-weight:
+        800;
+
+}
+
+
+/* ==========================================================
+   LÍMITE ALCANZADO
+========================================================== */
+
+.contador-caracteres.limite-alcanzado {
+
+    color:
+        var(--ap-rojo);
+
+    font-weight:
+        800;
+
+}
