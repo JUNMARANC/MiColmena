@@ -143,6 +143,18 @@
         <input
             type="hidden"
             name="origen"
+            value="{{ origen }}"
+        >
+
+        <input
+            type="hidden"
+            name="id_apiario_origen"
+            value="{{ id_apiario_origen }}"
+        >
+
+        <input
+            type="hidden"
+            name="origen"
             value="{% if request.POST.origen %}{{ request.POST.origen }}{% else %}{{ request.GET.origen|default:'' }}{% endif %}"
         >
 
@@ -1175,7 +1187,7 @@
 
 
             <a
-                href="{% url 'incidencias_apicultor' %}"
+                href="{{ url_cancelar }}"
                 class="btn-cancelar-incidencia"
             >
 

@@ -81,7 +81,196 @@ document.addEventListener(
 
         ];
 
+        /* ==================================================
+        ==================================================
+        RESUMEN DINÁMICO DE COLMENAS
+        ==================================================
+        ================================================== */
 
+        const paginaColmenas =
+            document.querySelector(
+                ".colmenas-page"
+            );
+
+
+        function aplicarResumenColmenas(
+            resumen
+        ) {
+
+            if (
+                !resumen
+            ) {
+
+                return;
+
+            }
+
+
+            const valores = {
+
+                totalColmenas:
+                    resumen.total,
+
+                totalColmenasActivas:
+                    resumen.activas,
+
+                totalColmenasRevision:
+                    resumen.revision,
+
+                totalColmenasRiesgo:
+                    resumen.riesgo,
+
+                totalColmenasInactivas:
+                    resumen.inactivas,
+
+            };
+
+
+            Object.entries(
+                valores
+            ).forEach(
+                function (
+                    [id, valor]
+                ) {
+
+                    const elemento =
+                        document.getElementById(
+                            id
+                        );
+
+
+                    if (
+                        elemento
+                    ) {
+
+                        elemento.textContent =
+                            valor
+                            ??
+                            0;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        async function actualizarResumenColmenas() {
+
+            if (
+                !paginaColmenas
+            ) {
+
+                return;
+
+            }
+
+
+            const url =
+                paginaColmenas.dataset
+                    .urlResumen;
+
+
+            if (
+                !url
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const respuesta =
+                    await fetch(
+                        url,
+                        {
+                            method:
+                                "GET",
+
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest",
+                            },
+
+                            cache:
+                                "no-store",
+                        }
+                    );
+
+
+                if (
+                    !respuesta.ok
+                ) {
+
+                    return;
+
+                }
+
+
+                const datos =
+                    await respuesta.json();
+
+
+                if (
+                    !datos.ok
+                    ||
+                    !datos.resumen
+                ) {
+
+                    return;
+
+                }
+
+
+                aplicarResumenColmenas(
+                    datos.resumen
+                );
+
+            }
+
+            catch (
+                error
+            ) {
+
+                console.error(
+                    "No se pudo actualizar el resumen de colmenas:",
+                    error
+                );
+
+            }
+
+        }
+
+        /* ==================================================
+        ACTUALIZAR AL CARGAR
+        ================================================== */
+
+        actualizarResumenColmenas();
+
+
+
+        /* ==================================================
+        ACTUALIZAR AL VOLVER A LA PESTAÑA
+        ================================================== */
+
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+
+                if (
+                    !document.hidden
+                ) {
+
+                    actualizarResumenColmenas();
+
+                }
+
+            }
+        );
 
         /* ==================================================
            ==================================================
@@ -1866,6 +2055,712 @@ document.addEventListener(
             }
         );
 
+        /* ==================================================
+        ACTUALIZAR COLMENA DESPUÉS DEL AJAX
+        ================================================== */
+
+        function obtenerClaseEstado(
+            estado
+        ) {
+
+            switch (
+                estado
+            ) {
+
+                case "Activa":
+                    return "activa";
+
+                case "Revisión":
+                    return "revision";
+
+                case "Riesgo":
+                    return "riesgo";
+
+                default:
+                    return "inactiva";
+
+            }
+
+        }
+
+
+
+        function aplicarClaseEstado(
+            elemento,
+            estado
+        ) {
+
+            if (
+                !elemento
+            ) {
+
+                return;
+
+            }
+
+
+            elemento.classList.remove(
+                "activa",
+                "revision",
+                "riesgo",
+                "inactiva"
+            );
+
+
+            elemento.classList.add(
+                obtenerClaseEstado(
+                    estado
+                )
+            );
+
+        }
+
+
+
+        function truncarTexto(
+            texto,
+            limite
+        ) {
+
+            if (
+                texto.length
+                <=
+                limite
+            ) {
+
+                return texto;
+
+            }
+
+
+            return (
+                texto.slice(
+                    0,
+                    limite - 1
+                )
+                +
+                "…"
+            );
+
+        }
+
+
+
+        function activarImagenAjax(
+            boton
+        ) {
+
+            if (
+                !boton
+                ||
+                boton.dataset.visorAjaxListo
+                ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            boton.dataset.visorAjaxListo =
+                "true";
+
+
+            boton.addEventListener(
+                "click",
+                function () {
+
+                    abrirVisor(
+                        this.dataset.imagenColmena,
+                        this.dataset.imagenTitulo,
+                        this
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        function actualizarColmenaEnPantalla(
+            datos,
+            formulario
+        ) {
+
+            if (
+                !datos
+            ) {
+
+                return;
+
+            }
+
+
+            const id =
+                String(
+                    datos.id
+                );
+
+
+            const estado =
+                datos.estado;
+
+
+            const descripcion =
+                datos.descripcion
+                ||
+                "";
+
+
+            let imagenUrl =
+                datos.imagen_url
+                ||
+                "";
+
+
+            /* ==============================================
+            EVITAR CACHÉ DE LA NUEVA FOTO
+            ============================================== */
+
+            if (
+                imagenUrl
+            ) {
+
+                imagenUrl += (
+                    imagenUrl.includes("?")
+                        ?
+                        "&"
+                        :
+                        "?"
+                )
+                +
+                "v="
+                +
+                Date.now();
+
+            }
+
+
+            /* ==============================================
+            TABLA
+            ============================================== */
+
+            const fila =
+                document.querySelector(
+                    `[data-colmena-fila="${id}"]`
+                );
+
+
+            if (
+                fila
+            ) {
+
+                const estadoTabla =
+                    fila.querySelector(
+                        "[data-colmena-estado-tabla]"
+                    );
+
+
+                if (
+                    estadoTabla
+                ) {
+
+                    aplicarClaseEstado(
+                        estadoTabla,
+                        estado
+                    );
+
+
+                    estadoTabla.innerHTML = `
+
+                        <i
+                            class="bi bi-circle-fill"
+                            aria-hidden="true"
+                        ></i>
+
+                        ${estado}
+                    `;
+
+                }
+
+
+                const infoTabla =
+                    fila.querySelector(
+                        "[data-colmena-tabla-info]"
+                    );
+
+
+                if (
+                    infoTabla
+                ) {
+
+                    let descripcionTabla =
+                        infoTabla.querySelector(
+                            ".colmenas-tabla-descripcion"
+                        );
+
+
+                    if (
+                        !descripcionTabla
+                    ) {
+
+                        descripcionTabla =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        descripcionTabla.className =
+                            "colmenas-tabla-descripcion";
+
+
+                        infoTabla.appendChild(
+                            descripcionTabla
+                        );
+
+                    }
+
+
+                    descripcionTabla.textContent =
+                        truncarTexto(
+                            descripcion,
+                            45
+                        );
+
+                }
+
+
+                if (
+                    imagenUrl
+                ) {
+
+                    const celdaImagen =
+                        fila.querySelector(
+                            "[data-colmena-tabla-imagen]"
+                        );
+
+
+                    if (
+                        celdaImagen
+                    ) {
+
+                        celdaImagen.innerHTML = `
+
+                            <img
+                                src="${imagenUrl}"
+                                alt="Fotografía de ${datos.codigo}"
+                                class="colmenas-tabla-miniatura"
+                                loading="lazy"
+                            >
+                        `;
+
+                    }
+
+                }
+
+            }
+
+
+            /* ==============================================
+            TARJETA
+            ============================================== */
+
+            const tarjeta =
+                document.querySelector(
+                    `[data-colmena-card="${id}"]`
+                );
+
+
+            if (
+                tarjeta
+            ) {
+
+                const estadoCard =
+                    tarjeta.querySelector(
+                        "[data-colmena-estado-card]"
+                    );
+
+
+                if (
+                    estadoCard
+                ) {
+
+                    aplicarClaseEstado(
+                        estadoCard,
+                        estado
+                    );
+
+
+                    estadoCard.textContent =
+                        estado;
+
+                }
+
+
+                const descripcionCard =
+                    tarjeta.querySelector(
+                        "[data-colmena-descripcion-card]"
+                    );
+
+
+                if (
+                    descripcionCard
+                ) {
+
+                    descripcionCard.textContent =
+                        truncarTexto(
+                            descripcion,
+                            100
+                        );
+
+                }
+
+
+                if (
+                    imagenUrl
+                ) {
+
+                    const contenedorImagen =
+                        tarjeta.querySelector(
+                            "[data-colmena-card-imagen]"
+                        );
+
+
+                    if (
+                        contenedorImagen
+                    ) {
+
+                        contenedorImagen.innerHTML = `
+
+                            <button
+                                type="button"
+                                class="btn-imagen-colmena"
+                                data-imagen-colmena="${imagenUrl}"
+                                data-imagen-titulo="${datos.codigo}"
+                                title="Ver fotografía"
+                            >
+
+                                <img
+                                    src="${imagenUrl}"
+                                    alt="Fotografía de la colmena ${datos.codigo}"
+                                    loading="lazy"
+                                >
+
+                            </button>
+                        `;
+
+
+                        activarImagenAjax(
+                            contenedorImagen.querySelector(
+                                "[data-imagen-colmena]"
+                            )
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            /* ==============================================
+            MODAL VER DETALLE
+            ============================================== */
+
+            const detalle =
+                document.querySelector(
+                    `[data-colmena-detalle="${id}"]`
+                );
+
+
+            if (
+                detalle
+            ) {
+
+                const estadoDetalle =
+                    detalle.querySelector(
+                        "[data-colmena-estado-detalle]"
+                    );
+
+
+                if (
+                    estadoDetalle
+                ) {
+
+                    aplicarClaseEstado(
+                        estadoDetalle,
+                        estado
+                    );
+
+
+                    estadoDetalle.innerHTML = `
+
+                        <span></span>
+
+                        ${estado}
+                    `;
+
+                }
+
+
+                const descripcionDetalle =
+                    detalle.querySelector(
+                        "[data-colmena-descripcion-detalle]"
+                    );
+
+
+                if (
+                    descripcionDetalle
+                ) {
+
+                    descripcionDetalle.textContent =
+                        descripcion;
+
+
+                    descripcionDetalle.classList.remove(
+                        "sin-descripcion-colmena"
+                    );
+
+                }
+
+
+                /* ==========================================
+                FOTO DEL DETALLE
+                ========================================== */
+
+                if (
+                    imagenUrl
+                ) {
+
+                    const fotografiaActual =
+                        detalle.querySelector(
+                            ".colmena-modal-imagen, .colmena-modal-sin-imagen"
+                        );
+
+
+                    if (
+                        fotografiaActual
+                    ) {
+
+                        const botonFoto =
+                            document.createElement(
+                                "button"
+                            );
+
+
+                        botonFoto.type =
+                            "button";
+
+
+                        botonFoto.className =
+                            "colmena-modal-imagen";
+
+
+                        botonFoto.dataset.imagenColmena =
+                            imagenUrl;
+
+
+                        botonFoto.dataset.imagenTitulo =
+                            datos.codigo;
+
+
+                        botonFoto.innerHTML = `
+
+                            <img
+                                src="${imagenUrl}"
+                                alt="Fotografía de la colmena ${datos.codigo}"
+                            >
+
+                            <span>
+
+                                <i class="bi bi-arrows-fullscreen"></i>
+
+                                Ampliar fotografía
+
+                            </span>
+                        `;
+
+
+                        fotografiaActual.replaceWith(
+                            botonFoto
+                        );
+
+
+                        activarImagenAjax(
+                            botonFoto
+                        );
+
+                    }
+
+                }
+
+
+                /* ==========================================
+                MANTENIMIENTO / INCIDENCIA
+                ========================================== */
+
+                const acciones =
+                    detalle.querySelector(
+                        "[data-colmena-acciones-principales]"
+                    );
+
+
+                if (
+                    acciones
+                ) {
+
+                    if (
+                        datos.permite_nuevas_actividades
+                    ) {
+
+                        acciones.innerHTML = `
+
+                            <a
+                                href="${datos.url_mantenimiento}"
+                                class="btn-modal-mantenimiento"
+                            >
+
+                                <i class="bi bi-tools"></i>
+
+                                <span>
+                                    Registrar mantenimiento
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="${datos.url_incidencia}"
+                                class="btn-modal-incidencia"
+                            >
+
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                <span>
+                                    Reportar incidencia
+                                </span>
+
+                            </a>
+                        `;
+
+                    }
+
+                    else {
+
+                        acciones.innerHTML = `
+
+                            <button
+                                type="button"
+                                class="btn-modal-mantenimiento"
+                                disabled
+                                aria-disabled="true"
+                                title="La colmena está inactiva"
+                            >
+
+                                <i class="bi bi-tools"></i>
+
+                                <span>
+                                    Registrar mantenimiento
+                                </span>
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="btn-modal-incidencia"
+                                disabled
+                                aria-disabled="true"
+                                title="La colmena está inactiva"
+                            >
+
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                <span>
+                                    Reportar incidencia
+                                </span>
+
+                            </button>
+                        `;
+
+                    }
+
+                }
+
+            }
+
+
+            /* ==============================================
+            ACTUALIZAR FORMULARIO GESTIONAR
+            ============================================== */
+
+            if (
+                formulario
+            ) {
+
+                formulario.dataset.estadoOriginal =
+                    estado;
+
+
+                const inputImagen =
+                    formulario.querySelector(
+                        'input[name="imagen"]'
+                    );
+
+
+                if (
+                    inputImagen
+                ) {
+
+                    inputImagen.value =
+                        "";
+
+                }
+
+
+                if (
+                    imagenUrl
+                ) {
+
+                    const preview =
+                        formulario.querySelector(
+                            ".colmena-preview-imagen"
+                        );
+
+
+                    if (
+                        preview
+                    ) {
+
+                        preview.innerHTML = `
+
+                            <img
+                                src="${imagenUrl}"
+                                alt="Fotografía actual de ${datos.codigo}"
+                                data-imagen-original="${imagenUrl}"
+                            >
+
+                            <div class="colmena-preview-overlay">
+
+                                <i class="bi bi-camera"></i>
+
+                                <span>
+                                    Fotografía actual
+                                </span>
+
+                            </div>
+                        `;
+
+                    }
+
+                }
+
+            }
+
+        }
+
 
 
         /* ==================================================
@@ -1879,11 +2774,150 @@ document.addEventListener(
                 formulario
             ) {
 
+                /* ==============================================
+                VALIDAR CAMBIO A INACTIVA EN TIEMPO REAL
+                ============================================== */
+
+                const estadoSelect =
+                    formulario.querySelector(
+                        'select[name="estado"]'
+                    );
+
+
+                if (
+                    estadoSelect
+                ) {
+
+                    estadoSelect.addEventListener(
+                        "change",
+                        function () {
+
+
+                            /* ==========================================
+                            SOLO CUANDO ELIJA INACTIVA
+                            ========================================== */
+
+                            if (
+                                this.value !== "Inactiva"
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            const estadoOriginal =
+                                (
+                                    formulario.dataset.estadoOriginal
+                                    ||
+                                    ""
+                                ).trim();
+
+
+                            /* ==========================================
+                            SI YA ESTABA INACTIVA, PERMITIR
+                            ========================================== */
+
+                            if (
+                                estadoOriginal === "Inactiva"
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            const tieneMantenimientoPendiente =
+                                formulario.dataset.mantenimientoPendiente
+                                ===
+                                "true";
+
+
+                            const tieneIncidenciaAbierta =
+                                formulario.dataset.incidenciaAbierta
+                                ===
+                                "true";
+
+
+                            /* ==========================================
+                            NO TIENE BLOQUEOS
+                            ========================================== */
+
+                            if (
+                                !tieneMantenimientoPendiente
+                                &&
+                                !tieneIncidenciaAbierta
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            /* ==========================================
+                            MOTIVOS
+                            ========================================== */
+
+                            const motivos = [];
+
+
+                            if (
+                                tieneMantenimientoPendiente
+                            ) {
+
+                                motivos.push(
+                                    "mantenimientos pendientes"
+                                );
+
+                            }
+
+
+                            if (
+                                tieneIncidenciaAbierta
+                            ) {
+
+                                motivos.push(
+                                    "incidencias pendientes o en proceso"
+                                );
+
+                            }
+
+
+                            const codigoColmena =
+                                formulario.dataset.codigoColmena
+                                ||
+                                "seleccionada";
+
+
+                            /* ==========================================
+                            MOSTRAR MENSAJE
+                            ========================================== */
+
+                            mostrarValidacion(
+                                `La colmena "${codigoColmena}" no puede cambiar a Inactiva porque tiene ${motivos.join(" e ")}. Finaliza esos registros antes de inactivarla.`,
+                                "No se puede inactivar la colmena"
+                            );
+
+
+                            /* ==========================================
+                            VOLVER AL ESTADO ORIGINAL
+                            ========================================== */
+
+                            this.value =
+                                estadoOriginal;
+
+                        }
+                    );
+
+                }
+
                 formulario.addEventListener(
                     "submit",
-                    function (
+                    async function (
                         evento
                     ) {
+
+                        evento.preventDefault();
 
 
                         const estado =
@@ -1904,9 +2938,8 @@ document.addEventListener(
                             );
 
 
-
                         /* ======================================
-                           ESTADO
+                        ESTADO
                         ====================================== */
 
                         if (
@@ -1916,9 +2949,6 @@ document.addEventListener(
                                 estado.value
                             )
                         ) {
-
-                            evento.preventDefault();
-
 
                             if (
                                 estado
@@ -1946,9 +2976,8 @@ document.addEventListener(
                         );
 
 
-
                         /* ======================================
-                           DESCRIPCIÓN
+                        DESCRIPCIÓN
                         ====================================== */
 
                         if (
@@ -1962,9 +2991,6 @@ document.addEventListener(
                             if (
                                 !descripcion.value
                             ) {
-
-                                evento.preventDefault();
-
 
                                 descripcion.classList.add(
                                     "is-invalid"
@@ -1988,9 +3014,8 @@ document.addEventListener(
                         }
 
 
-
                         /* ======================================
-                           IMAGEN
+                        IMAGEN
                         ====================================== */
 
                         if (
@@ -2010,9 +3035,6 @@ document.addEventListener(
                             if (
                                 !resultado.valido
                             ) {
-
-                                evento.preventDefault();
-
 
                                 inputImagen.classList.add(
                                     "is-invalid"
@@ -2037,15 +3059,22 @@ document.addEventListener(
                         }
 
 
-
                         /* ======================================
-                           EVITAR DOBLE ENVÍO
+                        BOTÓN
                         ====================================== */
 
                         const botonGuardar =
                             formulario.querySelector(
                                 ".btn-guardar-colmena"
                             );
+
+
+                        const contenidoOriginal =
+                            botonGuardar
+                                ?
+                                botonGuardar.innerHTML
+                                :
+                                "";
 
 
                         if (
@@ -2062,6 +3091,145 @@ document.addEventListener(
                                     Guardando...
                                 </span>
                             `;
+
+                        }
+
+
+                        try {
+
+                            /* ==================================
+                            FORM DATA
+                            ================================== */
+
+                            const datosFormulario =
+                                new FormData(
+                                    formulario
+                                );
+
+
+                            /* ==================================
+                            PETICIÓN
+                            ================================== */
+
+                            const respuesta =
+                                await fetch(
+                                    formulario.action,
+                                    {
+                                        method:
+                                            "POST",
+
+                                        body:
+                                            datosFormulario,
+
+                                        headers: {
+                                            "X-Requested-With":
+                                                "XMLHttpRequest",
+                                        },
+                                    }
+                                );
+
+
+                            const datos =
+                                await respuesta.json();
+
+
+                            /* ==================================
+                            ERROR DEL BACKEND
+                            ================================== */
+
+                            if (
+                                !respuesta.ok
+                                ||
+                                !datos.ok
+                            ) {
+
+                                mostrarValidacion(
+                                    datos.error
+                                    ||
+                                    "No fue posible actualizar la colmena."
+                                );
+
+
+                                return;
+
+                            }
+
+
+                            /* ==================================
+                            ACTUALIZAR TODA LA INTERFAZ
+                            ================================== */
+
+                            actualizarColmenaEnPantalla(
+                                datos.colmena,
+                                formulario
+                            );
+
+
+                            /* ==================================
+                            CONTADORES
+                            ================================== */
+
+                            aplicarResumenColmenas(
+                                datos.resumen
+                            );
+
+
+                            /* ==================================
+                            CERRAR GESTIONAR
+                            ================================== */
+
+                            const modal =
+                                formulario.closest(
+                                    ".modal-editar-colmena"
+                                );
+
+
+                            cerrarModalEditar(
+                                modal
+                            );
+
+
+                            /* ==================================
+                            MENSAJE
+                            ================================== */
+
+                            mostrarValidacion(
+                                datos.mensaje,
+                                "Cambios guardados"
+                            );
+
+                        }
+
+                        catch (
+                            error
+                        ) {
+
+                            console.error(
+                                "Error actualizando la colmena:",
+                                error
+                            );
+
+
+                            mostrarValidacion(
+                                "Ocurrió un error al guardar los cambios. Inténtalo nuevamente."
+                            );
+
+                        }
+
+                        finally {
+
+                            if (
+                                botonGuardar
+                            ) {
+
+                                botonGuardar.disabled =
+                                    false;
+
+
+                                botonGuardar.innerHTML =
+                                    contenidoOriginal;
+
+                            }
 
                         }
 

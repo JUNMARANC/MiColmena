@@ -12,6 +12,7 @@ from panel_apicultor.views import (
 
     # Colmenas
     mis_colmenas,
+    datos_colmenas_apicultor,
     editar_colmena_apicultor,
 
     # Mantenimientos
@@ -101,6 +102,12 @@ urlpatterns = [
         "colmenas/",
         mis_colmenas,
         name="colmenas_apicultor",
+    ),
+
+    path(
+        "colmenas/datos/",
+        datos_colmenas_apicultor,
+        name="datos_colmenas_apicultor",
     ),
 
 

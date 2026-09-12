@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect,get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q, Prefetch, Count
+from django.db.models import Q, Prefetch, Count, Exists, OuterRef, Subquery
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.utils import timezone
@@ -1936,7 +1936,65 @@ def colmena_esta_operativa(colmena):
 
 
 
+# ============================================================
+# RESUMEN GENERAL DE COLMENAS
+# PANEL APICULTOR
+# ============================================================
 
+def obtener_resumen_colmenas_apicultor(
+    apicultor
+):
+
+    # ========================================================
+    # UNA SOLA CONSULTA PARA TODOS LOS CONTADORES
+    # ========================================================
+
+    return (
+        Colmena.objects
+        .filter(
+            id_apiario__id_apicultor=
+                apicultor
+        )
+        .aggregate(
+
+            total=Count(
+                "id_colmena"
+            ),
+
+            activas=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact=
+                        "Activa"
+                )
+            ),
+
+            revision=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact=
+                        "Revisión"
+                )
+            ),
+
+            riesgo=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact=
+                        "Riesgo"
+                )
+            ),
+
+            inactivas=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact=
+                        "Inactiva"
+                )
+            ),
+
+        )
+    )
 
 
 # ============================================================
@@ -1990,6 +2048,74 @@ def mis_colmenas(request):
         )
     )
 
+    # ========================================================
+    # REGISTROS ABIERTOS DE CADA COLMENA
+    # ========================================================
+
+    mantenimientos_pendientes_colmena = (
+        Mantenimiento.objects
+        .filter(
+            id_colmena=OuterRef("pk"),
+            estado__iexact="Pendiente"
+        )
+    )
+
+
+    incidencias_abiertas_colmena = (
+        Incidencia.objects
+        .filter(
+            id_colmena=OuterRef("pk")
+        )
+        .filter(
+            Q(
+                estado__iexact="Pendiente"
+            )
+            |
+            Q(
+                estado__iexact="En proceso"
+            )
+        )
+    )
+
+    # ========================================================
+    # ÚLTIMO MANTENIMIENTO COMPLETADO
+    # ========================================================
+
+    ultimo_mantenimiento_colmena = (
+        Mantenimiento.objects
+        .filter(
+            id_colmena=OuterRef("pk"),
+            estado__iexact="Completado"
+        )
+        .order_by(
+            "-fechaejecucion",
+            "-pk"
+        )
+    )
+
+
+    # ========================================================
+    # TOTAL DE INCIDENCIAS POR COLMENA
+    # ========================================================
+
+    total_incidencias_colmena = (
+        Incidencia.objects
+        .filter(
+            id_colmena=OuterRef("pk")
+        )
+        .values(
+            "id_colmena"
+        )
+        .annotate(
+            total=Count(
+                "pk"
+            )
+        )
+        .values(
+            "total"
+        )
+    )
+
 
     # ========================================================
     # COLMENAS
@@ -2006,6 +2132,42 @@ def mis_colmenas(request):
         .select_related(
             "id_apiario"
         )
+        .annotate(
+
+            # --------------------------------------------
+            # TRABAJOS ABIERTOS
+            # --------------------------------------------
+
+            tiene_mantenimiento_pendiente=Exists(
+                mantenimientos_pendientes_colmena
+            ),
+
+            tiene_incidencia_abierta=Exists(
+                incidencias_abiertas_colmena
+            ),
+
+
+            # --------------------------------------------
+            # ÚLTIMO MANTENIMIENTO
+            # --------------------------------------------
+
+            ultimo_mantenimiento_fecha=Subquery(
+                ultimo_mantenimiento_colmena
+                .values(
+                    "fechaejecucion"
+                )[:1]
+            ),
+
+
+            # --------------------------------------------
+            # TOTAL DE INCIDENCIAS
+            # --------------------------------------------
+
+            total_incidencias=Subquery(
+                total_incidencias_colmena[:1]
+            ),
+
+        )
         .order_by(
             "codigocolmena"
         )
@@ -2014,46 +2176,40 @@ def mis_colmenas(request):
 
     # ========================================================
     # DATOS GENERALES ANTES DE FILTRAR
+    #
+    # Todos los contadores se obtienen mediante una única
+    # consulta aggregate().
     # ========================================================
 
+    resumen_colmenas = (
+        obtener_resumen_colmenas_apicultor(
+            apicultor
+        )
+    )
+
+
     total_colmenas = (
-        colmenas.count()
+        resumen_colmenas["total"]
     )
 
 
     total_activas = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Activa"
-        )
-        .count()
+        resumen_colmenas["activas"]
     )
 
 
     total_revision = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Revisión"
-        )
-        .count()
+        resumen_colmenas["revision"]
     )
 
 
     total_riesgo = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Riesgo"
-        )
-        .count()
+        resumen_colmenas["riesgo"]
     )
 
 
     total_inactivas = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Inactiva"
-        )
-        .count()
+        resumen_colmenas["inactivas"]
     )
 
 
@@ -2192,27 +2348,17 @@ def mis_colmenas(request):
             )
         )
 
-        # Último mantenimiento completado
-        colmena.ultimo_mantenimiento = (
-            Mantenimiento.objects
-            .filter(
-                id_colmena=colmena,
-                estado="Completado"
-            )
-            .order_by(
-                "-fechaejecucion"
-            )
-            .first()
-        )
 
+        # ====================================================
+        # NORMALIZAR TOTAL DE INCIDENCIAS
+        #
+        # Subquery devuelve None cuando no existe ninguna.
+        # ====================================================
 
-        # Incidencias registradas
         colmena.total_incidencias = (
-            Incidencia.objects
-            .filter(
-                id_colmena=colmena
-            )
-            .count()
+            colmena.total_incidencias
+            or
+            0
         )
 
 
@@ -2266,7 +2412,81 @@ def mis_colmenas(request):
         contexto
     )
 
+# ============================================================
+# DATOS DINÁMICOS DE MIS COLMENAS
+# PANEL APICULTOR
+# ============================================================
 
+@login_required
+@require_GET
+def datos_colmenas_apicultor(
+    request
+):
+
+    # ========================================================
+    # APICULTOR
+    # ========================================================
+
+    apicultor = (
+        Apicultor.objects
+        .filter(
+            user=request.user
+        )
+        .first()
+    )
+
+
+    if not apicultor:
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": (
+                    "El usuario no tiene un "
+                    "perfil de apicultor."
+                ),
+            },
+            status=403
+        )
+
+
+    # ========================================================
+    # RESUMEN
+    # ========================================================
+
+    resumen = (
+        obtener_resumen_colmenas_apicultor(
+            apicultor
+        )
+    )
+
+
+    # ========================================================
+    # RESPUESTA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "ok": True,
+
+            "resumen": {
+                "total":
+                    resumen["total"],
+
+                "activas":
+                    resumen["activas"],
+
+                "revision":
+                    resumen["revision"],
+
+                "riesgo":
+                    resumen["riesgo"],
+
+                "inactivas":
+                    resumen["inactivas"],
+            },
+        }
+    )
 
 # ============================================================
 # VALIDAR FOTOGRAFÍA DE COLMENA
@@ -2425,14 +2645,6 @@ def editar_colmena_apicultor(
 
     # ========================================================
     # COLMENA
-    #
-    # SEGURIDAD:
-    # solamente puede editar una colmena perteneciente
-    # a uno de SUS apiarios.
-    #
-    # IMPORTANTE:
-    # Una colmena Inactiva SÍ puede editarse.
-    # Esto permite reactivarla.
     # ========================================================
 
     colmena = get_object_or_404(
@@ -2444,18 +2656,38 @@ def editar_colmena_apicultor(
 
         id_colmena=id_colmena,
 
-        id_apiario__id_apicultor=apicultor,
+        id_apiario__id_apicultor=
+            apicultor,
 
     )
 
 
     # ========================================================
+    # PETICIÓN AJAX
+    # ========================================================
+
+    es_ajax = (
+        request.headers.get(
+            "X-Requested-With"
+        )
+        ==
+        "XMLHttpRequest"
+    )
+
+
+    # ========================================================
+    # ESTADO ORIGINAL
+    # ========================================================
+
+    estado_original = (
+        colmena.estadocolmena
+        or
+        ""
+    ).strip()
+
+
+    # ========================================================
     # ORIGEN
-    #
-    # Nos permite regresar a:
-    #
-    # - Mis Colmenas
-    # - Detalle del Apiario
     # ========================================================
 
     origen = (
@@ -2469,7 +2701,7 @@ def editar_colmena_apicultor(
 
 
     # ========================================================
-    # REDIRECCIÓN
+    # REDIRECCIÓN NORMAL
     # ========================================================
 
     def redireccionar():
@@ -2485,6 +2717,35 @@ def editar_colmena_apicultor(
         return redirect(
             "colmenas_apicultor"
         )
+
+
+    # ========================================================
+    # RESPONDER ERROR
+    # ========================================================
+
+    def responder_error(
+        mensaje,
+        status=400
+    ):
+
+        if es_ajax:
+
+            return JsonResponse(
+                {
+                    "ok": False,
+                    "error": mensaje,
+                },
+                status=status
+            )
+
+
+        messages.error(
+            request,
+            mensaje
+        )
+
+
+        return redireccionar()
 
 
     # ========================================================
@@ -2526,9 +2787,9 @@ def editar_colmena_apicultor(
     estados_validos = [
 
         "Activa",
+        "Revisión",
         "Riesgo",
         "Inactiva",
-        "Revisión",
 
     ]
 
@@ -2539,12 +2800,85 @@ def editar_colmena_apicultor(
 
     if estado not in estados_validos:
 
-        messages.error(
-            request,
+        return responder_error(
             "Selecciona un estado válido para la colmena."
         )
 
-        return redireccionar()
+
+    # ========================================================
+    # VALIDAR TRANSICIÓN A INACTIVA
+    # ========================================================
+
+    if (
+        estado == "Inactiva"
+        and
+        estado_original != "Inactiva"
+    ):
+
+        tiene_mantenimiento_pendiente = (
+            Mantenimiento.objects
+            .filter(
+                id_colmena=colmena,
+                estado__iexact="Pendiente"
+            )
+            .exists()
+        )
+
+
+        tiene_incidencia_abierta = (
+            Incidencia.objects
+            .filter(
+                id_colmena=colmena
+            )
+            .filter(
+                Q(
+                    estado__iexact="Pendiente"
+                )
+                |
+                Q(
+                    estado__iexact="En proceso"
+                )
+            )
+            .exists()
+        )
+
+
+        if (
+            tiene_mantenimiento_pendiente
+            or
+            tiene_incidencia_abierta
+        ):
+
+            motivos = []
+
+
+            if tiene_mantenimiento_pendiente:
+
+                motivos.append(
+                    "mantenimientos pendientes"
+                )
+
+
+            if tiene_incidencia_abierta:
+
+                motivos.append(
+                    "incidencias pendientes o en proceso"
+                )
+
+
+            return responder_error(
+                (
+                    f'La colmena "{colmena.codigocolmena}" '
+                    "no puede cambiar a Inactiva porque tiene "
+                    +
+                    " e ".join(
+                        motivos
+                    )
+                    +
+                    ". Finaliza esos registros antes de "
+                    "inactivar la colmena."
+                )
+            )
 
 
     # ========================================================
@@ -2553,19 +2887,13 @@ def editar_colmena_apicultor(
 
     if not descripcion:
 
-        messages.error(
-            request,
+        return responder_error(
             "La descripción de la colmena no puede quedar vacía."
         )
 
-        return redireccionar()
-
 
     # ========================================================
-    # VALIDAR NUEVA IMAGEN
-    #
-    # Es opcional.
-    # Si no selecciona otra, conserva la actual.
+    # VALIDAR FOTOGRAFÍA
     # ========================================================
 
     if nueva_imagen:
@@ -2579,16 +2907,13 @@ def editar_colmena_apicultor(
 
         if error_imagen:
 
-            messages.error(
-                request,
+            return responder_error(
                 error_imagen
             )
 
-            return redireccionar()
-
 
     # ========================================================
-    # ACTUALIZAR
+    # ACTUALIZAR DATOS
     # ========================================================
 
     colmena.estadocolmena = (
@@ -2647,17 +2972,112 @@ def editar_colmena_apicultor(
 
     except Exception:
 
-        messages.error(
-            request,
+        return responder_error(
             "No fue posible actualizar la colmena. "
-            "Inténtalo nuevamente."
+            "Inténtalo nuevamente.",
+            status=500
         )
-
-        return redireccionar()
 
 
     # ========================================================
-    # MENSAJE
+    # RESPUESTA AJAX
+    # ========================================================
+
+    if es_ajax:
+
+        resumen = (
+            obtener_resumen_colmenas_apicultor(
+                apicultor
+            )
+        )
+
+
+        imagen_url = ""
+
+        if colmena.imagen:
+
+            try:
+
+                imagen_url = (
+                    colmena.imagen.url
+                )
+
+            except ValueError:
+
+                imagen_url = ""
+
+
+        return JsonResponse(
+            {
+                "ok": True,
+
+                "mensaje": (
+                    f'La colmena "{colmena.codigocolmena}" '
+                    "fue actualizada correctamente."
+                ),
+
+                "colmena": {
+
+                    "id":
+                        colmena.id_colmena,
+
+                    "codigo":
+                        colmena.codigocolmena,
+
+                    "estado":
+                        colmena.estadocolmena,
+
+                    "descripcion":
+                        colmena.descripcion,
+
+                    "imagen_url":
+                        imagen_url,
+
+                    "permite_nuevas_actividades":
+                        colmena_esta_operativa(
+                            colmena
+                        ),
+
+                    "url_mantenimiento":
+                        reverse(
+                            "registrar_mantenimiento_apicultor",
+                            args=[
+                                colmena.id_colmena
+                            ]
+                        ),
+
+                    "url_incidencia":
+                        reverse(
+                            "reportar_incidencia_apicultor",
+                            args=[
+                                colmena.id_colmena
+                            ]
+                        ),
+                },
+
+                "resumen": {
+
+                    "total":
+                        resumen["total"],
+
+                    "activas":
+                        resumen["activas"],
+
+                    "revision":
+                        resumen["revision"],
+
+                    "riesgo":
+                        resumen["riesgo"],
+
+                    "inactivas":
+                        resumen["inactivas"],
+                },
+            }
+        )
+
+
+    # ========================================================
+    # RESPUESTA NORMAL
     # ========================================================
 
     messages.success(
@@ -3414,9 +3834,10 @@ def reportar_incidencia_apicultor(
         "crear_incidencia_apicultor"
     )
 
-
     return redirect(
-        f"{url}?colmena={colmena.id_colmena}"
+        f"{url}"
+        f"?colmena={colmena.id_colmena}"
+        f"&origen=colmenas"
     )
 
 
@@ -6268,48 +6689,26 @@ def crear_incidencia_apicultor(request):
     # PÁGINA DE ORIGEN
     # ========================================================
 
-    if request.method == "POST":
-
-        origen = (
-            request.POST
-            .get(
-                "origen",
-                ""
-            )
-            .strip()
-        )
+    origen = (
+        request.POST.get("origen")
+        or
+        request.GET.get("origen")
+        or
+        ""
+    ).strip()
 
 
-        id_apiario_origen = (
-            request.POST
-            .get(
-                "id_apiario_origen",
-                ""
-            )
-            .strip()
-        )
+    id_apiario_origen = (
+        request.POST.get("id_apiario_origen")
+        or
+        request.GET.get("id_apiario_origen")
+        or
+        ""
+    ).strip()
 
-    else:
-
-        origen = (
-            request.GET
-            .get(
-                "origen",
-                ""
-            )
-            .strip()
-        )
-
-
-        id_apiario_origen = (
-            request.GET
-            .get(
-                "id_apiario_origen",
-                ""
-            )
-            .strip()
-        )
-
+    # ========================================================
+    # APIARIO DE ORIGEN
+    # ========================================================
 
     apiario_origen = None
 
@@ -6328,6 +6727,38 @@ def crear_incidencia_apicultor(request):
                 )
             )
             .first()
+        )
+
+    # ========================================================
+    # URL PARA CANCELAR
+    # ========================================================
+
+    if origen == "colmenas":
+
+        url_cancelar = reverse(
+            "colmenas_apicultor"
+        )
+
+
+    elif (
+        origen == "detalle_apiario"
+        and
+        apiario_origen
+    ):
+
+        url_cancelar = reverse(
+            "detalle_apiario_apicultor",
+            kwargs={
+                "id_apiario":
+                    apiario_origen.id_apiario
+            }
+        )
+
+
+    else:
+
+        url_cancelar = reverse(
+            "incidencias_apicultor"
         )
 
 
@@ -6496,6 +6927,15 @@ def crear_incidencia_apicultor(request):
 
             "max_tamano_imagen_mb":
                 MAX_TAMANO_IMAGEN_MB,
+
+            "origen":
+                origen,
+
+            "id_apiario_origen":
+                id_apiario_origen,
+
+            "url_cancelar":
+                url_cancelar,
 
         }
 
@@ -7133,9 +7573,16 @@ def crear_incidencia_apicultor(request):
             )
 
 
-        # ====================================================
+        # ========================================================
         # 20. REGRESAR A LA PÁGINA DE ORIGEN
-        # ====================================================
+        # ========================================================
+
+        if origen == "colmenas":
+
+            return redirect(
+                "colmenas_apicultor"
+            )
+
 
         if (
             apiario_origen

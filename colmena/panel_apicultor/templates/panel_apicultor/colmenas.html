@@ -31,7 +31,10 @@
 {% block content %}
 
 
-<div class="colmenas-page">
+<div
+    class="colmenas-page"
+    data-url-resumen="{% url 'datos_colmenas_apicultor' %}"
+>
 
 
     <!-- =====================================================
@@ -77,7 +80,7 @@
 
             <div>
 
-                <strong>
+                <strong id="totalColmenas">
                     {{ total_colmenas|default:0 }}
                 </strong>
 
@@ -116,7 +119,7 @@
 
             <div>
 
-                <strong>
+                <strong id="totalColmenasActivas">
                     {{ total_activas|default:0 }}
                 </strong>
 
@@ -145,7 +148,7 @@
 
             <div>
 
-                <strong>
+                <strong id="totalColmenasRevision">
                     {{ total_revision|default:0 }}
                 </strong>
 
@@ -174,7 +177,7 @@
 
             <div>
 
-                <strong>
+                <strong id="totalColmenasRiesgo">
                     {{ total_riesgo|default:0 }}
                 </strong>
 
@@ -203,7 +206,7 @@
 
             <div>
 
-                <strong>
+                <strong id="totalColmenasInactivas">
                     {{ total_inactivas|default:0 }}
                 </strong>
 
@@ -489,9 +492,15 @@
 
                         {% for colmena in colmenas %}
 
-                            <tr>
+                            <tr
+                                data-colmena-fila="{{ colmena.id_colmena }}"
+                            >
 
-                                <td data-titulo="Imagen" class="colmenas-tabla-col-img">
+                                <td
+                                    data-titulo="Imagen"
+                                    class="colmenas-tabla-col-img"
+                                    data-colmena-tabla-imagen
+                                >
                                     {% if colmena.imagen %}
                                         <img src="{{ colmena.imagen.url }}"
                                              alt="Fotografía de {{ colmena.codigocolmena }}"
@@ -503,7 +512,10 @@
                                     {% endif %}
                                 </td>
 
-                                <td data-titulo="Colmena">
+                                <td
+                                    data-titulo="Colmena"
+                                    data-colmena-tabla-info
+                                >
                                     <strong class="colmenas-tabla-codigo">{{ colmena.codigocolmena }}</strong>
                                     {% if colmena.descripcion %}
                                         <span class="colmenas-tabla-descripcion">
@@ -517,10 +529,16 @@
                                 </td>
 
                                 <td data-titulo="Último mantenimiento">
-                                    {% if colmena.ultimo_mantenimiento %}
-                                        {{ colmena.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                    {% if colmena.ultimo_mantenimiento_fecha %}
+
+                                        {{ colmena.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
+
                                     {% else %}
-                                        <span class="colmenas-tabla-sin-dato">Sin registros</span>
+
+                                        <span class="colmenas-tabla-sin-dato">
+                                            Sin registros
+                                        </span>
+
                                     {% endif %}
                                 </td>
 
@@ -536,7 +554,11 @@
                                 </td>
 
                                 <td data-titulo="Estado">
-                                    <span class="colmenas-tabla-estado{% if colmena.estadocolmena == 'Activa' %} activa{% elif colmena.estadocolmena == 'Revisión' %} revision{% elif colmena.estadocolmena == 'Riesgo' %} riesgo{% else %} inactiva{% endif %}">
+
+                                    <span
+                                        data-colmena-estado-tabla
+                                        class="colmenas-tabla-estado{% if colmena.estadocolmena == 'Activa' %} activa{% elif colmena.estadocolmena == 'Revisión' %} revision{% elif colmena.estadocolmena == 'Riesgo' %} riesgo{% else %} inactiva{% endif %}"
+                                    >
                                         <i class="bi bi-circle-fill" aria-hidden="true"></i>
                                         {{ colmena.estadocolmena }}
                                     </span>
@@ -581,14 +603,20 @@
             {% for colmena in colmenas %}
 
 
-                <article class="colmena-card">
+                <article
+                    class="colmena-card"
+                    data-colmena-card="{{ colmena.id_colmena }}"
+                >
 
 
                     <!-- =====================================
                          FOTOGRAFÍA
                     ====================================== -->
 
-                    <div class="colmena-card-imagen">
+                    <div
+                        class="colmena-card-imagen"
+                        data-colmena-card-imagen
+                    >
 
 
                         {% if colmena.imagen %}
@@ -648,6 +676,7 @@
 
 
                         <span
+                            data-colmena-estado-card
                             class="
                                 colmena-estado
 
@@ -743,9 +772,9 @@
                             <strong>
 
 
-                                {% if colmena.ultimo_mantenimiento %}
+                                {% if colmena.ultimo_mantenimiento_fecha %}
 
-                                    {{ colmena.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                    {{ colmena.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
 
                                 {% else %}
 
@@ -794,7 +823,10 @@
                          DESCRIPCIÓN
                     ====================================== -->
 
-                    <div class="colmena-card-descripcion">
+                    <div
+                        class="colmena-card-descripcion"
+                        data-colmena-descripcion-card
+                    >
 
 
                         {% if colmena.descripcion %}
@@ -1056,6 +1088,7 @@
     <div
         class="colmena-modal-overlay"
         id="modalColmenaGeneral{{ colmena.id_colmena }}"
+        data-colmena-detalle="{{ colmena.id_colmena }}"
         aria-hidden="true"
     >
 
@@ -1220,6 +1253,7 @@
 
 
                         <strong
+                            data-colmena-estado-detalle
                             class="
                                 colmena-modal-estado
 
@@ -1266,15 +1300,15 @@
 
                     <!-- FECHA -->
 
+                    <!-- FECHA -->
+
                     <div class="colmena-modal-dato">
 
                         <span>
                             Fecha de registro
                         </span>
 
-
                         <strong>
-
 
                             {% if colmena.fecharegistro %}
 
@@ -1285,7 +1319,6 @@
                                 Sin registro
 
                             {% endif %}
-
 
                         </strong>
 
@@ -1305,9 +1338,9 @@
                         <strong>
 
 
-                            {% if colmena.ultimo_mantenimiento %}
+                            {% if colmena.ultimo_mantenimiento_fecha %}
 
-                                {{ colmena.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                {{ colmena.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
 
                             {% else %}
 
@@ -1356,7 +1389,7 @@
                     {% if colmena.descripcion %}
 
 
-                        <p>
+                        <p data-colmena-descripcion-detalle>
                             {{ colmena.descripcion }}
                         </p>
 
@@ -1364,7 +1397,10 @@
                     {% else %}
 
 
-                        <p class="sin-descripcion-colmena">
+                        <p
+                            class="sin-descripcion-colmena"
+                            data-colmena-descripcion-detalle
+                        >
 
                             No se ha registrado una descripción
                             para esta colmena.
@@ -1393,59 +1429,90 @@
                      ACCIONES PRINCIPALES
                 ============================================== -->
 
-                <div class="colmena-modal-acciones-principales">
+                <div
+                    class="colmena-modal-acciones-principales"
+                    data-colmena-acciones-principales
+                >
+
+                    <!-- =================================================
+                        MANTENIMIENTO
+                    ================================================== -->
+
+                    {% if colmena.permite_nuevas_actividades %}
+
+                        <a
+                            href="{% url 'registrar_mantenimiento_apicultor' colmena.id_colmena %}"
+                            class="btn-modal-mantenimiento"
+                        >
+
+                            <i class="bi bi-tools"></i>
+
+                            <span>
+                                Registrar mantenimiento
+                            </span>
+
+                        </a>
+
+                    {% else %}
+
+                        <button
+                            type="button"
+                            class="btn-modal-mantenimiento"
+                            disabled
+                            aria-disabled="true"
+                            title="La colmena está inactiva"
+                        >
+
+                            <i class="bi bi-tools"></i>
+
+                            <span>
+                                Registrar mantenimiento
+                            </span>
+
+                        </button>
+
+                    {% endif %}
 
 
-                    <!-- GESTIONAR COLMENA -->
 
-                    <button
-                        type="button"
-                        class="btn-modal-gestionar-colmena"
-                        data-editar-colmena-modal="modalEditarColmena{{ colmena.id_colmena }}"
-                        data-cerrar-detalle-antes-editar
-                    >
+                    <!-- =================================================
+                        INCIDENCIA
+                    ================================================== -->
 
-                        <i class="bi bi-pencil-square"></i>
+                    {% if colmena.permite_nuevas_actividades %}
 
-                        <span>
-                            Gestionar colmena
-                        </span>
+                        <a
+                            href="{% url 'reportar_incidencia_apicultor' colmena.id_colmena %}"
+                            class="btn-modal-incidencia"
+                        >
 
-                    </button>
+                            <i class="bi bi-exclamation-triangle-fill"></i>
 
+                            <span>
+                                Reportar incidencia
+                            </span>
 
+                        </a>
 
-                    <!-- MANTENIMIENTO -->
+                    {% else %}
 
-                    <a
-                        href="{% url 'mantenimientos_apicultor' %}?nuevo=1&apiario_nuevo={{ colmena.id_apiario_id }}&colmena_nueva={{ colmena.id_colmena }}"
-                        class="btn-modal-mantenimiento"
-                    >
+                        <button
+                            type="button"
+                            class="btn-modal-incidencia"
+                            disabled
+                            aria-disabled="true"
+                            title="La colmena está inactiva"
+                        >
 
-                        <i class="bi bi-tools"></i>
+                            <i class="bi bi-exclamation-triangle-fill"></i>
 
-                        <span>
-                            Registrar mantenimiento
-                        </span>
+                            <span>
+                                Reportar incidencia
+                            </span>
 
-                    </a>
+                        </button>
 
-
-
-                    <!-- INCIDENCIA -->
-
-                    <a
-                        href="{% url 'reportar_incidencia_apicultor' colmena.id_colmena %}"
-                        class="btn-modal-incidencia"
-                    >
-
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-
-                        <span>
-                            Reportar incidencia
-                        </span>
-
-                    </a>
+                    {% endif %}
 
 
                 </div>
@@ -1527,7 +1594,16 @@
                 action="{% url 'editar_colmena_apicultor' colmena.id_colmena %}"
                 enctype="multipart/form-data"
                 class="form-editar-colmena"
+
                 data-id-colmena="{{ colmena.id_colmena }}"
+
+                data-codigo-colmena="{{ colmena.codigocolmena }}"
+
+                data-estado-original="{{ colmena.estadocolmena }}"
+
+                data-mantenimiento-pendiente="{% if colmena.tiene_mantenimiento_pendiente %}true{% else %}false{% endif %}"
+
+                data-incidencia-abierta="{% if colmena.tiene_incidencia_abierta %}true{% else %}false{% endif %}"
             >
 
                 {% csrf_token %}
