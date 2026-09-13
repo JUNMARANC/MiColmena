@@ -142,38 +142,14 @@
 
 <!-- =========================================================
      MENSAJES
+
+     Este bloque pintaba los mensajes de Django otra vez, y
+     base_admin.html ya los pinta en su línea 617. Por eso cada
+     aviso salía dos veces: uno arriba, del base, y otro aquí.
+
+     Se quitó de aquí y se deja el del base, que es el que usan
+     todas las demás pantallas del panel.
 ========================================================= -->
-
-{% if messages %}
-
-    {% for message in messages %}
-
-        <div
-            class="
-                alert
-                alert-{{ message.tags }}
-                alert-dismissible
-                fade
-                show
-            "
-            role="alert"
-        >
-
-            {{ message }}
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Cerrar"
-            ></button>
-
-        </div>
-
-    {% endfor %}
-
-{% endif %}
-
 
 
 <!-- =========================================================

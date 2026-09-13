@@ -11934,6 +11934,9 @@ input[type="radio"] {
     justify-content:
         center;
 
+    box-sizing:
+        border-box;
+
     border-radius:
         11px;
 
@@ -16871,5 +16874,284 @@ tr.fila-oculta-busqueda {
 
     }
 
+
+}
+
+/* ==========================================================
+   ==========================================================
+   EVIDENCIAS FOTOGRÁFICAS DEL MANTENIMIENTO
+
+   El campo de archivo era un <input type="file"> con la clase
+   form-control de Bootstrap, que deja el control nativo del
+   navegador: «Elegir archivos | Sin archivos seleccionados».
+
+   Ese control lo pinta el sistema operativo, así que se ve
+   distinto en cada navegador, no respeta la tipografía del
+   panel y el texto se corta cuando la columna es estrecha —que
+   es justo lo que pasaba con tres columnas.
+
+   Con ::file-selector-button se puede dar estilo al botón
+   interno, que es lo único del control nativo que sí acepta
+   CSS.
+   ========================================================== */
+
+.mantenimiento-input-evidencias {
+
+    width: 100%;
+    min-height: 44px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px dashed #c9dbd0;
+    border-radius: 11px;
+
+    background: rgba(255, 255, 255, .7);
+
+    color: #6b7a71;
+    font-size: .74rem;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        border-color .2s ease,
+        background-color .2s ease;
+
+}
+
+
+.mantenimiento-input-evidencias:hover {
+
+    border-color: var(--verde-medio);
+
+    background: #ffffff;
+
+}
+
+
+/* El botón interno del control nativo */
+
+.mantenimiento-input-evidencias::file-selector-button {
+
+    height: 42px;
+
+    margin: 0 12px 0 0;
+    padding: 0 16px;
+
+    border: none;
+    border-right: 1px solid #dce6e0;
+    border-radius: 0;
+
+    background: #eef4f0;
+    color: var(--verde-oscuro);
+
+    font-family: inherit;
+    font-size: .74rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease;
+
+}
+
+
+.mantenimiento-input-evidencias:hover::file-selector-button {
+
+    background: var(--verde-medio);
+    color: #ffffff;
+
+}
+
+
+/* Cada bloque tiñe su botón con su propio color, igual que el
+   icono de la cabecera */
+
+.mantenimiento-evidencia-input.antes .mantenimiento-input-evidencias::file-selector-button {
+    background: #f9e7d6;
+    color: #a86628;
+}
+
+.mantenimiento-evidencia-input.antes .mantenimiento-input-evidencias:hover::file-selector-button {
+    background: #a86628;
+    color: #ffffff;
+}
+
+
+.mantenimiento-evidencia-input.durante .mantenimiento-input-evidencias::file-selector-button {
+    background: #dceafb;
+    color: #396eaa;
+}
+
+.mantenimiento-evidencia-input.durante .mantenimiento-input-evidencias:hover::file-selector-button {
+    background: #396eaa;
+    color: #ffffff;
+}
+
+
+.mantenimiento-evidencia-input.despues .mantenimiento-input-evidencias::file-selector-button {
+    background: #e2f1df;
+    color: var(--verde-hoja);
+}
+
+.mantenimiento-evidencia-input.despues .mantenimiento-input-evidencias:hover::file-selector-button {
+    background: var(--verde-hoja);
+    color: #ffffff;
+}
+
+
+.mantenimiento-input-evidencias:focus-visible {
+
+    outline: 3px solid var(--miel, #F0A000);
+    outline-offset: 2px;
+
+}
+
+
+/* ==========================================================
+   LA CABECERA DE CADA BLOQUE
+
+   El icono y el texto se desalineaban cuando el título
+   quedaba en una línea y el subtítulo en dos.
+========================================================== */
+
+.mantenimiento-evidencia-input-header {
+
+    align-items: flex-start;
+
+    min-width: 0;
+
+}
+
+
+.mantenimiento-evidencia-input-header > div {
+
+    min-width: 0;
+
+}
+
+
+/* El margin-top que traía esta regla venía a descuadrar el
+   centrado del icono dentro del cuadrito de color. La alineación
+   del cuadrito respecto al texto ya la resuelve el flex del
+   header; aquí no hace falta ningún ajuste manual. */
+
+
+/* ==========================================================
+   LAS TRES COLUMNAS
+
+   En pantallas medianas, tres columnas dejan cada caja tan
+   estrecha que el nombre del archivo no cabe. Por debajo de
+   1200px pasan a dos, y en celular a una.
+========================================================== */
+
+@media (max-width: 1200px) {
+
+    .mantenimiento-evidencia-input {
+        margin-bottom: 12px;
+    }
+
+}
+
+
+@media (max-width: 575px) {
+
+    .mantenimiento-input-evidencias {
+        flex-direction: column;
+        align-items: stretch;
+
+        min-height: 0;
+    }
+
+    .mantenimiento-input-evidencias::file-selector-button {
+        width: 100%;
+        margin: 0 0 6px;
+
+        border-right: none;
+        border-bottom: 1px solid #dce6e0;
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mantenimiento-input-evidencias,
+    .mantenimiento-input-evidencias::file-selector-button {
+        transition: none !important;
+    }
+
+}
+
+
+/* ==========================================================
+   EL TAMAÑO DE LOS ICONOS DE EVIDENCIA
+
+   El círculo mide 38px y el icono estaba a .95rem, unos 15px:
+   ocupaba el 40% del espacio y se veía perdido dentro de la
+   pastilla de color.
+
+   La proporción que funciona en un icono dentro de un círculo
+   es de la mitad a poco más: 22px en 42px.
+
+   Va como regla propia sobre el <i>, no heredando el font-size
+   del contenedor. Así el tamaño no depende de que nadie toque
+   el contenedor más adelante.
+========================================================== */
+
+.mantenimiento-evidencia-icono {
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+}
+
+
+.mantenimiento-evidencia-icono i,
+.mantenimiento-evidencia-icono .bi {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 22px;
+    line-height: 1;
+
+}
+
+
+/* El mismo criterio para los iconos de las cabeceras de los
+   bloques de evidencia del detalle, que tienen el mismo
+   problema de proporción. */
+
+.mantenimiento-evidencia-bloque .mantenimiento-evidencia-icono i {
+
+    font-size: 22px;
+
+}
+
+
+@media (max-width: 575px) {
+
+    .mantenimiento-evidencia-icono {
+        width: 38px;
+        height: 38px;
+    }
+
+    .mantenimiento-evidencia-icono i,
+    .mantenimiento-evidencia-icono .bi {
+        font-size: 20px;
+    }
 
 }
