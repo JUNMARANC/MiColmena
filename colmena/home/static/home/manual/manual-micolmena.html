@@ -1,0 +1,1450 @@
+<!-- INICIO BLOQUE 1 · HEAD + ESTILOS + PÁGINAS 1-5 -->
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="UTF-8">
+<title>Manual de Usuario · Home y Acceso · Mi Colmena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --miel:#F6DE87; --miel-deep:#E7B43C; --verde:#214F3B; --verde-medio:#39795F;
+  --crema:#FFF9E8; --blanco:#fff; --tinta:#18221C; --gris:#6B746E;
+  --linea:#E7E0C9; --rojo:#B4473A; --rojo-bg:#FBE9E6;
+  --font:"Montserrat Alternates","Montserrat",sans-serif;
+}
+@page{ size:A4; margin:0; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+html,body{background:#5d655f;font-family:var(--font);color:var(--tinta);}
+.page{position:relative;width:210mm;height:297mm;margin:10mm auto;background:var(--blanco);
+  overflow:hidden;page-break-after:always;break-after:page;}
+.page:last-child{page-break-after:auto;break-after:auto;}
+img{display:block;}
+
+/* panales discretos */
+.hex{position:absolute;width:0;height:0;pointer-events:none;z-index:0;
+  border-left:13mm solid transparent;border-right:13mm solid transparent;border-bottom:22mm solid rgba(246,222,135,.16);}
+.hex::after{content:"";position:absolute;left:-13mm;top:22mm;width:0;height:0;
+  border-left:13mm solid transparent;border-right:13mm solid transparent;border-top:22mm solid rgba(246,222,135,.16);}
+.hex.v{border-bottom-color:rgba(57,121,95,.07);}.hex.v::after{border-top-color:rgba(57,121,95,.07);}
+.hex.dark{border-bottom-color:rgba(33,79,59,.06);}.hex.dark::after{border-top-color:rgba(33,79,59,.06);}
+
+/* cabezal y pie */
+.runhead{position:absolute;top:0;left:0;right:0;height:13mm;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14mm;z-index:5;font-size:8pt;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-medio);font-weight:600;}
+.runhead .brand{display:flex;align-items:center;gap:2.4mm;color:var(--verde);}
+.runhead .dot{width:7px;height:7px;background:var(--miel-deep);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);}
+.runfoot{position:absolute;bottom:0;left:0;right:0;height:11mm;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14mm;border-top:1px solid var(--linea);font-size:8pt;color:var(--gris);}
+.runfoot .pg{font-weight:700;color:var(--verde);font-size:10pt;}
+.body-pad{position:absolute;top:13mm;bottom:11mm;left:0;right:0;padding:8mm 14mm;z-index:2;}
+
+.kicker{display:inline-flex;align-items:center;gap:2mm;font-size:8.5pt;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--verde-medio);}
+.kicker::before{content:"";width:7mm;height:2.4px;background:var(--miel-deep);border-radius:2px;}
+h1.sec{font-size:24pt;line-height:1.05;font-weight:800;color:var(--verde);margin:2.5mm 0 2mm;letter-spacing:-.01em;}
+h1.sec em{font-style:normal;color:var(--miel-deep);}
+.lead{font-size:10.2pt;line-height:1.55;color:#3c463f;}
+p{font-size:9.7pt;line-height:1.58;color:#3c463f;}
+.small{font-size:8.5pt;color:var(--gris);line-height:1.5;}
+
+/* tarjetas */
+.glass{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 6px 22px rgba(33,79,59,.10);border-radius:5mm;}
+.card{background:#fff;border:1px solid var(--linea);border-radius:5mm;box-shadow:0 5px 18px rgba(33,79,59,.08);padding:6mm;}
+.badgehex{width:13mm;height:13mm;background:var(--miel);flex:0 0 auto;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);display:flex;align-items:center;justify-content:center;font-size:12pt;}
+
+/* capturas */
+.shot{position:relative;background:#fff;border:1px solid #d9d4c2;border-radius:3mm;
+  box-shadow:0 10px 30px rgba(33,79,59,.16);overflow:hidden;z-index:2;}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.shot.contain img{object-fit:contain;background:#f7f6f1;}
+.shot.pad img{object-fit:cover;}
+.browser-bar{height:6.4mm;background:linear-gradient(#f3f0e6,#e9e5d6);display:flex;align-items:center;gap:1.6mm;
+  padding:0 3mm;border-bottom:1px solid #ddd7c4;}
+.browser-bar i{width:2.3mm;height:2.3mm;border-radius:50%;}
+.browser-bar .u{margin-left:3mm;font-size:6.6pt;color:#8b8a7d;background:#fff;border-radius:20px;padding:.6mm 3mm;flex:1;font-weight:600;}
+.figcap{font-size:8pt;color:var(--gris);margin-top:2mm;text-align:center;font-weight:500;}
+.figcap b{color:var(--verde-medio);}
+
+/* marcadores y llamadas */
+.mk{position:absolute;z-index:9;width:7mm;height:7mm;border-radius:50%;background:var(--verde);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:9.5pt;font-weight:800;border:1.6px solid var(--miel);
+  box-shadow:0 3px 8px rgba(0,0,0,.3);font-family:var(--font);}
+.mk.miel{background:var(--miel-deep);border-color:var(--verde);color:var(--verde);}
+.callout{position:absolute;z-index:8;background:#fff;border:1px solid var(--linea);border-left:3px solid var(--miel-deep);
+  border-radius:2mm;padding:1.6mm 2.6mm;font-size:8pt;line-height:1.3;color:var(--tinta);box-shadow:0 3px 10px rgba(0,0,0,.10);max-width:46mm;}
+.callout b{color:var(--verde);}
+.callout .n{display:inline-flex;width:4.6mm;height:4.6mm;border-radius:50%;background:var(--verde);color:#fff;
+  font-size:7.5pt;font-weight:800;align-items:center;justify-content:center;margin-right:1.6mm;}
+.legend{list-style:none;display:grid;gap:2.2mm;}
+.legend li{display:flex;gap:3mm;align-items:flex-start;font-size:9pt;line-height:1.38;}
+.legend .num{flex:0 0 6mm;height:6mm;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:8.4pt;font-weight:800;margin-top:.3mm;}
+.legend .num.miel{background:var(--miel-deep);color:var(--verde);border:1px solid var(--verde);}
+.legend b{color:var(--verde);font-weight:700;}
+
+/* pasos, flujos, grillas */
+.steps{display:grid;gap:3mm;}
+.step{display:flex;gap:4mm;align-items:flex-start;background:var(--crema);border:1px solid #f0e6c3;border-radius:4mm;padding:3.4mm 4mm;}
+.step .s{flex:0 0 8mm;height:8mm;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10pt;}
+.step p{font-size:9.2pt;} .step p b{color:var(--verde);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;}
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;}
+.flow .node{background:#fff;border:2px solid var(--verde-medio);border-radius:4mm;padding:2.8mm 6mm;font-size:9.2pt;font-weight:700;
+  color:var(--verde);text-align:center;min-width:50mm;box-shadow:0 4px 10px rgba(33,79,59,.10);}
+.flow .node.fill{background:var(--verde);color:#fff;} .flow .node.miel{background:var(--miel);border-color:var(--miel-deep);color:var(--verde);}
+.flow .arrow{height:7mm;width:2px;background:var(--miel-deep);position:relative;}
+.flow .arrow::after{content:"";position:absolute;bottom:-1px;left:-3px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--miel-deep);}
+.infocard{background:#fff;border:1px solid var(--linea);border-radius:4mm;padding:4.5mm;box-shadow:0 4px 12px rgba(33,79,59,.07);display:flex;flex-direction:column;gap:1mm;}
+.infocard .ic{width:11mm;height:11mm;border-radius:50%;background:var(--crema);display:flex;align-items:center;justify-content:center;font-size:13pt;}
+.infocard h4{font-size:9.7pt;color:var(--verde);font-weight:700;}
+.infocard p{font-size:8.7pt;line-height:1.42;}
+.infocard.warn{border-color:#eccfc9;background:#fff8f6;} .infocard.warn .ic{background:var(--rojo-bg);} .infocard.warn h4{color:var(--rojo);}
+.nota{display:flex;gap:3.5mm;align-items:flex-start;background:var(--verde);color:#fff;border-radius:4mm;padding:4mm 5mm;}
+.nota .ic{font-size:13pt;} .nota p{color:#f3f7f4;font-size:9pt;line-height:1.45;} .nota b{color:var(--miel);}
+.nota.miel{background:var(--miel);color:var(--verde);} .nota.miel p{color:#46504a;} .nota.miel b{color:var(--verde);}
+.mt2{margin-top:2mm;}.mt3{margin-top:3mm;}.mt4{margin-top:4mm;}.mt5{margin-top:5mm;}
+.tc{text-align:center;}
+.divider{height:1px;background:var(--linea);margin:4mm 0;}
+.seg{font-size:8pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-medio);margin-bottom:2.4mm;display:flex;align-items:center;gap:2mm;}
+.seg::before{content:"";width:4mm;height:4mm;background:var(--miel);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);}
+ul.dash{list-style:none;display:grid;gap:2mm;}
+ul.dash li{position:relative;padding-left:6mm;font-size:9.3pt;line-height:1.46;color:#3c463f;}
+ul.dash li::before{content:"";position:absolute;left:0;top:1.7mm;width:3.4mm;height:3.4mm;background:var(--miel-deep);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);}
+
+/* índice */
+.toc{display:grid;grid-template-columns:1fr;gap:.6mm;margin-top:2mm;}
+.toc .row{display:flex;align-items:baseline;gap:3mm;font-size:9.3pt;padding:1.5mm 2mm;border-radius:2mm;}
+.toc .row:hover{background:var(--crema);}
+.toc .n{font-weight:800;color:var(--miel-deep);font-size:10pt;width:9mm;flex:0 0 9mm;}
+.toc .t{flex:1;color:var(--tinta);}
+.toc .pf{font-weight:700;color:var(--verde);width:9mm;text-align:right;flex:0 0 9mm;}
+.toc-sep{height:1px;background:var(--linea);margin:2.5mm 0;}
+.toc-head{font-size:7.6pt;letter-spacing:.16em;text-transform:uppercase;color:var(--verde-medio);font-weight:700;margin:2mm 0 1mm;}
+
+/* portada */
+.cover{background:linear-gradient(160deg,#214F3B 0%,#2c6049 46%,#39795F 100%);color:#fff;}
+.cover .hex.c1{top:-14mm;right:-10mm;transform:scale(2.4);opacity:.6;}
+.cover .hex.c2{bottom:30mm;left:-16mm;transform:scale(2.1);}
+.cover-inner{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;padding:20mm 18mm;}
+.cover .sena-top{display:flex;align-items:center;gap:4mm;font-size:9pt;letter-spacing:.14em;text-transform:uppercase;color:var(--miel);font-weight:600;}
+.cover .sena-top .ln{flex:0 0 30mm;height:2px;background:rgba(246,222,135,.5);}
+.cover-logo{margin:13mm 0 4mm;display:flex;align-items:center;gap:5mm;}
+.cover-logo img{height:27mm;width:27mm;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.12);padding:1mm;border:1.5px solid rgba(246,222,135,.5);}
+.cover-logo .wm{font-size:19pt;font-weight:800;} .cover-logo .wm span{color:var(--miel);}
+.cover h1{font-size:46pt;line-height:.98;font-weight:800;margin-top:7mm;letter-spacing:-.02em;}
+.cover .sub{margin-top:6mm;display:flex;gap:4mm;align-items:center;}
+.cover .sub .pill{background:rgba(246,222,135,.14);border:1px solid rgba(246,222,135,.5);color:var(--miel);
+  border-radius:30px;padding:2.2mm 6mm;font-size:12pt;font-weight:700;}
+.cover .meta{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:5mm 10mm;font-size:9.3pt;}
+.cover .meta .lab{color:var(--miel);font-size:7.8pt;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1mm;font-weight:700;}
+.cover .meta .val{color:#f2f6f3;line-height:1.5;}
+.cover .rule{height:1px;background:rgba(246,222,135,.35);margin:5mm 0;}
+.cover .fecha{position:absolute;right:18mm;bottom:14mm;text-align:right;}
+.cover .fecha .lab{font-size:7.6pt;letter-spacing:.18em;text-transform:uppercase;color:var(--miel);}
+.cover .fecha .val{font-size:11pt;font-weight:600;}
+.closing{background:linear-gradient(165deg,#FFF9E8 0%,#fbf3da 100%);}
+@media print{html,body{background:#fff;}.page{margin:0;box-shadow:none;}}
+
+/* ---------- Helpers de display / alineación ---------- */
+.flex{display:flex;}
+.inline-flex{display:inline-flex;}
+.between{justify-content:space-between;}
+.around{justify-content:space-around;}
+.center{align-items:center;}
+.middle{justify-content:center;}
+.vtop{align-items:flex-start;}
+.vbottom{align-items:flex-end;}
+.col{flex-direction:column;}
+.wrap{flex-wrap:wrap;}
+.flex1{flex:1;}
+.gap1{gap:2mm;} .gap2{gap:4mm;} .gap3{gap:6mm;}
+
+/* ---------- Alineación de texto ---------- */
+.tl{text-align:left;} .tc{text-align:center;} .tr{text-align:right;}
+.m-auto{margin-left:auto;margin-right:auto;}
+.mt0{margin-top:0;} .mr0{margin-right:0;} .mb0{margin-bottom:0;}
+
+/* ---------- Espaciados verticales (todos los usados) ---------- */
+.mt1{margin-top:1mm;} .mt2{margin-top:2mm;} .mt3{margin-top:3mm;}
+.mt4{margin-top:4mm;} .mt5{margin-top:5mm;} .mt6{margin-top:6mm;}
+.mt8{margin-top:8mm;} .mt10{margin-top:10mm;} .mt12{margin-top:12mm;}
+.mb1{margin-bottom:1mm;} .mb2{margin-bottom:2mm;} .mb3{margin-bottom:3mm;}
+.mb4{margin-bottom:4mm;} .mb5{margin-bottom:5mm;}
+.pt2{padding-top:2mm;} .pb2{padding-bottom:2mm;}
+
+/* ---------- Etiquetas / pastillas ---------- */
+.chip{display:inline-flex;align-items:center;gap:2mm;background:var(--crema);
+  border:1px solid #f0e6c3;border-radius:30mm;padding:1.6mm 4mm;
+  font-size:8.6pt;font-weight:700;color:var(--verde);line-height:1;}
+.chip svg{display:block;}
+
+/* ---------- Escala / peso / color de refuerzo ---------- */
+.fw700{font-weight:700;} .fw800{font-weight:800;}
+.fs8{font-size:8pt;} .fs85{font-size:8.5pt;} .fs9{font-size:9pt;} .fs10{font-size:10pt;}
+.muted{color:var(--gris);} .vverde{color:var(--verde);} .vmiel{color:var(--miel-deep);}
+.maxw{max-width:155mm;}
+
+/* ---------- Línea separadora fina ---------- */
+.hline{height:1px;background:var(--linea);border:0;margin:3mm 0;}
+
+/* ---------- Seguridad: ajuste de capturas altas dentro de .shot ---------- */
+.shot img{will-change:auto;}
+.shot.contain{background:#f7f6f1;}
+
+/* ---------- Celdas de diagrama horizontal (flujos) ---------- */
+.hflow{display:flex;align-items:center;gap:2mm;flex-wrap:wrap;font-size:8.8pt;
+  font-weight:700;color:var(--verde);}
+
+/* ---------- Lista de verificación (checklist) ---------- */
+.checklist{list-style:none;display:grid;gap:2.4mm;}
+.checklist li{position:relative;padding-left:7mm;font-size:9.3pt;line-height:1.45;color:#3c463f;}
+.checklist li::before{content:"✓";position:absolute;left:0;top:0;width:5mm;height:5mm;border-radius:50%;
+  background:var(--verde);color:#fff;font-size:8pt;font-weight:800;display:flex;align-items:center;justify-content:center;}
+
+/* ---------- Icono circular simple para tarjetas editoriales ---------- */
+.disc{flex:0 0 auto;width:11mm;height:11mm;border-radius:50%;background:var(--crema);
+  display:flex;align-items:center;justify-content:center;font-size:13pt;}
+.disc.green{background:var(--verde);color:#fff;} .disc.red{background:var(--rojo-bg);}
+
+/* ---------- Tabla editorial ligera ---------- */
+.etable{width:100%;border-collapse:collapse;font-size:9pt;}
+.etable th,.etable td{text-align:left;padding:2.6mm 3mm;border-bottom:1px solid var(--linea);vertical-align:top;}
+.etable th{background:var(--crema);color:var(--verde);font-size:8.4pt;text-transform:uppercase;letter-spacing:.08em;}
+.etable td:first-child{font-weight:700;color:var(--verde);white-space:nowrap;}
+
+/* ---------- Evita páginas huérfanas en impresión ---------- */
+.card,.infocard,.step,.nota,.shot{break-inside:avoid;page-break-inside:avoid;}
+
+
+
+/* ---------- CORRECCIÓN CSS FINAL ---------- */
+.shot img.contain{
+  object-fit:contain;
+  background:#f7f6f1;
+}
+.flow .arrow.bee{
+  width:8mm;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12pt;
+  line-height:1;
+}
+.flow .arrow.bee::after{display:none;}
+.rule{height:1px;background:var(--linea);}
+
+</style>
+</head>
+<body>
+
+<!-- PÁGINA 01 · PORTADA -->
+<section class="page cover">
+  <div class="hex v c1"></div><div class="hex c2"></div>
+  <div class="cover-inner">
+    <div class="sena-top"><span class="ln"></span> Servicio Nacional de Aprendizaje — SENA</div>
+    <div class="cover-logo">
+      <img src="assets/logo-micolmena.png" alt="Logo Mi Colmena">
+      <div class="wm">mi <span>Colmena</span></div>
+    </div>
+    <div style="font-size:10pt;letter-spacing:.3em;color:rgba(255,255,255,.75);text-transform:uppercase;font-weight:600;">Manual de Usuario</div>
+    <h1>Home y<br><em style="font-style:normal;color:var(--miel);">Acceso</em></h1>
+    <div class="sub">
+      <span class="pill">MI COLMENA</span>
+      <span style="font-size:10pt;color:rgba(255,255,255,.8);">Apicultura + Software</span>
+    </div>
+    <div class="rule"></div>
+    <div class="meta">
+      <div><div class="lab">Programa</div><div class="val">Análisis y Desarrollo de Software</div></div>
+      <div><div class="lab">Proyecto</div><div class="val">Mi Colmena</div></div>
+      <div><div class="lab">Desarrollado por</div><div class="val">Jaime Andrés Arboleda Ochoa<br>Juan Manuel Herrera<br>John Mario Ríos Valencia</div></div>
+      <div><div class="lab">Alcance del documento</div><div class="val">Home público · Acceso · 2FA · Recuperación de contraseña</div></div>
+    </div>
+    <div class="fecha"><div class="lab">Fecha del documento</div><div class="val">13 de septiembre de 2026</div></div>
+  </div>
+</section>
+
+<!-- PÁGINA 02 · ÍNDICE -->
+<section class="page">
+  <div class="hex dark" style="top:-12mm;right:-12mm;transform:scale(1.6);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Manual de Usuario</span></div>
+  <div class="body-pad">
+    <span class="kicker">Contenido</span>
+    <h1 class="sec">Índice <em>general</em></h1>
+    <p class="lead">Guía visual del sitio público de Mi Colmena y del acceso seguro al sistema. El número de la derecha indica la página física donde comienza cada tema; algunos temas ocupan más de una página.</p>
+    <div class="toc mt3">
+      <div class="toc-head">Home · El sitio público</div>
+      <div class="row"><span class="n">01</span><span class="t">Introducción</span><span class="pf">03</span></div>
+      <div class="row"><span class="n">02</span><span class="t">Objetivo y alcance</span><span class="pf">04</span></div>
+      <div class="row"><span class="n">03</span><span class="t">Requisitos</span><span class="pf">05</span></div>
+      <div class="row"><span class="n">04</span><span class="t">Home</span><span class="pf">06</span></div>
+      <div class="row"><span class="n">05</span><span class="t">Barra de navegación</span><span class="pf">07</span></div>
+      <div class="row"><span class="n">06</span><span class="t">Página de inicio</span><span class="pf">08</span></div>
+      <div class="row"><span class="n">07</span><span class="t">Carrusel</span><span class="pf">09</span></div>
+      <div class="row"><span class="n">08</span><span class="t">Quiénes somos</span><span class="pf">10</span></div>
+      <div class="row"><span class="n">09</span><span class="t">Servicios</span><span class="pf">11</span></div>
+      <div class="row"><span class="n">10</span><span class="t">Detalle de servicios</span><span class="pf">13</span></div>
+      <div class="row"><span class="n">11</span><span class="t">Proceso de atención</span><span class="pf">14</span></div>
+      <div class="row"><span class="n">12</span><span class="t">Contáctanos</span><span class="pf">15</span></div>
+      <div class="row"><span class="n">13</span><span class="t">Pie de página</span><span class="pf">17</span></div>
+      <div class="row"><span class="n">14</span><span class="t">Manual flotante</span><span class="pf">18</span></div>
+      <div class="toc-head mt3">Acceso · Ingreso y seguridad</div>
+      <div class="row"><span class="n">15</span><span class="t">Acceso</span><span class="pf">19</span></div>
+      <div class="row"><span class="n">16</span><span class="t">Login</span><span class="pf">20</span></div>
+      <div class="row"><span class="n">17</span><span class="t">Seguridad</span><span class="pf">22</span></div>
+      <div class="row"><span class="n">18</span><span class="t">2FA</span><span class="pf">23</span></div>
+      <div class="row"><span class="n">19</span><span class="t">Reenvío 2FA</span><span class="pf">24</span></div>
+      <div class="row"><span class="n">20</span><span class="t">Recuperar contraseña</span><span class="pf">25</span></div>
+      <div class="row"><span class="n">21</span><span class="t">Nueva contraseña</span><span class="pf">26</span></div>
+      <div class="row"><span class="n">22</span><span class="t">Flujo de acceso</span><span class="pf">28</span></div>
+      <div class="row"><span class="n">23</span><span class="t">Situaciones frecuentes</span><span class="pf">29</span></div>
+      <div class="row"><span class="n">24</span><span class="t">Seguridad</span><span class="pf">30</span></div>
+    </div>
+    <div class="nota miel mt4"><span class="ic">🐝</span>
+      <p><b>Nota:</b> el Panel Administrador y el Panel Apicultor se documentan en manuales independientes. Este manual cubre únicamente el Home público y el acceso.</p></div>
+  </div>
+  <div class="runfoot"><span>mi Colmena · Tecnología al servicio de la apicultura</span><span class="pg">02</span></div>
+</section>
+
+<!-- PÁGINA 03 · INTRODUCCIÓN -->
+<section class="page">
+  <div class="hex v" style="bottom:-14mm;left:-12mm;transform:scale(1.7);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">01 · Introducción</span>
+    <h1 class="sec">Bienvenido a <em>Mi Colmena</em></h1>
+    <p class="lead">Mi Colmena es una plataforma orientada al acompañamiento y la gestión de procesos relacionados con <b>apiarios, colmenas, mantenimientos y actividades apícolas</b>.</p>
+    <div class="grid2 mt4" style="align-items:start;">
+      <div>
+        <p>Este manual describe el funcionamiento del <b>sitio web público</b> (Home) y del proceso de <b>acceso seguro al sistema</b>. A través del Home, cualquier visitante puede conocer la organización, consultar los servicios apícolas, contactar al equipo y, si cuenta con una cuenta autorizada, ingresar a la plataforma.</p>
+        <p class="mt3">Cada procedimiento se explica <b>mediante capturas reales de la plataforma</b> e instrucciones paso a paso, con marcadores, llamadas y diagramas, para que una persona que nunca haya usado el sistema pueda comprenderlo con facilidad.</p>
+        <div class="card mt4" style="background:var(--crema);border-color:#f0e6c3;">
+          <div class="seg">Qué encontrará en este manual</div>
+          <ul class="dash">
+            <li>El recorrido completo por el sitio público de Mi Colmena.</li>
+            <li>Servicios, contacto y elementos de navegación.</li>
+            <li>Ingreso al sistema con usuario y contraseña.</li>
+            <li>Verificación en dos pasos (2FA) y recuperación de contraseña.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="shot" style="aspect-ratio:16/10;">
+          <div class="browser-bar"><i style="background:#e06456"></i><i style="background:#efb93d"></i><i style="background:#5bb36a"></i><span class="u">micolmena · Inicio</span></div>
+          <img src="imagenes/02_header_hero_slide1.png" alt="Inicio de Mi Colmena">
+        </div>
+        <div class="figcap">El sitio público puede visitarse <b>sin iniciar sesión</b>.</div>
+        <div class="grid3 mt4">
+          <div class="infocard tc" style="align-items:center;"><div class="badgehex">🏠</div><h4>Home</h4><p>Conozca la organización y sus servicios.</p></div>
+          <div class="infocard tc" style="align-items:center;"><div class="badgehex">🔐</div><h4>Acceso</h4><p>Ingreso para usuarios autorizados.</p></div>
+          <div class="infocard tc" style="align-items:center;"><div class="badgehex">🛡️</div><h4>Seguridad</h4><p>2FA y recuperación de contraseña.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">03</span></div>
+</section>
+
+<!-- PÁGINA 04 · OBJETIVO Y ALCANCE -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">02 · Objetivo y alcance</span>
+    <h1 class="sec">Qué permite <em>este manual</em></h1>
+    <p class="lead" style="max-width:155mm;">Brindar una guía clara para navegar por el sitio público de Mi Colmena y acceder al sistema de forma segura.</p>
+    <div class="grid2 mt4" style="gap:6mm;">
+      <div>
+        <div class="seg">Objetivos de aprendizaje</div>
+        <div class="steps">
+          <div class="step"><span class="s">✓</span><p><b>Navegar por el sitio público</b> y reconocer sus secciones principales.</p></div>
+          <div class="step"><span class="s">✓</span><p><b>Conocer Mi Colmena</b>, su equipo, misión y enfoque apícola.</p></div>
+          <div class="step"><span class="s">✓</span><p><b>Consultar los servicios</b> y el detalle de cada uno.</p></div>
+          <div class="step"><span class="s">✓</span><p><b>Comunicarse con la organización</b> mediante el formulario de contacto.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="seg">Acceso y seguridad</div>
+        <div class="steps">
+          <div class="step"><span class="s">✓</span><p><b>Acceder al sistema</b> con un usuario autorizado.</p></div>
+          <div class="step"><span class="s">✓</span><p><b>Entender los mensajes de seguridad</b> del inicio de sesión.</p></div>
+          <div class="step"><span class="s">✓</span><p><b>Recuperar la contraseña</b> cuando no sea posible ingresar.</p></div>
+          <div class="step"><span class="s">✓</span><p><b>Utilizar la verificación en dos pasos (2FA)</b> cuando el sistema la solicite.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid2" style="gap:6mm;">
+      <div class="card" style="border-color:#cfe4d8;background:#f4faf6;">
+        <div class="seg" style="color:var(--verde-medio);">Incluido en este documento</div>
+        <ul class="dash"><li>Home / sitio web público.</li><li>Acceso e inicio de sesión.</li><li>Recuperación de contraseña.</li><li>Verificación en dos pasos durante el login.</li></ul>
+      </div>
+      <div class="card" style="border-color:#e6d9b0;background:#fdf8ea;">
+        <div class="seg" style="color:#9a7b1f;">No incluido (documentos independientes)</div>
+        <ul class="dash"><li><b>Panel Administrador.</b></li><li><b>Panel Apicultor.</b></li></ul>
+        <p class="small mt3">Cada panel contará con su propio manual de usuario, con sus funciones, pantallas y permisos específicos.</p>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">04</span></div>
+</section>
+
+<!-- PÁGINA 05 · REQUISITOS -->
+<section class="page">
+  <div class="hex" style="top:20mm;right:-14mm;transform:scale(1.8);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">03 · Requisitos</span>
+    <h1 class="sec">Antes de <em>comenzar</em></h1>
+    <p class="lead" style="max-width:150mm;">Para visitar el sitio público y, si corresponde, ingresar al sistema, tenga en cuenta los siguientes requisitos.</p>
+    <div class="grid2 mt5" style="gap:5mm;">
+      <div class="infocard" style="flex-direction:row;align-items:center;gap:5mm;">
+        <div class="badgehex" style="height:14mm;width:14mm;font-size:14pt;">①</div>
+        <div><h4>Conexión a Internet</h4><p>Una conexión estable para cargar el sitio y enviar el formulario de contacto.</p></div>
+      </div>
+      <div class="infocard" style="flex-direction:row;align-items:center;gap:5mm;">
+        <div class="badgehex" style="height:14mm;width:14mm;font-size:14pt;">②</div>
+        <div><h4>Dispositivo compatible</h4><p>Computador, portátil, tablet o celular con un navegador actualizado.</p></div>
+      </div>
+      <div class="infocard" style="flex-direction:row;align-items:center;gap:5mm;">
+        <div class="badgehex" style="height:14mm;width:14mm;font-size:14pt;">③</div>
+        <div><h4>Navegador moderno</h4><p>Google Chrome, Microsoft Edge, Mozilla Firefox o Safari, en una versión reciente.</p></div>
+      </div>
+      <div class="infocard" style="flex-direction:row;align-items:center;gap:5mm;">
+        <div class="badgehex" style="height:14mm;width:14mm;font-size:14pt;background:var(--verde);color:#fff;">④</div>
+        <div><h4>Para ingresar al sistema</h4><p>Un usuario previamente creado y autorizado por la organización.</p></div>
+      </div>
+    </div>
+    <div class="nota mt5"><span class="ic">🔒</span>
+      <p><b>Importante:</b> Mi Colmena <b>no tiene registro público desde el Home</b>. Las cuentas de acceso son creadas y autorizadas por la organización; desde el sitio público no es posible crear una cuenta por cuenta propia.</p></div>
+    <div class="card mt4 glass" style="display:flex;gap:5mm;align-items:center;background:rgba(255,249,232,.7);">
+      <span style="font-size:20pt;">🧭</span>
+      <p class="small"><b style="color:var(--verde);">Recuerde:</b> puede visitar el Home, conocer los servicios y enviar el formulario de contacto sin iniciar sesión. El acceso solo es necesario para utilizar los paneles internos.</p>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">05</span></div>
+</section>
+<!-- FIN BLOQUE 1 -->
+
+<!-- INICIO BLOQUE 2 · PÁGINAS 6-13 -->
+
+<!-- PÁGINA 06 · HOME -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:7mm 12mm;">
+    <span class="kicker">04 · Home</span>
+    <h1 class="sec" style="font-size:20pt;">Conociendo el <em>Home</em></h1>
+    <div class="grid2 mt2" style="grid-template-columns:0.92fr 1.08fr;gap:6mm;align-items:start;">
+      <div class="shot" style="height:238mm;">
+        <div class="browser-bar"><i style="background:#e06456"></i><i style="background:#efb93d"></i><i style="background:#5bb36a"></i><span class="u">micolmena · Inicio</span></div>
+        <img src="imagenes/01_home_completo.png" alt="Home completo de Mi Colmena">
+      </div>
+      <div>
+        <p class="lead">El <b>Home</b> es la página pública de Mi Colmena. Puede visitarse <b>sin iniciar sesión</b> y reúne la presentación de la organización, sus servicios, el formulario de contacto y el acceso al sistema.</p>
+        <div class="seg mt3">Elementos de la página</div>
+        <ul class="legend">
+          <li><span class="num">1</span><span><b>Logo.</b> Identidad de Mi Colmena.</span></li>
+          <li><span class="num">2</span><span><b>Barra de navegación.</b> Menú principal del sitio.</span></li>
+          <li><span class="num">3</span><span><b>Inicio.</b> Vuelve a la parte superior del Home.</span></li>
+          <li><span class="num">4</span><span><b>Quiénes somos.</b> Presenta al equipo y la entidad.</span></li>
+          <li><span class="num">5</span><span><b>Servicios.</b> Sección de servicios apícolas.</span></li>
+          <li><span class="num">6</span><span><b>Contáctanos.</b> Formulario para escribir al equipo.</span></li>
+          <li><span class="num">7</span><span><b>Acceso.</b> Conduce a la pantalla de inicio de sesión.</span></li>
+          <li><span class="num miel">8</span><span><b>Contenido principal.</b> Hero, carrusel e información.</span></li>
+          <li><span class="num miel">9</span><span><b>Botón flotante del manual.</b> Abre esta guía de usuario.</span></li>
+        </ul>
+        <div class="nota miel mt4"><span class="ic">🌐</span>
+          <p><b>Recuerde:</b> el Home es público. El botón <b>Acceso</b> está reservado para usuarios con una cuenta autorizada.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">06</span></div>
+</section>
+
+<!-- PÁGINA 07 · BARRA DE NAVEGACIÓN -->
+<section class="page">
+  <div class="hex dark" style="top:-14mm;left:-12mm;transform:scale(1.5);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">05 · Barra de navegación</span>
+    <h1 class="sec">El <em>menú principal</em></h1>
+    <p class="lead" style="max-width:160mm;">La barra de navegación se ubica en el encabezado y permite moverse por las secciones públicas del sitio.</p>
+    <div class="shot mt4" style="aspect-ratio:1901/430;">
+      <img src="imagenes/02_header_hero_slide1.png" alt="Encabezado de Mi Colmena"
+           style="object-position:0 0;object-fit:cover;">
+      <span class="mk" style="left:3.5%;top:16%;">1</span>
+      <span class="mk miel" style="left:55%;top:18%;">2</span>
+      <span class="mk miel" style="left:62%;top:18%;">3</span>
+      <span class="mk miel" style="left:71%;top:18%;">4</span>
+      <span class="mk miel" style="left:81%;top:18%;">5</span>
+      <span class="mk" style="left:92.5%;top:18%;">6</span>
+    </div>
+    <div class="figcap">Recorte ampliado del encabezado real. La numeración indica cada elemento del menú.</div>
+    <div class="grid2 mt5" style="gap:6mm;">
+      <div class="card">
+        <div class="seg">Identidad y secciones</div>
+        <ul class="legend">
+          <li><span class="num">1</span><span><b>Logo Mi Colmena.</b> Al pulsarlo, vuelve al inicio.</span></li>
+          <li><span class="num miel">2</span><span><b>Inicio.</b> Regresa a la parte superior.</span></li>
+          <li><span class="num miel">3</span><span><b>Quiénes somos.</b> Equipo y presentación de la entidad.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="seg">Secciones y acceso</div>
+        <ul class="legend">
+          <li><span class="num miel">4</span><span><b>Servicios.</b> Abre la zona de servicios apícolas.</span></li>
+          <li><span class="num miel">5</span><span><b>Contáctanos.</b> Lleva al formulario de contacto.</span></li>
+          <li><span class="num">6</span><span><b>Acceso.</b> Dirige a la pantalla de inicio de sesión.</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="small mt4">Las flechas y números son ayudas visuales añadidas sobre la captura; no modifican la interfaz.</p>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">07</span></div>
+</section>
+
+<!-- PÁGINA 08 · HERO (REEMPLAZO SOLO DE ESTA PÁGINA · MARCADORES SOBRE CAPTURA) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:6mm 11mm;">
+    <span class="kicker">06 · Página de inicio</span>
+    <h1 class="sec" style="font-size:19pt;">El <em>Hero</em> principal</h1>
+    <div class="shot mt2" style="aspect-ratio:1901/1078;background:#f7f6f1;">
+      <img src="imagenes/02_header_hero_slide1.png"
+           alt="Hero principal de Mi Colmena"
+           style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+      <span class="mk miel" style="left:22%;top:43%;">1</span>
+      <span class="mk miel" style="left:22%;top:56%;">2</span>
+      <span class="mk miel" style="left:23%;top:69%;">3</span>
+      <span class="mk miel" style="left:68%;top:45%;">4</span>
+      <span class="mk" style="left:2.2%;top:52%;">5</span>
+      <span class="mk" style="left:93.4%;top:52%;">6</span>
+      <span class="mk" style="left:50%;top:88%;transform:translateX(-50%);">7</span>
+      <span class="mk" style="left:50%;top:95%;transform:translateX(-50%);">8</span>
+    </div>
+    <div class="grid3 mt4" style="gap:5mm;">
+      <ul class="legend">
+        <li><span class="num miel">1</span><span><b>Mensaje principal.</b> Título del slide activo.</span></li>
+        <li><span class="num miel">2</span><span><b>Descripción.</b> Texto complementario.</span></li>
+        <li><span class="num miel">3</span><span><b>Botón de acción.</b> “Contáctanos”.</span></li>
+      </ul>
+      <ul class="legend">
+        <li><span class="num miel">4</span><span><b>Imagen o video.</b> Recurso visual del slide.</span></li>
+        <li><span class="num">5</span><span><b>Flecha anterior.</b> Muestra el slide previo.</span></li>
+        <li><span class="num">6</span><span><b>Flecha siguiente.</b> Avanza al próximo slide.</span></li>
+      </ul>
+      <ul class="legend">
+        <li><span class="num">7</span><span><b>Indicadores.</b> Señalan el slide actual.</span></li>
+        <li><span class="num">8</span><span><b>“Desliza”.</b> Indica que el contenido se desliza.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">08</span></div>
+</section>
+
+<!-- PÁGINA 09 · CARRUSEL (REEMPLAZO SOLO DE ESTA PÁGINA · COMPOSICIÓN EQUILIBRADA) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:6mm 11mm;">
+    <span class="kicker">07 · Carrusel</span>
+    <h1 class="sec" style="font-size:19pt;margin-bottom:1mm;">Tres mensajes, <em>un carrusel</em></h1>
+    <p class="small" style="margin-bottom:3mm;">El Hero es un carrusel interactivo: use las flechas laterales o los indicadores para moverse entre los tres slides. Cada captura se muestra completa y sin recortes.</p>
+
+    <!-- SLIDE 1 GRANDE (todo el ancho) -->
+    <div class="shot" style="aspect-ratio:1901/1078;background:#f7f6f1;">
+      <img src="imagenes/02_header_hero_slide1.png"
+           alt="Slide 1 del carrusel"
+           style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+      <div class="callout" style="right:3mm;top:3mm;max-width:52mm;">
+        <span class="n">1</span><b>Slide 1</b><br>“Cuidamos y fortalecemos tus colmenas”<br><b>Botón:</b> Contáctanos
+      </div>
+    </div>
+
+    <!-- SLIDES 2 Y 3 EN DOS COLUMNAS -->
+    <div class="grid2 mt3" style="gap:5mm;">
+      <div>
+        <div class="shot" style="aspect-ratio:1900/1076;background:#f7f6f1;">
+          <img src="imagenes/03_hero_slide2.png"
+               alt="Slide 2 del carrusel"
+               style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+          <div class="callout" style="left:3mm;top:3mm;max-width:46mm;">
+            <span class="n">2</span><b>Slide 2</b><br>“Revisamos cada colmena en campo”<br><b>Botón:</b> Ver servicios
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="shot" style="aspect-ratio:1901/1078;background:#f7f6f1;">
+          <img src="imagenes/04_hero_slide3.png"
+               alt="Slide 3 del carrusel"
+               style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+          <div class="callout" style="left:3mm;top:3mm;max-width:46mm;">
+            <span class="n">3</span><b>Slide 3</b><br>“Un equipo que acompaña tu apiario”<br><b>Botón:</b> Conócenos
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETAS INFERIORES -->
+    <div class="grid2 mt3" style="gap:5mm;">
+      <div class="infocard" style="flex-direction:row;align-items:center;gap:4mm;padding:3.5mm 4mm;">
+        <span style="font-size:15pt;">◀ ▶</span>
+        <p style="font-size:8.8pt;"><b style="color:var(--verde);">Flechas:</b> avanzan o retroceden entre slides de forma manual.</p>
+      </div>
+      <div class="infocard" style="flex-direction:row;align-items:center;gap:4mm;padding:3.5mm 4mm;">
+        <span style="font-size:15pt;">● ● ●</span>
+        <p style="font-size:8.8pt;"><b style="color:var(--verde);">Indicadores:</b> señalan cuál de los tres mensajes está activo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">09</span></div>
+</section>
+
+<!-- P￁GINA 10 ﾷ QUI￉NES SOMOS (REEMPLAZO SOLO DE ESTA P￁GINA ﾷ MARCADORES CORREGIDOS) -->
+<section class="page">
+  <div class="hex v" style="bottom:-14mm;right:-12mm;transform:scale(1.6);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Secci￳n ﾷ Home</span></div>
+  <div class="body-pad" style="padding:6mm 11mm;">
+    <span class="kicker">08 ﾷ Quienes somos</span>
+    <h1 class="sec" style="font-size:19pt;">El equipo detras de <em>Mi Colmena</em></h1>
+    <div class="shot mt2" style="aspect-ratio:1901/1078;background:#f7f6f1;">
+      <img src="imagenes/05_quienes_somos.png"
+           alt="Secci￳n Qui￩nes somos"
+           style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+      <span class="mk miel" style="left:19%;top:31%;">1</span>
+      <span class="mk miel" style="left:17%;top:79%;transform:translateX(-50%);">2</span>
+      <span class="mk miel" style="left:30%;top:79%;transform:translateX(-50%);">3</span>
+      <span class="mk" style="left:67%;top:35%;">4</span>
+      <span class="mk" style="left:74%;top:50%;">5</span>
+      <span class="mk miel" style="left:39%;top:90%;">6</span>
+      <span class="mk miel" style="left:67%;top:90%;">7</span>
+    </div>
+    <div class="grid2 mt4" style="gap:6mm;">
+      <div>
+        <div class="seg">Personas y entidad</div>
+        <ul class="legend">
+          <li><span class="num miel">1</span><span><b>Equipo.</b> Fotografia principal del equipo de Mi Colmena.</span></li>
+          <li><span class="num miel">2</span><span><b>Camilo Herrera.</b> Nombre bajo la primera persona (traje amarillo).</span></li>
+          <li><span class="num miel">3</span><span><b>Juan Alejandro Herrera.</b> Nombre bajo la segunda persona (traje claro).</span></li>
+          <li><span class="num">4</span><span><b>Entidad / KEMI.</b> Organizaci￳n que respalda la iniciativa.</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="seg">Prop￳sito</div>
+        <ul class="legend">
+          <li><span class="num">5</span><span><b>Nuestra misi￳n.</b> Texto de compromiso con empresas, colmenas y apicultores.</span></li>
+          <li><span class="num miel">6</span><span><b>Protecci￳n de la biodiversidad.</b> Icono de flor en la fila inferior.</span></li>
+          <li><span class="num miel">7</span><span><b>Monitoreo de colmenas.</b> Icono de lupa en la fila inferior.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">10</span></div>
+</section>
+
+<!-- PÁGINA 11 · SERVICIOS APÍCOLAS (AJUSTE SOLO DE MARCADORES 2 Y 3) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:6mm 12mm;">
+    <span class="kicker">09 · Servicios</span>
+    <h1 class="sec" style="font-size:19pt;">Servicios <em>apícolas</em></h1>
+    <div class="shot mt2" style="aspect-ratio:1900/1072;background:#f7f6f1;">
+      <img src="imagenes/06_servicios_general.png"
+           alt="Sección de servicios de Mi Colmena"
+           style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+      <span class="mk miel" style="left:15%;top:39%;">1</span>
+      <span class="mk miel" style="left:44%;top:39%;">2</span>
+      <span class="mk miel" style="left:67%;top:39%;">3</span>
+      <span class="mk miel" style="left:25%;top:62%;">4</span>
+    </div>
+    <div class="grid2 mt4" style="gap:5mm 7mm;">
+      <ul class="legend">
+        <li><span class="num miel">1</span><span><b>Manejo y fortalecimiento de colmenas.</b> Diagnóstico, productividad y recomendaciones técnicas.</span></li>
+        <li><span class="num miel">2</span><span><b>Traslado seguro de colmenas.</b> Traslado organizado, cuidado de las abejas y ubicación segura.</span></li>
+      </ul>
+      <ul class="legend">
+        <li><span class="num miel">3</span><span><b>Instalación de apiarios y asesoría técnica.</b> Selección del lugar, montaje y asesoría.</span></li>
+        <li><span class="num miel">4</span><span><b>Evaluación sanitaria apícola.</b> Prevención, control sanitario y recomendaciones de manejo.</span></li>
+      </ul>
+    </div>
+    <div class="nota mt4"><span class="ic">🖱️</span>
+      <p><b>Tarjetas interactivas:</b> cada tarjeta muestra la indicación <b>“pasa el mouse”</b>. Al posicionar el cursor, aparece información adicional y la opción <b>“más información”</b> para abrir el detalle del servicio en un modal.</p></div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">11</span></div>
+</section>
+
+<!-- PÁGINA 12 · INTERACCIÓN CON SERVICIOS -->
+<section class="page">
+  <div class="hex" style="top:18mm;right:-14mm;transform:scale(1.7);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">09 · Servicios · Interacción</span>
+    <h1 class="sec" style="font-size:19pt;">Cómo interactuar con un <em>servicio</em></h1>
+    <p class="lead">Siga la secuencia <b>ANTES → HOVER → MÁS INFORMACIÓN</b> para abrir el detalle de un servicio.</p>
+    <div class="grid3 mt4" style="gap:5mm;align-items:start;">
+      <div>
+        <div class="chip" style="background:var(--verde);color:#fff;border-color:var(--verde);">① Antes</div>
+        <div class="shot mt2" style="aspect-ratio:392/327;"><img class="contain" src="imagenes/06_servicios_general.png" alt="Tarjeta sin hover" style="object-position:25% 30%;"></div>
+        <p class="small mt2"><b>1.</b> Localice la tarjeta del servicio que le interese.</p>
+      </div>
+      <div>
+        <div class="chip" style="background:var(--miel-deep);color:var(--verde);">② Hover</div>
+        <div class="shot mt2" style="aspect-ratio:392/327;"><img src="imagenes/07_servicio_hover.png" alt="Tarjeta en estado hover"></div>
+        <p class="small mt2"><b>2.</b> Pase el mouse sobre la tarjeta. <b>3.</b> Aparece la descripción.</p>
+      </div>
+      <div>
+        <div class="chip" style="background:var(--verde-medio);color:#fff;border-color:var(--verde-medio);">③ Más información</div>
+        <div class="shot mt2 glass" style="aspect-ratio:392/327;display:flex;align-items:center;justify-content:center;background:var(--crema);">
+          <div class="tc" style="padding:6mm;"><div style="font-size:22pt;">🪟</div><p class="mt2" style="font-weight:700;color:var(--verde);">Se abre el modal</p><p class="small">Ventana con el detalle del servicio y el botón <b>Cerrar</b>.</p></div>
+        </div>
+        <p class="small mt2"><b>4.</b> Seleccione “más información”. <b>5.</b> Se abre el modal del servicio.</p>
+      </div>
+    </div>
+    <div class="card mt5" style="background:var(--crema);border-color:#f0e6c3;">
+      <div class="seg">Secuencia resumida</div>
+      <div class="flex" style="gap:2mm;flex-wrap:wrap;font-size:9pt;font-weight:600;color:var(--verde);">
+        <span class="chip">1 · Localizar tarjeta</span><span>→</span>
+        <span class="chip">2 · Pasar el mouse</span><span>→</span>
+        <span class="chip">3 · Ver descripción</span><span>→</span>
+        <span class="chip">4 · “más información”</span><span>→</span>
+        <span class="chip">5 · Abrir modal</span>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">12</span></div>
+</section>
+
+<!-- PÁGINA 13 · DETALLE DE SERVICIOS -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:6mm 12mm;">
+    <span class="kicker">10 · Detalle de servicios</span>
+    <h1 class="sec" style="font-size:19pt;">El detalle de cada <em>servicio</em></h1>
+    <p class="lead mt1">Al elegir “más información” se abre un <b>modal</b> con el detalle. Cada ventana incluye el botón <b>Cerrar</b> para volver al Home.</p>
+    <div class="grid2 mt3" style="gap:5mm 7mm;">
+      <div>
+        <div class="shot" style="height:60mm;"><img src="imagenes/08_modal_manejo.png" alt="Modal Manejo y fortalecimiento"></div>
+        <div class="card mt2" style="padding:3.5mm 4mm;">
+          <b style="color:var(--verde);font-size:9.4pt;">Manejo y fortalecimiento</b>
+          <ul class="dash mt2"><li>Diagnóstico general.</li><li>Revisión de productividad.</li><li>Recomendaciones técnicas.</li></ul>
+        </div>
+      </div>
+      <div>
+        <div class="shot" style="height:60mm;"><img src="imagenes/09_modal_traslado.png" alt="Modal Traslado seguro"></div>
+        <div class="card mt2" style="padding:3.5mm 4mm;">
+          <b style="color:var(--verde);font-size:9.4pt;">Traslado seguro de colmenas</b>
+          <ul class="dash mt2"><li>Traslado organizado.</li><li>Cuidado de las abejas.</li><li>Ubicación segura del apiario.</li></ul>
+        </div>
+      </div>
+      <div>
+        <div class="shot" style="height:60mm;"><img src="imagenes/10_modal_instalacion.png" alt="Modal Instalación de apiarios"></div>
+        <div class="card mt2" style="padding:3.5mm 4mm;">
+          <b style="color:var(--verde);font-size:9.4pt;">Instalación de apiarios y asesoría</b>
+          <ul class="dash mt2"><li>Selección del lugar.</li><li>Montaje del apiario.</li><li>Asesoría técnica.</li></ul>
+        </div>
+      </div>
+      <div>
+        <div class="shot" style="height:60mm;"><img src="imagenes/11_modal_evaluacion.png" alt="Modal Evaluación sanitaria"></div>
+        <div class="card mt2" style="padding:3.5mm 4mm;">
+          <b style="color:var(--verde);font-size:9.4pt;">Evaluación sanitaria apícola</b>
+          <ul class="dash mt2"><li>Prevención de enfermedades.</li><li>Control sanitario.</li><li>Recomendaciones de manejo.</li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="nota miel mt4"><span class="ic">✕</span>
+      <p>Para cerrar cualquiera de las ventanas use el botón <b>Cerrar</b> (o la “X”) que aparece en el modal. Los textos mostrados son los de la interfaz real.</p></div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">13</span></div>
+</section>
+
+<!-- FIN BLOQUE 2 -->
+
+<!-- INICIO BLOQUE 3 · PÁGINAS 14-22 -->
+
+<!-- PÁGINA 14 · PROCESO DE ATENCIÓN -->
+<section class="page closing">
+  <div class="hex" style="top:20mm;left:-14mm;transform:scale(1.8);"></div>
+  <div class="hex v" style="bottom:-14mm;right:-12mm;transform:scale(1.7);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">11 · Proceso de atención</span>
+    <h1 class="sec">Cómo acompañamos <em>tu apiario</em></h1>
+    <p class="lead" style="max-width:155mm;">La atención de Mi Colmena se organiza en tres momentos: contacto, diagnóstico y acompañamiento. La imagen inferior muestra el proceso tal como se presenta en el sitio.</p>
+    <div class="shot mt5 glass" style="aspect-ratio:897/192;margin:0 auto;max-width:170mm;">
+      <img class="contain" src="imagenes/12_proceso_atencion.png" alt="Proceso de atención en el sitio">
+    </div>
+    <div class="grid3 mt6" style="gap:6mm;margin-top:14mm;">
+      <div class="flow">
+        <div class="node fill">1 · Contáctanos</div>
+        <div class="arrow bee">🐝</div>
+        <p class="tc" style="font-size:8.8pt;max-width:52mm;">Cuéntanos qué necesita tu apiario.</p>
+      </div>
+      <div class="flow">
+        <div class="node miel">2 · Diagnóstico</div>
+        <div class="arrow bee">🐝</div>
+        <p class="tc" style="font-size:8.8pt;max-width:52mm;">Evaluamos y definimos un plan.</p>
+      </div>
+      <div class="flow">
+        <div class="node">3 · Acompañamiento</div>
+        <div class="arrow bee">🍯</div>
+        <p class="tc" style="font-size:8.8pt;max-width:52mm;">Realizamos seguimiento al proceso.</p>
+      </div>
+    </div>
+    <div class="card mt5 glass" style="background:rgba(255,255,255,.7);">
+      <p class="small tc"><b style="color:var(--verde);">El recorrido de la abeja:</b> el proceso inicia cuando el visitante envía su mensaje y avanza, paso a paso, hasta el acompañamiento técnico en campo.</p>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">14</span></div>
+</section>
+
+<!-- PÁGINA 15 · CONTÁCTANOS (REEMPLAZO SOLO DE ESTA PÁGINA · FORMULARIO GRANDE) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:6mm 12mm;">
+    <span class="kicker">12 · Contáctanos</span>
+    <h1 class="sec" style="font-size:19pt;">El formulario de <em>contacto</em></h1>
+    <div class="grid2 mt3" style="grid-template-columns:.92fr 1.08fr;gap:8mm;align-items:start;">
+      <div class="shot" style="aspect-ratio:593/702;background:#f7f6f1;width:100%;">
+        <img src="imagenes/14_contacto_formulario.png"
+             alt="Formulario Contáctanos diligenciado"
+             style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+        <span class="mk miel" style="left:8%;top:17%;">1</span>
+        <span class="mk" style="left:8%;top:31%;">2</span>
+        <span class="mk" style="left:8%;top:43%;">3</span>
+        <span class="mk miel" style="left:8%;top:60%;">4</span>
+        <span class="mk miel" style="left:90%;top:74%;transform:translateX(-50%);">5</span>
+        <span class="mk miel" style="left:50%;top:90%;transform:translateX(-50%);">6</span>
+      </div>
+      <div>
+        <p class="lead" style="font-size:9.6pt;">A través de este formulario puede contarnos qué necesita su apiario. Diligencie los campos y envíe el mensaje; el equipo de Mi Colmena lo recibirá para dar inicio al proceso de atención.</p>
+        <div class="seg mt4">Campos del formulario</div>
+        <ul class="legend">
+          <li><span class="num miel">1</span><span><b>Tipo de interés.</b> Seleccione el motivo de su mensaje.</span></li>
+          <li><span class="num">2</span><span><b>Nombre.</b> Nombre de la persona que escribe.</span></li>
+          <li><span class="num">3</span><span><b>Correo.</b> Correo de contacto para recibir respuesta.</span></li>
+          <li><span class="num miel">4</span><span><b>Mensaje.</b> Espacio para describir la necesidad.</span></li>
+          <li><span class="num miel">5</span><span><b>Contador.</b> Indica el máximo de <b>500 caracteres</b>.</span></li>
+          <li><span class="num miel">6</span><span><b>Enviar mensaje.</b> Botón que remite el formulario.</span></li>
+        </ul>
+        <div class="card mt4" style="background:var(--crema);border-color:#f0e6c3;padding:4mm 5mm;">
+          <b style="color:var(--verde);font-size:9.2pt;">Opciones del campo “interés”</b>
+          <ul class="dash mt2">
+            <li>Monitoreo de colmenas</li>
+            <li>Asesorías</li>
+            <li>Instalación de apiarios</li>
+            <li>Otro</li>
+          </ul>
+        </div>
+        <div class="nota miel mt4"><span class="ic">✍️</span>
+          <p>El contador 5 aparece junto al campo de mensaje y muestra los caracteres escritos sobre el máximo permitido (500).</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">15</span></div>
+</section>
+
+<!-- PÁGINA 16 · ENVÍO DEL CONTACTO -->
+<section class="page">
+  <div class="hex v" style="top:-12mm;left:-12mm;transform:scale(1.5);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">12 · Envío del contacto</span>
+    <h1 class="sec" style="font-size:19pt;">Enviar un <em>mensaje</em></h1>
+    <div class="grid2 mt4" style="gap:6mm;align-items:start;">
+      <div>
+        <div class="seg">Formulario diligenciado</div>
+        <div class="shot mt2" style="height:128mm;"><img class="contain" src="imagenes/14_contacto_formulario.png" alt="Formulario diligenciado"></div>
+        <p class="small mt2">El contador refleja los caracteres escritos; en el ejemplo, <b>122/500</b>.</p>
+      </div>
+      <div>
+        <div class="seg">Confirmación de envío</div>
+        <div class="shot mt2" style="height:128mm;"><img src="imagenes/15_contacto_enviado.png" alt="Mensaje enviado"></div>
+        <p class="small mt2">Al enviarse correctamente aparece <b>“¡Mensaje enviado!”</b> con el botón <b>Volver al inicio</b>.</p>
+      </div>
+    </div>
+    <div class="seg mt4">Flujo de envío</div>
+    <div class="flex center" style="gap:2mm;flex-wrap:wrap;font-size:8.8pt;font-weight:600;color:var(--verde);">
+      <span class="chip">Seleccionar interés</span><span>↓</span>
+      <span class="chip">Nombre</span><span>↓</span>
+      <span class="chip">Correo</span><span>↓</span>
+      <span class="chip">Mensaje</span><span>↓</span>
+      <span class="chip">Enviar</span><span>↓</span>
+      <span class="chip" style="background:var(--verde);color:#fff;">Confirmación</span>
+    </div>
+    <div class="nota mt4"><span class="ic">⚠️</span>
+      <p><b>Si ocurre un problema,</b> el sistema informa al visitante dentro del mismo formulario. Verifique los datos e intente nuevamente. El manual no muestra correos internos ni buzones privados.</p></div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">16</span></div>
+</section>
+
+<!-- PÁGINA 17 · FOOTER (REEMPLAZO SOLO DE ESTA PÁGINA · 6 Y 7 SOBRE ENLACES LEGALES) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad" style="padding:6mm 11mm;">
+    <span class="kicker">13 · Pie de página</span>
+    <h1 class="sec" style="font-size:19pt;">El <em>footer</em></h1>
+    <p class="lead">El pie de página agrupa la identidad, la descripción, la navegación, los datos de contacto, las redes sociales y los enlaces legales.</p>
+
+    <div class="shot mt3 contain" style="aspect-ratio:1897/366;background:#f7f6f1;">
+      <img src="imagenes/16_footer.png"
+           alt="Pie de página de Mi Colmena"
+           style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+      <span class="mk miel" style="left:4%;top:30%;">1</span>
+      <span class="mk miel" style="left:16%;top:30%;">2</span>
+      <span class="mk" style="left:44%;top:30%;">3</span>
+      <span class="mk" style="left:63%;top:30%;">4</span>
+      <span class="mk miel" style="left:86%;top:30%;">5</span>
+
+      <span class="mk" style="left:61.5%;top:80%;transform:translateX(-50%);">6</span>
+      <span class="mk" style="left:71%;top:80%;transform:translateX(-50%);">7</span>
+    </div>
+
+    <div class="grid2 mt5" style="gap:6mm;">
+      <div class="card">
+        <div class="seg">Identidad y contenido</div>
+        <ul class="legend">
+          <li><span class="num miel">1</span><span><b>Logo / identidad de Mi Colmena.</b> Marca ubicada en el pie del sitio.</span></li>
+          <li><span class="num miel">2</span><span><b>Información o descripción principal.</b> Texto de presentación del footer.</span></li>
+          <li><span class="num">3</span><span><b>Enlaces de navegación.</b> Accesos directos a las secciones del sitio.</span></li>
+          <li><span class="num">4</span><span><b>Información de contacto.</b> Correo, teléfonos y ubicación públicos.</span></li>
+          <li><span class="num miel">5</span><span><b>Redes sociales.</b> Iconos de las cuentas oficiales.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="seg">Enlaces legales (franja inferior)</div>
+        <ul class="legend">
+          <li><span class="num">6</span><span><b>Términos y condiciones.</b> Primer enlace legal, junto al copyright en la franja inferior.</span></li>
+          <li><span class="num">7</span><span><b>Política de privacidad.</b> Segundo enlace legal, a la derecha del anterior.</span></li>
+        </ul>
+        <div class="nota miel mt4"><span class="ic">⚖️</span>
+          <p>Los enlaces 6 y 7 se ubican en la franja inferior del pie de página, separados por una pleca ( | ), y abren los documentos legales de Mi Colmena.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">17</span></div>
+</section>
+
+<!-- PÁGINA 18 · MANUAL FLOTANTE -->
+<section class="page">
+  <div class="hex dark" style="bottom:-14mm;left:-12mm;transform:scale(1.7);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Home</span></div>
+  <div class="body-pad">
+    <span class="kicker">14 · Manual flotante</span>
+    <h1 class="sec" style="font-size:19pt;">El botón <em>Manual de usuario</em></h1>
+    <p class="lead" style="max-width:155mm;">En el sitio hay un botón flotante con estilo <b>Liquid Glass</b>. Permite abrir este manual en cualquier momento.</p>
+    <div class="grid2 mt6" style="gap:8mm;align-items:center;">
+      <div class="tc">
+        <div class="chip mb3">Estado normal</div>
+        <div class="shot contain glass" style="aspect-ratio:186/165;max-width:70mm;margin:0 auto;background:#f3f6f2;">
+          <img class="contain" src="imagenes/17_manual_cerrado.png" alt="Botón manual en estado normal">
+        </div>
+        <p class="mt3"><b>Normal:</b> se muestra solo el <b>icono del libro</b>.</p>
+      </div>
+      <div class="tc">
+        <div class="chip mb3" style="background:var(--miel-deep);color:var(--verde);">Estado hover</div>
+        <div class="shot contain glass" style="aspect-ratio:577/188;max-width:110mm;margin:0 auto;background:#f3f6f2;">
+          <img class="contain" src="imagenes/18_manual_hover.png" alt="Botón manual en estado hover">
+        </div>
+        <p class="mt3"><b>Hover:</b> aparece el icono junto al texto <b>“Manual de usuario”</b>.</p>
+      </div>
+    </div>
+    <div class="nota mt6" style="margin-top:10mm;"><span class="ic">📄</span>
+      <p>Al hacer <b>clic</b>, el manual se abre como un archivo <b>PDF en una pestaña nueva</b> del navegador, sin cerrar el sitio de Mi Colmena.</p></div>
+  </div>
+  <div class="runfoot"><span>Home</span><span class="pg">18</span></div>
+</section>
+
+<!-- PÁGINA 19 · ACCESO AL SISTEMA -->
+<section class="page">
+  <div class="hex" style="top:20mm;right:-14mm;transform:scale(1.8);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Acceso</span></div>
+  <div class="body-pad">
+    <span class="kicker">15 · Acceso</span>
+    <h1 class="sec">Acceso <em>al sistema</em></h1>
+    <p class="lead">El ingreso es restringido. Solo pueden entrar las personas con una cuenta creada y autorizada.</p>
+    <div class="mt6" style="margin-top:12mm;">
+      <div class="flow">
+        <div class="node" style="min-width:70mm;">HOME</div>
+        <div class="arrow"></div>
+        <div class="node miel" style="min-width:70mm;">Botón “Acceso”</div>
+        <div class="arrow"></div>
+        <div class="node fill" style="min-width:70mm;">LOGIN</div>
+      </div>
+    </div>
+    <div class="grid2 mt5" style="gap:6mm;margin-top:10mm;">
+      <div class="card">
+        <div class="seg">Perfiles de usuario</div>
+        <ul class="dash">
+          <li><b>Administrador.</b> Ingresa al Panel Administrador.</li>
+          <li><b>Apicultor.</b> Ingresa al Panel Apicultor.</li>
+        </ul>
+        <p class="small mt3">El panel al que se dirige cada usuario depende de su perfil asignado.</p>
+      </div>
+      <div class="card warn" style="border-color:#eccfc9;background:#fff8f6;">
+        <div class="seg" style="color:var(--rojo);">El acceso NO incluye</div>
+        <ul class="dash">
+          <li>Registro público desde el Home.</li>
+          <li>Acceso con Google.</li>
+          <li>Acceso con Facebook.</li>
+          <li>Otros métodos de autenticación.</li>
+        </ul>
+        <p class="small mt3">Solo existe el inicio con <b>usuario y contraseña</b> autorizados.</p>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Acceso</span><span class="pg">19</span></div>
+</section>
+
+<!-- PÁGINA 20 · LOGIN (REEMPLAZO SOLO DE ESTA PÁGINA · CAPTURA GRANDE + MARCADORES REALES) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Acceso</span></div>
+  <div class="body-pad" style="padding:6mm 11mm;">
+    <span class="kicker">16 · Login</span>
+    <h1 class="sec" style="font-size:18pt;">La pantalla de <em>inicio de sesión</em></h1>
+    <div class="shot mt1" style="aspect-ratio:1917/1078;background:#f7f6f1;">
+      <img src="imagenes/19_login_completo.png"
+           alt="Pantalla de login completa"
+           style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+      <span class="mk miel" style="left:3.2%;top:11%;">6</span>
+      <span class="mk" style="left:60%;top:40%;">1</span>
+      <span class="mk" style="left:60%;top:52%;">2</span>
+      <span class="mk miel" style="left:92%;top:52%;transform:translateX(-50%);">3</span>
+      <span class="mk miel" style="left:81%;top:63%;transform:translateX(-50%);">5</span>
+      <span class="mk miel" style="left:74%;top:77%;">4</span>
+    </div>
+    <div class="grid2 mt3" style="gap:6mm;">
+      <div class="card" style="padding:4mm 5mm;">
+        <div class="seg">Lado izquierdo (presentación)</div>
+        <p class="small">Muestra <b>Mi Colmena</b>, el saludo <b>“¡Bienvenido!”</b>, una <b>abeja</b> y el mensaje institucional: <i>“Gestiona tus apiarios, colmenas y mantenimientos en un solo lugar”</i>. El botón <b>Volver</b> (6) regresa al Home.</p>
+      </div>
+      <div class="card" style="padding:4mm 5mm;">
+        <div class="seg">Lado derecho (formulario)</div>
+        <ul class="legend" style="gap:1.4mm;">
+          <li><span class="num">1</span><span><b>Usuario.</b> Campo para el nombre de usuario asignado.</span></li>
+          <li><span class="num">2</span><span><b>Contraseña.</b> Campo para la contraseña.</span></li>
+          <li><span class="num miel">3</span><span><b>Mostrar/ocultar.</b> Icono de ojo dentro del campo contraseña.</span></li>
+          <li><span class="num miel">4</span><span><b>Ingresar.</b> Botón que envía las credenciales.</span></li>
+          <li><span class="num miel">5</span><span><b>¿Olvidó su contraseña?</b> Inicia la recuperación.</span></li>
+          <li><span class="num miel">6</span><span><b>Volver.</b> Regresa al sitio público (Home).</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Acceso</span><span class="pg">20</span></div>
+</section>
+
+<!-- PÁGINA 21 · CÓMO INICIAR SESIÓN -->
+<section class="page">
+  <div class="hex v" style="bottom:-14mm;right:-12mm;transform:scale(1.6);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Acceso</span></div>
+  <div class="body-pad">
+    <span class="kicker">16 · Login · Procedimiento</span>
+    <h1 class="sec" style="font-size:18pt;">Cómo <em>iniciar sesión</em></h1>
+    <div class="grid2 mt4" style="gap:6mm;align-items:start;">
+      <div>
+        <div class="steps">
+          <div class="step"><span class="s">1</span><p>Ingrese el <b>usuario asignado</b> en el campo Usuario.</p></div>
+          <div class="step"><span class="s">2</span><p>Ingrese su <b>contraseña</b> en el campo Contraseña.</p></div>
+          <div class="step"><span class="s">3</span><p>De forma <b>opcional</b>, use el icono del ojo para mostrar u ocultar la contraseña.</p></div>
+          <div class="step"><span class="s">4</span><p>Presione el botón <b>Ingresar</b>.</p></div>
+          <div class="step"><span class="s">5</span><p>El sistema <b>valida las credenciales</b> y dirige al panel según el perfil.</p></div>
+        </div>
+        <div class="grid2 mt4" style="gap:4mm;">
+          <div class="infocard"><div class="ic">🛡️</div><h4>Si es Administrador</h4><p>Ingresa al <b>Panel Administrador</b>.</p></div>
+          <div class="infocard"><div class="ic">🐝</div><h4>Si es Apicultor</h4><p>Ingresa al <b>Panel Apicultor</b>.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="seg">Contraseña oculta</div>
+        <div class="shot" style="height:78mm;"><img class="contain" src="imagenes/20_login_formulario.png" alt="Formulario de login con contraseña oculta"></div>
+        <div class="seg mt4">Contraseña visible (icono del ojo)</div>
+        <div class="shot" style="height:78mm;"><img class="contain" src="imagenes/21_login_password_visible.png" alt="Formulario de login con contraseña visible"></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Acceso</span><span class="pg">21</span></div>
+</section>
+
+<!-- PÁGINA 22 · SEGURIDAD DEL LOGIN -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad">
+    <span class="kicker">17 · Seguridad del login</span>
+    <h1 class="sec" style="font-size:18pt;">Mensajes y comportamientos <em>de seguridad</em></h1>
+    <div class="grid2 mt4" style="gap:6mm;align-items:start;">
+      <div>
+        <div class="seg">Mensaje real: credenciales incorrectas</div>
+        <div class="shot" style="height:96mm;"><img class="contain" src="imagenes/22_login_error.png" alt="Error de credenciales incorrectas"></div>
+        <div class="card mt3" style="border-color:#eccfc9;background:#fff8f6;padding:4mm;">
+          <p class="small" style="color:var(--rojo);"><b>El sistema muestra:</b> “Usuario o contraseña incorrectos. Intentos restantes: 2.”</p>
+          <p class="small mt2">El número de intentos lo indica la propia pantalla; el manual no asigna valores que no aparezcan en ella.</p>
+        </div>
+      </div>
+      <div>
+        <div class="seg">Otros comportamientos de protección</div>
+        <div class="infocard warn"><div class="ic">🔒</div><h4>Campos vacíos</h4><p>Si Usuario o Contraseña se envían sin diligenciar, el sistema no permite continuar y solicita completar los datos obligatorios.</p></div>
+        <div class="infocard warn mt3"><div class="ic">⏳</div><h4>Bloqueo temporal</h4><p>Tras varios intentos fallidos, el acceso puede suspenderse temporalmente como medida de protección. Espere el tiempo indicado por el sistema antes de intentar de nuevo.</p></div>
+        <div class="infocard warn mt3"><div class="ic">🚫</div><h4>Usuario inactivo</h4><p>Una cuenta desactivada no puede ingresar. Debe solicitar la activación a la organización.</p></div>
+        <div class="infocard warn mt3"><div class="ic">👤</div><h4>Usuario sin perfil</h4><p>Si la cuenta no tiene un perfil asignado, no se dirige a ningún panel. La organización debe asignar el rol correspondiente.</p></div>
+      </div>
+    </div>
+    <p class="small mt4">Las tarjetas describen comportamientos de seguridad con ayudas editoriales; no representan alertas simuladas del sistema.</p>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">22</span></div>
+</section>
+
+<!-- FIN BLOQUE 3 -->
+
+<!-- INICIO BLOQUE FINAL · PÁGINAS 23-31 + CIERRE -->
+
+<!-- PÁGINA 23 · 2FA (REEMPLAZO SOLO DE ESTA PÁGINA · TARJETA CENTRAL AMPLIADA) -->
+<section class="page">
+  <div class="hex dark" style="top:-14mm;right:-12mm;transform:scale(1.5);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad" style="padding:6mm 13mm;">
+    <span class="kicker">18 · Verificación en dos pasos</span>
+    <h1 class="sec" style="font-size:18pt;">Verificación <em>2FA</em></h1>
+    <div class="grid2 mt3" style="grid-template-columns:1.12fr .88fr;gap:7mm;align-items:start;">
+
+      <div class="shot" style="aspect-ratio:4/5;background:#f7f6f1;overflow:hidden;">
+        <img src="imagenes/25_2fa.png"
+             alt="Tarjeta de verificación en dos pasos (recorte de la captura real)"
+             style="width:100%;height:100%;object-fit:cover;object-position:50% 46%;display:block;">
+
+        <span class="mk miel" style="left:18%;top:40%;">1</span>
+        <span class="mk miel" style="left:50%;top:60%;transform:translateX(-50%);">2</span>
+        <span class="mk" style="left:50%;top:73%;transform:translateX(-50%);">3</span>
+        <span class="mk" style="left:50%;top:23%;transform:translateX(-50%);">4</span>
+      </div>
+
+      <div>
+        <p>Después de validar <b>usuario y contraseña</b>, algunas cuentas requieren un <b>segundo factor</b>. El sistema envía un <b>código de 6 dígitos</b> al correo registrado.</p>
+        <div class="seg mt4">Elementos de la verificación</div>
+        <ul class="legend">
+          <li><span class="num miel">1</span><span><b>Código de 6 dígitos.</b> Campo para escribir el código recibido (en la guía, ejemplo ficticio <b>123456</b>).</span></li>
+          <li><span class="num miel">2</span><span><b>Verificar e iniciar sesión.</b> Botón que valida el código y continúa.</span></li>
+          <li><span class="num">3</span><span><b>¿No recibiste el código? · Reenviar código.</b> Opción para solicitar un nuevo envío.</span></li>
+          <li><span class="num">4</span><span><b>Aviso de envío al correo.</b> Indica que el código fue enviado al correo registrado, que se muestra parcialmente oculto. El código vence en <b>5 minutos</b>.</span></li>
+        </ul>
+        <div class="nota miel mt4"><span class="ic">✉️</span>
+          <p>El código llega al <b>correo registrado</b>. Por seguridad nunca lo comparta ni lo escriba en este manual.</p></div>
+        <div class="card mt4" style="background:var(--crema);border-color:#f0e6c3;padding:4mm;">
+          <p class="small">La imagen es un recorte ampliado de la captura real para destacar la tarjeta de verificación; no se agregó ni modificó ningún elemento de la interfaz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">23</span></div>
+</section>
+
+<!-- PÁGINA 24 · REENVÍO 2FA (REEMPLAZO SOLO DE ESTA PÁGINA) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad" style="padding:6mm 13mm;">
+    <span class="kicker">19 · Reenvío 2FA</span>
+    <h1 class="sec" style="font-size:18pt;">Si no llega el <em>código</em></h1>
+    <div class="grid2 mt3" style="grid-template-columns:1.05fr .95fr;gap:7mm;align-items:start;">
+
+      <div>
+        <!-- Pantalla completa real con el formulario -->
+        <div class="shot" style="aspect-ratio:4/5;background:#f7f6f1;overflow:hidden;">
+          <img src="imagenes/25_2fa.png"
+               alt="Pantalla de verificación con la zona de reenvío"
+               style="width:100%;height:100%;object-fit:cover;object-position:50% 46%;display:block;">
+
+          <span class="mk" style="left:50%;top:22%;transform:translateX(-50%);">1</span>
+          <span class="mk miel" style="left:18%;top:40%;">2</span>
+          <span class="mk miel" style="left:50%;top:60%;transform:translateX(-50%);">3</span>
+          <span class="mk miel" style="left:50%;top:73%;transform:translateX(-50%);">4</span>
+          <span class="mk" style="left:66%;top:80%;transform:translateX(-50%);">5</span>
+        </div>
+        <p class="small mt2">Escena real de la verificación. El recuadro inferior muestra ampliada la zona de reenvío.</p>
+
+        <!-- Franja real de reenvío ampliada -->
+        <div class="shot contain mt3" style="aspect-ratio:501/197;background:#f7f6f1;">
+          <img src="imagenes/26_2fa_reenvio.png"
+               alt="Zona de reenvío del código ampliada"
+               style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+          <span class="mk miel" style="left:17%;top:28%;">4</span>
+          <span class="mk" style="left:74%;top:28%;transform:translateX(-50%);">5</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="seg">Elementos de la pantalla</div>
+        <ul class="legend">
+          <li><span class="num">1</span><span><b>Aviso de envío.</b> Indica que el código fue enviado al correo registrado (que se muestra parcialmente oculto) y que vence en <b>5 minutos</b>.</span></li>
+          <li><span class="num miel">2</span><span><b>Campo del código.</b> Espacio para los 6 dígitos; en la guía se usa solo el ejemplo ficticio <b>123456</b>.</span></li>
+          <li><span class="num miel">3</span><span><b>Verificar e iniciar sesión.</b> Botón para continuar tras escribir el código.</span></li>
+          <li><span class="num miel">4</span><span><b>Reenviar código.</b> Opción “¿No recibiste el código?” para solicitar un nuevo envío al correo registrado.</span></li>
+          <li><span class="num">5</span><span><b>Tiempo de espera / reenvíos.</b> Mientras está activo se muestra “Reenviar en XX s” y, según la pantalla, los reenvíos disponibles.</span></li>
+        </ul>
+
+        <div class="card mt4" style="background:var(--crema);border-color:#f0e6c3;padding:4mm 5mm;">
+          <div class="seg">Cómo proceder</div>
+          <ul class="dash">
+            <li>Puede solicitar un nuevo código con <b>Reenviar código</b>.</li>
+            <li>El nuevo código llega al <b>correo registrado</b>.</li>
+            <li>Al recibirlo, escríbalo en el campo correspondiente y verifique.</li>
+            <li>No escriba códigos reales en el manual; use solo <b>123456</b> como ejemplo.</li>
+          </ul>
+        </div>
+
+        <div class="nota miel mt4"><span class="ic">⏱️</span>
+          <p>Espere a que termine el temporizador para volver a usar <b>Reenviar código</b> y revise también la carpeta de correo no deseado.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">24</span></div>
+</section>
+
+<!-- PÁGINA 25 · RECUPERAR CONTRASEÑA (AJUSTE SOLO DEL MARCADOR 3 SOBRE LA X) -->
+<section class="page">
+  <div class="hex v" style="bottom:-14mm;left:-12mm;transform:scale(1.7);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad" style="padding:6mm 13mm;">
+    <span class="kicker">20 · Recuperar contraseña</span>
+    <h1 class="sec" style="font-size:18pt;">Recuperar la <em>contraseña</em></h1>
+    <div class="grid2 mt3" style="grid-template-columns:1.02fr .98fr;gap:7mm;align-items:start;">
+
+      <div class="shot" style="aspect-ratio:4/5;background:#f7f6f1;overflow:hidden;">
+        <img src="imagenes/23_recuperar_password.png"
+             alt="Modal Recuperar contraseña (recorte real ampliado)"
+             style="width:100%;height:100%;object-fit:cover;object-position:50% 46%;display:block;">
+
+        <span class="mk" style="left:50%;top:30%;transform:translateX(-50%);">4</span>
+        <span class="mk miel" style="left:50%;top:47%;transform:translateX(-50%);">1</span>
+        <span class="mk miel" style="left:50%;top:63%;transform:translateX(-50%);">2</span>
+        <span class="mk" style="right:6%;top:9%;">3</span>
+      </div>
+
+      <div>
+        <p>Si olvidó su contraseña, use la opción <b>¿Olvidó su contraseña?</b> del Login. En la ventana de recuperación solo debe escribir el correo asociado a su cuenta.</p>
+
+        <div class="seg mt4">Elementos de la ventana</div>
+        <ul class="legend">
+          <li><span class="num miel">1</span><span><b>Correo electrónico.</b> Campo para escribir el correo registrado (el marcador de posición muestra un correo de ejemplo).</span></li>
+          <li><span class="num miel">2</span><span><b>Enviar instrucciones.</b> Botón que solicita el código de recuperación.</span></li>
+          <li><span class="num">3</span><span><b>Cerrar (X).</b> Botón en la esquina superior del recuadro para salir de la ventana de recuperación.</span></li>
+          <li><span class="num">4</span><span><b>Instrucción.</b> La ventana indica que se enviará un <b>código de 6 dígitos</b> y un <b>enlace seguro</b> al correo para restablecer la contraseña.</span></li>
+        </ul>
+
+        <div class="card mt4" style="background:var(--crema);border-color:#f0e6c3;padding:4mm 5mm;">
+          <div class="seg">Cómo proceder</div>
+          <ul class="dash">
+            <li>Escriba su <b>correo registrado</b>.</li>
+            <li>El sistema envía un <b>código de recuperación</b> a ese correo (ejemplo de referencia: <b>123456</b>).</li>
+            <li>Continúe con el proceso para crear una <b>nueva contraseña</b>.</li>
+            <li>Si no desea continuar, cierre la ventana con la <b>X</b> o use “Volver al inicio de sesión”.</li>
+          </ul>
+        </div>
+
+        <div class="nota mt4"><span class="ic">🔐</span>
+          <p>Por seguridad, el sistema <b>no revela públicamente si un correo existe</b>. No escriba códigos ni contraseñas reales dentro de este manual.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">25</span></div>
+</section>
+
+<!-- INICIO BLOQUE FINAL (continuación corregida) · PÁGINAS 26-31 + CIERRE -->
+
+<!-- PÁGINA 26 · NUEVA CONTRASEÑA (REEMPLAZO SOLO DE ESTA PÁGINA · MARCO 3/4 SIN ALTURA FIJA) -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad" style="padding:6mm 12mm;">
+    <span class="kicker">21 · Nueva contraseña</span>
+    <h1 class="sec" style="font-size:18pt;">Crear una <em>nueva contraseña</em></h1>
+    <div class="grid2 mt3" style="grid-template-columns:1.05fr .95fr;gap:7mm;align-items:start;">
+      <div class="shot" style="aspect-ratio:3/4;width:100%;margin:0 auto;background:#f7f6f1;">
+        <img src="imagenes/24_nueva_password.png"
+             alt="Modal Crear nueva contraseña (recorte vertical)"
+             style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;">
+
+        <span class="mk miel" style="left:7%;top:42%;">1</span>
+        <span class="mk" style="left:7%;top:54%;">2</span>
+        <span class="mk miel" style="left:88%;top:54%;">3</span>
+        <span class="mk" style="left:7%;top:66%;">4</span>
+        <span class="mk miel" style="left:9%;top:74.5%;">5</span>
+        <span class="mk miel" style="left:50%;top:84%;transform:translateX(-50%);">6</span>
+      </div>
+      <div>
+        <div class="seg">Campos de la ventana</div>
+        <ul class="legend">
+          <li><span class="num miel">1</span><span><b>Código de 6 dígitos.</b> El recibido en el correo (ejemplo ficticio 123456).</span></li>
+          <li><span class="num">2</span><span><b>Nueva contraseña.</b> La contraseña que desea establecer.</span></li>
+          <li><span class="num miel">3</span><span><b>Mostrar/ocultar.</b> Icono para revisar lo escrito en cada campo.</span></li>
+          <li><span class="num">4</span><span><b>Confirmación.</b> Repita exactamente la nueva contraseña.</span></li>
+          <li><span class="num miel">5</span><span><b>Coincidencia.</b> El sistema indica “✓ Las contraseñas coinciden”.</span></li>
+          <li><span class="num miel">6</span><span><b>Restablecer contraseña.</b> Botón que aplica el cambio.</span></li>
+        </ul>
+        <div class="nota mt4"><span class="ic">✔️</span>
+          <p><b>La contraseña y la confirmación deben coincidir</b> para completar el proceso. La ventana también ofrece “Volver al inicio de sesión”.</p></div>
+        <div class="card mt4" style="background:var(--crema);border-color:#f0e6c3;padding:4mm;">
+          <p class="small">Cualquier código en la documentación se representa con el valor ficticio <b>123456</b>; nunca escriba aquí una contraseña real.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">26</span></div>
+</section>
+
+<!-- PÁGINA 27 · DESPUÉS DE RECUPERAR -->
+<section class="page closing">
+  <div class="hex" style="top:16mm;right:-14mm;transform:scale(1.8);"></div>
+  <div class="hex v" style="bottom:-14mm;left:-12mm;transform:scale(1.7);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad">
+    <span class="kicker">21 · Después de recuperar</span>
+    <h1 class="sec" style="font-size:18pt;">Qué ocurre tras <em>restablecer</em></h1>
+    <p class="lead" style="max-width:150mm;">Una vez que la nueva contraseña queda establecida, el proceso de cierre de sesión protege la cuenta. El siguiente diagrama resume los pasos; no representa una pantalla del sistema.</p>
+    <div class="mt8" style="margin-top:12mm;">
+      <div class="flow">
+        <div class="node miel" style="min-width:78mm;">Nueva contraseña</div>
+        <div class="arrow"></div>
+        <div class="node" style="min-width:78mm;">Cambio correcto</div>
+        <div class="arrow bee">🍯</div>
+        <div class="node" style="min-width:78mm;">Se invalidan recuperaciones anteriores</div>
+        <div class="arrow"></div>
+        <div class="node" style="min-width:78mm;">Se cierran sesiones activas</div>
+        <div class="arrow bee">🐝</div>
+        <div class="node" style="min-width:78mm;">Volver al Login</div>
+        <div class="arrow"></div>
+        <div class="node fill" style="min-width:78mm;">Ingresar con la nueva contraseña</div>
+      </div>
+    </div>
+    <div class="nota mt8" style="margin-top:12mm;"><span class="ic">🔑</span>
+      <p>Tras el cambio, inicie sesión desde la pantalla de Login con su usuario y la <b>nueva contraseña</b>. Si tenía el sistema abierto en otros equipos, esas sesiones quedan cerradas por seguridad.</p></div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">27</span></div>
+</section>
+
+<!-- PÁGINA 28 · FLUJO GENERAL DE ACCESO -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad">
+    <span class="kicker">22 · Flujo de acceso</span>
+    <h1 class="sec" style="font-size:18pt;">El recorrido <em>completo</em></h1>
+    <div class="grid2 mt4" style="gap:8mm;align-items:start;">
+      <div>
+        <div class="seg">Acceso normal y 2FA</div>
+        <div class="flow">
+          <div class="node">HOME</div><div class="arrow"></div>
+          <div class="node miel">ACCESO</div><div class="arrow"></div>
+          <div class="node">USUARIO + CONTRASEÑA</div><div class="arrow bee">❓</div>
+          <div class="node fill" style="min-width:62mm;">¿REQUIERE 2FA?</div>
+        </div>
+        <div class="grid2 mt4" style="gap:4mm;">
+          <div class="card tc" style="padding:4mm;"><b class="vverde">NO</b>
+            <p class="small mt2">Ingresa al panel según su rol (Administrador o Apicultor).</p></div>
+          <div class="card tc" style="padding:4mm;border-color:var(--miel-deep);"><b class="vmiel">SÍ</b>
+            <p class="small mt2">Código al correo → verificar → panel según rol.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="seg">Recuperación de contraseña</div>
+        <div class="flow">
+          <div class="node">LOGIN</div><div class="arrow"></div>
+          <div class="node miel">¿Olvidó su contraseña?</div><div class="arrow"></div>
+          <div class="node">Correo</div><div class="arrow bee">✉️</div>
+          <div class="node">Código + enlace seguro</div><div class="arrow"></div>
+          <div class="node">Nueva contraseña</div><div class="arrow"></div>
+          <div class="node fill">Volver al Login</div>
+        </div>
+        <div class="nota miel mt4"><span class="ic">🧭</span>
+          <p>En ambos recorridos, el destino final depende del <b>perfil</b> del usuario. No existen registro público ni accesos con redes sociales.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">28</span></div>
+</section>
+
+<!-- PÁGINA 29 · SITUACIONES FRECUENTES -->
+<section class="page">
+  <div class="hex dark" style="top:-12mm;right:-12mm;transform:scale(1.5);"></div>
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad">
+    <span class="kicker">23 · Situaciones frecuentes</span>
+    <h1 class="sec" style="font-size:18pt;">Si algo <em>no funciona</em></h1>
+    <div class="grid2 mt4" style="gap:4mm;">
+      <div class="infocard warn" style="flex-direction:row;gap:4mm;"><span class="disc red">⚠️</span><div><h4>Usuario/contraseña incorrectos</h4><p>Revise los datos y vuelva a escribirlos, cuidando mayúsculas y espacios.</p></div></div>
+      <div class="infocard warn" style="flex-direction:row;gap:4mm;"><span class="disc red">⏳</span><div><h4>Bloqueo temporal</h4><p>Espere el tiempo indicado por el sistema antes de intentar de nuevo.</p></div></div>
+      <div class="infocard warn" style="flex-direction:row;gap:4mm;"><span class="disc red">🕘</span><div><h4>Código vencido</h4><p>El código 2FA vence en 5 minutos; solicite uno nuevo.</p></div></div>
+      <div class="infocard warn" style="flex-direction:row;gap:4mm;"><span class="disc red">🔢</span><div><h4>Código incorrecto</h4><p>Compare los 6 dígitos con el correo y vuelva a ingresarlos.</p></div></div>
+      <div class="infocard" style="flex-direction:row;gap:4mm;"><span class="disc">📨</span><div><h4>No llegó el código</h4><p>Use “Reenviar código” y revise correo no deseado o spam.</p></div></div>
+      <div class="infocard" style="flex-direction:row;gap:4mm;"><span class="disc">🔗</span><div><h4>Enlace vencido</h4><p>Inicie nuevamente la recuperación de contraseña desde el Login.</p></div></div>
+      <div class="infocard" style="flex-direction:row;gap:4mm;"><span class="disc">🔏</span><div><h4>Contraseñas no coinciden</h4><p>Vuelva a escribir la nueva contraseña y su confirmación.</p></div></div>
+      <div class="infocard" style="flex-direction:row;gap:4mm;"><span class="disc">📨</span><div><h4>Error enviando el contacto</h4><p>Verifique su conexión e inténtelo unos minutos después.</p></div></div>
+    </div>
+    <div class="nota mt5"><span class="ic">🧑‍💼</span>
+      <p>Si el problema persiste con un <b>usuario inactivo</b> o <b>sin perfil</b>, comuníquese con la organización; estos estados solo pueden resolverse desde la administración de cuentas.</p></div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">29</span></div>
+</section>
+
+<!-- PÁGINA 30 · RECOMENDACIONES DE SEGURIDAD -->
+<section class="page">
+  <div class="runhead"><span class="brand"><span class="dot"></span> mi Colmena</span><span>Sección · Seguridad</span></div>
+  <div class="body-pad">
+    <span class="kicker">24 · Seguridad</span>
+    <h1 class="sec" style="font-size:18pt;">Recomendaciones de <em>seguridad</em></h1>
+    <div class="grid2 mt5" style="gap:6mm;">
+      <div class="card">
+        <div class="seg">Proteja sus accesos</div>
+        <ul class="checklist">
+          <li>No comparta sus credenciales.</li>
+          <li>No comparta los códigos 2FA.</li>
+          <li>Utilice una contraseña segura.</li>
+          <li>No reutilice contraseñas de otros servicios.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="seg">Buenas prácticas</div>
+        <ul class="checklist">
+          <li>Cierre sesión en equipos compartidos.</li>
+          <li>Verifique siempre el remitente de los correos.</li>
+          <li>Mantenga actualizado su correo de recuperación.</li>
+          <li>Cambie la contraseña ante cualquier actividad sospechosa.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid3 mt5" style="gap:5mm;">
+      <div class="infocard tc" style="align-items:center;"><div class="badgehex">🔐</div><h4>Acceso único</h4><p>Solo usted debe conocer su usuario y contraseña.</p></div>
+      <div class="infocard tc" style="align-items:center;"><div class="badgehex">📲</div><h4>Segundo factor</h4><p>El código de 6 dígitos es personal y de un solo uso por vencimiento.</p></div>
+      <div class="infocard tc" style="align-items:center;"><div class="badgehex">🍯</div><h4>Canales oficiales</h4><p>Use únicamente el sitio y los correos de Mi Colmena.</p></div>
+    </div>
+    <div class="nota miel mt5"><span class="ic">🐝</span>
+      <p>Una cuenta protegida cuida su información y la de todo el apiario. Ante cualquier duda sobre un mensaje o correo, no ingrese datos y contacte a la organización.</p></div>
+  </div>
+  <div class="runfoot"><span>Seguridad</span><span class="pg">30</span></div>
+</section>
+
+<!-- PÁGINA 31 · CONTRAPORTADA -->
+<section class="page closing">
+  <div class="hex" style="top:-14mm;left:-12mm;transform:scale(2.2);"></div>
+  <div class="hex v" style="bottom:-14mm;right:-12mm;transform:scale(2.2);"></div>
+  <div class="body-pad flex col middle center" style="justify-content:center;text-align:center;padding:20mm;">
+    <img src="assets/logo-micolmena.png" alt="Logo Mi Colmena"
+         style="height:30mm;width:30mm;object-fit:contain;margin:0 auto 6mm;">
+    <h1 class="sec" style="font-size:24pt;">Gracias por utilizar <em>Mi Colmena.</em></h1>
+    <p class="lead mt4" style="max-width:140mm;margin-left:auto;margin-right:auto;">
+      Esta guía fue diseñada para facilitar el acceso a la información pública de la plataforma y ayudar a los usuarios a ingresar de forma segura al sistema.</p>
+    <div class="rule" style="width:60mm;margin:10mm auto;"></div>
+    <div style="font-size:16pt;font-weight:800;color:var(--verde);letter-spacing:.04em;">MI COLMENA</div>
+    <p class="mt2" style="font-size:11pt;color:var(--verde-medio);font-weight:600;font-style:italic;">“Tecnología al servicio de la apicultura.”</p>
+    <p class="small mt8" style="margin-top:14mm;">Manual de Usuario · Home y Acceso · 13 de septiembre de 2026</p>
+  </div>
+</section>
+
+</body>
+</html>
+<!-- FIN BLOQUE FINAL -->
