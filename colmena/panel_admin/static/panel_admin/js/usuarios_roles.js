@@ -1301,6 +1301,89 @@ function limpiarFotoRegistroAdministrador(
 
 }
 
+function actualizarBotonRegistroAdministrador() {
+
+    const formulario =
+        document.getElementById(
+            "formAgregarAdministrador"
+        );
+
+    const boton =
+        document.getElementById(
+            "btnGuardarAdministrador"
+        );
+
+    const password =
+        document.getElementById(
+            "passwordAdministrador"
+        );
+
+    const confirmar =
+        document.getElementById(
+            "confirmarPasswordAdministrador"
+        );
+
+
+    if (
+        !formulario ||
+        !boton
+    ) {
+
+        return;
+    }
+
+
+    const hayVerificando =
+        formulario.querySelector(
+            '[data-verificando="1"]'
+        );
+
+
+    const hayDuplicado =
+        formulario.querySelector(
+            '[data-duplicado="1"]'
+        );
+
+
+    const passwordVerificando =
+        Boolean(
+            password &&
+            password.dataset.passwordVerificando === "1"
+        );
+
+
+    const passwordValidado =
+        Boolean(
+            password &&
+            password.dataset.passwordValidado === "1"
+        );
+
+
+    const passwordsCoinciden =
+        Boolean(
+            password &&
+            confirmar &&
+            password.value &&
+            confirmar.value &&
+            password.value === confirmar.value
+        );
+
+
+    const formularioValido =
+        formulario.checkValidity();
+
+
+    boton.disabled =
+        !(
+            formularioValido &&
+            !hayVerificando &&
+            !hayDuplicado &&
+            !passwordVerificando &&
+            passwordValidado &&
+            passwordsCoinciden
+        );
+
+}
 
 /* ============================================================
    VALIDACIONES - REGISTRAR ADMINISTRADOR
@@ -1322,6 +1405,27 @@ function inicializarValidacionesRegistroAdministrador(
 
     const REGEX_USERNAME =
         /^[A-Za-z0-9_@.+-]+$/;
+
+    let temporizadorPasswordDjango =
+        null;
+
+
+    let secuenciaPasswordDjango =
+        0;
+
+
+    if (campos.password) {
+
+        campos.password.dataset.passwordValidado =
+            "0";
+
+        campos.password.dataset.passwordVerificando =
+            "0";
+
+    }
+
+
+    actualizarBotonRegistroAdministrador();
 
 
     /* ========================================================
@@ -2169,6 +2273,67 @@ function inicializarValidacionesRegistroAdministrador(
 
     }
 
+    /* ========================================================
+    CONTEXTO QUE AFECTA LA SEGURIDAD DE LA CONTRASEÑA
+    ======================================================== */
+
+    function obtenerFirmaContextoPassword() {
+
+        return JSON.stringify([
+            campos.password
+                ? campos.password.value
+                : "",
+
+            campos.username
+                ? campos.username.value.trim()
+                : "",
+
+            campos.correo
+                ? campos.correo.value.trim().toLowerCase()
+                : "",
+
+            campos.primerNombre
+                ? campos.primerNombre.value.trim()
+                : "",
+
+            campos.segundoNombre
+                ? campos.segundoNombre.value.trim()
+                : "",
+
+            campos.primerApellido
+                ? campos.primerApellido.value.trim()
+                : "",
+
+            campos.segundoApellido
+                ? campos.segundoApellido.value.trim()
+                : ""
+        ]);
+
+    }
+
+
+    function invalidarPasswordDjango() {
+
+        if (!campos.password) {
+            return;
+        }
+
+
+        secuenciaPasswordDjango +=
+            1;
+
+
+        campos.password.dataset.passwordValidado =
+            "0";
+
+        campos.password.dataset.passwordVerificando =
+            "0";
+
+
+        actualizarBotonRegistroAdministrador();
+
+    }
+
 
     /* ========================================================
        CONTRASEÑA
@@ -2264,6 +2429,8 @@ function inicializarValidacionesRegistroAdministrador(
 
         if (!validarPassword()) {
 
+            invalidarPasswordDjango();
+
             return false;
 
         }
@@ -2271,6 +2438,24 @@ function inicializarValidacionesRegistroAdministrador(
 
         const passwordConsultado =
             campo.value;
+
+
+        const firmaConsultada =
+            obtenerFirmaContextoPassword();
+
+
+        const secuenciaActual =
+            ++secuenciaPasswordDjango;
+
+
+        campo.dataset.passwordValidado =
+            "0";
+
+        campo.dataset.passwordVerificando =
+            "1";
+
+
+        actualizarBotonRegistroAdministrador();
 
 
         // =====================================================
@@ -2409,18 +2594,28 @@ function inicializarValidacionesRegistroAdministrador(
 
 
             // =================================================
-            // IGNORAR RESPUESTA SI CAMBIÓ LA CONTRASEÑA
+            // IGNORAR RESPUESTA SI CAMBIÓ CUALQUIER DATO
+            // QUE AFECTA LA VALIDACIÓN DE LA CONTRASEÑA
             // =================================================
 
             if (
-                campo.value
-                !==
-                passwordConsultado
+                secuenciaActual !==
+                    secuenciaPasswordDjango
+                ||
+                obtenerFirmaContextoPassword() !==
+                    firmaConsultada
+                ||
+                campo.value !==
+                    passwordConsultado
             ) {
 
                 return false;
 
             }
+
+
+            campo.dataset.passwordVerificando =
+                "0";
 
 
             // =================================================
@@ -2452,11 +2647,21 @@ function inicializarValidacionesRegistroAdministrador(
                     );
 
 
+                campo.dataset.passwordValidado =
+                    "0";
+
+                campo.dataset.passwordVerificando =
+                    "0";
+
+
                 marcarCampo(
                     campo,
                     false,
                     mensaje
                 );
+
+
+                actualizarBotonRegistroAdministrador();
 
 
                 return false;
@@ -2485,11 +2690,21 @@ function inicializarValidacionesRegistroAdministrador(
                     );
 
 
+            campo.dataset.passwordValidado =
+                "1";
+
+            campo.dataset.passwordVerificando =
+                "0";
+
+
             marcarCampo(
                 campo,
                 true,
                 mensajeValido
             );
+
+
+            actualizarBotonRegistroAdministrador();
 
 
             return true;
@@ -2503,6 +2718,13 @@ function inicializarValidacionesRegistroAdministrador(
             );
 
 
+            campo.dataset.passwordValidado =
+                "0";
+
+            campo.dataset.passwordVerificando =
+                "0";
+
+
             marcarCampo(
                 campo,
                 false,
@@ -2513,9 +2735,77 @@ function inicializarValidacionesRegistroAdministrador(
             );
 
 
+            actualizarBotonRegistroAdministrador();
+
+
             return false;
 
         }
+
+    }
+
+    function programarValidacionPasswordDjango() {
+
+        clearTimeout(
+            temporizadorPasswordDjango
+        );
+
+
+        if (
+            !campos.password ||
+            !campos.password.value
+        ) {
+
+            invalidarPasswordDjango();
+
+            return;
+
+        }
+
+
+        if (!validarPassword()) {
+
+            invalidarPasswordDjango();
+
+            return;
+
+        }
+
+
+        secuenciaPasswordDjango +=
+            1;
+
+
+        campos.password.dataset.passwordValidado =
+            "0";
+
+        campos.password.dataset.passwordVerificando =
+            "1";
+
+
+        mostrarFeedback(
+            campos.password,
+            "verificando",
+            "Verificando seguridad de la contraseña..."
+        );
+
+
+        actualizarBotonRegistroAdministrador();
+
+
+        temporizadorPasswordDjango =
+            setTimeout(
+                async function () {
+
+                    await validarPasswordConDjango();
+
+                    validarConfirmacionPassword();
+
+                    actualizarBotonRegistroAdministrador();
+
+                },
+                400
+            );
 
     }
 
@@ -2604,7 +2894,7 @@ function inicializarValidacionesRegistroAdministrador(
             "input",
             function () {
 
-                validarPassword();
+                programarValidacionPasswordDjango();
 
 
                 if (
@@ -2617,23 +2907,31 @@ function inicializarValidacionesRegistroAdministrador(
 
                 }
 
+
+                actualizarBotonRegistroAdministrador();
+
             }
         );
 
 
-        // =====================================================
-        // VALIDACIÓN REAL AL SALIR DEL CAMPO
-        // =====================================================
-
         campos.password.addEventListener(
             "blur",
-            function () {
+            async function () {
+
+                clearTimeout(
+                    temporizadorPasswordDjango
+                );
+
 
                 if (
                     campos.password.value
                 ) {
 
-                    validarPasswordConDjango();
+                    await validarPasswordConDjango();
+
+                    validarConfirmacionPassword();
+
+                    actualizarBotonRegistroAdministrador();
 
                 }
 
@@ -2650,10 +2948,64 @@ function inicializarValidacionesRegistroAdministrador(
         campos.confirmarPassword
             .addEventListener(
                 "input",
-                validarConfirmacionPassword
+                function () {
+
+                    validarConfirmacionPassword();
+
+                    actualizarBotonRegistroAdministrador();
+
+                }
             );
 
     }
+
+
+    /* ========================================================
+    REVALIDAR PASSWORD SI CAMBIAN DATOS DEL USUARIO
+    ======================================================== */
+
+    [
+        campos.primerNombre,
+        campos.segundoNombre,
+        campos.primerApellido,
+        campos.segundoApellido,
+        campos.correo,
+        campos.username
+    ]
+        .filter(Boolean)
+        .forEach(
+            function (campo) {
+
+                campo.addEventListener(
+                    "input",
+                    function () {
+
+                        if (
+                            campos.password
+                            &&
+                            campos.password.value
+                        ) {
+
+                            programarValidacionPasswordDjango();
+
+                        }
+                        else {
+
+                            actualizarBotonRegistroAdministrador();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    formulario.addEventListener(
+        "change",
+        actualizarBotonRegistroAdministrador
+    );
 
 
     /* ========================================================
@@ -3166,7 +3518,7 @@ function restaurarBotonRegistrarAdministrador(
 
 
     boton.disabled =
-        false;
+        true;
 
 
     boton.innerHTML = `
@@ -5650,6 +6002,18 @@ function inicializarVerificacionDuplicadosAdministrador() {
             formulario.querySelector(
                 '[data-duplicado="1"]'
             );
+
+
+        if (
+            formulario.id ===
+            "formAgregarAdministrador"
+        ) {
+
+            actualizarBotonRegistroAdministrador();
+
+            return;
+
+        }
 
 
         boton.disabled =

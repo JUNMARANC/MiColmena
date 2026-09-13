@@ -9687,11 +9687,19 @@ def editar_apicultor(request, id_apicultor):
         # Validadores reales de Django
         # -----------------------------------------------------
 
+        usuario_temporal_password = User(
+            username=username,
+            email=correo,
+            first_name=nombres,
+            last_name=apellidos,
+        )
+
+
         try:
 
             validate_password(
                 nueva_password,
-                user=usuario
+                user=usuario_temporal_password
             )
 
 

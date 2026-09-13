@@ -47,7 +47,128 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalAgregarElemento = document.getElementById(
         "modalAgregarApicultor"
     );
- 
+
+    const usernameAgregarPassword = document.getElementById(
+        "usernameAgregar"
+    );
+
+    const correoAgregarPassword = document.getElementById(
+        "correoAgregar"
+    );
+
+    const primerNombreAgregarPassword = document.getElementById(
+        "primerNombreAgregar"
+    );
+
+    const primerApellidoAgregarPassword = document.getElementById(
+        "primerApellidoAgregar"
+    );
+
+
+    let temporizadorPasswordApicultor =
+        null;
+
+
+    let secuenciaPasswordApicultor =
+        0;
+
+
+    if (passwordAgregar) {
+
+        passwordAgregar.dataset.passwordValidado =
+            "0";
+
+        passwordAgregar.dataset.passwordVerificando =
+            "0";
+
+    }
+
+    function actualizarBotonRegistroApicultor() {
+
+        if (
+            !formularioAgregar ||
+            !botonGuardarApicultor
+        ) {
+
+            return;
+        }
+
+
+        const hayDuplicado =
+            formularioAgregar.querySelector(
+                '[data-duplicado="1"]'
+            );
+
+        const hayVerificando =
+            formularioAgregar.querySelector(
+                '[data-verificando="1"]'
+            );
+
+
+        const passwordVerificando =
+            Boolean(
+                passwordAgregar &&
+                passwordAgregar.dataset.passwordVerificando === "1"
+            );
+
+
+        const passwordValidado =
+            Boolean(
+                passwordAgregar &&
+                passwordAgregar.dataset.passwordValidado === "1"
+            );
+
+
+        const passwordsCoinciden =
+            Boolean(
+                passwordAgregar &&
+                confirmarPasswordAgregar &&
+                passwordAgregar.value &&
+                confirmarPasswordAgregar.value &&
+                passwordAgregar.value ===
+                    confirmarPasswordAgregar.value
+            );
+
+
+        const formularioValido =
+            formularioAgregar.checkValidity();
+
+
+        botonGuardarApicultor.disabled =
+            !(
+                formularioValido &&
+                !hayDuplicado &&
+                !hayVerificando &&
+                !passwordVerificando &&
+                passwordValidado &&
+                passwordsCoinciden
+            );
+
+    }
+
+    actualizarBotonRegistroApicultor();
+
+    if (formularioAgregar) {
+
+        const observadorEstadoValidaciones =
+            new MutationObserver(
+                actualizarBotonRegistroApicultor
+            );
+
+
+        observadorEstadoValidaciones.observe(
+            formularioAgregar,
+            {
+                subtree: true,
+                attributes: true,
+                attributeFilter: [
+                    "data-duplicado",
+                    "data-verificando"
+                ]
+            }
+        );
+
+    }
  
     /* =========================================================
        MOSTRAR Y OCULTAR CONTRASEÑAS
@@ -271,6 +392,55 @@ document.addEventListener("DOMContentLoaded", function () {
         VALIDAR SEGURIDAD DE CONTRASEÑA CON DJANGO
     ========================================================= */
 
+    function obtenerFirmaPasswordApicultor() {
+
+        return JSON.stringify([
+            passwordAgregar
+                ? passwordAgregar.value
+                : "",
+
+            usernameAgregarPassword
+                ? usernameAgregarPassword.value.trim()
+                : "",
+
+            correoAgregarPassword
+                ? correoAgregarPassword.value.trim().toLowerCase()
+                : "",
+
+            primerNombreAgregarPassword
+                ? primerNombreAgregarPassword.value.trim()
+                : "",
+
+            primerApellidoAgregarPassword
+                ? primerApellidoAgregarPassword.value.trim()
+                : ""
+        ]);
+
+    }
+
+
+    function invalidarPasswordApicultor() {
+
+        if (!passwordAgregar) {
+            return;
+        }
+
+
+        secuenciaPasswordApicultor +=
+            1;
+
+
+        passwordAgregar.dataset.passwordValidado =
+            "0";
+
+        passwordAgregar.dataset.passwordVerificando =
+            "0";
+
+
+        actualizarBotonRegistroApicultor();
+
+    }
+
     async function validarSeguridadPasswordAgregar() {
 
         if (
@@ -288,6 +458,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const passwordConsultado =
             passwordAgregar.value;
 
+        const firmaConsultada =
+            obtenerFirmaPasswordApicultor();
+
+
+        const secuenciaActual =
+            ++secuenciaPasswordApicultor;
+
+
+        passwordAgregar.dataset.passwordValidado =
+            "0";
+
+        passwordAgregar.dataset.passwordVerificando =
+            "1";
+
+
+        actualizarBotonRegistroApicultor();
+
 
         // =====================================================
         // CAMPO VACÍO
@@ -298,6 +485,17 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordAgregar.setCustomValidity(
                 "La contraseña es obligatoria."
             );
+
+
+            passwordAgregar.dataset.passwordValidado =
+                "0";
+
+            passwordAgregar.dataset.passwordVerificando =
+                "0";
+
+
+            actualizarBotonRegistroApicultor();
+
 
             return false;
         }
@@ -335,6 +533,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 "text-danger"
             );
 
+            passwordAgregar.dataset.passwordValidado =
+                "0";
+
+            passwordAgregar.dataset.passwordVerificando =
+                "0";
+
+
+            actualizarBotonRegistroApicultor();
 
             return false;
         }
@@ -477,13 +683,22 @@ document.addEventListener("DOMContentLoaded", function () {
             // llegaba la respuesta del servidor.
 
             if (
-                passwordAgregar.value
-                !==
-                passwordConsultado
+                secuenciaActual !==
+                    secuenciaPasswordApicultor
+                ||
+                obtenerFirmaPasswordApicultor() !==
+                    firmaConsultada
+                ||
+                passwordAgregar.value !==
+                    passwordConsultado
             ) {
 
                 return false;
             }
+
+
+            passwordAgregar.dataset.passwordVerificando =
+                "0";
 
 
             // =================================================
@@ -536,6 +751,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     "text-danger"
                 );
 
+                passwordAgregar.dataset.passwordValidado =
+                    "0";
+
+                passwordAgregar.dataset.passwordVerificando =
+                    "0";
+
+
+                actualizarBotonRegistroApicultor();
+
 
                 return false;
             }
@@ -578,6 +802,16 @@ document.addEventListener("DOMContentLoaded", function () {
             mensajePasswordSeguridadAgregar.classList.add(
                 "text-success"
             );
+
+
+            passwordAgregar.dataset.passwordValidado =
+                "1";
+
+            passwordAgregar.dataset.passwordVerificando =
+                "0";
+
+
+            actualizarBotonRegistroApicultor();
 
 
             return true;
@@ -626,21 +860,104 @@ document.addEventListener("DOMContentLoaded", function () {
                 "text-danger"
             );
 
+            passwordAgregar.dataset.passwordValidado =
+                "0";
+
+            passwordAgregar.dataset.passwordVerificando =
+                "0";
+
+
+            actualizarBotonRegistroApicultor();
+
 
             return false;
         }
 
     }
- 
+
+    function programarValidacionPasswordApicultor() {
+
+        clearTimeout(
+            temporizadorPasswordApicultor
+        );
+
+
+        if (
+            !passwordAgregar ||
+            !passwordAgregar.value
+        ) {
+
+            invalidarPasswordApicultor();
+
+            return;
+
+        }
+
+
+        if (
+            passwordAgregar.value.length < 8
+        ) {
+
+            validarSeguridadPasswordAgregar();
+
+            return;
+
+        }
+
+
+        secuenciaPasswordApicultor +=
+            1;
+
+
+        passwordAgregar.dataset.passwordValidado =
+            "0";
+
+        passwordAgregar.dataset.passwordVerificando =
+            "1";
+
+
+        if (mensajePasswordSeguridadAgregar) {
+
+            mensajePasswordSeguridadAgregar.textContent =
+                "Verificando seguridad de la contraseña...";
+
+            mensajePasswordSeguridadAgregar.classList.remove(
+                "d-none",
+                "text-danger",
+                "text-success"
+            );
+
+            mensajePasswordSeguridadAgregar.classList.add(
+                "text-muted"
+            );
+
+        }
+
+
+        actualizarBotonRegistroApicultor();
+
+
+        temporizadorPasswordApicultor =
+            setTimeout(
+                async function () {
+
+                    await validarSeguridadPasswordAgregar();
+
+                    validarContrasenas();
+
+                    actualizarBotonRegistroApicultor();
+
+                },
+                400
+            );
+
+    }
  
     if (passwordAgregar) {
 
         passwordAgregar.addEventListener(
             "input",
             function () {
-
-                // El usuario modificó la contraseña.
-                // Quitamos cualquier resultado anterior.
 
                 passwordAgregar.setCustomValidity("");
 
@@ -650,45 +967,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-                if (
-                    mensajePasswordSeguridadAgregar
-                ) {
-
-                    mensajePasswordSeguridadAgregar
-                        .textContent = "";
-
-                    mensajePasswordSeguridadAgregar
-                        .classList.add(
-                            "d-none"
-                        );
-
-                    mensajePasswordSeguridadAgregar
-                        .classList.remove(
-                            "text-danger",
-                            "text-success",
-                            "text-muted"
-                        );
-
-                }
+                programarValidacionPasswordApicultor();
 
 
                 validarContrasenas();
 
+
+                actualizarBotonRegistroApicultor();
+
             }
         );
 
 
-        // Cuando el administrador pasa al campo
-        // "Confirmar contraseña", comprobamos la contraseña
-        // contra los validadores reales de Django.
-
         passwordAgregar.addEventListener(
             "blur",
-            function () {
+            async function () {
+
+                clearTimeout(
+                    temporizadorPasswordApicultor
+                );
+
 
                 if (passwordAgregar.value) {
 
-                    validarSeguridadPasswordAgregar();
+                    await validarSeguridadPasswordAgregar();
+
+                    validarContrasenas();
+
+                    actualizarBotonRegistroApicultor();
 
                 }
 
@@ -696,17 +1002,67 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
- 
+
+
     if (confirmarPasswordAgregar) {
- 
+
         confirmarPasswordAgregar.addEventListener(
             "input",
-            validarContrasenas
+            function () {
+
+                validarContrasenas();
+
+                actualizarBotonRegistroApicultor();
+
+            }
         );
- 
+
     }
  
- 
+    [
+        usernameAgregarPassword,
+        correoAgregarPassword,
+        primerNombreAgregarPassword,
+        primerApellidoAgregarPassword
+    ]
+        .filter(Boolean)
+        .forEach(
+            function (campo) {
+
+                campo.addEventListener(
+                    "input",
+                    function () {
+
+                        if (
+                            passwordAgregar &&
+                            passwordAgregar.value
+                        ) {
+
+                            programarValidacionPasswordApicultor();
+
+                        }
+                        else {
+
+                            actualizarBotonRegistroApicultor();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    if (formularioAgregar) {
+
+        formularioAgregar.addEventListener(
+            "input",
+            actualizarBotonRegistroApicultor
+        );
+
+    }
+    
     /* =========================================================
         ENVÍO DEL FORMULARIO
     ========================================================= */
@@ -884,6 +1240,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         "is-invalid"
                     );
 
+
+                    passwordAgregar.dataset.passwordValidado =
+                        "0";
+
+                    passwordAgregar.dataset.passwordVerificando =
+                        "0";
+
                 }
 
 
@@ -919,7 +1282,7 @@ document.addEventListener("DOMContentLoaded", function () {
  
                 if (botonGuardarApicultor) {
  
-                    botonGuardarApicultor.disabled = false;
+                    botonGuardarApicultor.disabled = true;
  
                     botonGuardarApicultor.innerHTML = `
                         <i class="bi bi-person-check-fill me-2"></i>
@@ -1568,6 +1931,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensajePassword = document.getElementById(
         "mensajePasswordEditarNoCoincide"
     );
+
+    const mensajePasswordSeguridadEditar =
+        document.getElementById(
+            "mensajePasswordSeguridadEditar"
+        );
  
     const usuarioActivoEditar = document.getElementById(
         "usuarioActivoEditar"
@@ -1602,6 +1970,28 @@ document.addEventListener("DOMContentLoaded", function () {
     );
  
     let fotoOriginalEditar = "";
+
+    let temporizadorPasswordEditar =
+        null;
+
+
+    let secuenciaPasswordEditar =
+        0;
+
+
+    let permitirSiguienteEnvioEditar =
+        false;
+
+
+    if (passwordEditar) {
+
+        passwordEditar.dataset.passwordValidado =
+            "0";
+
+        passwordEditar.dataset.passwordVerificando =
+            "0";
+
+    }
  
  
     /* =========================================================
@@ -1688,8 +2078,78 @@ document.addEventListener("DOMContentLoaded", function () {
             if (usuarioActivoEditar) {
                 usuarioActivoEditar.checked = usuarioActivo;
             }
- 
+
+
+            /* Limpiar estados de validación del apicultor anterior */
+            [
+                nombresEditar,
+                apellidosEditar,
+                identificacionEditar,
+                telefonoEditar,
+                correoEditar,
+                usernameEditar
+            ]
+                .filter(Boolean)
+                .forEach(
+                    function (campo) {
+
+                        campo.setCustomValidity("");
+
+                        campo.classList.remove(
+                            "is-valid",
+                            "is-invalid"
+                        );
+
+                        campo.dataset.duplicado =
+                            "0";
+
+                        campo.dataset.verificando =
+                            "0";
+
+                    }
+                );
+
+
+            if (passwordEditar) {
+
+                passwordEditar.dataset.passwordValidado =
+                    "0";
+
+                passwordEditar.dataset.passwordVerificando =
+                    "0";
+
+                passwordEditar.setCustomValidity("");
+
+                passwordEditar.classList.remove(
+                    "is-valid",
+                    "is-invalid"
+                );
+
+            }
+
+
+            if (confirmarPasswordEditar) {
+
+                confirmarPasswordEditar.setCustomValidity("");
+
+                confirmarPasswordEditar.classList.remove(
+                    "is-valid",
+                    "is-invalid"
+                );
+
+            }
+
+
+            ocultarMensajeSeguridadEditar();
+
+
+            permitirSiguienteEnvioEditar =
+                false;
+
+
             actualizarTextoEstado();
+
+            actualizarBotonEdicionApicultor();
  
         }
     );
@@ -1887,137 +2347,1083 @@ document.addEventListener("DOMContentLoaded", function () {
  
  
     /* =========================================================
-       VALIDAR CONTRASEÑAS
+    VALIDAR CONTRASEÑA EN EDICIÓN
     ========================================================= */
- 
-    function validarPasswordEditar() {
- 
+
+    function hayCambioPasswordEditar() {
+
         if (
             !passwordEditar ||
             !confirmarPasswordEditar
         ) {
-            return true;
+
+            return false;
+
         }
- 
-        const password = passwordEditar.value;
+
+
+        return Boolean(
+            passwordEditar.value ||
+            confirmarPasswordEditar.value
+        );
+
+    }
+
+
+    function obtenerFirmaPasswordEditar() {
+
+        return JSON.stringify([
+            passwordEditar
+                ? passwordEditar.value
+                : "",
+
+            usernameEditar
+                ? usernameEditar.value.trim()
+                : "",
+
+            correoEditar
+                ? correoEditar.value.trim().toLowerCase()
+                : "",
+
+            nombresEditar
+                ? nombresEditar.value.trim()
+                : "",
+
+            apellidosEditar
+                ? apellidosEditar.value.trim()
+                : ""
+        ]);
+
+    }
+
+
+    function actualizarBotonEdicionApicultor() {
+
+        if (
+            !formularioEditar ||
+            !botonGuardar
+        ) {
+
+            return;
+
+        }
+
+
+        const hayDuplicado =
+            formularioEditar.querySelector(
+                '[data-duplicado="1"]'
+            );
+
+
+        const hayVerificando =
+            formularioEditar.querySelector(
+                '[data-verificando="1"]'
+            );
+
+
+        const cambioPassword =
+            hayCambioPasswordEditar();
+
+
+        const passwordVerificando =
+            Boolean(
+                passwordEditar &&
+                passwordEditar.dataset.passwordVerificando === "1"
+            );
+
+
+        const passwordValidado =
+            Boolean(
+                passwordEditar &&
+                passwordEditar.dataset.passwordValidado === "1"
+            );
+
+
+        const passwordsCoinciden =
+            Boolean(
+                passwordEditar &&
+                confirmarPasswordEditar &&
+                passwordEditar.value &&
+                confirmarPasswordEditar.value &&
+                passwordEditar.value ===
+                    confirmarPasswordEditar.value
+            );
+
+
+        const passwordCorrecto =
+            (
+                !cambioPassword
+                ||
+                (
+                    !passwordVerificando &&
+                    passwordValidado &&
+                    passwordsCoinciden
+                )
+            );
+
+
+        const formularioValido =
+            formularioEditar.checkValidity();
+
+
+        botonGuardar.disabled =
+            !(
+                formularioValido &&
+                !hayDuplicado &&
+                !hayVerificando &&
+                passwordCorrecto
+            );
+
+    }
+
+
+    function invalidarPasswordEditar() {
+
+        if (!passwordEditar) {
+            return;
+        }
+
+
+        secuenciaPasswordEditar +=
+            1;
+
+
+        passwordEditar.dataset.passwordValidado =
+            "0";
+
+        passwordEditar.dataset.passwordVerificando =
+            "0";
+
+
+        actualizarBotonEdicionApicultor();
+
+    }
+
+
+    function ocultarMensajeSeguridadEditar() {
+
+        if (!mensajePasswordSeguridadEditar) {
+            return;
+        }
+
+
+        mensajePasswordSeguridadEditar.textContent =
+            "";
+
+        mensajePasswordSeguridadEditar.classList.add(
+            "d-none"
+        );
+
+        mensajePasswordSeguridadEditar.classList.remove(
+            "text-danger",
+            "text-success",
+            "text-muted"
+        );
+
+    }
+
+
+    function mostrarMensajeSeguridadEditar(
+        estado,
+        mensaje
+    ) {
+
+        if (!mensajePasswordSeguridadEditar) {
+            return;
+        }
+
+
+        mensajePasswordSeguridadEditar.textContent =
+            mensaje;
+
+
+        mensajePasswordSeguridadEditar.classList.remove(
+            "d-none",
+            "text-danger",
+            "text-success",
+            "text-muted"
+        );
+
+
+        if (estado === "error") {
+
+            mensajePasswordSeguridadEditar.classList.add(
+                "text-danger"
+            );
+
+            return;
+
+        }
+
+
+        if (estado === "valido") {
+
+            mensajePasswordSeguridadEditar.classList.add(
+                "text-success"
+            );
+
+            return;
+
+        }
+
+
+        mensajePasswordSeguridadEditar.classList.add(
+            "text-muted"
+        );
+
+    }
+
+
+    function validarPasswordEditar() {
+
+        if (
+            !passwordEditar ||
+            !confirmarPasswordEditar
+        ) {
+
+            return true;
+
+        }
+
+
+        const password =
+            passwordEditar.value;
+
         const confirmacion =
             confirmarPasswordEditar.value;
- 
-        passwordEditar.setCustomValidity("");
+
+
         confirmarPasswordEditar.setCustomValidity("");
- 
+
         confirmarPasswordEditar.classList.remove(
             "is-invalid",
             "is-valid"
         );
- 
-        if (!password && !confirmacion) {
- 
+
+
+        // =====================================================
+        // AMBOS VACÍOS = CONSERVAR CONTRASEÑA ACTUAL
+        // =====================================================
+
+        if (
+            !password &&
+            !confirmacion
+        ) {
+
+            passwordEditar.setCustomValidity("");
+
+            passwordEditar.classList.remove(
+                "is-valid",
+                "is-invalid"
+            );
+
+
             if (mensajePassword) {
-                mensajePassword.classList.add("d-none");
+
+                mensajePassword.classList.add(
+                    "d-none"
+                );
+
             }
- 
+
+
+            ocultarMensajeSeguridadEditar();
+
+
             return true;
+
         }
- 
+
+
+        // =====================================================
+        // CONFIRMACIÓN SIN CONTRASEÑA
+        // =====================================================
+
+        if (!password) {
+
+            passwordEditar.setCustomValidity(
+                "Ingresa la nueva contraseña."
+            );
+
+            passwordEditar.classList.remove(
+                "is-valid"
+            );
+
+            passwordEditar.classList.add(
+                "is-invalid"
+            );
+
+
+            return false;
+
+        }
+
+
+        // =====================================================
+        // MÍNIMO 8 CARACTERES
+        // =====================================================
+
         if (password.length < 8) {
- 
+
             passwordEditar.setCustomValidity(
                 "La contraseña debe tener mínimo 8 caracteres."
             );
- 
+
+            passwordEditar.classList.remove(
+                "is-valid"
+            );
+
+            passwordEditar.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeSeguridadEditar(
+                "error",
+                "La contraseña debe tener mínimo 8 caracteres."
+            );
+
+
             return false;
+
         }
- 
-        if (!confirmacion || password !== confirmacion) {
- 
+
+
+        // =====================================================
+        // COINCIDENCIA
+        // =====================================================
+
+        if (
+            !confirmacion ||
+            password !== confirmacion
+        ) {
+
             confirmarPasswordEditar.setCustomValidity(
                 "Las contraseñas no coinciden."
             );
- 
+
             confirmarPasswordEditar.classList.add(
                 "is-invalid"
             );
- 
+
+
             if (mensajePassword) {
-                mensajePassword.classList.remove("d-none");
+
+                mensajePassword.classList.remove(
+                    "d-none"
+                );
+
             }
- 
+
+
             return false;
+
         }
- 
+
+
         confirmarPasswordEditar.classList.add(
             "is-valid"
         );
- 
+
+
         if (mensajePassword) {
-            mensajePassword.classList.add("d-none");
+
+            mensajePassword.classList.add(
+                "d-none"
+            );
+
         }
- 
+
+
         return true;
- 
+
     }
- 
- 
+
+
+    /* =========================================================
+    VALIDACIÓN REAL CON DJANGO
+    ========================================================= */
+
+    async function validarSeguridadPasswordEditar() {
+
+        if (
+            !passwordEditar ||
+            !formularioEditar
+        ) {
+
+            return false;
+
+        }
+
+
+        const passwordConsultado =
+            passwordEditar.value;
+
+
+        // Contraseña vacía = no se desea cambiar.
+        if (!passwordConsultado) {
+
+            invalidarPasswordEditar();
+
+            ocultarMensajeSeguridadEditar();
+
+            passwordEditar.setCustomValidity("");
+
+
+            return true;
+
+        }
+
+
+        if (
+            passwordConsultado.length < 8
+        ) {
+
+            passwordEditar.dataset.passwordValidado =
+                "0";
+
+            passwordEditar.dataset.passwordVerificando =
+                "0";
+
+
+            passwordEditar.setCustomValidity(
+                "La contraseña debe tener mínimo 8 caracteres."
+            );
+
+
+            mostrarMensajeSeguridadEditar(
+                "error",
+                "La contraseña debe tener mínimo 8 caracteres."
+            );
+
+
+            actualizarBotonEdicionApicultor();
+
+
+            return false;
+
+        }
+
+
+        const firmaConsultada =
+            obtenerFirmaPasswordEditar();
+
+
+        const secuenciaActual =
+            ++secuenciaPasswordEditar;
+
+
+        passwordEditar.dataset.passwordValidado =
+            "0";
+
+        passwordEditar.dataset.passwordVerificando =
+            "1";
+
+
+        passwordEditar.setCustomValidity("");
+
+
+        passwordEditar.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        mostrarMensajeSeguridadEditar(
+            "verificando",
+            "Verificando seguridad de la contraseña..."
+        );
+
+
+        actualizarBotonEdicionApicultor();
+
+
+        const datos =
+            new FormData();
+
+
+        const csrf =
+            formularioEditar.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            );
+
+
+        if (csrf) {
+
+            datos.append(
+                "csrfmiddlewaretoken",
+                csrf.value
+            );
+
+        }
+
+
+        datos.append(
+            "password",
+            passwordConsultado
+        );
+
+
+        datos.append(
+            "username",
+            usernameEditar
+                ? usernameEditar.value
+                : ""
+        );
+
+
+        datos.append(
+            "correo",
+            correoEditar
+                ? correoEditar.value
+                : ""
+        );
+
+
+        /*
+        * El endpoint recibe estos nombres porque también
+        * lo utiliza el formulario de creación.
+        *
+        * En edición enviamos los nombres completos.
+        */
+        datos.append(
+            "primer_nombre",
+            nombresEditar
+                ? nombresEditar.value
+                : ""
+        );
+
+
+        datos.append(
+            "primer_apellido",
+            apellidosEditar
+                ? apellidosEditar.value
+                : ""
+        );
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    URL_VALIDAR_PASSWORD_APICULTOR,
+                    {
+                        method: "POST",
+                        body: datos,
+                        credentials: "same-origin"
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    "No fue posible validar la contraseña."
+                );
+
+            }
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            // Ignorar respuestas anteriores.
+            if (
+                secuenciaActual !==
+                    secuenciaPasswordEditar
+                ||
+                obtenerFirmaPasswordEditar() !==
+                    firmaConsultada
+                ||
+                passwordEditar.value !==
+                    passwordConsultado
+            ) {
+
+                return false;
+
+            }
+
+
+            passwordEditar.dataset.passwordVerificando =
+                "0";
+
+
+            // =================================================
+            // INVÁLIDA
+            // =================================================
+
+            if (!resultado.valido) {
+
+                const mensajes =
+                    (
+                        resultado.mensajes &&
+                        resultado.mensajes.length
+                    )
+                        ?
+                        resultado.mensajes
+                        :
+                        [
+                            "La contraseña no cumple los requisitos de seguridad."
+                        ];
+
+
+                const mensajeCompleto =
+                    mensajes.join(" ");
+
+
+                passwordEditar.dataset.passwordValidado =
+                    "0";
+
+
+                passwordEditar.setCustomValidity(
+                    mensajeCompleto
+                );
+
+
+                passwordEditar.classList.remove(
+                    "is-valid"
+                );
+
+                passwordEditar.classList.add(
+                    "is-invalid"
+                );
+
+
+                mostrarMensajeSeguridadEditar(
+                    "error",
+                    mensajeCompleto
+                );
+
+
+                actualizarBotonEdicionApicultor();
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // VÁLIDA
+            // =================================================
+
+            passwordEditar.dataset.passwordValidado =
+                "1";
+
+            passwordEditar.dataset.passwordVerificando =
+                "0";
+
+
+            passwordEditar.setCustomValidity("");
+
+
+            passwordEditar.classList.remove(
+                "is-invalid"
+            );
+
+            passwordEditar.classList.add(
+                "is-valid"
+            );
+
+
+            const mensajeValido =
+                (
+                    resultado.mensajes &&
+                    resultado.mensajes.length
+                )
+                    ?
+                    resultado.mensajes.join(" ")
+                    :
+                    "La contraseña cumple los requisitos de seguridad.";
+
+
+            mostrarMensajeSeguridadEditar(
+                "valido",
+                mensajeValido
+            );
+
+
+            actualizarBotonEdicionApicultor();
+
+
+            return true;
+
+
+        } catch (error) {
+
+            console.error(
+                "Error validando contraseña de edición:",
+                error
+            );
+
+
+            passwordEditar.dataset.passwordValidado =
+                "0";
+
+            passwordEditar.dataset.passwordVerificando =
+                "0";
+
+
+            const mensaje =
+                (
+                    "No fue posible verificar la contraseña. "
+                    + "Intenta nuevamente."
+                );
+
+
+            passwordEditar.setCustomValidity(
+                mensaje
+            );
+
+
+            passwordEditar.classList.remove(
+                "is-valid"
+            );
+
+            passwordEditar.classList.add(
+                "is-invalid"
+            );
+
+
+            mostrarMensajeSeguridadEditar(
+                "error",
+                mensaje
+            );
+
+
+            actualizarBotonEdicionApicultor();
+
+
+            return false;
+
+        }
+
+    }
+
+
+    /* =========================================================
+    PROGRAMAR VALIDACIÓN EN VIVO
+    ========================================================= */
+
+    function programarValidacionPasswordEditar() {
+
+        clearTimeout(
+            temporizadorPasswordEditar
+        );
+
+
+        invalidarPasswordEditar();
+
+
+        if (
+            !passwordEditar ||
+            !passwordEditar.value
+        ) {
+
+            ocultarMensajeSeguridadEditar();
+
+            return;
+
+        }
+
+
+        if (
+            passwordEditar.value.length < 8
+        ) {
+
+            mostrarMensajeSeguridadEditar(
+                "error",
+                "La contraseña debe tener mínimo 8 caracteres."
+            );
+
+
+            return;
+
+        }
+
+
+        passwordEditar.dataset.passwordVerificando =
+            "1";
+
+
+        mostrarMensajeSeguridadEditar(
+            "verificando",
+            "Verificando seguridad de la contraseña..."
+        );
+
+
+        actualizarBotonEdicionApicultor();
+
+
+        temporizadorPasswordEditar =
+            setTimeout(
+                async function () {
+
+                    await validarSeguridadPasswordEditar();
+
+                    validarPasswordEditar();
+
+                    actualizarBotonEdicionApicultor();
+
+                },
+                400
+            );
+
+    }
+
+
+    /* =========================================================
+    EVENTOS DE CONTRASEÑA
+    ========================================================= */
+
     if (passwordEditar) {
- 
+
         passwordEditar.addEventListener(
             "input",
-            validarPasswordEditar
+            function () {
+
+                passwordEditar.setCustomValidity("");
+
+                passwordEditar.classList.remove(
+                    "is-valid",
+                    "is-invalid"
+                );
+
+
+                programarValidacionPasswordEditar();
+
+                validarPasswordEditar();
+
+                actualizarBotonEdicionApicultor();
+
+            }
         );
- 
+
     }
- 
+
+
     if (confirmarPasswordEditar) {
- 
+
         confirmarPasswordEditar.addEventListener(
             "input",
-            validarPasswordEditar
+            function () {
+
+                validarPasswordEditar();
+
+                actualizarBotonEdicionApicultor();
+
+            }
         );
- 
+
     }
- 
- 
+
+
     /* =========================================================
-       ENVÍO DEL FORMULARIO
+    SI CAMBIAN DATOS DEL USUARIO, REVALIDAR PASSWORD
     ========================================================= */
- 
+
+    [
+        nombresEditar,
+        apellidosEditar,
+        correoEditar,
+        usernameEditar
+    ]
+        .filter(Boolean)
+        .forEach(
+            function (campo) {
+
+                campo.addEventListener(
+                    "input",
+                    function () {
+
+                        if (
+                            passwordEditar &&
+                            passwordEditar.value
+                        ) {
+
+                            programarValidacionPasswordEditar();
+
+                        }
+                        else {
+
+                            actualizarBotonEdicionApicultor();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =========================================================
+    OBSERVAR DUPLICADOS Y CONSULTAS AJAX
+    ========================================================= */
+
+    const observadorEstadoEditar =
+        new MutationObserver(
+            actualizarBotonEdicionApicultor
+        );
+
+
+    observadorEstadoEditar.observe(
+        formularioEditar,
+        {
+            subtree: true,
+            attributes: true,
+            attributeFilter: [
+                "data-duplicado",
+                "data-verificando"
+            ]
+        }
+    );
+
+
+    formularioEditar.addEventListener(
+        "input",
+        actualizarBotonEdicionApicultor
+    );
+
+
+    /* =========================================================
+    ENVÍO DEL FORMULARIO
+    ========================================================= */
+
     formularioEditar.addEventListener(
         "submit",
-        function (evento) {
- 
-            const passwordValido =
+        async function (evento) {
+
+            // =================================================
+            // SEGUNDO ENVÍO
+            // =================================================
+
+            if (permitirSiguienteEnvioEditar) {
+
+                permitirSiguienteEnvioEditar =
+                    false;
+
+
+                if (botonGuardar) {
+
+                    botonGuardar.disabled =
+                        true;
+
+                    botonGuardar.innerHTML = `
+                        <span
+                            class="spinner-border spinner-border-sm me-2"
+                            aria-hidden="true"
+                        ></span>
+                        Guardando...
+                    `;
+
+                }
+
+
+                return;
+
+            }
+
+
+            evento.preventDefault();
+
+
+            // =================================================
+            // VALIDACIONES LOCALES
+            // =================================================
+
+            const passwordLocalValido =
                 validarPasswordEditar();
- 
+
+
             if (
-                !passwordValido ||
+                !passwordLocalValido ||
                 !formularioEditar.checkValidity()
             ) {
- 
-                evento.preventDefault();
-                evento.stopPropagation();
- 
+
                 formularioEditar.classList.add(
                     "was-validated"
                 );
- 
+
+                formularioEditar.reportValidity();
+
+                actualizarBotonEdicionApicultor();
+
+
                 return;
+
             }
- 
-            if (botonGuardar) {
- 
-                botonGuardar.disabled = true;
- 
-                botonGuardar.innerHTML = `
-                    <span
-                        class="spinner-border spinner-border-sm me-2"
-                        aria-hidden="true"
-                    ></span>
-                    Guardando...
-                `;
- 
+
+
+            const hayDuplicado =
+                formularioEditar.querySelector(
+                    '[data-duplicado="1"]'
+                );
+
+
+            const hayVerificando =
+                formularioEditar.querySelector(
+                    '[data-verificando="1"]'
+                );
+
+
+            if (
+                hayDuplicado ||
+                hayVerificando
+            ) {
+
+                actualizarBotonEdicionApicultor();
+
+                return;
+
             }
- 
+
+
+            // =================================================
+            // SI HAY NUEVA CONTRASEÑA, VALIDACIÓN FINAL DJANGO
+            // =================================================
+
+            if (hayCambioPasswordEditar()) {
+
+                const passwordSeguro =
+                    await validarSeguridadPasswordEditar();
+
+
+                if (!passwordSeguro) {
+
+                    passwordEditar.focus();
+
+                    actualizarBotonEdicionApicultor();
+
+                    return;
+
+                }
+
+
+                if (!validarPasswordEditar()) {
+
+                    confirmarPasswordEditar.focus();
+
+                    actualizarBotonEdicionApicultor();
+
+                    return;
+
+                }
+
+            }
+
+
+            // =================================================
+            // TODO CORRECTO
+            // =================================================
+
+            permitirSiguienteEnvioEditar =
+                true;
+
+
+            formularioEditar.requestSubmit();
+
         }
     );
  
@@ -2049,11 +3455,24 @@ document.addEventListener("DOMContentLoaded", function () {
             }
  
             if (passwordEditar) {
- 
+
                 passwordEditar.value = "";
                 passwordEditar.type = "password";
                 passwordEditar.setCustomValidity("");
- 
+
+
+                passwordEditar.dataset.passwordValidado =
+                    "0";
+
+                passwordEditar.dataset.passwordVerificando =
+                    "0";
+
+
+                passwordEditar.classList.remove(
+                    "is-valid",
+                    "is-invalid"
+                );
+
             }
  
             if (confirmarPasswordEditar) {
@@ -2072,12 +3491,27 @@ document.addEventListener("DOMContentLoaded", function () {
             if (mensajePassword) {
                 mensajePassword.classList.add("d-none");
             }
+
+            ocultarMensajeSeguridadEditar();
+
+
+            clearTimeout(
+                temporizadorPasswordEditar
+            );
+
+
+            secuenciaPasswordEditar +=
+                1;
+
+
+            permitirSiguienteEnvioEditar =
+                false;
  
             mostrarFotoEditar("");
  
             if (botonGuardar) {
  
-                botonGuardar.disabled = false;
+                botonGuardar.disabled = true;
  
                 botonGuardar.innerHTML = `
                     <i class="bi bi-floppy-fill me-2"></i>
@@ -3398,6 +4832,8 @@ document.addEventListener(
 
             }
 
+            campo.dataset.verificando =
+                "1";
 
             mostrarEstado(
                 campo,
@@ -3446,10 +4882,16 @@ document.addEventListener(
 
                         }
 
+                        campo.dataset.verificando =
+                            "0";
+
 
                         if (
                             datos.valido === false
                         ) {
+
+                            campo.dataset.verificando =
+                                "0";
 
                             campo.dataset.duplicado =
                                 "0";
@@ -3515,6 +4957,8 @@ document.addEventListener(
                             error
                         );
 
+                        campo.dataset.verificando =
+                            "0";
 
                         // No afirmamos que está disponible
                         // si no pudimos consultar el servidor.
@@ -3574,6 +5018,9 @@ document.addEventListener(
                     campo.dataset.duplicado =
                         "0";
 
+                    campo.dataset.verificando =
+                        "0";
+
 
                     const esValido =
                         validarLocal(
@@ -3582,8 +5029,14 @@ document.addEventListener(
 
 
                     if (!esValido) {
+
                         return;
+
                     }
+
+
+                    campo.dataset.verificando =
+                        "1";
 
 
                     mostrarEstado(
