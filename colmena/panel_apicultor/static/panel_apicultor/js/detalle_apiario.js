@@ -942,40 +942,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================================================
-    // ACTUALIZACIÓN AUTOMÁTICA
-    // CADA 10 SEGUNDOS
+    // ACTUALIZAR AL REGRESAR A LA PESTAÑA
     // =========================================================
 
-    const intervaloDetalleApiario =
-        window.setInterval(
-            function () {
-
-                if (
-                    document.visibilityState
-                    ===
-                    "visible"
-                ) {
-
-                    cargarDatosDetalleApiario();
-
-                }
-
-            },
-            10000
-        );
-
-
-    // =========================================================
-    // LIMPIAR INTERVALO AL SALIR
-    // =========================================================
-
-    window.addEventListener(
-        "pagehide",
+    document.addEventListener(
+        "visibilitychange",
         function () {
 
-            window.clearInterval(
-                intervaloDetalleApiario
-            );
+            if (
+                document.visibilityState
+                ===
+                "visible"
+            ) {
+
+                cargarDatosDetalleApiario();
+
+            }
 
         }
     );
@@ -1078,7 +1060,139 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     );
 
+    // =========================================================
+    // VALIDAR CAMBIO INMEDIATO A INACTIVA
+    // =========================================================
 
+    formulariosEditarColmena.forEach(
+        function (
+            formulario
+        ) {
+
+            const estado =
+                formulario.querySelector(
+                    '[name="estado"]'
+                );
+
+
+            if (!estado) {
+
+                return;
+
+            }
+
+
+            estado.addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        estado.value
+                        !==
+                        "Inactiva"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const originales =
+                        datosOriginalesColmena.get(
+                            formulario
+                        );
+
+
+                    const estadoOriginal = (
+                        originales
+                            ?
+                            originales.estado
+                            :
+                            ""
+                    );
+
+
+                    if (
+                        estadoOriginal
+                        ===
+                        "Inactiva"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const tieneMantenimiento = (
+                        formulario.dataset
+                            .tieneMantenimientoPendiente
+                        ===
+                        "1"
+                    );
+
+
+                    const tieneIncidencia = (
+                        formulario.dataset
+                            .tieneIncidenciaAbierta
+                        ===
+                        "1"
+                    );
+
+
+                    if (
+                        !tieneMantenimiento
+                        &&
+                        !tieneIncidencia
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const motivos = [];
+
+
+                    if (tieneMantenimiento) {
+
+                        motivos.push(
+                            "mantenimientos pendientes"
+                        );
+
+                    }
+
+
+                    if (tieneIncidencia) {
+
+                        motivos.push(
+                            "incidencias pendientes o en proceso"
+                        );
+
+                    }
+
+
+                    window.alert(
+                        "Esta colmena no puede cambiar a Inactiva "
+                        +
+                        "porque tiene "
+                        +
+                        motivos.join(" e ")
+                        +
+                        ". Finaliza esos registros antes de inactivarla."
+                    );
+
+
+                    estado.value =
+                        estadoOriginal;
+
+
+                    estado.focus();
+
+                }
+            );
+
+        }
+    );
 
     // =========================================================
     // RESTAURAR FORMULARIO

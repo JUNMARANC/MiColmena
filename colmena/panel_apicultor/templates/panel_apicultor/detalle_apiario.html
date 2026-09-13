@@ -939,13 +939,13 @@
 
                             <td>
 
-                                {% if item.ultimo_mantenimiento %}
+                                {% if item.ultimo_mantenimiento_fecha %}
 
                                     <div class="tabla-fecha">
 
                                         <i class="bi bi-calendar-check"></i>
 
-                                        {{ item.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                        {{ item.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
 
                                     </div>
 
@@ -1463,9 +1463,9 @@
 
                             <strong>
 
-                                {% if item.ultimo_mantenimiento %}
+                                {% if item.ultimo_mantenimiento_fecha %}
 
-                                    {{ item.ultimo_mantenimiento.fechaejecucion|date:"d/m/Y" }}
+                                    {{ item.ultimo_mantenimiento_fecha|date:"d/m/Y" }}
 
                                 {% else %}
 
@@ -1653,6 +1653,22 @@
                     action="{% url 'editar_colmena_apicultor' item.colmena.id_colmena %}"
                     enctype="multipart/form-data"
                     class="form-editar-colmena-detalle"
+
+                    data-tiene-mantenimiento-pendiente="
+                        {% if item.colmena.tiene_mantenimiento_pendiente %}
+                            1
+                        {% else %}
+                            0
+                        {% endif %}
+                    "
+
+                    data-tiene-incidencia-abierta="
+                        {% if item.colmena.tiene_incidencia_abierta %}
+                            1
+                        {% else %}
+                            0
+                        {% endif %}
+                    "
                 >
 
                     {% csrf_token %}

@@ -49,14 +49,28 @@
 
 
             <a
-                href="{% url 'incidencias_apicultor' %}"
+                href="{{ url_cancelar }}"
                 class="btn-volver-incidencias"
             >
 
                 <i class="bi bi-arrow-left"></i>
 
                 <span>
-                    Volver a incidencias
+
+                    {% if origen == "colmenas" %}
+
+                        Volver a Mis Colmenas
+
+                    {% elif origen == "detalle_apiario" %}
+
+                        Volver al apiario
+
+                    {% else %}
+
+                        Volver a incidencias
+
+                    {% endif %}
+
                 </span>
 
             </a>
@@ -152,17 +166,7 @@
             value="{{ id_apiario_origen }}"
         >
 
-        <input
-            type="hidden"
-            name="origen"
-            value="{% if request.POST.origen %}{{ request.POST.origen }}{% else %}{{ request.GET.origen|default:'' }}{% endif %}"
-        >
 
-        <input
-            type="hidden"
-            name="id_apiario_origen"
-            value="{% if request.POST.id_apiario_origen %}{{ request.POST.id_apiario_origen }}{% else %}{{ request.GET.id_apiario_origen|default:'' }}{% endif %}"
-        >
 
 
 
@@ -576,7 +580,8 @@
                             type="text"
                             id="tituloIncidencia"
                             name="titulo"
-                            maxlength="150"
+                            minlength="3"
+                            maxlength="100"
                             value="{{ valores_formulario.titulo|default:'' }}"
                             placeholder="Ej: Presencia de plaga en la colmena"
                             autocomplete="off"
@@ -595,7 +600,7 @@
                         </small>
 
                         <span id="contadorTitulo">
-                            0 / 150
+                            0 / 100
                         </span>
 
                     </div>
@@ -789,7 +794,7 @@
                 <textarea
                     id="observacionesIncidencia"
                     name="observaciones"
-                    maxlength="1000"
+                    maxlength="255"
                     rows="6"
                     placeholder="Describe qué encontraste, posibles causas, condiciones observadas o cualquier información que ayude a evaluar la incidencia..."
                 >{{ valores_formulario.observaciones|default:"" }}</textarea>
@@ -802,7 +807,7 @@
                     </small>
 
                     <span id="contadorObservaciones">
-                        0 / 1000
+                        0 / 255
                     </span>
 
                 </div>

@@ -39,7 +39,38 @@ document.addEventListener("DOMContentLoaded", function () {
         "webp"
     ];
 
+    /* ======================================================
+    FORMULARIO DEVUELTO POR EL BACKEND
+    ====================================================== */
 
+    const scriptFormularioMantenimientoError =
+        document.getElementById(
+            "mantenimientoFormularioError"
+        );
+
+
+    let datosFormularioMantenimientoError =
+        null;
+
+
+    if (scriptFormularioMantenimientoError) {
+
+        try {
+
+            datosFormularioMantenimientoError =
+                JSON.parse(
+                    scriptFormularioMantenimientoError
+                        .textContent
+                );
+
+        } catch (error) {
+
+            datosFormularioMantenimientoError =
+                null;
+
+        }
+
+    }
 
     /* ======================================================
        ======================================================
@@ -172,6 +203,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const formulariosCompletar =
         document.querySelectorAll(
             ".form-completar-mantenimiento, .form-completar-modal"
+        );
+
+    const formulariosCancelar =
+        document.querySelectorAll(
+            ".form-cancelar-mantenimiento, .form-cancelar-modal"
         );
 
 
@@ -308,6 +344,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let botonCompletarOrigen = null;
 
 
+    let formularioCancelarActivo = null;
+
+    let botonCancelarOrigen = null;
+
+
     let elementoFocoAntesValidacion = null;
 
     let elementoFocoAntesVisor = null;
@@ -363,6 +404,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 )
         );
 
+        const cancelar =
+            document.querySelector(
+                "#modalConfirmarCancelacion.activo"
+            );
+
 
         const visor = (
             visorEvidencia
@@ -389,6 +435,8 @@ document.addEventListener("DOMContentLoaded", function () {
             editar
             ||
             completar
+            ||
+            cancelar
             ||
             visor
             ||
@@ -452,6 +500,132 @@ document.addEventListener("DOMContentLoaded", function () {
     const fechaHoy =
         obtenerFechaHoy();
 
+    
+    /* ======================================================
+    CONTADORES DE CARACTERES
+    ====================================================== */
+
+    function configurarContadorCaracteres(
+        campo
+    ) {
+
+        if (!campo) {
+
+            return;
+
+        }
+
+
+        const maximo =
+            Number(
+                campo.getAttribute(
+                    "maxlength"
+                )
+            );
+
+
+        if (
+            !Number.isFinite(maximo)
+            ||
+            maximo <= 0
+        ) {
+
+            return;
+
+        }
+
+
+        const contenedor =
+            campo.closest(
+                ".mantenimiento-campo, .form-editar-observacion"
+            );
+
+
+        if (!contenedor) {
+
+            return;
+
+        }
+
+
+        const contador =
+            contenedor.querySelector(
+                ".contador-caracteres"
+            );
+
+
+        if (!contador) {
+
+            return;
+
+        }
+
+
+        function actualizarContador() {
+
+            const usados =
+                campo.value.length;
+
+
+            const restantes =
+                Math.max(
+                    0,
+                    maximo - usados
+                );
+
+
+            contador.textContent =
+                restantes === 1
+                    ?
+                    "1 carácter disponible"
+                    :
+                    `${restantes} caracteres disponibles`;
+
+
+            contador.classList.toggle(
+                "limite-cercano",
+                restantes <= 20
+                &&
+                restantes > 0
+            );
+
+
+            contador.classList.toggle(
+                "limite-alcanzado",
+                restantes === 0
+            );
+
+        }
+
+
+        campo.addEventListener(
+            "input",
+            actualizarContador
+        );
+
+
+        actualizarContador();
+
+    }
+
+
+    /* ======================================================
+    ACTIVAR CONTADORES
+    ====================================================== */
+
+    document
+        .querySelectorAll(
+            ".campo-contador-caracteres"
+        )
+        .forEach(
+            function (campo) {
+
+                configurarContadorCaracteres(
+                    campo
+                );
+
+            }
+        );
 
 
     /* ======================================================
@@ -1385,6 +1559,44 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        /* ==================================================
+        REGRESAR A LA VISTA DE ORIGEN
+        ================================================== */
+
+        const origen = (
+            origenCrearMantenimiento
+                ?
+                origenCrearMantenimiento.value.trim()
+                :
+                ""
+        );
+
+
+        const urlCancelar = (
+            modalCrear.dataset.urlCancelar
+            ||
+            ""
+        );
+
+
+        if (
+            origen === "detalle_apiario"
+            &&
+            urlCancelar
+        ) {
+
+            window.location.href =
+                urlCancelar;
+
+            return;
+
+        }
+
+
+        /* ==================================================
+        CIERRE NORMAL DESDE MANTENIMIENTOS
+        ================================================== */
+
         modalCrear.classList.remove(
             "activo"
         );
@@ -1954,12 +2166,45 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
+                    const estado = (
+                        opcion.dataset.estado
+                        ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                    const esInactiva =
+                        estado
+                        ===
+                        "inactiva";
+
+
+                    const esColmenaOriginal = (
+                        opcion.value
+                        ===
+                        colmena.dataset.colmenaOriginal
+                    );
+
+
+                    const disponible = (
+                        corresponde
+                        &&
+                        (
+                            !esInactiva
+                            ||
+                            esColmenaOriginal
+                        )
+                    );
+
+
                     opcion.hidden =
-                        !corresponde;
+                        !disponible;
 
 
                     opcion.disabled =
-                        !corresponde;
+                        !disponible;
 
                 }
             );
@@ -1976,9 +2221,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 &&
                 seleccionada.value
                 &&
-                seleccionada.dataset.apiario
-                !==
-                idApiario
+                (
+                    seleccionada.dataset.apiario
+                    !==
+                    idApiario
+                    ||
+                    seleccionada.disabled
+                )
             ) {
 
                 colmena.value =
@@ -3108,14 +3357,33 @@ document.addEventListener("DOMContentLoaded", function () {
             255;
 
 
+        const restantes =
+            Math.max(
+                0,
+                maximo - textarea.value.length
+            );
+
+
         contador.textContent =
-            textarea.value.length
-            +
-            " / "
-            +
-            maximo
-            +
-            " caracteres";
+            restantes === 1
+                ?
+                "1 carácter disponible"
+                :
+                `${restantes} caracteres disponibles`;
+
+
+        contador.classList.toggle(
+            "limite-cercano",
+            restantes <= 20
+            &&
+            restantes > 0
+        );
+
+
+        contador.classList.toggle(
+            "limite-alcanzado",
+            restantes === 0
+        );
 
     }
 
@@ -3360,18 +3628,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             actualizarContador(
                 textarea
-            );
-
-
-            textarea.addEventListener(
-                "input",
-                function () {
-
-                    actualizarContador(
-                        this
-                    );
-
-                }
             );
 
 
@@ -3721,7 +3977,472 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    /* ======================================================
+    ======================================================
+    CANCELAR MANTENIMIENTO
+    ======================================================
+    ====================================================== */
 
+    function obtenerModalConfirmarCancelacion() {
+
+        let modal =
+            document.getElementById(
+                "modalConfirmarCancelacion"
+            );
+
+
+        if (modal) {
+
+            return modal;
+
+        }
+
+
+        modal =
+            document.createElement(
+                "div"
+            );
+
+
+        modal.id =
+            "modalConfirmarCancelacion";
+
+
+        modal.className =
+            "confirmar-completado-overlay confirmar-cancelacion-overlay";
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        modal.innerHTML = `
+
+            <div
+                class="confirmar-completado-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="tituloConfirmarCancelacion"
+            >
+
+                <div
+                    class="confirmar-completado-icono"
+                >
+
+                    <i class="bi bi-x-circle-fill"></i>
+
+                </div>
+
+
+                <div class="confirmar-completado-contenido">
+
+                    <span class="confirmar-completado-etiqueta">
+                        Confirmar acción
+                    </span>
+
+
+                    <h2 id="tituloConfirmarCancelacion">
+                        ¿Cancelar mantenimiento?
+                    </h2>
+
+
+                    <p>
+                        El mantenimiento dejará de estar pendiente
+                        y pasará al historial de cancelados.
+                    </p>
+
+
+                    <div class="confirmar-completado-aviso">
+
+                        <i class="bi bi-info-circle-fill"></i>
+
+                        <span>
+                            Esta acción cerrará el mantenimiento.
+                            Después no podrá editarse ni volver
+                            al estado Pendiente.
+                        </span>
+
+                    </div>
+
+
+                    <div class="confirmar-completado-mantenimiento">
+
+                        <div>
+
+                            <span>
+                                Mantenimiento
+                            </span>
+
+                            <strong id="confirmarCancelacionNombre">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Ubicación
+                            </span>
+
+                            <strong id="confirmarCancelacionUbicacion">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="confirmar-completado-acciones">
+
+                    <button
+                        type="button"
+                        class="btn-cancelar-completado"
+                        id="btnVolverCancelacion"
+                    >
+                        Volver
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-confirmar-completado"
+                        id="btnConfirmarCancelacion"
+                    >
+
+                        <i class="bi bi-x-lg"></i>
+
+                        <span>
+                            Sí, cancelar
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+
+        document.body.appendChild(
+            modal
+        );
+
+
+        const botonVolver =
+            modal.querySelector(
+                "#btnVolverCancelacion"
+            );
+
+
+        const botonConfirmar =
+            modal.querySelector(
+                "#btnConfirmarCancelacion"
+            );
+
+
+        if (botonVolver) {
+
+            botonVolver.addEventListener(
+                "click",
+                cerrarConfirmacionCancelacion
+            );
+
+        }
+
+
+        if (botonConfirmar) {
+
+            botonConfirmar.addEventListener(
+                "click",
+                confirmarCancelacionMantenimiento
+            );
+
+        }
+
+
+        modal.addEventListener(
+            "click",
+            function (evento) {
+
+                if (
+                    evento.target
+                    ===
+                    modal
+                ) {
+
+                    cerrarConfirmacionCancelacion();
+
+                }
+
+            }
+        );
+
+
+        return modal;
+
+    }
+
+
+
+    function abrirConfirmacionCancelacion(
+        formulario
+    ) {
+
+        if (!formulario) {
+
+            return;
+
+        }
+
+
+        const modal =
+            obtenerModalConfirmarCancelacion();
+
+
+        formularioCancelarActivo =
+            formulario;
+
+
+        botonCancelarOrigen =
+            formulario.querySelector(
+                'button[type="submit"]'
+            );
+
+
+        const nombre = (
+            formulario.dataset
+                .nombreMantenimiento
+            ||
+            "Mantenimiento"
+        ).trim();
+
+
+        const ubicacion = (
+            formulario.dataset
+                .colmenaMantenimiento
+            ||
+            "Sin ubicación asociada"
+        ).trim();
+
+
+        const nombreElemento =
+            modal.querySelector(
+                "#confirmarCancelacionNombre"
+            );
+
+
+        const ubicacionElemento =
+            modal.querySelector(
+                "#confirmarCancelacionUbicacion"
+            );
+
+
+        const botonConfirmar =
+            modal.querySelector(
+                "#btnConfirmarCancelacion"
+            );
+
+
+        if (nombreElemento) {
+
+            nombreElemento.textContent =
+                nombre;
+
+        }
+
+
+        if (ubicacionElemento) {
+
+            ubicacionElemento.textContent =
+                ubicacion;
+
+        }
+
+
+        if (botonConfirmar) {
+
+            botonConfirmar.disabled =
+                false;
+
+
+            botonConfirmar.innerHTML = `
+
+                <i class="bi bi-x-lg"></i>
+
+                <span>
+                    Sí, cancelar
+                </span>
+            `;
+
+        }
+
+
+        modal.classList.add(
+            "activo"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        bloquearScroll();
+
+
+        if (botonConfirmar) {
+
+            setTimeout(
+                function () {
+
+                    botonConfirmar.focus();
+
+                },
+                70
+            );
+
+        }
+
+    }
+
+
+
+    function cerrarConfirmacionCancelacion() {
+
+        const modal =
+            document.getElementById(
+                "modalConfirmarCancelacion"
+            );
+
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        modal.classList.remove(
+            "activo"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        restaurarScroll();
+
+
+        if (
+            botonCancelarOrigen
+            &&
+            document.body.contains(
+                botonCancelarOrigen
+            )
+        ) {
+
+            botonCancelarOrigen.focus();
+
+        }
+
+
+        formularioCancelarActivo =
+            null;
+
+
+        botonCancelarOrigen =
+            null;
+
+    }
+
+
+
+    function confirmarCancelacionMantenimiento() {
+
+        if (!formularioCancelarActivo) {
+
+            return;
+
+        }
+
+
+        const modal =
+            document.getElementById(
+                "modalConfirmarCancelacion"
+            );
+
+
+        const botonConfirmar =
+            modal
+                ?
+                modal.querySelector(
+                    "#btnConfirmarCancelacion"
+                )
+                :
+                null;
+
+
+        if (botonConfirmar) {
+
+            botonConfirmar.disabled =
+                true;
+
+
+            botonConfirmar.innerHTML = `
+
+                <span>
+                    Cancelando...
+                </span>
+            `;
+
+        }
+
+
+        const formulario =
+            formularioCancelarActivo;
+
+
+        HTMLFormElement
+            .prototype
+            .submit
+            .call(
+                formulario
+            );
+
+    }
+
+
+
+    formulariosCancelar.forEach(
+        function (formulario) {
+
+            formulario.addEventListener(
+                "submit",
+                function (evento) {
+
+                    evento.preventDefault();
+
+
+                    abrirConfirmacionCancelacion(
+                        formulario
+                    );
+
+                }
+            );
+
+        }
+    );
 
     /* ======================================================
        ======================================================
@@ -4079,6 +4800,28 @@ document.addEventListener("DOMContentLoaded", function () {
                3. CONFIRMACIÓN
             ============================================== */
 
+            const modalConfirmarCancelacion =
+                document.getElementById(
+                    "modalConfirmarCancelacion"
+                );
+
+
+            if (
+                modalConfirmarCancelacion
+                &&
+                modalConfirmarCancelacion
+                    .classList
+                    .contains(
+                        "activo"
+                    )
+            ) {
+
+                cerrarConfirmacionCancelacion();
+
+                return;
+
+            }
+
             if (
                 modalConfirmarCompletado
                 &&
@@ -4267,7 +5010,609 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    /* ======================================================
+    ======================================================
+    RESTAURAR FORMULARIO RECHAZADO POR EL BACKEND
+    ======================================================
+    ====================================================== */
 
+    function restaurarFormularioMantenimientoConError() {
+
+        if (!datosFormularioMantenimientoError) {
+
+            return;
+
+        }
+
+
+        const datos =
+            datosFormularioMantenimientoError;
+
+
+        /*
+        IMPORTANTE:
+        Se elimina de la variable para que pageshow no vuelva
+        a abrir el mismo formulario si el navegador restaura
+        esta página desde caché.
+        */
+
+        datosFormularioMantenimientoError =
+            null;
+
+
+        /* ==================================================
+        CREAR
+        ================================================== */
+
+        if (
+            datos.modo
+            ===
+            "crear"
+        ) {
+
+            if (
+                !formularioCrear
+                ||
+                !modalCrear
+            ) {
+
+                return;
+
+            }
+
+
+            /* ----------------------------------------------
+            ORIGEN
+            ---------------------------------------------- */
+
+            if (origenCrearMantenimiento) {
+
+                origenCrearMantenimiento.value =
+                    datos.origen
+                    ||
+                    "";
+
+            }
+
+
+            if (apiarioOrigenCrearMantenimiento) {
+
+                apiarioOrigenCrearMantenimiento.value =
+                    datos.id_apiario_origen
+                    ||
+                    "";
+
+            }
+
+
+            /* ----------------------------------------------
+            APIARIO
+            ---------------------------------------------- */
+
+            if (apiarioCrear) {
+
+                apiarioCrear.value =
+                    String(
+                        datos.id_apiario
+                        ||
+                        ""
+                    );
+
+            }
+
+
+            /* ----------------------------------------------
+            ALCANCE
+            ---------------------------------------------- */
+
+            const radiosCrear =
+                formularioCrear.querySelectorAll(
+                    ".alcance-mantenimiento-radio-apicultor"
+                );
+
+
+            let alcanceEncontrado =
+                false;
+
+
+            radiosCrear.forEach(
+                function (radio) {
+
+                    const coincide = (
+                        radio.value
+                        ===
+                        datos.entidad
+                    );
+
+
+                    radio.checked =
+                        coincide;
+
+
+                    if (coincide) {
+
+                        alcanceEncontrado =
+                            true;
+
+                    }
+
+                }
+            );
+
+
+            /*
+            Si por alguna razón el backend recibió un alcance
+            inválido, dejamos Apiario como valor seguro.
+            */
+
+            if (!alcanceEncontrado) {
+
+                const radioApiario =
+                    formularioCrear.querySelector(
+                        '.alcance-mantenimiento-radio-apicultor[value="Apiario"]'
+                    );
+
+
+                if (radioApiario) {
+
+                    radioApiario.checked =
+                        true;
+
+                }
+
+            }
+
+
+            /* ----------------------------------------------
+            FILTRAR COLMENAS
+            ---------------------------------------------- */
+
+            filtrarColmenasCrear();
+
+
+            /* ----------------------------------------------
+            COLMENA
+            ---------------------------------------------- */
+
+            if (
+                datos.entidad
+                ===
+                "Colmena"
+                &&
+                colmenaCrear
+            ) {
+
+                const idColmena =
+                    String(
+                        datos.id_colmena
+                        ||
+                        ""
+                    );
+
+
+                const opcionColmena =
+                    Array.from(
+                        colmenaCrear.options
+                    )
+                    .find(
+                        function (opcion) {
+
+                            return (
+                                opcion.value
+                                ===
+                                idColmena
+                                &&
+                                !opcion.disabled
+                            );
+
+                        }
+                    );
+
+
+                if (opcionColmena) {
+
+                    colmenaCrear.value =
+                        idColmena;
+
+                }
+
+            }
+
+
+            /* ----------------------------------------------
+            TAREA
+            ---------------------------------------------- */
+
+            const tipo =
+                formularioCrear.querySelector(
+                    'input[name="tipo"]'
+                );
+
+
+            if (tipo) {
+
+                tipo.value =
+                    datos.tipo
+                    ||
+                    "";
+
+
+                tipo.dispatchEvent(
+                    new Event(
+                        "input",
+                        {
+                            bubbles: true
+                        }
+                    )
+                );
+
+            }
+
+
+            /* ----------------------------------------------
+            FECHA
+            ---------------------------------------------- */
+
+            const fecha =
+                formularioCrear.querySelector(
+                    'input[name="fecha_ejecucion"]'
+                );
+
+
+            if (fecha) {
+
+                fecha.value =
+                    datos.fecha_ejecucion
+                    ||
+                    "";
+
+            }
+
+
+            /* ----------------------------------------------
+            PRIORIDAD
+            ---------------------------------------------- */
+
+            const prioridad =
+                formularioCrear.querySelector(
+                    'select[name="prioridad"]'
+                );
+
+
+            if (prioridad) {
+
+                prioridad.value =
+                    datos.prioridad
+                    ||
+                    "";
+
+            }
+
+
+            /* ----------------------------------------------
+            OBSERVACIONES
+            ---------------------------------------------- */
+
+            const observaciones =
+                formularioCrear.querySelector(
+                    'textarea[name="observaciones"]'
+                );
+
+
+            if (observaciones) {
+
+                observaciones.value =
+                    datos.observaciones
+                    ||
+                    "";
+
+
+                observaciones.dispatchEvent(
+                    new Event(
+                        "input",
+                        {
+                            bubbles: true
+                        }
+                    )
+                );
+
+            }
+
+
+            /* ----------------------------------------------
+            ABRIR
+            ---------------------------------------------- */
+
+            abrirModalCrear();
+
+
+            return;
+
+        }
+
+
+        /* ==================================================
+        EDITAR
+        ================================================== */
+
+        if (
+            datos.modo
+            !==
+            "editar"
+        ) {
+
+            return;
+
+        }
+
+
+        const idMantenimiento =
+            String(
+                datos.id_mantenimiento
+                ||
+                ""
+            );
+
+
+        if (!idMantenimiento) {
+
+            return;
+
+        }
+
+
+        const modal =
+            document.getElementById(
+                "modalEditarMantenimiento"
+                +
+                idMantenimiento
+            );
+
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        const formulario =
+            modal.querySelector(
+                ".form-editar-mantenimiento-apicultor"
+            );
+
+
+        if (!formulario) {
+
+            return;
+
+        }
+
+
+        /* ----------------------------------------------
+        ALCANCE
+        ---------------------------------------------- */
+
+        const radiosEntidad =
+            formulario.querySelectorAll(
+                ".entidad-editar-mantenimiento"
+            );
+
+
+        radiosEntidad.forEach(
+            function (radio) {
+
+                radio.checked = (
+                    radio.value
+                    ===
+                    datos.entidad
+                );
+
+            }
+        );
+
+
+        /* ----------------------------------------------
+        APIARIO
+        ---------------------------------------------- */
+
+        const apiario =
+            formulario.querySelector(
+                ".apiario-editar-mantenimiento"
+            );
+
+
+        if (apiario) {
+
+            apiario.value =
+                String(
+                    datos.id_apiario
+                    ||
+                    ""
+                );
+
+
+            /*
+            El listener que ya existe en tu módulo
+            vuelve a filtrar las colmenas disponibles.
+            */
+
+            apiario.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+        }
+
+
+        /* ----------------------------------------------
+        COLMENA
+        ---------------------------------------------- */
+
+        const colmena =
+            formulario.querySelector(
+                ".colmena-editar-mantenimiento"
+            );
+
+
+        if (
+            datos.entidad
+            ===
+            "Colmena"
+            &&
+            colmena
+        ) {
+
+            const idColmena =
+                String(
+                    datos.id_colmena
+                    ||
+                    ""
+                );
+
+
+            const opcionColmena =
+                Array.from(
+                    colmena.options
+                )
+                .find(
+                    function (opcion) {
+
+                        return (
+                            opcion.value
+                            ===
+                            idColmena
+                            &&
+                            !opcion.disabled
+                        );
+
+                    }
+                );
+
+
+            if (opcionColmena) {
+
+                colmena.value =
+                    idColmena;
+
+            }
+
+        }
+
+
+        /* ----------------------------------------------
+        TAREA
+        ---------------------------------------------- */
+
+        const tipo =
+            formulario.querySelector(
+                'input[name="tipo"]'
+            );
+
+
+        if (tipo) {
+
+            tipo.value =
+                datos.tipo
+                ||
+                "";
+
+
+            tipo.dispatchEvent(
+                new Event(
+                    "input",
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+        }
+
+
+        /* ----------------------------------------------
+        FECHA
+        ---------------------------------------------- */
+
+        const fecha =
+            formulario.querySelector(
+                'input[name="fecha_ejecucion"]'
+            );
+
+
+        if (fecha) {
+
+            fecha.value =
+                datos.fecha_ejecucion
+                ||
+                "";
+
+        }
+
+
+        /* ----------------------------------------------
+        PRIORIDAD
+        ---------------------------------------------- */
+
+        const prioridad =
+            formulario.querySelector(
+                'select[name="prioridad"]'
+            );
+
+
+        if (prioridad) {
+
+            prioridad.value =
+                datos.prioridad
+                ||
+                "";
+
+        }
+
+
+        /* ----------------------------------------------
+        OBSERVACIONES
+        ---------------------------------------------- */
+
+        const observaciones =
+            formulario.querySelector(
+                'textarea[name="observaciones"]'
+            );
+
+
+        if (observaciones) {
+
+            observaciones.value =
+                datos.observaciones
+                ||
+                "";
+
+
+            observaciones.dispatchEvent(
+                new Event(
+                    "input",
+                    {
+                        bubbles: true
+                    }
+                )
+            );
+
+        }
+
+
+        /* ----------------------------------------------
+        ABRIR MODAL
+        ---------------------------------------------- */
+
+        abrirModalEditar(
+            modal
+        );
+
+    }
 
     /* ======================================================
        ======================================================
@@ -4371,7 +5716,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+            /* ==============================================
+            CANCELAR
+            ============================================== */
 
+            const modalCancelar =
+                document.getElementById(
+                    "modalConfirmarCancelacion"
+                );
+
+
+            if (modalCancelar) {
+
+                modalCancelar
+                    .classList
+                    .remove(
+                        "activo"
+                    );
+
+
+                modalCancelar
+                    .setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+
+            }
 
             /* ==============================================
                VISOR
@@ -4458,6 +5828,13 @@ document.addEventListener("DOMContentLoaded", function () {
             botonCompletarOrigen =
                 null;
 
+            formularioCancelarActivo =
+                null;
+
+
+            botonCancelarOrigen =
+                null;
+
 
 
             /* ==============================================
@@ -4534,6 +5911,12 @@ document.addEventListener("DOMContentLoaded", function () {
             ============================================== */
 
             prepararMantenimientoDesdeOrigen();
+
+            /* ==============================================
+            RESTAURAR FORMULARIO CON ERROR
+            ============================================== */
+
+            restaurarFormularioMantenimientoConError();
 
 
         }
@@ -4639,9 +6022,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (origenCrearMantenimiento) {
 
             origenCrearMantenimiento.value =
-                origen === "detalle_apiario"
-                    ? "detalle_apiario"
-                    : "";
+                (
+                    origen === "detalle_apiario"
+                    ||
+                    origen === "colmenas"
+                )
+                    ?
+                    origen
+                    :
+                    "";
 
         }
 

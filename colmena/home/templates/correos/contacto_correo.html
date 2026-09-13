@@ -1,134 +1,333 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nuevo mensaje · Mi Colmena</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+
+    <!-- Le dice al cliente que la plantilla maneja modo claro y
+         oscuro, para que no invente sus propios colores -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+
+    <title>Nuevo mensaje &middot; Mi Colmena</title>
+
+    <style>
+        table { border-collapse: collapse; }
+
+        body { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+        /* iOS detecta teléfonos y direcciones y les pone su propio
+           estilo azul. Aquí ya son enlaces nuestros. */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        @media only screen and (max-width: 480px) {
+
+            .cuerpo-correo {
+                padding: 22px 18px 6px !important;
+            }
+
+            .caja-datos {
+                padding: 18px 16px !important;
+            }
+
+            /* Los dos botones lado a lado no caben en un celular:
+               se apilan y ocupan todo el ancho */
+            .boton-accion {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 0 10px !important;
+                box-sizing: border-box !important;
+            }
+
+            .titulo-correo {
+                font-size: 20px !important;
+            }
+        }
+    </style>
+
 </head>
-<body style="margin:0; padding:0; background:#F3EEE3; font-family:Arial, Helvetica, sans-serif;">
 
-  <!--
-    TEXTO DE VISTA PREVIA (preheader): es lo que se alcanza a leer en la
-    bandeja de entrada junto al asunto, antes de abrir el correo. Está
-    oculto visualmente pero lo leen los clientes de correo.
-  -->
-  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; opacity:0;">
-    {{ mensaje|truncatewords:15 }}
-  </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3EEE3;">
-    <tr>
-      <td align="center" style="padding:32px 16px;">
+<body style="margin:0; padding:0; width:100%; background-color:#F3EEE3; font-family:'Segoe UI', Roboto, Arial, Helvetica, sans-serif;">
 
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:24px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,.12);">
 
-          <!-- Barra de marca -->
-          <tr>
-            <td style="background:#F0A000; height:6px; line-height:6px; font-size:0;">&nbsp;</td>
-          </tr>
+    <!-- ==========================================================
+         PREHEADER
 
-          <!-- Encabezado -->
-          <tr>
-            <td align="center" style="background:#F6DE87; padding:34px 25px 28px;">
-              
-              <img src="{% static 'home/img/logoo.png' %}" alt="Mi Colmena" width="80" style="display:block; margin:0 auto 16px; border:0;">
+         Lo que se alcanza a leer en la bandeja junto al asunto.
+         Los caracteres invisibles del final evitan que el cliente
+         rellene el resto con el texto que sigue.
+    =========================================================== -->
 
-              <span style="display:inline-block; background:#2B1704; color:#F6DE87; font-size:11px; font-weight:bold; letter-spacing:.6px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:12px;">Nuevo mensaje</span>
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#F3EEE3;">
+        {{ mensaje|truncatewords:15 }}
+        &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+    </div>
 
-              <h1 style="margin:6px 0 0; color:#2B1704; font-size:24px; font-family:Arial, Helvetica, sans-serif;">Alguien te escribió por el sitio</h1>
-              <p style="margin:8px 0 0; color:#6B4A12; font-size:13px;">
-                Formulario de contacto · Mi Colmena{% if fecha %} · {{ fecha }}{% endif %}
-              </p>
-            </td>
-          </tr>
 
-          <!-- Cuerpo -->
-          <tr>
-            <td style="padding:30px 30px 6px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; background-color:#F3EEE3;">
 
-              <!-- Datos del usuario -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF6EA; border:1px solid #F0E1B8; border-radius:16px;">
-                <tr>
-                  <td style="padding:22px 24px;">
-                    <p style="margin:0 0 14px; color:#2B1704; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">Información del contacto</p>
+        <tr>
+            <td align="center" style="padding:32px 16px;">
 
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; width:85px; vertical-align:top;">Nombre</td>
-                        <td style="padding:6px 0; color:#2B1704; font-size:14px;">{{ nombre }}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">Correo</td>
-                        <td style="padding:6px 0; color:#2B1704; font-size:14px;">
-                          <a href="mailto:{{ correo }}" style="color:#2B1704; text-decoration:underline;">{{ correo }}</a>
+
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px; background-color:#ffffff; border-radius:24px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,.12);">
+
+
+                    <!-- ==============================================
+                         BARRA DE MARCA
+                    =============================================== -->
+
+                    <tr>
+                        <td style="background-color:#F0A000; height:6px; line-height:6px; font-size:0;">&nbsp;</td>
+                    </tr>
+
+
+                    <!-- ==============================================
+                         ENCABEZADO
+
+                         El logo viaja dentro del correo (cid:), no
+                         enlazado. Antes usaba la etiqueta static, que
+                         en un correo produce una ruta relativa
+                         (/static/...) sin sitio contra el cual
+                         resolverse: la imagen nunca aparecía.
+                    =============================================== -->
+
+                    <tr>
+                        <td align="center" style="background-color:#F6DE87; padding:34px 25px 28px;">
+
+                            <img
+                                src="cid:logo_micolmena"
+                                alt="Mi Colmena"
+                                width="88"
+                                height="88"
+                                style="display:block; width:88px; height:88px; margin:0 auto 16px; border:0; outline:none; text-decoration:none;"
+                            >
+
+                            <span style="display:inline-block; background-color:#2B1704; color:#F6DE87; font-size:11px; font-weight:bold; letter-spacing:.6px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:12px;">
+                                Nuevo mensaje
+                            </span>
+
+                            <h1 class="titulo-correo" style="margin:6px 0 0; color:#2B1704; font-size:24px; font-weight:700;">
+                                Alguien te escribi&oacute; por el sitio
+                            </h1>
+
+                            <p style="margin:8px 0 0; color:#6B4A12; font-size:13px;">
+                                Formulario de contacto &middot; Mi Colmena{% if fecha %} &middot; {{ fecha }}{% endif %}
+                            </p>
+
                         </td>
-                      </tr>
-                      {% if telefono %}
-                      <tr>
-                        <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">Teléfono</td>
-                        <td style="padding:6px 0; color:#2B1704; font-size:14px;">
-                          <a href="tel:{{ telefono }}" style="color:#2B1704; text-decoration:underline;">{{ telefono }}</a>
-                        </td>
-                      </tr>
-                      {% endif %}
-                      {% if asunto %}
-                      <tr>
-                        <td style="padding:8px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">Interesado en</td>
-                        <td style="padding:6px 0; vertical-align:top;">
-                          <span style="display:inline-block; background:#F0A000; color:#2B1704; font-size:12px; font-weight:bold; padding:5px 13px; border-radius:20px;">{{ asunto }}</span>
-                        </td>
-                      </tr>
-                      {% endif %}
-                    </table>
-                  </td>
-                </tr>
-              </table>
+                    </tr>
 
-              <!-- Mensaje -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9EC; border-left:5px solid #F0A000; border-radius:14px; margin-top:20px;">
-                <tr>
-                  <td style="padding:22px 24px;">
-                    <p style="margin:0 0 10px; color:#2B1704; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">Mensaje</p>
-                    <p style="margin:0; color:#3A2A12; font-size:15px; line-height:1.7;">{{ mensaje|linebreaksbr }}</p>
-                  </td>
-                </tr>
-              </table>
 
-              <!-- Botones de acción -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:26px;">
-                <tr>
-                  <td align="center" style="padding:0 6px 6px;">
-                    <a href="mailto:{{ correo }}" style="display:inline-block; background:#F0A000; color:#2B1704; text-decoration:none; padding:14px 30px; border-radius:40px; font-weight:bold; font-size:14px; font-family:Arial, Helvetica, sans-serif;">
-                      Responder por correo
-                    </a>
-                    {% if telefono %}
-                    <a href="tel:{{ telefono }}" style="display:inline-block; background:#FFFFFF; border:2px solid #F0A000; color:#2B1704; text-decoration:none; padding:12px 26px; border-radius:40px; font-weight:bold; font-size:14px; font-family:Arial, Helvetica, sans-serif; margin-left:8px;">
-                      Llamar
-                    </a>
-                    {% endif %}
-                  </td>
-                </tr>
-              </table>
+                    <!-- ==============================================
+                         CUERPO
+                    =============================================== -->
+
+                    <tr>
+                        <td class="cuerpo-correo" style="padding:30px 30px 6px;">
+
+
+                            <!-- ----- DATOS DEL CONTACTO ----- -->
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FBF6EA; border:1px solid #F0E1B8; border-radius:16px;">
+                                <tr>
+                                    <td class="caja-datos" style="padding:22px 24px;">
+
+                                        <p style="margin:0 0 14px; color:#2B1704; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">
+                                            Informaci&oacute;n del contacto
+                                        </p>
+
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                                            <tr>
+                                                <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; width:95px; vertical-align:top;">
+                                                    Nombre
+                                                </td>
+                                                <td style="padding:6px 0; color:#2B1704; font-size:14px;">
+                                                    {{ nombre }}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">
+                                                    Correo
+                                                </td>
+                                                <td style="padding:6px 0; color:#2B1704; font-size:14px; word-break:break-all;">
+                                                    <a href="mailto:{{ correo }}" style="color:#2B1704; text-decoration:underline;">{{ correo }}</a>
+                                                </td>
+                                            </tr>
+
+                                            {% if telefono %}
+                                            <tr>
+                                                <td style="padding:6px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">
+                                                    Tel&eacute;fono
+                                                </td>
+                                                <td style="padding:6px 0; color:#2B1704; font-size:14px;">
+                                                    <a href="tel:{{ telefono }}" style="color:#2B1704; text-decoration:underline;">{{ telefono }}</a>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+
+                                            {% if asunto %}
+                                            <tr>
+                                                <td style="padding:8px 10px 6px 0; color:#8C4A12; font-size:14px; font-weight:bold; vertical-align:top;">
+                                                    Interesado en
+                                                </td>
+                                                <td style="padding:6px 0; vertical-align:top;">
+                                                    <span style="display:inline-block; background-color:#F0A000; color:#2B1704; font-size:12px; font-weight:bold; padding:5px 13px; border-radius:20px;">
+                                                        {{ asunto }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+
+                                        </table>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                            <!-- ----- MENSAJE ----- -->
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FFF9EC; border-left:5px solid #F0A000; border-radius:14px; margin-top:20px;">
+                                <tr>
+                                    <td class="caja-datos" style="padding:22px 24px;">
+
+                                        <p style="margin:0 0 10px; color:#2B1704; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">
+                                            Mensaje
+                                        </p>
+
+                                        <p style="margin:0; color:#3A2A12; font-size:15px; line-height:1.7;">
+                                            {{ mensaje|linebreaksbr }}
+                                        </p>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                            <!-- ----- BOTONES -----
+
+                                 El bloque condicional de Outlook usa VML.
+                                 Outlook de escritorio corre sobre el motor
+                                 de Word e ignora border-radius, así que sin
+                                 esto las pastillas le salen como
+                                 rectángulos con esquinas rectas.
+                            ------------------------------------------ -->
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;">
+                                <tr>
+                                    <td align="center" style="padding:0 6px 6px;">
+
+                                        <!--[if mso]>
+                                        <v:roundrect
+                                            xmlns:v="urn:schemas-microsoft-com:vml"
+                                            xmlns:w="urn:schemas-microsoft-com:office:word"
+                                            href="mailto:{{ correo }}"
+                                            style="height:46px; v-text-anchor:middle; width:210px;"
+                                            arcsize="50%"
+                                            stroke="f"
+                                            fillcolor="#F0A000">
+                                            <w:anchorlock/>
+                                            <center style="color:#2B1704; font-family:Arial,sans-serif; font-size:14px; font-weight:bold;">
+                                                Responder por correo
+                                            </center>
+                                        </v:roundrect>
+                                        <![endif]-->
+
+                                        <!--[if !mso]><!-- -->
+                                        <a
+                                            href="mailto:{{ correo }}"
+                                            class="boton-accion"
+                                            style="display:inline-block; background-color:#F0A000; color:#2B1704; text-decoration:none; padding:14px 30px; border-radius:40px; font-weight:bold; font-size:14px; text-align:center;"
+                                        >
+                                            Responder por correo
+                                        </a>
+                                        <!--<![endif]-->
+
+                                        {% if telefono %}
+
+                                            <!--[if mso]>
+                                            <v:roundrect
+                                                xmlns:v="urn:schemas-microsoft-com:vml"
+                                                xmlns:w="urn:schemas-microsoft-com:office:word"
+                                                href="tel:{{ telefono }}"
+                                                style="height:46px; v-text-anchor:middle; width:130px;"
+                                                arcsize="50%"
+                                                strokecolor="#F0A000"
+                                                strokeweight="2px"
+                                                fillcolor="#FFFFFF">
+                                                <w:anchorlock/>
+                                                <center style="color:#2B1704; font-family:Arial,sans-serif; font-size:14px; font-weight:bold;">
+                                                    Llamar
+                                                </center>
+                                            </v:roundrect>
+                                            <![endif]-->
+
+                                            <!--[if !mso]><!-- -->
+                                            <a
+                                                href="tel:{{ telefono }}"
+                                                class="boton-accion"
+                                                style="display:inline-block; background-color:#FFFFFF; border:2px solid #F0A000; color:#2B1704; text-decoration:none; padding:12px 26px; border-radius:40px; font-weight:bold; font-size:14px; text-align:center; margin-left:8px;"
+                                            >
+                                                Llamar
+                                            </a>
+                                            <!--<![endif]-->
+
+                                        {% endif %}
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+
+                    <!-- ==============================================
+                         PIE
+                    =============================================== -->
+
+                    <tr>
+                        <td align="center" style="background-color:#F6DE87; padding:22px;">
+
+                            <p style="margin:0; color:#2B1704; font-weight:bold; font-size:14px;">
+                                Mi Colmena
+                            </p>
+
+                            <p style="margin:6px 0 0; color:#6B4A12; font-size:12px;">
+                                &copy; {% now "Y" %} &middot; Sistema de gesti&oacute;n ap&iacute;cola
+                            </p>
+
+                            {% if sitio_url %}
+                            <p style="margin:10px 0 0;">
+                                <a href="{{ sitio_url }}" style="color:#8C4A12; font-size:12px; text-decoration:underline;">
+                                    Visitar el sitio
+                                </a>
+                            </p>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+
+                </table>
 
             </td>
-          </tr>
+        </tr>
 
-          <!-- Pie -->
-          <tr>
-            <td align="center" style="background:#F6DE87; padding:22px;">
-              <p style="margin:0; color:#2B1704; font-weight:bold; font-size:14px; font-family:Arial, Helvetica, sans-serif;">Mi Colmena</p>
-              <p style="margin:6px 0 0; color:#6B4A12; font-size:12px; font-family:Arial, Helvetica, sans-serif;">© {% now "Y" %} · Sistema de gestión apícola</p>
-              <!-- Reemplaza este href por el dominio real cuando esté en producción -->
-              <p style="margin:10px 0 0;"><a href="https://tudominio.com" style="color:#8C4A12; font-size:12px; text-decoration:underline;">Visitar el sitio</a></p>
-            </td>
-          </tr>
-
-        </table>
-
-      </td>
-    </tr>
-  </table>
+    </table>
 
 </body>
+
 </html>

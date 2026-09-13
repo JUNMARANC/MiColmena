@@ -1179,12 +1179,24 @@ def mis_apiarios(request):
     )
 
 
-    if estado:
+    estados_permitidos = [
+        "Bueno",
+        "Precaución",
+        "Deficiente",
+    ]
+
+
+    if estado in estados_permitidos:
 
         apiarios = apiarios.filter(
             estadoapiario__iexact=
                 estado
         )
+
+
+    else:
+
+        estado = ""
 
 
     # ========================================================
@@ -1784,6 +1796,74 @@ def detalle_apiario_apicultor(
 
 
     # ========================================================
+    # REGISTROS ABIERTOS DE CADA COLMENA
+    # ========================================================
+
+    mantenimientos_pendientes_colmena = (
+        Mantenimiento.objects
+        .filter(
+            id_colmena=OuterRef("pk"),
+            estado__iexact="Pendiente"
+        )
+    )
+
+
+    incidencias_abiertas_colmena = (
+        Incidencia.objects
+        .filter(
+            id_colmena=OuterRef("pk")
+        )
+        .filter(
+            Q(
+                estado__iexact="Pendiente"
+            )
+            |
+            Q(
+                estado__iexact="En proceso"
+            )
+        )
+    )
+
+
+    # ========================================================
+    # ÚLTIMO MANTENIMIENTO COMPLETADO
+    # ========================================================
+
+    ultimo_mantenimiento_colmena = (
+        Mantenimiento.objects
+        .filter(
+            id_colmena=OuterRef("pk"),
+            estado__iexact="Completado"
+        )
+        .order_by(
+            "-fechaejecucion",
+            "-pk"
+        )
+    )
+
+
+    # ========================================================
+    # TOTAL DE INCIDENCIAS POR COLMENA
+    # ========================================================
+
+    total_incidencias_colmena = (
+        Incidencia.objects
+        .filter(
+            id_colmena=OuterRef("pk")
+        )
+        .values(
+            "id_colmena"
+        )
+        .annotate(
+            total=Count("pk")
+        )
+        .values(
+            "total"
+        )
+    )
+
+
+    # ========================================================
     # COLMENAS DEL APIARIO
     # ========================================================
 
@@ -1792,6 +1872,42 @@ def detalle_apiario_apicultor(
         .filter(
             id_apiario=apiario
         )
+        .annotate(
+
+            # -----------------------------------------------
+            # TRABAJOS ABIERTOS
+            # -----------------------------------------------
+
+            tiene_mantenimiento_pendiente=Exists(
+                mantenimientos_pendientes_colmena
+            ),
+
+            tiene_incidencia_abierta=Exists(
+                incidencias_abiertas_colmena
+            ),
+
+
+            # -----------------------------------------------
+            # ÚLTIMO MANTENIMIENTO
+            # -----------------------------------------------
+
+            ultimo_mantenimiento_fecha=Subquery(
+                ultimo_mantenimiento_colmena
+                .values(
+                    "fechaejecucion"
+                )[:1]
+            ),
+
+
+            # -----------------------------------------------
+            # TOTAL DE INCIDENCIAS
+            # -----------------------------------------------
+
+            total_incidencias=Subquery(
+                total_incidencias_colmena[:1]
+            ),
+
+        )
         .order_by(
             "codigocolmena"
         )
@@ -1799,42 +1915,46 @@ def detalle_apiario_apicultor(
 
 
     # ========================================================
-    # CONTEO POR ESTADO
+    # RESUMEN DE ESTADOS
+    # UNA SOLA CONSULTA
     # ========================================================
 
-    colmenas_activas = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Activa"
+    resumen_colmenas = (
+        colmenas.aggregate(
+
+            total=Count(
+                "id_colmena"
+            ),
+
+            activas=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact="Activa"
+                )
+            ),
+
+            revision=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact="Revisión"
+                )
+            ),
+
+            riesgo=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact="Riesgo"
+                )
+            ),
+
+            inactivas=Count(
+                "id_colmena",
+                filter=Q(
+                    estadocolmena__iexact="Inactiva"
+                )
+            ),
+
         )
-        .count()
-    )
-
-
-    colmenas_riesgo = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Riesgo"
-        )
-        .count()
-    )
-
-
-    colmenas_revision = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Revisión"
-        )
-        .count()
-    )
-
-
-    colmenas_inactivas = (
-        colmenas
-        .filter(
-            estadocolmena__iexact="Inactiva"
-        )
-        .count()
     )
 
 
@@ -1847,47 +1967,17 @@ def detalle_apiario_apicultor(
 
     for colmena in colmenas:
 
-        # ====================================================
-        # DISPONIBILIDAD PARA NUEVAS ACTIVIDADES
-        # ====================================================
-
         colmena.permite_nuevas_actividades = (
             colmena_esta_operativa(
                 colmena
             )
         )
 
-        # ====================================================
-        # ÚLTIMO MANTENIMIENTO COMPLETADO
-        # ====================================================
 
-        ultimo_mantenimiento = (
-            Mantenimiento.objects
-            .filter(
-                id_colmena=colmena,
-                estado="Completado"
-            )
-            .order_by(
-                "-fechaejecucion"
-            )
-            .first()
-        )
-
-
-        # ====================================================
-        # INCIDENCIAS DE LA COLMENA
-        #
-        # Por ahora contamos las registradas.
-        # Después ajustamos aquí cuáles estados
-        # consideramos "activas".
-        # ====================================================
-
-        total_incidencias = (
-            Incidencia.objects
-            .filter(
-                id_colmena=colmena
-            )
-            .count()
+        colmena.total_incidencias = (
+            colmena.total_incidencias
+            or
+            0
         )
 
 
@@ -1896,13 +1986,38 @@ def detalle_apiario_apicultor(
                 "colmena":
                     colmena,
 
-                "ultimo_mantenimiento":
-                    ultimo_mantenimiento,
+                "ultimo_mantenimiento_fecha":
+                    colmena.ultimo_mantenimiento_fecha,
 
                 "total_incidencias":
-                    total_incidencias,
+                    colmena.total_incidencias,
             }
         )
+
+
+    # ========================================================
+    # CONTADORES
+    # ========================================================
+
+    total_colmenas = (
+        resumen_colmenas["total"]
+    )
+
+    colmenas_activas = (
+        resumen_colmenas["activas"]
+    )
+
+    colmenas_revision = (
+        resumen_colmenas["revision"]
+    )
+
+    colmenas_riesgo = (
+        resumen_colmenas["riesgo"]
+    )
+
+    colmenas_inactivas = (
+        resumen_colmenas["inactivas"]
+    )
 
 
     # ========================================================
@@ -1938,7 +2053,7 @@ def detalle_apiario_apicultor(
             colmenas_detalle,
 
         "total_colmenas":
-            colmenas.count(),
+            total_colmenas,
 
         "colmenas_activas":
             colmenas_activas,
@@ -3425,10 +3540,68 @@ def validar_imagen_mantenimiento(archivo):
 
     return None
 
+# ============================================================
+# GUARDAR FORMULARIO DE MANTENIMIENTO CON ERROR
+# ============================================================
+
+def guardar_formulario_mantenimiento_error(
+    request,
+    *,
+    modo,
+    entidad,
+    id_apiario,
+    id_colmena,
+    tipo,
+    fecha_texto,
+    prioridad,
+    observaciones,
+    origen="",
+    id_apiario_origen="",
+    id_mantenimiento=None,
+):
+
+    request.session[
+        "mantenimiento_formulario_error"
+    ] = {
+
+        "modo":
+            modo,
+
+        "id_mantenimiento":
+            id_mantenimiento,
+
+        "entidad":
+            entidad,
+
+        "id_apiario":
+            id_apiario,
+
+        "id_colmena":
+            id_colmena,
+
+        "tipo":
+            tipo,
+
+        "fecha_ejecucion":
+            fecha_texto,
+
+        "prioridad":
+            prioridad,
+
+        "observaciones":
+            observaciones,
+
+        "origen":
+            origen,
+
+        "id_apiario_origen":
+            id_apiario_origen,
+
+    }
 
 # ============================================================
-# REGISTRAR MANTENIMIENTO
-# PANEL APICULTOR
+# ACCESO RÁPIDO A MANTENIMIENTO
+# DESDE MIS COLMENAS
 # ============================================================
 
 @login_required
@@ -3442,44 +3615,17 @@ def registrar_mantenimiento_apicultor(
 ):
 
     # ========================================================
-    # 1. OBTENER APICULTOR AUTENTICADO
+    # APICULTOR
     # ========================================================
 
-    apicultor = (
-        Apicultor.objects
-        .filter(
-            user=request.user
-        )
-        .first()
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
     )
 
 
     # ========================================================
-    # 2. VALIDAR PERFIL DE APICULTOR
-    # ========================================================
-
-    if not apicultor:
-
-        messages.error(
-            request,
-            (
-                "Tu usuario no tiene un perfil "
-                "de apicultor asignado."
-            )
-        )
-
-        return redirect(
-            "login"
-        )
-
-
-    # ========================================================
-    # 3. OBTENER COLMENA
-    #
-    # SEGURIDAD:
-    #
-    # El apicultor solamente puede registrar mantenimientos
-    # sobre colmenas pertenecientes a sus propios apiarios.
+    # VALIDAR COLMENA Y PROPIEDAD
     # ========================================================
 
     colmena = get_object_or_404(
@@ -3490,13 +3636,13 @@ def registrar_mantenimiento_apicultor(
             id_colmena,
 
         id_apiario__id_apicultor=
-            apicultor
+            apicultor,
 
     )
 
 
     # ========================================================
-    # 4. VALIDAR QUE LA COLMENA ESTÉ OPERATIVA
+    # COLMENA INACTIVA
     # ========================================================
 
     if not colmena_esta_operativa(
@@ -3518,460 +3664,21 @@ def registrar_mantenimiento_apicultor(
 
 
     # ========================================================
-    # 5. APIARIO AUTOMÁTICO
-    #
-    # No permitimos que el usuario envíe manualmente otro
-    # apiario. Lo obtenemos directamente desde la colmena.
+    # ABRIR FORMULARIO PRINCIPAL DE MANTENIMIENTOS
     # ========================================================
 
-    apiario = (
-        colmena.id_apiario
+    url = reverse(
+        "mantenimientos_apicultor"
     )
 
 
-    # ========================================================
-    # 6. PROCESAR FORMULARIO
-    # ========================================================
-
-    if request.method == "POST":
-
-        # ====================================================
-        # 6.1 TIPO DE MANTENIMIENTO
-        # ====================================================
-
-        tipo = (
-            request.POST
-            .get(
-                "tipo",
-                ""
-            )
-            .strip()
-        )
-
-
-        # ====================================================
-        # 6.2 FECHA
-        # ====================================================
-
-        fecha_ejecucion = (
-            request.POST
-            .get(
-                "fecha_ejecucion",
-                ""
-            )
-            .strip()
-        )
-
-
-        # ====================================================
-        # 6.3 ESTADO
-        # ====================================================
-
-        estado = (
-            request.POST
-            .get(
-                "estado",
-                ""
-            )
-            .strip()
-        )
-
-
-        # ====================================================
-        # 6.4 PRIORIDAD
-        # ====================================================
-
-        prioridad = (
-            request.POST
-            .get(
-                "prioridad",
-                ""
-            )
-            .strip()
-        )
-
-
-        # ====================================================
-        # 6.5 OBSERVACIONES
-        # ====================================================
-
-        observaciones = (
-            request.POST
-            .get(
-                "observaciones",
-                ""
-            )
-            .strip()
-        )
-
-
-        # ====================================================
-        # 7. VALIDACIONES
-        # ====================================================
-
-        errores = []
-
-
-        # ====================================================
-        # 7.1 TIPO
-        # ====================================================
-
-        if not tipo:
-
-            errores.append(
-                (
-                    "Debes ingresar el tipo "
-                    "de mantenimiento."
-                )
-            )
-
-
-        elif len(tipo) > 100:
-
-            errores.append(
-                (
-                    "El tipo de mantenimiento no puede "
-                    "superar los 100 caracteres."
-                )
-            )
-
-
-        # ====================================================
-        # 7.2 FECHA
-        # ====================================================
-
-        fecha_convertida = None
-
-
-        if not fecha_ejecucion:
-
-            errores.append(
-                (
-                    "Debes seleccionar la fecha "
-                    "del mantenimiento."
-                )
-            )
-
-        else:
-
-            try:
-
-                fecha_convertida = (
-                    datetime.strptime(
-                        fecha_ejecucion,
-                        "%Y-%m-%d"
-                    )
-                    .date()
-                )
-
-            except ValueError:
-
-                errores.append(
-                    (
-                        "La fecha del mantenimiento "
-                        "no es válida."
-                    )
-                )
-
-
-        # ====================================================
-        # 7.3 ESTADO
-        # ====================================================
-
-        estados_validos = [
-            "Pendiente",
-            "Completado",
-            "Cancelado",
-        ]
-
-
-        if estado not in estados_validos:
-
-            errores.append(
-                "Selecciona un estado válido."
-            )
-
-
-        # ====================================================
-        # 7.4 PRIORIDAD
-        # ====================================================
-
-        prioridades_validas = [
-            "Baja",
-            "Media",
-            "Alta",
-            "Crítica",
-        ]
-
-
-        if prioridad not in prioridades_validas:
-
-            errores.append(
-                "Selecciona una prioridad válida."
-            )
-
-
-        # ====================================================
-        # 7.5 OBSERVACIONES
-        # ====================================================
-
-        if len(observaciones) > 1000:
-
-            errores.append(
-                (
-                    "Las observaciones no pueden superar "
-                    "los 1000 caracteres."
-                )
-            )
-
-
-        # ====================================================
-        # 8. MOSTRAR ERRORES
-        # ====================================================
-
-        if errores:
-
-            for error in errores:
-
-                messages.error(
-                    request,
-                    error
-                )
-
-
-        # ====================================================
-        # 9. DATOS VÁLIDOS
-        # ====================================================
-
-        else:
-
-            # =================================================
-            # 9.1 RESPONSABLE
-            # =================================================
-
-            responsable = (
-                request.user
-                .get_full_name()
-                .strip()
-            )
-
-
-            if not responsable:
-
-                responsable = (
-                    request.user.username
-                )
-
-
-            # =================================================
-            # 9.2 CREAR MANTENIMIENTO
-            # =================================================
-
-            try:
-
-                with transaction.atomic():
-
-                    mantenimiento = (
-                        Mantenimiento.objects.create(
-
-                            # -------------------------------
-                            # UBICACIÓN
-                            # -------------------------------
-
-                            id_apiario=
-                                apiario,
-
-                            id_colmena=
-                                colmena,
-
-
-                            # -------------------------------
-                            # ENTIDAD
-                            # -------------------------------
-
-                            entidadmantenimiento=
-                                "Colmena",
-
-
-                            # -------------------------------
-                            # INFORMACIÓN
-                            # -------------------------------
-
-                            tipo=
-                                tipo,
-
-                            fechaejecucion=
-                                fecha_convertida,
-
-                            estado=
-                                estado,
-
-                            prioridad=
-                                prioridad,
-
-                            observaciones=
-                                observaciones,
-
-
-                            # -------------------------------
-                            # RESPONSABLE
-                            # -------------------------------
-
-                            responsable=
-                                responsable,
-
-                        )
-                    )
-
-
-            except Exception as error:
-
-                print(
-                    (
-                        "ERROR CREANDO MANTENIMIENTO "
-                        "DESDE PANEL APICULTOR:"
-                    ),
-                    type(error).__name__,
-                    error
-                )
-
-                messages.error(
-                    request,
-                    (
-                        "Ocurrió un error al registrar "
-                        "el mantenimiento. "
-                        "Inténtalo nuevamente."
-                    )
-                )
-
-                # No seguimos con la notificación
-                # porque el mantenimiento no fue creado.
-
-            else:
-
-                # =============================================
-                # 10. NOTIFICAR A LOS ADMINISTRADORES
-                #
-                # IMPORTANTE:
-                #
-                # Esto ocurre después de guardar el
-                # mantenimiento.
-                #
-                # Si la notificación falla, NO eliminamos
-                # el mantenimiento que ya fue registrado.
-                # =============================================
-
-                try:
-
-                    resultado_notificaciones = (
-                        notificar_mantenimiento_creado(
-                            mantenimiento
-                        )
-                    )
-
-
-                    print(
-                        (
-                            "NOTIFICACIONES MANTENIMIENTO "
-                            "A ADMIN:"
-                        ),
-                        resultado_notificaciones
-                    )
-
-
-                except Exception as error:
-
-                    print(
-                        (
-                            "ERROR NOTIFICANDO MANTENIMIENTO "
-                            "A ADMINISTRADORES:"
-                        ),
-                        type(error).__name__,
-                        error
-                    )
-
-
-                # =============================================
-                # 11. MENSAJE DE ÉXITO
-                # =============================================
-
-                messages.success(
-                    request,
-                    (
-                        "El mantenimiento fue registrado "
-                        "correctamente."
-                    )
-                )
-
-
-                # =============================================
-                # 12. REDIRECCIÓN
-                # =============================================
-
-                return redirect(
-                    "colmenas_apicultor"
-                )
-
-
-    # ========================================================
-    # 13. CONTEXTO
-    # ========================================================
-
-    contexto = {
-
-        "apicultor":
-            apicultor,
-
-        "apiario":
-            apiario,
-
-        "colmena":
-            colmena,
-
-        "fecha_hoy":
-            timezone.localdate().isoformat(),
-
-    }
-
-
-    # ========================================================
-    # 14. MOSTRAR FORMULARIO
-    # ========================================================
-
-    return render(
-        request,
-        "panel_apicultor/registrar_mantenimiento.html",
-        contexto
+    return redirect(
+        f"{url}"
+        f"?nuevo=1"
+        f"&apiario_nuevo={colmena.id_apiario_id}"
+        f"&colmena_nueva={colmena.id_colmena}"
+        f"&origen=colmenas"
     )
-
-
-    # ========================================================
-    # CONTEXTO
-    # ========================================================
-
-    contexto = {
-
-        "apicultor":
-            apicultor,
-
-        "apiario":
-            apiario,
-
-        "colmena":
-            colmena,
-
-        "fecha_hoy":
-            timezone.localdate().isoformat(),
-
-    }
-
-
-    return render(
-        request,
-        "panel_apicultor/registrar_mantenimiento.html",
-        contexto
-    )
-
 
 
 # ============================================================
@@ -4076,6 +3783,25 @@ def mantenimientos_apicultor(request):
         user=request.user
     )
 
+    # ========================================================
+    # FORMULARIO QUE REGRESA CON ERROR
+    # ========================================================
+
+    formulario_mantenimiento_error = (
+        request.session.pop(
+            "mantenimiento_formulario_error",
+            None
+        )
+    )
+
+
+    if not isinstance(
+        formulario_mantenimiento_error,
+        dict
+    ):
+
+        formulario_mantenimiento_error = None
+
 
     # ========================================================
     # APIARIOS DEL APICULTOR
@@ -4090,6 +3816,118 @@ def mantenimientos_apicultor(request):
             "nombreapiario"
         )
     )
+
+    # ========================================================
+    # ORIGEN DEL REGISTRO DE MANTENIMIENTO
+    # ========================================================
+
+    origen_guardado = ""
+
+    id_apiario_origen_guardado = ""
+
+
+    if (
+        formulario_mantenimiento_error
+        and
+        formulario_mantenimiento_error.get(
+            "modo"
+        )
+        ==
+        "crear"
+    ):
+
+        origen_guardado = (
+            formulario_mantenimiento_error
+            .get(
+                "origen",
+                ""
+            )
+            or
+            ""
+        )
+
+
+        id_apiario_origen_guardado = (
+            formulario_mantenimiento_error
+            .get(
+                "id_apiario_origen",
+                ""
+            )
+            or
+            ""
+        )
+
+
+    origen = (
+        request.GET
+        .get(
+            "origen",
+            origen_guardado
+        )
+        .strip()
+    )
+
+
+    id_apiario_origen = (
+        request.GET
+        .get(
+            "id_apiario_origen",
+            id_apiario_origen_guardado
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # VALIDAR PÁGINA DE ORIGEN
+    # ========================================================
+
+    if (
+        origen == "detalle_apiario"
+        and
+        id_apiario_origen.isdigit()
+    ):
+
+        apiario_origen = (
+            apiarios
+            .filter(
+                id_apiario=int(
+                    id_apiario_origen
+                )
+            )
+            .first()
+        )
+
+
+        if apiario_origen:
+
+            url_cancelar_mantenimiento = reverse(
+                "detalle_apiario_apicultor",
+                kwargs={
+                    "id_apiario":
+                        apiario_origen.id_apiario
+                }
+            )
+
+        else:
+
+            origen = ""
+            id_apiario_origen = ""
+
+
+    elif origen == "colmenas":
+
+        url_cancelar_mantenimiento = reverse(
+            "colmenas_apicultor"
+        )
+
+        id_apiario_origen = ""
+
+
+    else:
+
+        origen = ""
+        id_apiario_origen = ""
 
 
     # ========================================================
@@ -4514,6 +4352,71 @@ def mantenimientos_apicultor(request):
     )
 
 
+    # ========================================================
+    # SI UNA EDICIÓN REGRESA CON ERROR,
+    # BUSCAR LA PÁGINA DONDE ESTÁ ESE MANTENIMIENTO
+    # ========================================================
+
+    if (
+        not pagina
+        and
+        formulario_mantenimiento_error
+        and
+        formulario_mantenimiento_error.get(
+            "modo"
+        )
+        ==
+        "editar"
+    ):
+
+        id_mantenimiento_error = (
+            formulario_mantenimiento_error
+            .get(
+                "id_mantenimiento"
+            )
+        )
+
+
+        if str(
+            id_mantenimiento_error
+            or
+            ""
+        ).isdigit():
+
+            ids_mantenimientos = list(
+
+                mantenimientos
+                .values_list(
+                    "id_mantenimiento",
+                    flat=True
+                )
+
+            )
+
+
+            try:
+
+                indice_mantenimiento = (
+                    ids_mantenimientos.index(
+                        int(
+                            id_mantenimiento_error
+                        )
+                    )
+                )
+
+
+                pagina = (
+                    indice_mantenimiento
+                    //
+                    10
+                ) + 1
+
+
+            except ValueError:
+
+                pass
+
+
     mantenimientos_pagina = (
         paginator.get_page(
             pagina
@@ -4533,6 +4436,15 @@ def mantenimientos_apicultor(request):
         "apiarios":
             apiarios,
 
+        "origen":
+            origen,
+
+        "id_apiario_origen":
+            id_apiario_origen,
+
+        "url_cancelar_mantenimiento":
+            url_cancelar_mantenimiento,
+
         "colmenas":
             colmenas,
 
@@ -4541,6 +4453,9 @@ def mantenimientos_apicultor(request):
 
         "mantenimientos":
             mantenimientos_pagina,
+
+        "formulario_mantenimiento_error":
+            formulario_mantenimiento_error,
 
 
         # ----------------------------------------------------
@@ -5080,11 +4995,59 @@ def crear_mantenimiento_apicultor(request):
 
     if errores:
 
+        guardar_formulario_mantenimiento_error(
+
+            request,
+
+            modo="crear",
+
+            entidad=
+                entidad,
+
+            id_apiario=
+                id_apiario,
+
+            id_colmena=
+                id_colmena,
+
+            tipo=
+                tipo,
+
+            fecha_texto=
+                fecha_texto,
+
+            prioridad=
+                prioridad,
+
+            observaciones=
+                observaciones,
+
+            origen=
+                origen,
+
+            id_apiario_origen=
+                id_apiario_origen,
+
+        )
+
+
         for error in errores:
 
             messages.error(
                 request,
                 error
+            )
+
+
+        if todas_evidencias:
+
+            messages.info(
+                request,
+                (
+                    "Por seguridad del navegador, "
+                    "debes seleccionar nuevamente "
+                    "las fotografías."
+                )
             )
 
 
@@ -5297,6 +5260,40 @@ def crear_mantenimiento_apicultor(request):
             error
         )
 
+        guardar_formulario_mantenimiento_error(
+
+            request,
+
+            modo="crear",
+
+            entidad=
+                entidad,
+
+            id_apiario=
+                id_apiario,
+
+            id_colmena=
+                id_colmena,
+
+            tipo=
+                tipo,
+
+            fecha_texto=
+                fecha_texto,
+
+            prioridad=
+                prioridad,
+
+            observaciones=
+                observaciones,
+
+            origen=
+                origen,
+
+            id_apiario_origen=
+                id_apiario_origen,
+
+        )
 
         messages.error(
             request,
@@ -5305,6 +5302,17 @@ def crear_mantenimiento_apicultor(request):
                 "Inténtalo nuevamente."
             )
         )
+
+        if todas_evidencias:
+
+            messages.info(
+                request,
+                (
+                    "Por seguridad del navegador, "
+                    "debes seleccionar nuevamente "
+                    "las fotografías."
+                )
+            )
 
 
         return redirect(
@@ -5357,7 +5365,7 @@ def crear_mantenimiento_apicultor(request):
 
 
     # ========================================================
-    # 19. REGRESAR A LA PÁGINA DE ORIGEN
+    # 19. REGRESAR A DETALLE DE APIARIO
     # ========================================================
 
     if (
@@ -5376,6 +5384,21 @@ def crear_mantenimiento_apicultor(request):
                 apiario_origen.id_apiario
         )
 
+
+    # ========================================================
+    # REGRESAR A MIS COLMENAS
+    # ========================================================
+
+    if origen == "colmenas":
+
+        return redirect(
+            "colmenas_apicultor"
+        )
+
+
+    # ========================================================
+    # REGRESAR A MANTENIMIENTOS
+    # ========================================================
 
     return redirect(
         "mantenimientos_apicultor"
@@ -5443,6 +5466,24 @@ def editar_mantenimiento_apicultor(
             id_mantenimiento
     )
 
+    # ========================================================
+    # SOLO LOS PENDIENTES PUEDEN EDITARSE
+    # ========================================================
+
+    if mantenimiento.estado != "Pendiente":
+
+        messages.error(
+            request,
+            (
+                "Este mantenimiento ya está cerrado "
+                "y no puede modificarse."
+            )
+        )
+
+        return redirect(
+            "mantenimientos_apicultor"
+        )
+
 
     # ========================================================
     # DATOS
@@ -5496,17 +5537,6 @@ def editar_mantenimiento_apicultor(
         )
         .strip()
     )
-
-
-    estado = (
-        request.POST
-        .get(
-            "estado",
-            ""
-        )
-        .strip()
-    )
-
 
     prioridad = (
         request.POST
@@ -5591,21 +5621,6 @@ def editar_mantenimiento_apicultor(
         errores.append(
             "La tarea no puede superar los 100 caracteres."
         )
-
-
-    estados_validos = [
-        "Pendiente",
-        "Completado",
-        "Cancelado",
-    ]
-
-
-    if estado not in estados_validos:
-
-        errores.append(
-            "Selecciona un estado válido."
-        )
-
 
     prioridades_validas = [
         "Baja",
@@ -5839,11 +5854,56 @@ def editar_mantenimiento_apicultor(
 
     if errores:
 
+        guardar_formulario_mantenimiento_error(
+
+            request,
+
+            modo="editar",
+
+            id_mantenimiento=
+                mantenimiento.id_mantenimiento,
+
+            entidad=
+                entidad,
+
+            id_apiario=
+                id_apiario,
+
+            id_colmena=
+                id_colmena,
+
+            tipo=
+                tipo,
+
+            fecha_texto=
+                fecha_texto,
+
+            prioridad=
+                prioridad,
+
+            observaciones=
+                observaciones,
+
+        )
+
+
         for error in errores:
 
             messages.error(
                 request,
                 error
+            )
+
+
+        if nuevas_evidencias:
+
+            messages.info(
+                request,
+                (
+                    "Por seguridad del navegador, "
+                    "debes seleccionar nuevamente "
+                    "las fotografías nuevas."
+                )
             )
 
 
@@ -5884,12 +5944,6 @@ def editar_mantenimiento_apicultor(
             mantenimiento.fechaejecucion = (
                 fecha_ejecucion
             )
-
-
-            mantenimiento.estado = (
-                estado
-            )
-
 
             mantenimiento.prioridad = (
                 prioridad
@@ -5990,10 +6044,55 @@ def editar_mantenimiento_apicultor(
 
     except Exception:
 
+        guardar_formulario_mantenimiento_error(
+
+            request,
+
+            modo="editar",
+
+            id_mantenimiento=
+                mantenimiento.id_mantenimiento,
+
+            entidad=
+                entidad,
+
+            id_apiario=
+                id_apiario,
+
+            id_colmena=
+                id_colmena,
+
+            tipo=
+                tipo,
+
+            fecha_texto=
+                fecha_texto,
+
+            prioridad=
+                prioridad,
+
+            observaciones=
+                observaciones,
+
+        )
+
+
         messages.error(
             request,
             "No fue posible actualizar el mantenimiento."
         )
+
+
+        if nuevas_evidencias:
+
+            messages.info(
+                request,
+                (
+                    "Por seguridad del navegador, "
+                    "debes seleccionar nuevamente "
+                    "las fotografías nuevas."
+                )
+            )
 
 
         return redirect(
@@ -6089,6 +6188,24 @@ def completar_mantenimiento_apicultor(
             "mantenimientos_apicultor"
         )
 
+    # ========================================================
+    # SOLO UN PENDIENTE PUEDE COMPLETARSE
+    # ========================================================
+
+    if mantenimiento.estado != "Pendiente":
+
+        messages.error(
+            request,
+            (
+                "El estado actual del mantenimiento "
+                "no permite marcarlo como completado."
+            )
+        )
+
+        return redirect(
+            "mantenimientos_apicultor"
+        )
+
 
     mantenimiento.estado = (
         "Completado"
@@ -6112,6 +6229,132 @@ def completar_mantenimiento_apicultor(
         "mantenimientos_apicultor"
     )
 
+# ============================================================
+# CANCELAR MANTENIMIENTO
+# PANEL APICULTOR
+# ============================================================
+
+@login_required
+@permiso_requerido(
+    "mr",
+    redireccion="dashboard_apicultor"
+)
+@require_POST
+def cancelar_mantenimiento_apicultor(
+    request,
+    id_mantenimiento
+):
+
+    # ========================================================
+    # APICULTOR
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # ACCESO
+    # ========================================================
+
+    acceso_mantenimiento = (
+
+        Q(
+            id_apiario__id_apicultor=apicultor
+        )
+
+        |
+
+        Q(
+            id_colmena__id_apiario__id_apicultor=apicultor
+        )
+
+    )
+
+
+    mantenimiento = get_object_or_404(
+
+        Mantenimiento.objects
+        .filter(
+            acceso_mantenimiento
+        )
+        .distinct(),
+
+        id_mantenimiento=
+            id_mantenimiento
+    )
+
+
+    # ========================================================
+    # VALIDAR ESTADO
+    # ========================================================
+
+    if mantenimiento.estado == "Completado":
+
+        messages.error(
+            request,
+            (
+                "Un mantenimiento completado "
+                "no puede cancelarse."
+            )
+        )
+
+        return redirect(
+            "mantenimientos_apicultor"
+        )
+
+
+    if mantenimiento.estado == "Cancelado":
+
+        messages.info(
+            request,
+            "Este mantenimiento ya estaba cancelado."
+        )
+
+        return redirect(
+            "mantenimientos_apicultor"
+        )
+
+
+    if mantenimiento.estado != "Pendiente":
+
+        messages.error(
+            request,
+            "El estado actual del mantenimiento no permite cancelarlo."
+        )
+
+        return redirect(
+            "mantenimientos_apicultor"
+        )
+
+
+    # ========================================================
+    # CANCELAR
+    # ========================================================
+
+    mantenimiento.estado = (
+        "Cancelado"
+    )
+
+
+    mantenimiento.save(
+        update_fields=[
+            "estado"
+        ]
+    )
+
+
+    messages.success(
+        request,
+        "Mantenimiento cancelado correctamente."
+    )
+
+
+    return redirect(
+        "mantenimientos_apicultor"
+    )
 
 # ============================================================
 # ACTUALIZAR OBSERVACIÓN
@@ -6162,6 +6405,23 @@ def actualizar_observacion_mantenimiento_apicultor(
             id_mantenimiento
     )
 
+    # ========================================================
+    # SOLO LOS PENDIENTES PUEDEN MODIFICARSE
+    # ========================================================
+
+    if mantenimiento.estado != "Pendiente":
+
+        messages.error(
+            request,
+            (
+                "Las observaciones de un mantenimiento "
+                "completado o cancelado no pueden modificarse."
+            )
+        )
+
+        return redirect(
+            "mantenimientos_apicultor"
+        )
 
     observaciones = (
         request.POST
@@ -7343,6 +7603,18 @@ def crear_incidencia_apicultor(request):
                 "Debes ingresar un título para la incidencia."
             )
 
+        elif len(titulo) < 3:
+
+            errores.append(
+                "El título debe tener al menos 3 caracteres."
+            )
+
+        elif len(titulo) > 100:
+
+            errores.append(
+                "El título no puede superar los 100 caracteres."
+            )
+
 
         # ====================================================
         # PRIORIDAD
@@ -7352,6 +7624,19 @@ def crear_incidencia_apicultor(request):
 
             errores.append(
                 "Selecciona una prioridad válida."
+            )
+
+        # ====================================================
+        # OBSERVACIONES
+        # ====================================================
+
+        if len(observaciones) > 255:
+
+            errores.append(
+                (
+                    "Las observaciones no pueden superar "
+                    "los 255 caracteres."
+                )
             )
 
 
@@ -7381,10 +7666,9 @@ def crear_incidencia_apicultor(request):
 
         else:
 
-            fecha_deteccion = (
-                timezone.localdate()
+            errores.append(
+                "Debes seleccionar la fecha de detección."
             )
-
 
         # ====================================================
         # NO PERMITIR FECHA FUTURA
@@ -10477,6 +10761,11 @@ def perfil_apicultor(request):
                 )
 
 
+            return redirect(
+                "perfil_apicultor"
+            )
+
+
         # ====================================================
         # 2.4 GUARDAR CAMBIOS
         # ====================================================
@@ -10626,6 +10915,11 @@ def perfil_apicultor(request):
                         "Ocurrió un error al actualizar "
                         "la información de tu perfil."
                     )
+                )
+
+
+                return redirect(
+                    "perfil_apicultor"
                 )
 
 
