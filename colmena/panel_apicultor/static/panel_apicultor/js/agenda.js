@@ -76,7 +76,165 @@ document.addEventListener("DOMContentLoaded", function () {
             '.agenda-fecha-filtro input[name="fecha"]'
         );
 
+    /* ======================================================
+    FILTROS AUTOMÁTICOS
+    ====================================================== */
 
+    /*
+    * Tiempo de espera para el buscador.
+    *
+    * Evita recargar la página por cada tecla.
+    */
+    const TIEMPO_BUSQUEDA_FILTRO =
+        500;
+
+
+    let temporizadorBusquedaFiltro =
+        null;
+
+
+    /* ======================================================
+    ENVIAR FILTROS
+    ====================================================== */
+
+    function enviarFiltrosAgenda() {
+
+        if (!formularioFiltros) {
+            return;
+        }
+
+
+        /*
+        * requestSubmit() respeta el comportamiento normal
+        * del formulario.
+        */
+
+        if (
+            typeof formularioFiltros.requestSubmit
+            ===
+            "function"
+        ) {
+
+            formularioFiltros.requestSubmit();
+
+        } else {
+
+            formularioFiltros.submit();
+
+        }
+
+    }
+
+
+    /* ======================================================
+    SELECTS
+    APIARIO / TIPO / ESTADO
+    ====================================================== */
+
+    selectsFiltros.forEach(
+        function (
+            select
+        ) {
+
+            select.addEventListener(
+                "change",
+                function () {
+
+                    enviarFiltrosAgenda();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* ======================================================
+    FECHA
+    ====================================================== */
+
+    if (inputFechaFiltro) {
+
+        inputFechaFiltro.addEventListener(
+            "change",
+            function () {
+
+                enviarFiltrosAgenda();
+
+            }
+        );
+
+    }
+
+
+    /* ======================================================
+    BUSCADOR
+    ====================================================== */
+
+    if (buscador) {
+
+        buscador.addEventListener(
+            "input",
+            function () {
+
+                /*
+                * Cancelamos la búsqueda anterior si el
+                * usuario todavía está escribiendo.
+                */
+
+                window.clearTimeout(
+                    temporizadorBusquedaFiltro
+                );
+
+
+                temporizadorBusquedaFiltro =
+                    window.setTimeout(
+                        function () {
+
+                            enviarFiltrosAgenda();
+
+                        },
+                        TIEMPO_BUSQUEDA_FILTRO
+                    );
+
+            }
+        );
+
+
+        /*
+        * Si pulsa Enter no necesitamos esperar
+        * los 500 ms.
+        */
+
+        buscador.addEventListener(
+            "keydown",
+            function (
+                evento
+            ) {
+
+                if (
+                    evento.key
+                    ===
+                    "Enter"
+                ) {
+
+                    evento.preventDefault();
+
+
+                    window.clearTimeout(
+                        temporizadorBusquedaFiltro
+                    );
+
+
+                    enviarFiltrosAgenda();
+
+                }
+
+            }
+        );
+
+    }
+    
 
     /* ======================================================
        DATOS ENVIADOS DESDE DJANGO

@@ -9008,7 +9008,7 @@ def editar_incidencia_apicultor(
 def agenda_apicultor(request):
 
     # ========================================================
-    # APICULTOR AUTENTICADO
+    # 1. APICULTOR AUTENTICADO
     # ========================================================
 
     apicultor = get_object_or_404(
@@ -9018,7 +9018,7 @@ def agenda_apicultor(request):
 
 
     # ========================================================
-    # APIARIOS DEL APICULTOR
+    # 2. APIARIOS ASIGNADOS AL APICULTOR
     # ========================================================
 
     apiarios = (
@@ -9033,35 +9033,41 @@ def agenda_apicultor(request):
 
 
     # ========================================================
-    # FECHA ACTUAL
+    # 3. FECHA ACTUAL
     # ========================================================
 
-    hoy = timezone.localdate()
+    hoy = (
+        timezone.localdate()
+    )
 
 
     # ========================================================
-    # EVENTOS DEL APICULTOR
+    # 4. EVENTOS DEL APICULTOR
     #
-    # Puede ver:
+    # El apicultor puede visualizar:
     #
-    # 1. Eventos asignados directamente a él.
+    # - Eventos asignados directamente a él.
+    # - Eventos pertenecientes a sus apiarios.
     #
-    # 2. Eventos correspondientes a sus apiarios.
-    #
-    # Esto nos permite que un administrador cree un evento
-    # para un apiario y el apicultor encargado pueda verlo.
+    # Esto permite que los eventos creados por un administrador
+    # para un apiario también aparezcan en la agenda del
+    # apicultor responsable.
     # ========================================================
 
     eventos_base = (
         EventoAgenda.objects
         .filter(
+
             Q(
                 responsable=apicultor
             )
+
             |
+
             Q(
                 id_apiario__in=apiarios
             )
+
         )
         .select_related(
             "id_apiario",
@@ -9074,7 +9080,42 @@ def agenda_apicultor(request):
 
 
     # ========================================================
-    # CONTADORES GENERALES
+    # 5. ESTADOS VÁLIDOS
+    # ========================================================
+
+    estados_validos = [
+
+        EventoAgenda.EstadoEvento.PROGRAMADO,
+
+        EventoAgenda.EstadoEvento.COMPLETADO,
+
+        EventoAgenda.EstadoEvento.CANCELADO,
+
+    ]
+
+
+    # ========================================================
+    # 6. TIPOS VÁLIDOS
+    # ========================================================
+
+    tipos_validos = [
+
+        EventoAgenda.TipoEvento.MANTENIMIENTO,
+
+        EventoAgenda.TipoEvento.REVISION,
+
+        EventoAgenda.TipoEvento.INCIDENCIA,
+
+        EventoAgenda.TipoEvento.EVENTO,
+
+    ]
+
+
+    # ========================================================
+    # 7. CONTADORES GENERALES
+    #
+    # Los contadores se calculan sobre todos los eventos del
+    # apicultor, independientemente del filtro seleccionado.
     # ========================================================
 
     total_eventos = (
@@ -9085,7 +9126,11 @@ def agenda_apicultor(request):
     total_programados = (
         eventos_base
         .filter(
-            estado=EventoAgenda.EstadoEvento.PROGRAMADO
+            estado=(
+                EventoAgenda
+                .EstadoEvento
+                .PROGRAMADO
+            )
         )
         .count()
     )
@@ -9094,7 +9139,11 @@ def agenda_apicultor(request):
     total_completados = (
         eventos_base
         .filter(
-            estado=EventoAgenda.EstadoEvento.COMPLETADO
+            estado=(
+                EventoAgenda
+                .EstadoEvento
+                .COMPLETADO
+            )
         )
         .count()
     )
@@ -9103,20 +9152,35 @@ def agenda_apicultor(request):
     total_cancelados = (
         eventos_base
         .filter(
-            estado=EventoAgenda.EstadoEvento.CANCELADO
+            estado=(
+                EventoAgenda
+                .EstadoEvento
+                .CANCELADO
+            )
         )
         .count()
     )
 
 
     # ========================================================
-    # EVENTOS PARA HOY
+    # 8. EVENTOS PARA HOY
+    #
+    # Aquí solamente mostramos actividades que todavía están
+    # PROGRAMADAS.
+    #
+    # Un evento completado o cancelado no debe seguir
+    # apareciendo dentro de "Actividades para hoy".
     # ========================================================
 
     eventos_hoy = (
         eventos_base
         .filter(
-            fecha=hoy
+            fecha=hoy,
+            estado=(
+                EventoAgenda
+                .EstadoEvento
+                .PROGRAMADO
+            )
         )
         .order_by(
             "hora"
@@ -9124,20 +9188,31 @@ def agenda_apicultor(request):
     )
 
 
-    total_hoy = eventos_hoy.count()
+    total_hoy = (
+        eventos_hoy.count()
+    )
 
 
     # ========================================================
-    # PRÓXIMOS EVENTOS
+    # 9. PRÓXIMOS EVENTOS
     #
-    # No mostramos aquí eventos ya completados/cancelados.
+    # Solamente:
+    #
+    # - Fecha actual o futura.
+    # - Estado Programado.
+    #
+    # No mostramos aquí eventos ya completados o cancelados.
     # ========================================================
 
     proximos_eventos = (
         eventos_base
         .filter(
             fecha__gte=hoy,
-            estado=EventoAgenda.EstadoEvento.PROGRAMADO
+            estado=(
+                EventoAgenda
+                .EstadoEvento
+                .PROGRAMADO
+            )
         )
         .order_by(
             "fecha",
@@ -9147,204 +9222,409 @@ def agenda_apicultor(request):
 
 
     # ========================================================
-    # TIPOS DISPONIBLES
+    # 10. TIPOS DISPONIBLES PARA EL FILTRO
     # ========================================================
 
     tipos_disponibles = [
+
         {
-            "valor": EventoAgenda.TipoEvento.MANTENIMIENTO,
-            "nombre": "Mantenimiento",
+            "valor":
+                EventoAgenda
+                .TipoEvento
+                .MANTENIMIENTO,
+
+            "nombre":
+                "Mantenimiento",
         },
+
         {
-            "valor": EventoAgenda.TipoEvento.REVISION,
-            "nombre": "Revisión",
+            "valor":
+                EventoAgenda
+                .TipoEvento
+                .REVISION,
+
+            "nombre":
+                "Revisión",
         },
+
         {
-            "valor": EventoAgenda.TipoEvento.INCIDENCIA,
-            "nombre": "Incidencia",
+            "valor":
+                EventoAgenda
+                .TipoEvento
+                .INCIDENCIA,
+
+            "nombre":
+                "Incidencia",
         },
+
         {
-            "valor": EventoAgenda.TipoEvento.EVENTO,
-            "nombre": "Evento general",
+            "valor":
+                EventoAgenda
+                .TipoEvento
+                .EVENTO,
+
+            "nombre":
+                "Evento general",
         },
+
     ]
 
 
     # ========================================================
-    # ESTADOS DISPONIBLES
+    # 11. ESTADOS DISPONIBLES PARA EL FILTRO
     # ========================================================
 
     estados_disponibles = [
+
         {
-            "valor": EventoAgenda.EstadoEvento.PROGRAMADO,
-            "nombre": "Programado",
+            "valor":
+                EventoAgenda
+                .EstadoEvento
+                .PROGRAMADO,
+
+            "nombre":
+                "Programado",
         },
+
         {
-            "valor": EventoAgenda.EstadoEvento.COMPLETADO,
-            "nombre": "Completado",
+            "valor":
+                EventoAgenda
+                .EstadoEvento
+                .COMPLETADO,
+
+            "nombre":
+                "Completado",
         },
+
         {
-            "valor": EventoAgenda.EstadoEvento.CANCELADO,
-            "nombre": "Cancelado",
+            "valor":
+                EventoAgenda
+                .EstadoEvento
+                .CANCELADO,
+
+            "nombre":
+                "Cancelado",
         },
+
     ]
 
 
     # ========================================================
-    # FILTROS GET
+    # 12. FILTROS GET
     # ========================================================
 
-    busqueda = request.GET.get(
-        "q",
-        ""
-    ).strip()
-
-
-    apiario_seleccionado = request.GET.get(
-        "apiario",
-        ""
-    ).strip()
-
-
-    tipo_seleccionado = request.GET.get(
-        "tipo",
-        ""
-    ).strip()
-
-
-    estado_seleccionado = request.GET.get(
-        "estado",
-        ""
-    ).strip()
-
-
-    fecha_seleccionada = request.GET.get(
-        "fecha",
-        ""
-    ).strip()
-
-
-    # ========================================================
-    # CONSULTA DE RESULTADOS
-    # ========================================================
-
-    eventos = eventos_base
-
-
-    # ========================================================
-    # BUSCADOR
-    # ========================================================
-
-    if busqueda:
-
-        eventos = eventos.filter(
-
-            Q(
-                titulo__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                descripcion__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                id_apiario__nombreapiario__icontains=busqueda
-            )
-
-            |
-
-            Q(
-                id_colmena__codigocolmena__icontains=busqueda
-            )
-
+    busqueda = (
+        request.GET
+        .get(
+            "q",
+            ""
         )
+        .strip()
+    )
 
 
-    # ========================================================
-    # FILTRO APIARIO
-    # ========================================================
-
-    if apiario_seleccionado.isdigit():
-
-        eventos = eventos.filter(
-            id_apiario__id_apiario=int(
-                apiario_seleccionado
-            )
+    apiario_seleccionado = (
+        request.GET
+        .get(
+            "apiario",
+            ""
         )
+        .strip()
+    )
 
 
-    # ========================================================
-    # FILTRO TIPO
-    # ========================================================
-
-    tipos_validos = [
-        EventoAgenda.TipoEvento.MANTENIMIENTO,
-        EventoAgenda.TipoEvento.REVISION,
-        EventoAgenda.TipoEvento.INCIDENCIA,
-        EventoAgenda.TipoEvento.EVENTO,
-    ]
-
-
-    if (
-        tipo_seleccionado
-        and
-        tipo_seleccionado in tipos_validos
-    ):
-
-        eventos = eventos.filter(
-            tipo_evento=tipo_seleccionado
+    tipo_seleccionado = (
+        request.GET
+        .get(
+            "tipo",
+            ""
         )
+        .strip()
+    )
 
 
-    # ========================================================
-    # FILTRO ESTADO
-    # ========================================================
-
-    estados_validos = [
-        EventoAgenda.EstadoEvento.PROGRAMADO,
-        EventoAgenda.EstadoEvento.COMPLETADO,
-        EventoAgenda.EstadoEvento.CANCELADO,
-    ]
-
-
-    if (
-        estado_seleccionado
-        and
-        estado_seleccionado in estados_validos
-    ):
-
-        eventos = eventos.filter(
-            estado=estado_seleccionado
+    estado_seleccionado = (
+        request.GET
+        .get(
+            "estado",
+            ""
         )
+        .strip()
+    )
 
 
-    # ========================================================
-    # FILTRO POR FECHA
-    # ========================================================
-
-    if fecha_seleccionada:
-
-        eventos = eventos.filter(
-            fecha=fecha_seleccionada
+    fecha_seleccionada = (
+        request.GET
+        .get(
+            "fecha",
+            ""
         )
-
-
-    # ========================================================
-    # ORDEN
-    # ========================================================
-
-    eventos = eventos.order_by(
-        "fecha",
-        "hora"
+        .strip()
     )
 
 
     # ========================================================
-    # PAGINACIÓN
+    # 13. NORMALIZAR ESTADO
+    #
+    # REGLA PRINCIPAL:
+    #
+    # Si no existe un estado válido en el filtro,
+    # la agenda utiliza PROGRAMADO.
+    #
+    # Por lo tanto:
+    #
+    # - Al entrar → Programados.
+    # - Limpiar filtros → Programados.
+    # - Elegir Completado → Completados.
+    # - Elegir Cancelado → Cancelados.
+    # ========================================================
+
+    if (
+        estado_seleccionado
+        not in
+        estados_validos
+    ):
+
+        estado_seleccionado = (
+            EventoAgenda
+            .EstadoEvento
+            .PROGRAMADO
+        )
+
+
+    # ========================================================
+    # 14. CONSULTA INICIAL
+    #
+    # El estado se aplica PRIMERO.
+    #
+    # Así los demás filtros trabajan sobre el estado
+    # seleccionado y nunca perdemos combinaciones como:
+    #
+    # Completado + Apiario
+    # Completado + Fecha
+    # Completado + Búsqueda
+    # Programado + Tipo
+    # ========================================================
+
+    eventos = (
+        eventos_base
+        .filter(
+            estado=estado_seleccionado
+        )
+    )
+
+
+    # ========================================================
+    # 15. BUSCADOR
+    # ========================================================
+
+    if busqueda:
+
+        eventos = (
+            eventos
+            .filter(
+
+                Q(
+                    titulo__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    descripcion__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_apiario__nombreapiario__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_colmena__codigocolmena__icontains=
+                        busqueda
+                )
+
+            )
+        )
+
+
+    # ========================================================
+    # 16. FILTRO POR APIARIO
+    # ========================================================
+
+    if (
+        apiario_seleccionado
+        .isdigit()
+    ):
+
+        eventos = (
+            eventos
+            .filter(
+                id_apiario__id_apiario=int(
+                    apiario_seleccionado
+                )
+            )
+        )
+
+
+    # ========================================================
+    # 17. FILTRO POR TIPO
+    # ========================================================
+
+    if (
+        tipo_seleccionado
+        and
+        tipo_seleccionado
+        in
+        tipos_validos
+    ):
+
+        eventos = (
+            eventos
+            .filter(
+                tipo_evento=
+                    tipo_seleccionado
+            )
+        )
+
+
+    # ========================================================
+    # 18. FILTRO POR FECHA
+    # ========================================================
+
+    if fecha_seleccionada:
+
+        eventos = (
+            eventos
+            .filter(
+                fecha=
+                    fecha_seleccionada
+            )
+        )
+
+
+    # ========================================================
+    # 19. ORDENAR RESULTADOS
+    #
+    # Primero:
+    # - Fecha más cercana.
+    #
+    # Después:
+    # - Hora.
+    # ========================================================
+
+    eventos = (
+        eventos
+        .order_by(
+            "fecha",
+            "hora"
+        )
+    )
+
+
+    # ========================================================
+    # 20. EVENTOS PARA EL CALENDARIO
+    #
+    # Utilizamos exactamente el mismo queryset filtrado del
+    # listado.
+    #
+    # Esto significa:
+    #
+    # Estado Programado
+    #     → calendario muestra Programados.
+    #
+    # Estado Completado
+    #     → calendario muestra Completados.
+    #
+    # Estado Cancelado
+    #     → calendario muestra Cancelados.
+    #
+    # Los demás filtros también afectan al calendario.
+    #
+    # No usamos paginación aquí porque el calendario necesita
+    # conocer todos los eventos que cumplen los filtros.
+    # ========================================================
+
+    eventos_calendario = []
+
+
+    for evento in eventos:
+
+        eventos_calendario.append({
+
+            "id":
+                evento.id_evento,
+
+
+            "titulo":
+                evento.titulo,
+
+
+            "tipo":
+                evento.tipo_evento,
+
+
+            "estado":
+                evento.estado,
+
+
+            "fecha":
+                evento.fecha.strftime(
+                    "%Y-%m-%d"
+                ),
+
+
+            "hora":
+                evento.hora.strftime(
+                    "%H:%M"
+                ),
+
+
+            "apiario":
+                (
+                    evento
+                    .id_apiario
+                    .nombreapiario
+
+                    if evento.id_apiario
+
+                    else ""
+                ),
+
+
+            "colmena":
+                (
+                    evento
+                    .id_colmena
+                    .codigocolmena
+
+                    if evento.id_colmena
+
+                    else ""
+                ),
+
+
+            "descripcion":
+                (
+                    evento.descripcion
+                    or
+                    ""
+                ),
+
+        })
+
+
+    # ========================================================
+    # 21. PAGINACIÓN DEL LISTADO
+    #
+    # El calendario ya tiene todos los resultados.
+    # Aquí paginamos únicamente la tabla/listado.
     # ========================================================
 
     paginator = Paginator(
@@ -9353,154 +9633,139 @@ def agenda_apicultor(request):
     )
 
 
-    pagina = request.GET.get(
-        "page"
+    pagina = (
+        request.GET.get(
+            "page"
+        )
     )
 
 
-    eventos_pagina = paginator.get_page(
-        pagina
+    eventos_pagina = (
+        paginator.get_page(
+            pagina
+        )
     )
 
 
     # ========================================================
-    # EVENTOS PARA EL CALENDARIO
-    #
-    # Estos no están paginados porque el calendario necesita
-    # conocer todos los eventos disponibles.
-    # ========================================================
-
-    eventos_calendario = []
-
-
-    for evento in eventos_base.order_by(
-        "fecha",
-        "hora"
-    ):
-
-        eventos_calendario.append({
-
-            "id":
-                evento.id_evento,
-
-            "titulo":
-                evento.titulo,
-
-            "tipo":
-                evento.tipo_evento,
-
-            "estado":
-                evento.estado,
-
-            "fecha":
-                evento.fecha.strftime(
-                    "%Y-%m-%d"
-                ),
-
-            "hora":
-                evento.hora.strftime(
-                    "%H:%M"
-                ),
-
-            "apiario":
-                evento.id_apiario.nombreapiario
-                if evento.id_apiario
-                else "",
-
-            "colmena":
-                evento.id_colmena.codigocolmena
-                if evento.id_colmena
-                else "",
-
-            "descripcion":
-                evento.descripcion or "",
-
-        })
-
-
-    # ========================================================
-    # CONTEXTO
+    # 22. CONTEXTO
     # ========================================================
 
     contexto = {
 
+        # ====================================================
+        # APICULTOR
+        # ====================================================
+
         "apicultor":
             apicultor,
+
+
+        # ====================================================
+        # APIARIOS
+        # ====================================================
 
         "apiarios":
             apiarios,
 
 
+        # ====================================================
         # EVENTOS
+        # ====================================================
 
         "eventos":
             eventos_pagina,
 
+
         "eventos_hoy":
             eventos_hoy,
 
+
         "proximos_eventos":
             proximos_eventos,
+
 
         "eventos_calendario":
             eventos_calendario,
 
 
+        # ====================================================
         # CONTADORES
+        # ====================================================
 
         "total_eventos":
             total_eventos,
 
+
         "total_programados":
             total_programados,
+
 
         "total_completados":
             total_completados,
 
+
         "total_cancelados":
             total_cancelados,
 
+
         "total_hoy":
             total_hoy,
+
 
         "total_resultados":
             paginator.count,
 
 
-        # OPCIONES
+        # ====================================================
+        # OPCIONES PARA FILTROS
+        # ====================================================
 
         "tipos_disponibles":
             tipos_disponibles,
+
 
         "estados_disponibles":
             estados_disponibles,
 
 
-        # FILTROS
+        # ====================================================
+        # FILTROS ACTIVOS
+        # ====================================================
 
         "busqueda":
             busqueda,
 
+
         "apiario_seleccionado":
             apiario_seleccionado,
+
 
         "tipo_seleccionado":
             tipo_seleccionado,
 
+
         "estado_seleccionado":
             estado_seleccionado,
+
 
         "fecha_seleccionada":
             fecha_seleccionada,
 
 
-        # FECHA
+        # ====================================================
+        # FECHA ACTUAL
+        # ====================================================
 
         "hoy":
             hoy,
 
     }
 
+
+    # ========================================================
+    # 23. RENDER
+    # ========================================================
 
     return render(
         request,

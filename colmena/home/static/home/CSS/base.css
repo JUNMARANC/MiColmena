@@ -3116,3 +3116,300 @@ rotar, que es para lo que está dibujada.
         width: 58px;
     }
 }
+
+
+/* ==========================================================
+   MANUAL FLOTANTE - HOME
+   LIQUID GLASS UI COMPACTO
+========================================================== */
+
+.home-manual-flotante {
+
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    z-index: 950;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 6px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    text-decoration: none;
+
+    color: #203529;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.30),
+            rgba(255, 255, 255, 0.13)
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.48);
+
+    backdrop-filter:
+        blur(18px)
+        saturate(180%);
+
+    -webkit-backdrop-filter:
+        blur(18px)
+        saturate(180%);
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.60),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.10);
+
+    transition:
+        width 0.30s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+
+/* ==========================================================
+   REFLEJO DE VIDRIO
+========================================================== */
+
+.home-manual-flotante::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 3px;
+    left: 8px;
+    right: 8px;
+
+    height: 44%;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.45),
+            rgba(255, 255, 255, 0.04)
+        );
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   ICONO
+========================================================== */
+
+.home-manual-icono {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 46px;
+    height: 46px;
+
+    min-width: 46px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(250, 220, 105, 0.95),
+            rgba(236, 183, 35, 0.78)
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.45);
+
+    color:
+        #1E392B;
+
+    font-size: 19px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 7px 16px rgba(177, 130, 19, 0.20);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* ==========================================================
+   TEXTO OCULTO
+========================================================== */
+
+.home-manual-texto {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 0;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    white-space: nowrap;
+
+    color:
+        #203529;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    transition:
+        max-width 0.28s ease,
+        opacity 0.20s ease,
+        padding 0.28s ease;
+}
+
+
+/* ==========================================================
+   HOVER
+========================================================== */
+
+.home-manual-flotante:hover {
+
+    width: 220px;
+
+    transform:
+        translateY(-4px);
+
+    text-decoration: none;
+
+    color:
+        #203529;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.38),
+            rgba(255, 255, 255, 0.17)
+        );
+
+    box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.68),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.13);
+
+}
+
+
+.home-manual-flotante:hover
+.home-manual-icono {
+
+    transform:
+        scale(1.05)
+        rotate(-3deg);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        0 10px 22px rgba(177, 130, 19, 0.25);
+
+}
+
+
+.home-manual-flotante:hover
+.home-manual-texto {
+
+    max-width: 150px;
+
+    opacity: 1;
+
+    padding-right: 12px;
+
+}
+
+
+/* ==========================================================
+   ACCESIBILIDAD
+========================================================== */
+
+.home-manual-flotante:focus-visible {
+
+    outline:
+        3px solid
+        rgba(237, 188, 42, 0.40);
+
+    outline-offset:
+        4px;
+
+}
+
+
+/* ==========================================================
+   MÓVIL
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .home-manual-flotante {
+
+        right: 16px;
+        bottom: 16px;
+
+        width: 54px;
+        height: 54px;
+
+        padding: 5px;
+
+    }
+
+
+    .home-manual-flotante:hover {
+
+        width: 54px;
+
+        transform: none;
+
+    }
+
+
+    .home-manual-icono {
+
+        width: 44px;
+        height: 44px;
+
+        min-width: 44px;
+
+        font-size: 18px;
+
+    }
+
+
+    .home-manual-texto {
+
+        display: none;
+
+    }
+
+}
