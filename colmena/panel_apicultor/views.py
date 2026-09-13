@@ -6703,40 +6703,76 @@ def incidencias_apicultor(request):
     # ========================================================
     # 7. CONTADORES GENERALES
     #
-    # Estos contadores representan todas las incidencias
-    # disponibles para el apicultor, independientemente
-    # de los filtros seleccionados.
+    # Todos los contadores se obtienen mediante una única
+    # consulta aggregate().
+    #
+    # Se usa distinct=True porque la regla de acceso utiliza
+    # varias relaciones y una misma incidencia no debe
+    # contabilizarse más de una vez.
     # ========================================================
 
+    resumen_incidencias = (
+        incidencias_base
+        .aggregate(
+
+            total=Count(
+                "id_incidencia",
+                distinct=True
+            ),
+
+            pendientes=Count(
+                "id_incidencia",
+                filter=Q(
+                    estado__iexact="Pendiente"
+                ),
+                distinct=True
+            ),
+
+            en_proceso=Count(
+                "id_incidencia",
+                filter=Q(
+                    estado__iexact="En proceso"
+                ),
+                distinct=True
+            ),
+
+            resueltas=Count(
+                "id_incidencia",
+                filter=Q(
+                    estado__iexact="Resuelta"
+                ),
+                distinct=True
+            ),
+
+        )
+    )
+
+
     total_incidencias = (
-        incidencias_base.count()
+        resumen_incidencias[
+            "total"
+        ]
     )
 
 
     total_pendientes = (
-        incidencias_base
-        .filter(
-            estado__iexact="Pendiente"
-        )
-        .count()
+        resumen_incidencias[
+            "pendientes"
+        ]
     )
 
 
     total_en_proceso = (
-        incidencias_base
-        .filter(
-            estado__iexact="En proceso"
-        )
-        .count()
+        resumen_incidencias[
+            "en_proceso"
+        ]
     )
 
 
     total_resueltas = (
-        incidencias_base
-        .filter(
-            estado__iexact="Resuelta"
-        )
-        .count()
+        resumen_incidencias[
+            "resueltas"
+        ]
     )
 
 
@@ -6779,12 +6815,99 @@ def incidencias_apicultor(request):
         .strip()
     )
 
+    # ========================================================
+    # NORMALIZAR FILTROS
+    # ========================================================
+
+    # ========================================================
+    # ESTADO
+    #
+    # Un estado vacío o manipulado hace que la bandeja vuelva
+    # al comportamiento por defecto:
+    #
+    # - Pendiente
+    # - En proceso
+    # ========================================================
+
+    if estado_seleccionado not in estados_disponibles:
+
+        estado_seleccionado = ""
+
+
+    # ========================================================
+    # PRIORIDAD
+    # ========================================================
+
+    if prioridad_seleccionada not in prioridades_disponibles:
+
+        prioridad_seleccionada = ""
+
+
+    # ========================================================
+    # APIARIO
+    #
+    # Solamente aceptamos un ID numérico que corresponda a un
+    # apiario realmente asignado al apicultor autenticado.
+    # ========================================================
+
+    id_apiario_filtro = None
+
+
+    if apiario_seleccionado.isdigit():
+
+        id_apiario_candidato = int(
+            apiario_seleccionado
+        )
+
+
+        if apiarios.filter(
+            id_apiario=id_apiario_candidato
+        ).exists():
+
+            id_apiario_filtro = (
+                id_apiario_candidato
+            )
+
+        else:
+
+            apiario_seleccionado = ""
+
+
+    else:
+
+        apiario_seleccionado = ""
 
     # ========================================================
     # 9. CONSULTA FILTRABLE
     # ========================================================
 
     incidencias = incidencias_base
+
+
+    # ========================================================
+    # BANDEJA ACTIVA POR DEFECTO
+    #
+    # Si el usuario no eligió un estado concreto, mostramos
+    # solamente incidencias Pendientes o En proceso.
+    #
+    # Las Resueltas permanecen disponibles mediante el filtro
+    # de estado y funcionan como historial.
+    # ========================================================
+
+    if not estado_seleccionado:
+
+        incidencias = (
+            incidencias
+            .filter(
+                Q(
+                    estado__iexact="Pendiente"
+                )
+                |
+                Q(
+                    estado__iexact="En proceso"
+                )
+            )
+        )
 
 
     # ========================================================
@@ -6859,12 +6982,7 @@ def incidencias_apicultor(request):
     # - Incidencias asociadas a colmenas de ese apiario.
     # ========================================================
 
-    if apiario_seleccionado.isdigit():
-
-        id_apiario_filtro = int(
-            apiario_seleccionado
-        )
-
+    if id_apiario_filtro is not None:
 
         incidencias = (
             incidencias.filter(
@@ -6888,11 +7006,7 @@ def incidencias_apicultor(request):
     # 12. FILTRO POR ESTADO
     # ========================================================
 
-    if (
-        estado_seleccionado
-        and
-        estado_seleccionado in estados_disponibles
-    ):
+    if estado_seleccionado:
 
         incidencias = (
             incidencias.filter(
@@ -6905,11 +7019,7 @@ def incidencias_apicultor(request):
     # 13. FILTRO POR PRIORIDAD
     # ========================================================
 
-    if (
-        prioridad_seleccionada
-        and
-        prioridad_seleccionada in prioridades_disponibles
-    ):
+    if prioridad_seleccionada:
 
         incidencias = (
             incidencias.filter(
@@ -7559,28 +7669,6 @@ def crear_incidencia_apicultor(request):
             )
         )
 
-
-        # ====================================================
-        # COMPATIBILIDAD CON INPUT ANTIGUO
-        #
-        # name="imagen"
-        # ====================================================
-
-        if not imagenes_problema:
-
-            imagen_antigua = (
-                request.FILES.get(
-                    "imagen"
-                )
-            )
-
-            if imagen_antigua:
-
-                imagenes_problema = [
-                    imagen_antigua
-                ]
-
-
         # ====================================================
         # 8.3 CONSERVAR FORMULARIO SI HAY ERROR
         # ====================================================
@@ -8040,13 +8128,7 @@ def crear_incidencia_apicultor(request):
                     )
 
 
-        except Exception as error:
-
-            print(
-                "ERROR CREANDO INCIDENCIA APICULTOR:",
-                type(error).__name__,
-                error
-            )
+        except Exception:
 
             messages.error(
                 request,
@@ -8083,27 +8165,13 @@ def crear_incidencia_apicultor(request):
 
         try:
 
-            resultado_notificaciones = (
-                notificar_incidencia_creada(
-                    incidencia
-                )
+            notificar_incidencia_creada(
+                incidencia
             )
 
-            print(
-                "NOTIFICACIONES INCIDENCIA A ADMIN:",
-                resultado_notificaciones
-            )
+        except Exception:
 
-        except Exception as error:
-
-            print(
-                (
-                    "ERROR NOTIFICANDO INCIDENCIA "
-                    "A ADMINISTRADORES:"
-                ),
-                type(error).__name__,
-                error
-            )
+            pass
 
 
         # ====================================================
@@ -8285,6 +8353,37 @@ def editar_incidencia_apicultor(
 
     )
 
+    # ========================================================
+    # ESTADO ACTUAL
+    # ========================================================
+
+    estado_actual = (
+        incidencia.estado
+        or
+        "Pendiente"
+    ).strip()
+
+    # ========================================================
+    # INCIDENCIA RESUELTA
+    #
+    # Una incidencia resuelta queda cerrada y pasa a formar
+    # parte del historial. No puede volver a modificarse.
+    # ========================================================
+
+    if estado_actual == "Resuelta":
+
+        messages.info(
+            request,
+            (
+                "Esta incidencia ya está resuelta y forma parte "
+                "del historial. No puede modificarse."
+            )
+        )
+
+        return redirect(
+            "incidencias_apicultor"
+        )
+
 
     # ========================================================
     # 4. ESTADOS DISPONIBLES
@@ -8295,6 +8394,37 @@ def editar_incidencia_apicultor(
         "En proceso",
         "Resuelta",
     ]
+
+    # ========================================================
+    # TRANSICIONES DE ESTADO PERMITIDAS
+    #
+    # Pendiente:
+    #   - Puede mantenerse Pendiente.
+    #   - Puede pasar a En proceso.
+    #   - Puede pasar directamente a Resuelta.
+    #
+    # En proceso:
+    #   - Puede mantenerse En proceso.
+    #   - Puede pasar a Resuelta.
+    #
+    # Resuelta:
+    #   - Es un estado final.
+    # ========================================================
+
+    transiciones_estado = {
+
+        "Pendiente": {
+            "Pendiente",
+            "En proceso",
+            "Resuelta",
+        },
+
+        "En proceso": {
+            "En proceso",
+            "Resuelta",
+        },
+
+    }
 
 
     # ========================================================
@@ -8412,7 +8542,35 @@ def editar_incidencia_apicultor(
     # Evita repetir el mismo diccionario varias veces.
     # ========================================================
 
-    def construir_contexto():
+    def construir_contexto(
+        estado_formulario=None,
+        observaciones_formulario=None
+    ):
+
+        # ========================================================
+        # VALORES DEL FORMULARIO
+        #
+        # En GET usamos los valores guardados actualmente.
+        #
+        # Si un POST falla, podemos enviar nuevamente los valores
+        # que el usuario intentó guardar para no perderlos.
+        # ========================================================
+
+        if estado_formulario is None:
+
+            estado_formulario = (
+                estado_actual
+            )
+
+
+        if observaciones_formulario is None:
+
+            observaciones_formulario = (
+                incidencia.observaciones
+                or
+                ""
+            )
+
 
         return {
 
@@ -8445,6 +8603,12 @@ def editar_incidencia_apicultor(
 
             "max_tamano_imagen_mb":
                 MAX_TAMANO_IMAGEN_MB,
+
+            "estado_formulario":
+                estado_formulario,
+
+            "observaciones_formulario":
+                observaciones_formulario,
 
         }
 
@@ -8511,47 +8675,6 @@ def editar_incidencia_apicultor(
 
 
     # ========================================================
-    # 16. COMPATIBILIDAD TEMPORAL CON FORMULARIO ANTIGUO
-    #
-    # Si todavía existe algún formulario que envíe:
-    #
-    # name="imagen"
-    #
-    # la tratamos automáticamente como:
-    #
-    # - Problema si no está resuelta.
-    # - Solución si pasa a Resuelta.
-    # ========================================================
-
-    imagen_antigua_formulario = (
-        request.FILES.get(
-            "imagen"
-        )
-    )
-
-
-    if (
-        imagen_antigua_formulario
-        and
-        not nuevas_evidencias_problema
-        and
-        not nuevas_evidencias_solucion
-    ):
-
-        if estado == "Resuelta":
-
-            nuevas_evidencias_solucion = [
-                imagen_antigua_formulario
-            ]
-
-        else:
-
-            nuevas_evidencias_problema = [
-                imagen_antigua_formulario
-            ]
-
-
-    # ========================================================
     # 17. ERRORES
     # ========================================================
 
@@ -8568,16 +8691,39 @@ def editar_incidencia_apicultor(
             "Selecciona un estado válido."
         )
 
+    # ========================================================
+    # VALIDAR TRANSICIÓN DE ESTADO
+    # ========================================================
+
+    if estado in estados_disponibles:
+
+        estados_permitidos_desde_actual = (
+            transiciones_estado.get(
+                estado_actual,
+                set()
+            )
+        )
+
+
+        if estado not in estados_permitidos_desde_actual:
+
+            errores.append(
+                (
+                    f'No puedes cambiar una incidencia de '
+                    f'"{estado_actual}" a "{estado}".'
+                )
+            )
+
 
     # ========================================================
     # 19. VALIDAR OBSERVACIONES
     # ========================================================
 
-    if len(observaciones) > 1000:
+    if len(observaciones) > 255:
 
         errores.append(
             "Las observaciones no pueden superar "
-            "los 1000 caracteres."
+            "los 255 caracteres."
         )
 
 
@@ -8755,10 +8901,39 @@ def editar_incidencia_apicultor(
             )
 
 
+        # ====================================================
+        # LAS FOTOGRAFÍAS NO PUEDEN RESTAURARSE
+        #
+        # Los navegadores no permiten volver a llenar
+        # automáticamente un input type="file".
+        # ====================================================
+
+        if (
+            nuevas_evidencias_problema
+            or
+            nuevas_evidencias_solucion
+        ):
+
+            messages.info(
+                request,
+                (
+                    "Por seguridad del navegador, debes seleccionar "
+                    "nuevamente las fotografías que intentabas agregar."
+                )
+            )
+
+
         return render(
             request,
             "panel_apicultor/editar_incidencia.html",
-            construir_contexto()
+            construir_contexto(
+                (
+                    estado
+                    if estado in estados_disponibles
+                    else estado_actual
+                ),
+                observaciones
+            )
         )
 
 
@@ -8976,10 +9151,28 @@ def editar_incidencia_apicultor(
         )
 
 
+        if (
+            nuevas_evidencias_problema
+            or
+            nuevas_evidencias_solucion
+        ):
+
+            messages.info(
+                request,
+                (
+                    "Por seguridad del navegador, debes seleccionar "
+                    "nuevamente las fotografías que intentabas agregar."
+                )
+            )
+
+
         return render(
             request,
             "panel_apicultor/editar_incidencia.html",
-            construir_contexto()
+            construir_contexto(
+                estado,
+                observaciones
+            )
         )
 
 

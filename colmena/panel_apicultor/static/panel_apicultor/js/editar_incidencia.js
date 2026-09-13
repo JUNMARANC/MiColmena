@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
        5. CONFIGURACIÓN
     ====================================================== */
 
-    const MAX_OBSERVACIONES = 1000;
+    const MAX_OBSERVACIONES = 255;
 
     const TIPOS_IMAGEN_VALIDOS = [
         "image/jpeg",
@@ -387,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            cantidad >= 800
+            cantidad >= MAX_OBSERVACIONES * 0.8
             &&
             cantidad < MAX_OBSERVACIONES
         ) {
