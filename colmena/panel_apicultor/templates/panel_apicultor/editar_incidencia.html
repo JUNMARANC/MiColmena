@@ -595,7 +595,7 @@
                         value="Pendiente"
                         class="estado-incidencia-radio"
 
-                        {% if incidencia.estado == "Pendiente" or not incidencia.estado %}
+                        {% if estado_formulario == "Pendiente" or not estado_formulario %}
                             checked
                         {% endif %}
                     >
@@ -642,7 +642,7 @@
                         value="En proceso"
                         class="estado-incidencia-radio"
 
-                        {% if incidencia.estado == "En proceso" %}
+                        {% if estado_formulario == "En proceso" %}
                             checked
                         {% endif %}
                     >
@@ -689,7 +689,7 @@
                         value="Resuelta"
                         class="estado-incidencia-radio"
 
-                        {% if incidencia.estado == "Resuelta" %}
+                        {% if estado_formulario == "Resuelta" %}
                             checked
                         {% endif %}
                     >
@@ -809,22 +809,22 @@
                 <textarea
                     id="observacionesIncidencia"
                     name="observaciones"
-                    maxlength="1000"
+                    maxlength="255"
                     rows="7"
                     placeholder="Describe las acciones realizadas, resultados obtenidos o novedades encontradas..."
-                >{{ incidencia.observaciones|default:"" }}</textarea>
+                >{{ observaciones_formulario|default:"" }}</textarea>
 
 
                 <div class="campo-meta">
 
 
                     <small>
-                        Máximo 1000 caracteres.
+                        Máximo 255 caracteres.
                     </small>
 
 
                     <span id="contadorObservaciones">
-                        0 / 1000
+                        0 / 255
                     </span>
 
 
@@ -1794,7 +1794,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_apicultor/js/editar_incidencia.js' %}?v=2"
+    src="{% static 'panel_apicultor/js/editar_incidencia.js' %}?v=3"
 ></script>
 
 {% endblock %}

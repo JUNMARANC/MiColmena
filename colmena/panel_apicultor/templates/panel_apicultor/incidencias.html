@@ -157,7 +157,38 @@
 
 
         <!-- =================================================
-             RESUELTAS
+            EN PROCESO
+        ================================================== -->
+
+        <article class="incidencia-resumen-card resultados">
+
+
+            <div class="incidencia-resumen-icono">
+
+                <i class="bi bi-arrow-repeat"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ total_en_proceso|default:0 }}
+                </strong>
+
+                <span>
+                    En proceso
+                </span>
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- =================================================
+            RESUELTAS
         ================================================== -->
 
         <article class="incidencia-resumen-card resueltas">
@@ -178,37 +209,6 @@
 
                 <span>
                     Resueltas
-                </span>
-
-            </div>
-
-
-        </article>
-
-
-
-        <!-- =================================================
-             RESULTADOS
-        ================================================== -->
-
-        <article class="incidencia-resumen-card resultados">
-
-
-            <div class="incidencia-resumen-icono">
-
-                <i class="bi bi-funnel-fill"></i>
-
-            </div>
-
-
-            <div>
-
-                <strong>
-                    {{ total_resultados|default:0 }}
-                </strong>
-
-                <span>
-                    Resultados actuales
                 </span>
 
             </div>
@@ -343,7 +343,7 @@
 
 
                 <option value="">
-                    Todos los estados
+                    Pendientes y en proceso
                 </option>
 
 
@@ -516,7 +516,7 @@
 
                     <i class="bi bi-list-ul"></i>
 
-                    Incidencias registradas
+                    Incidencias activas
 
                 </span>
 
@@ -887,18 +887,22 @@
 
 
 
-                                    <!-- EDITAR -->
+                                    <!-- GESTIONAR -->
 
-                                    <a
-                                        href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
-                                        class="btn-editar-incidencia"
-                                        title="Gestionar incidencia"
-                                        aria-label="Gestionar incidencia {{ incidencia.id_incidencia }}"
-                                    >
+                                    {% if incidencia.estado != "Resuelta" %}
 
-                                        <i class="bi bi-pencil-square"></i>
+                                        <a
+                                            href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
+                                            class="btn-editar-incidencia"
+                                            title="Gestionar incidencia"
+                                            aria-label="Gestionar incidencia {{ incidencia.id_incidencia }}"
+                                        >
 
-                                    </a>
+                                            <i class="bi bi-pencil-square"></i>
+
+                                        </a>
+
+                                    {% endif %}
 
 
                                 </td>
@@ -1001,12 +1005,23 @@
                                     <i class="bi bi-eye" aria-hidden="true"></i>
                                 </button>
 
-                                <a href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
-                                   class="btn-editar-incidencia"
-                                   title="Editar"
-                                   aria-label="Editar incidencia {{ incidencia.id_incidencia }}">
-                                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
-                                </a>
+                                {% if incidencia.estado != "Resuelta" %}
+
+                                    <a
+                                        href="{% url 'editar_incidencia_apicultor' incidencia.id_incidencia %}"
+                                        class="btn-editar-incidencia"
+                                        title="Gestionar incidencia"
+                                        aria-label="Gestionar incidencia {{ incidencia.id_incidencia }}"
+                                    >
+
+                                        <i
+                                            class="bi bi-pencil-square"
+                                            aria-hidden="true"
+                                        ></i>
+
+                                    </a>
+
+                                {% endif %}
 
                             </div>
 
@@ -1139,7 +1154,7 @@
 
                 {% else %}
 
-                    No tienes incidencias registradas
+                    No tienes incidencias activas
 
                 {% endif %}
 
@@ -1156,8 +1171,8 @@
 
                 {% else %}
 
-                    Las incidencias que reportes en tus
-                    apiarios o colmenas aparecerán aquí.
+                    No tienes incidencias pendientes ni en proceso.
+                    Puedes consultar las resueltas desde el filtro de estado.
 
                 {% endif %}
 
@@ -1173,7 +1188,7 @@
                     class="btn-ver-todas-incidencias"
                 >
 
-                    Ver todas las incidencias
+                    Limpiar filtros
 
                 </a>
 
