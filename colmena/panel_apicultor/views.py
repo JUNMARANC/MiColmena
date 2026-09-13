@@ -3877,6 +3877,13 @@ def mantenimientos_apicultor(request):
         .strip()
     )
 
+    # ========================================================
+    # URL PREDETERMINADA PARA CANCELAR
+    # ========================================================
+
+    url_cancelar_mantenimiento = reverse(
+        "mantenimientos_apicultor"
+    )
 
     # ========================================================
     # VALIDAR PÁGINA DE ORIGEN
