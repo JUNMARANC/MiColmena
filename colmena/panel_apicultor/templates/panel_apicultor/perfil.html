@@ -13,7 +13,7 @@
 
 
 {% block page_subtitle %}
-    Consulta y actualiza tu información personal y tus datos como apicultor
+    Consulta y actualiza tu información personal y la seguridad de tu cuenta
 {% endblock %}
 
 
@@ -21,7 +21,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'panel_apicultor/css/perfil.css' %}?v=5"
+    href="{% static 'panel_apicultor/css/perfil.css' %}?v=6"
 >
 
 {% endblock %}
@@ -58,7 +58,7 @@
 
             <p>
                 Administra tu información personal,
-                datos de contacto y fotografía de perfil.
+                datos de contacto y seguridad de tu cuenta.
             </p>
 
         </div>
@@ -151,14 +151,12 @@
         <aside class="perfil-columna-lateral">
 
 
-            <!-- =============================================
-                 TARJETA IDENTIDAD
-            ============================================== -->
+            <!-- =================================================
+                 IDENTIDAD
+            ================================================== -->
 
             <article class="perfil-card perfil-card-identidad">
 
-
-                <!-- FOTO -->
 
                 <div class="perfil-avatar-contenedor">
 
@@ -218,6 +216,7 @@
 
                     </span>
 
+
                 </div>
 
 
@@ -268,7 +267,9 @@
 
 
 
-                <!-- INFORMACIÓN RÁPIDA -->
+                <!-- =================================================
+                     INFORMACIÓN RÁPIDA
+                ================================================== -->
 
                 <div class="perfil-resumen">
 
@@ -327,59 +328,39 @@
 
 
 
-                    <!-- =====================================================
-                        TELÉFONO
-                    ====================================================== -->
+                    <!-- TELÉFONO -->
 
-                    <div class="col-md-6">
+                    <div class="perfil-resumen-item">
 
-                        <label
-                            for="telefonoPerfil"
-                            class="form-label"
-                        >
-                            Teléfono
-                        </label>
+                        <div class="perfil-resumen-icono">
 
-
-                        <div class="perfil-input-contenedor">
-
-                            <span class="perfil-input-icono">
-                                <i class="bi bi-telephone"></i>
-                            </span>
-
-
-                            <input
-                                type="tel"
-                                class="form-control"
-                                id="telefonoPerfil"
-                                name="telefono"
-                                value="{{ telefono }}"
-                                maxlength="10"
-                                inputmode="numeric"
-                                autocomplete="tel"
-                                placeholder="Ejemplo: 3101234567"
-                            >
+                            <i class="bi bi-telephone-fill"></i>
 
                         </div>
 
 
-                        <!-- MENSAJE NORMAL -->
+                        <div>
 
-                        <small
-                            id="ayudaTelefonoPerfil"
-                            class="perfil-ayuda"
-                        >
-                            Debe comenzar por 3 y tener exactamente 10 números.
-                        </small>
+                            <span>
+                                Teléfono
+                            </span>
 
 
-                        <!-- MENSAJE DE ERROR -->
+                            <strong>
 
-                        <small
-                            id="errorTelefonoPerfil"
-                            class="perfil-error-validacion d-none"
-                            aria-live="polite"
-                        ></small>
+                                {% if telefono %}
+
+                                    {{ telefono }}
+
+                                {% else %}
+
+                                    Sin registrar
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
 
                     </div>
 
@@ -437,9 +418,9 @@
 
 
 
-            <!-- =============================================
-                 INFORMACIÓN COMO APICULTOR
-            ============================================== -->
+            <!-- =================================================
+                 INFORMACIÓN DEL APICULTOR
+            ================================================== -->
 
             <article class="perfil-card perfil-card-apicultor">
 
@@ -480,6 +461,7 @@
                             Identificación
                         </span>
 
+
                         <strong>
 
                             {% if identificacion %}
@@ -506,6 +488,7 @@
                             Zona de trabajo
                         </span>
 
+
                         <strong>
 
                             {% if zona_trabajo %}
@@ -531,6 +514,7 @@
                         <span>
                             Experiencia
                         </span>
+
 
                         <strong>
 
@@ -564,6 +548,7 @@
                             Rol
                         </span>
 
+
                         <strong class="perfil-rol">
 
                             <i class="bi bi-person-badge-fill"></i>
@@ -582,9 +567,9 @@
 
 
 
-            <!-- =============================================
+            <!-- =================================================
                  INFORMACIÓN DE LA CUENTA
-            ============================================== -->
+            ================================================== -->
 
             <article class="perfil-card perfil-card-seguridad">
 
@@ -625,6 +610,7 @@
                             Último acceso
                         </span>
 
+
                         <strong>
 
                             {% if usuario.last_login %}
@@ -643,13 +629,14 @@
 
 
 
-                    <!-- FECHA CREACIÓN -->
+                    <!-- CUENTA CREADA -->
 
                     <div class="perfil-dato">
 
                         <span>
                             Cuenta creada
                         </span>
+
 
                         <strong>
 
@@ -685,870 +672,96 @@
         <div class="perfil-contenido-principal">
 
 
-            <!-- =============================================
-                 FORMULARIO INFORMACIÓN PERSONAL
-            ============================================== -->
+            <!-- =================================================
+                 PESTAÑAS PRINCIPALES
+            ================================================== -->
 
-            <!-- =============================================
-                 PESTAÑAS
-            
-                 Antes las cinco secciones iban una debajo de
-                 otra y había que bajar mucho para llegar al
-                 historial. Agrupadas en pestañas, cada una se
-                 ve completa sin desplazarse.
-            
-                 Es el mismo patrón del panel del administrador:
-                 mismos nombres de clase y mismos atributos.
-            ============================================== -->
-            
-            <div class="perfil-tabs-principales" role="tablist">
-            
-                <button type="button" class="perfil-tab-btn activo"
-                        data-tab-target="perfil-tab-info" role="tab" aria-selected="true">
-                    <i class="bi bi-person-vcard" aria-hidden="true"></i>
-                    <span>Información</span>
-                </button>
-            
-                <button type="button" class="perfil-tab-btn"
-                        data-tab-target="perfil-tab-seguridad" role="tab" aria-selected="false">
-                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
-                    <span>Seguridad</span>
-                </button>
-            
-            </div>
-            
-            
-            <div class="perfil-tab-panel" data-tab-panel="perfil-tab-info">
-            <article class="perfil-card perfil-card-formulario">
+            <div
+                class="perfil-tabs-principales"
+                role="tablist"
+            >
 
 
-                <!-- HEADER -->
-
-                <div class="perfil-card-header">
-
-                    <div class="perfil-card-titulo">
-
-                        <div class="perfil-card-icono">
-
-                            <i class="bi bi-pencil-square"></i>
-
-                        </div>
-
-
-                        <div>
-
-                            <h3>
-                                Editar información
-                            </h3>
-
-                            <p>
-                                Mantén actualizados tus datos personales
-                                y de contacto.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- =========================================
-                     FORMULARIO
-                ========================================== -->
-
-                <form
-                    method="POST"
-                    action="{% url 'perfil_apicultor' %}"
-                    enctype="multipart/form-data"
-                    id="formPerfilApicultor"
-                    novalidate
+                <button
+                    type="button"
+                    class="perfil-tab-btn activo"
+                    data-tab-target="perfil-tab-info"
+                    role="tab"
+                    aria-selected="true"
                 >
 
-                    {% csrf_token %}
+                    <i
+                        class="bi bi-person-vcard"
+                        aria-hidden="true"
+                    ></i>
 
+                    <span>
+                        Información
+                    </span>
 
-                    <input
-                        type="hidden"
-                        name="eliminar_foto"
-                        id="eliminarFotoPerfil"
-                        value="0"
-                    >
+                </button>
 
 
 
-                    <!-- =====================================
-                         FOTOGRAFÍA
-                    ====================================== -->
-
-                    <section class="perfil-seccion-formulario">
-
-
-                        <div class="perfil-seccion-titulo">
-
-                            <div>
-
-                                <h4>
-                                    Fotografía de perfil
-                                </h4>
-
-                                <p>
-                                    Selecciona una fotografía para
-                                    identificar tu cuenta.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="perfil-foto-edicion">
-
-
-                            <!-- PREVIEW -->
-
-                            <div class="perfil-foto-preview">
-
-
-                                {% if foto %}
-
-                                    <img
-                                        src="{{ foto }}"
-                                        alt="Foto de perfil"
-                                        id="imagenPreviewPerfil"
-                                    >
-
-
-                                    <div
-                                        class="perfil-preview-icono d-none"
-                                        id="iconoPreviewPerfil"
-                                    >
-
-                                        <i class="bi bi-person-fill"></i>
-
-                                    </div>
-
-
-                                {% else %}
-
-
-                                    <img
-                                        src=""
-                                        alt="Vista previa"
-                                        id="imagenPreviewPerfil"
-                                        class="d-none"
-                                    >
-
-
-                                    <div
-                                        class="perfil-preview-icono"
-                                        id="iconoPreviewPerfil"
-                                    >
-
-                                        <i class="bi bi-person-fill"></i>
-
-                                    </div>
-
-
-                                {% endif %}
-
-
-                            </div>
-
-
-
-                            <!-- CONTROLES -->
-
-                            <div class="perfil-foto-controles">
-
-
-                                <h5>
-                                    Tu fotografía
-                                </h5>
-
-
-                                <p>
-                                    Formatos permitidos:
-                                    JPG, PNG o WEBP.
-                                    Tamaño máximo: 5 MB.
-                                </p>
-
-
-
-                                <div class="perfil-foto-botones">
-
-
-                                    <label
-                                        for="fotoperfil"
-                                        class="btn-cambiar-foto"
-                                    >
-
-                                        <i class="bi bi-camera-fill"></i>
-
-                                        <span>
-                                            Cambiar foto
-                                        </span>
-
-                                    </label>
-
-
-
-                                    <input
-                                        type="file"
-                                        id="fotoperfil"
-                                        name="fotoperfil"
-                                        accept="image/jpeg,image/png,image/webp"
-                                        class="d-none"
-                                    >
-
-
-
-                                    <button
-                                        type="button"
-                                        class="
-                                            btn-quitar-foto
-
-                                            {% if not foto %}
-                                                d-none
-                                            {% endif %}
-                                        "
-                                        id="btnQuitarFotoPerfil"
-                                    >
-
-                                        <i class="bi bi-trash3-fill"></i>
-
-                                        <span>
-                                            Quitar
-                                        </span>
-
-                                    </button>
-
-
-                                </div>
-
-
-
-                                <span
-                                    class="perfil-error-foto d-none"
-                                    id="errorFotoPerfil"
-                                >
-                                </span>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    </section>
-
-
-
-                    <div class="perfil-separador"></div>
-
-
-
-                    <!-- =====================================
-                         INFORMACIÓN PERSONAL
-                    ====================================== -->
-
-                    <section class="perfil-seccion-formulario">
-
-
-                        <div class="perfil-seccion-titulo">
-
-                            <div>
-
-                                <h4>
-                                    Información personal
-                                </h4>
-
-                                <p>
-                                    Datos asociados a tu cuenta.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="row g-4">
-
-
-                            <!-- =====================================================
-
-
-
-
-                            <!-- USERNAME -->
-
-                            <div class="col-md-6">
-
-
-                                <label
-                                    for="usernamePerfil"
-                                    class="form-label"
-                                >
-                                    Nombre de usuario
-                                </label>
-
-
-                                <div
-                                    class="
-                                        perfil-input-contenedor
-                                        perfil-input-bloqueado
-                                    "
-                                >
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-at"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="usernamePerfil"
-                                        value="{{ usuario.username }}"
-                                        readonly
-                                        disabled
-                                    >
-
-
-                                    <span class="perfil-input-candado">
-
-                                        <i class="bi bi-lock-fill"></i>
-
-                                    </span>
-
-                                </div>
-
-
-                                <small class="perfil-ayuda">
-                                    El nombre de usuario no se modifica
-                                    desde esta sección.
-                                </small>
-
-                            </div>
-
-
-                        </div>
-
-
-                    </section>
-
-
-                    <!-- =====================================
-                         PIE DEL FORMULARIO
-                    ====================================== -->
-
-                    <div class="perfil-formulario-footer">
-
-
-                        <div class="perfil-formulario-aviso">
-
-                            <i class="bi bi-info-circle-fill"></i>
-
-
-                            <span>
-                                Los cambios realizados aquí afectarán
-                                la información de tu cuenta.
-                            </span>
-
-                        </div>
-
-
-
-                        <button
-                            type="submit"
-                            class="btn-guardar-perfil"
-                            id="btnGuardarPerfil"
-                        >
-
-                            <i class="bi bi-floppy-fill"></i>
-
-                            <span>
-                                Guardar cambios
-                            </span>
-
-                        </button>
-
-
-                    </div>
-
-
-                </form>
-
-
-            </article>
-
-
-
-            <!-- =====================================================
-                 SEGURIDAD
-            ====================================================== -->
-            </div>
-            
-            
-            <div class="perfil-tab-panel d-none" data-tab-panel="perfil-tab-seguridad">
-            
-                <div class="perfil-subtabs" role="tablist">
-            
-                    <button type="button" class="perfil-subtab-btn activo"
-                            data-tab-target="sub-password" role="tab" aria-selected="true">
-                        <i class="bi bi-key" aria-hidden="true"></i>
-                        <span>Contraseña</span>
-                    </button>
-            
-                    <button type="button" class="perfil-subtab-btn"
-                            data-tab-target="sub-2fa" role="tab" aria-selected="false">
-                        <i class="bi bi-shield-check" aria-hidden="true"></i>
-                        <span>Verificación en dos pasos</span>
-                    </button>
-            
-                    <button type="button" class="perfil-subtab-btn"
-                            data-tab-target="sub-sesiones" role="tab" aria-selected="false">
-                        <i class="bi bi-laptop" aria-hidden="true"></i>
-                        <span>Sesiones</span>
-                    </button>
-            
-                    <button type="button" class="perfil-subtab-btn"
-                            data-tab-target="sub-historial" role="tab" aria-selected="false">
-                        <i class="bi bi-clock-history" aria-hidden="true"></i>
-                        <span>Historial</span>
-                    </button>
-            
-                </div>
-            
-            
-                <div data-tab-panel="sub-password">
-                    <article class="perfil-card perfil-card-seguridad">
-                <div class="perfil-card-header">
-
-
-                    <div class="perfil-card-titulo">
-
-
-                        <div class="perfil-card-icono">
-
-                            <i class="bi bi-shield-lock-fill"></i>
-
-                        </div>
-
-
-                        <div>
-
-                            <h3>
-                                Seguridad
-                            </h3>
-
-                            <p>
-                                Administra la contraseña de acceso a tu cuenta.
-                            </p>
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-
-                <!-- AVISO -->
-
-                <div class="perfil-aviso-seguridad">
-
-                    <i class="bi bi-info-circle-fill"></i>
-
-                    <p>
-                        Para cambiar tu contraseña debes ingresar primero
-                        la contraseña que utilizas actualmente.
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     FORMULARIO CAMBIAR CONTRASEÑA
-                ================================================== -->
-
-                <form
-                    method="POST"
-                    action="{% url 'cambiar_password_apicultor' %}"
-                    id="formCambiarPasswordPerfil"
-                    novalidate
+                <button
+                    type="button"
+                    class="perfil-tab-btn"
+                    data-tab-target="perfil-tab-seguridad"
+                    role="tab"
+                    aria-selected="false"
                 >
 
-                    {% csrf_token %}
+                    <i
+                        class="bi bi-shield-lock"
+                        aria-hidden="true"
+                    ></i>
 
+                    <span>
+                        Seguridad
+                    </span>
 
+                </button>
 
-                    <!-- =============================================
-                         CONTRASEÑA ACTUAL
-                    ============================================== -->
 
-                    <div class="mb-4">
+            </div>
 
 
-                        <label
-                            for="passwordActualPerfil"
-                            class="form-label"
-                        >
 
-                            Contraseña actual
+            <!-- =================================================
+                 PESTAÑA INFORMACIÓN
+            ================================================== -->
 
-                            <span class="campo-obligatorio">
-                                *
-                            </span>
+            <div
+                class="perfil-tab-panel"
+                data-tab-panel="perfil-tab-info"
+            >
 
-                        </label>
 
+                <article class="perfil-card perfil-card-formulario">
 
 
-                        <div class="input-group">
-
-
-                            <span class="input-group-text">
-
-                                <i class="bi bi-key-fill"></i>
-
-                            </span>
-
-
-
-                            <input
-                                type="password"
-                                class="form-control"
-                                id="passwordActualPerfil"
-                                name="password_actual"
-                                autocomplete="current-password"
-                                required
-                            >
-
-
-
-                            <button
-                                type="button"
-                                class="btn-password-perfil"
-                                data-password-target="passwordActualPerfil"
-                                aria-label="Mostrar contraseña"
-                                title="Mostrar contraseña"
-                            >
-
-                                <i class="bi bi-eye-fill"></i>
-
-                            </button>
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- =============================================
-                         NUEVA + CONFIRMAR
-                    ============================================== -->
-
-                    <div class="row g-4">
-
-
-                        <!-- NUEVA CONTRASEÑA -->
-
-                        <div class="col-md-6">
-
-
-                            <label
-                                for="passwordNuevoPerfil"
-                                class="form-label"
-                            >
-
-                                Nueva contraseña
-
-                                <span class="campo-obligatorio">
-                                    *
-                                </span>
-
-                            </label>
-
-
-
-                            <div class="input-group">
-
-
-                                <span class="input-group-text">
-
-                                    <i class="bi bi-lock-fill"></i>
-
-                                </span>
-
-
-
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="passwordNuevoPerfil"
-                                    name="password_nueva"
-                                    autocomplete="new-password"
-                                    minlength="8"
-                                    required
-                                >
-
-
-
-                                <button
-                                    type="button"
-                                    class="btn-password-perfil"
-                                    data-password-target="passwordNuevoPerfil"
-                                    aria-label="Mostrar contraseña"
-                                    title="Mostrar contraseña"
-                                >
-
-                                    <i class="bi bi-eye-fill"></i>
-
-                                </button>
-
-
-                            </div>
-
-
-
-                            <small class="perfil-ayuda">
-
-                                Usa una contraseña segura de mínimo
-                                8 caracteres.
-
-                            </small>
-
-
-                        </div>
-
-
-
-                        <!-- CONFIRMAR CONTRASEÑA -->
-
-                        <div class="col-md-6">
-
-
-                            <label
-                                for="confirmarPasswordPerfil"
-                                class="form-label"
-                            >
-
-                                Confirmar contraseña
-
-                                <span class="campo-obligatorio">
-                                    *
-                                </span>
-
-                            </label>
-
-
-
-                            <div class="input-group">
-
-
-                                <span class="input-group-text">
-
-                                    <i class="bi bi-lock-fill"></i>
-
-                                </span>
-
-
-
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="confirmarPasswordPerfil"
-                                    name="password_confirmacion"
-                                    autocomplete="new-password"
-                                    required
-                                >
-
-
-
-                                <button
-                                    type="button"
-                                    class="btn-password-perfil"
-                                    data-password-target="confirmarPasswordPerfil"
-                                    aria-label="Mostrar contraseña"
-                                    title="Mostrar contraseña"
-                                >
-
-                                    <i class="bi bi-eye-fill"></i>
-
-                                </button>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- =============================================
-                         ERROR COINCIDENCIA
-                    ============================================== -->
-
-                    <div
-                        class="perfil-password-error d-none"
-                        id="mensajePasswordPerfil"
-                    >
-
-                        <i class="bi bi-exclamation-circle-fill"></i>
-
-                        <span>
-                            Las contraseñas nuevas no coinciden.
-                        </span>
-
-                    </div>
-
-
-
-                    <!-- =============================================
-                         VALIDACIÓN EN TIEMPO REAL
-                    ============================================== -->
-
-                    <div
-                        class="perfil-password-validacion d-none"
-                        id="estadoPasswordPerfil"
-                    >
-
-
-                        <!-- LONGITUD -->
-
-                        <div class="perfil-password-regla">
-
-
-                            <i
-                                class="bi bi-circle"
-                                id="iconoLongitudPassword"
-                            ></i>
-
-
-                            <span>
-                                Mínimo 8 caracteres
-                            </span>
-
-
-                        </div>
-
-
-
-                        <!-- COINCIDENCIA -->
-
-                        <div class="perfil-password-regla">
-
-
-                            <i
-                                class="bi bi-circle"
-                                id="iconoCoincidenciaPassword"
-                            ></i>
-
-
-                            <span>
-                                Las contraseñas coinciden
-                            </span>
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- =============================================
-                         FOOTER SEGURIDAD
-                    ============================================== -->
-
-                    <div class="perfil-formulario-footer">
-
-
-                        <div class="perfil-formulario-aviso">
-
-
-                            <i class="bi bi-shield-check"></i>
-
-
-                            <span>
-
-                                Después de cambiarla seguirás conectado
-                                en esta sesión.
-
-                            </span>
-
-
-                        </div>
-
-
-
-                        <button
-                            type="submit"
-                            class="btn-guardar-perfil"
-                            id="btnCambiarPasswordPerfil"
-                        >
-
-
-                            <i class="bi bi-shield-lock-fill"></i>
-
-
-                            <span>
-                                Actualizar contraseña
-                            </span>
-
-
-                        </button>
-
-
-                    </div>
-
-
-                </form>
-                    </article>
-                </div>
-            
-            
-                <div class="d-none" data-tab-panel="sub-2fa">
-                <article class="perfil-card perfil-card-seguridad perfil-card-2fa">
-
-
-                    <!-- =================================================
-                        HEADER
-                    ================================================== -->
+                    <!-- HEADER -->
 
                     <div class="perfil-card-header">
 
                         <div class="perfil-card-titulo">
 
                             <div class="perfil-card-icono">
-                                <i class="bi bi-shield-check"></i>
+
+                                <i class="bi bi-pencil-square"></i>
+
                             </div>
 
 
                             <div>
 
                                 <h3>
-                                    Verificación en dos pasos
+                                    Editar información
                                 </h3>
 
                                 <p>
-                                    Añade una capa adicional de seguridad
-                                    a tu cuenta.
+                                    Mantén actualizados tus datos personales
+                                    y de contacto.
                                 </p>
 
                             </div>
@@ -1558,147 +771,49 @@
                     </div>
 
 
+
                     <!-- =================================================
-                        2FA NO DISPONIBLE
+                         FORMULARIO PERFIL
                     ================================================== -->
 
-                    {% if not permitir_2fa %}
+                    <form
+                        method="POST"
+                        action="{% url 'perfil_apicultor' %}"
+                        enctype="multipart/form-data"
+                        id="formPerfilApicultor"
+                        novalidate
+                    >
 
-                        <div class="perfil-2fa-aviso bloqueado">
-
-                            <div class="perfil-2fa-aviso-icono">
-                                <i class="bi bi-shield-x"></i>
-                            </div>
-
-
-                            <div>
-
-                                <strong>
-                                    Función no disponible
-                                </strong>
-
-                                <p>
-                                    La verificación en dos pasos está
-                                    deshabilitada por la configuración
-                                    de seguridad del sistema.
-                                </p>
-
-                            </div>
-
-                        </div>
+                        {% csrf_token %}
 
 
-                    {% else %}
+                        <input
+                            type="hidden"
+                            name="eliminar_foto"
+                            id="eliminarFotoPerfil"
+                            value="0"
+                        >
+
 
 
                         <!-- =============================================
-                            ESTADO
+                             FOTOGRAFÍA
                         ============================================== -->
 
-                        <div class="perfil-2fa-contenido">
+                        <section class="perfil-seccion-formulario">
 
 
-                            <div class="perfil-2fa-estado">
-
-
-                                <div>
-
-                                    <span class="perfil-2fa-etiqueta">
-                                        Estado
-                                    </span>
-
-
-                                    {% if configuracion_2fa.activo %}
-
-                                        <span class="perfil-2fa-badge activo">
-
-                                            <i class="bi bi-check-circle-fill"></i>
-
-                                            Activada
-
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="perfil-2fa-badge inactivo">
-
-                                            <i class="bi bi-circle"></i>
-
-                                            Desactivada
-
-                                        </span>
-
-                                    {% endif %}
-
-                                </div>
-
+                            <div class="perfil-seccion-titulo">
 
                                 <div>
 
-                                    <span class="perfil-2fa-etiqueta">
-                                        Método
-                                    </span>
-
-                                    <strong>
-                                        <i class="bi bi-envelope-fill"></i>
-                                        Correo electrónico
-                                    </strong>
-
-                                </div>
-
-
-                                <div>
-
-                                    <span class="perfil-2fa-etiqueta">
-                                        Correo
-                                    </span>
-
-                                    <strong>
-                                        {{ usuario.email|default:"Sin registrar" }}
-                                    </strong>
-
-                                </div>
-
-
-                                {% if configuracion_2fa.fecha_activacion %}
-
-                                    <div>
-
-                                        <span class="perfil-2fa-etiqueta">
-                                            Activada desde
-                                        </span>
-
-                                        <strong>
-                                            {{ configuracion_2fa.fecha_activacion|date:"d/m/Y H:i" }}
-                                        </strong>
-
-                                    </div>
-
-                                {% endif %}
-
-
-                            </div>
-
-
-                            <!-- =========================================
-                                INFORMACIÓN
-                            ========================================== -->
-
-                            <div class="perfil-2fa-explicacion">
-
-                                <i class="bi bi-envelope-shield-fill"></i>
-
-                                <div>
-
-                                    <strong>
-                                        Protección mediante código temporal
-                                    </strong>
+                                    <h4>
+                                        Fotografía de perfil
+                                    </h4>
 
                                     <p>
-                                        Cuando inicies sesión, Mi Colmena
-                                        enviará un código de 6 dígitos a tu
-                                        correo electrónico. El código vence
-                                        después de 5 minutos.
+                                        Selecciona una fotografía para
+                                        identificar tu cuenta.
                                     </p>
 
                                 </div>
@@ -1706,288 +821,1125 @@
                             </div>
 
 
-                            <!-- =========================================
-                                OBLIGATORIO
-                            ========================================== -->
 
-                            {% if segundo_factor_obligatorio %}
+                            <div class="perfil-foto-edicion">
 
-                                <div class="perfil-2fa-obligatorio">
+
+                                <div class="perfil-foto-preview">
+
+
+                                    {% if foto %}
+
+                                        <img
+                                            src="{{ foto }}"
+                                            alt="Foto de perfil"
+                                            id="imagenPreviewPerfil"
+                                        >
+
+
+                                        <div
+                                            class="perfil-preview-icono d-none"
+                                            id="iconoPreviewPerfil"
+                                        >
+
+                                            <i class="bi bi-person-fill"></i>
+
+                                        </div>
+
+
+                                    {% else %}
+
+
+                                        <img
+                                            src=""
+                                            alt="Vista previa"
+                                            id="imagenPreviewPerfil"
+                                            class="d-none"
+                                        >
+
+
+                                        <div
+                                            class="perfil-preview-icono"
+                                            id="iconoPreviewPerfil"
+                                        >
+
+                                            <i class="bi bi-person-fill"></i>
+
+                                        </div>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+
+                                <div class="perfil-foto-controles">
+
+
+                                    <h5>
+                                        Tu fotografía
+                                    </h5>
+
+
+                                    <p>
+                                        Formatos permitidos:
+                                        JPG, PNG o WEBP.
+                                        Tamaño máximo: 5 MB.
+                                    </p>
+
+
+
+                                    <div class="perfil-foto-botones">
+
+
+                                        <label
+                                            for="fotoperfil"
+                                            class="btn-cambiar-foto"
+                                        >
+
+                                            <i class="bi bi-camera-fill"></i>
+
+                                            <span>
+                                                Cambiar foto
+                                            </span>
+
+                                        </label>
+
+
+
+                                        <input
+                                            type="file"
+                                            id="fotoperfil"
+                                            name="fotoperfil"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            class="d-none"
+                                        >
+
+
+
+                                        <button
+                                            type="button"
+                                            class="
+                                                btn-quitar-foto
+
+                                                {% if not foto %}
+                                                    d-none
+                                                {% endif %}
+                                            "
+                                            id="btnQuitarFotoPerfil"
+                                        >
+
+                                            <i class="bi bi-trash3-fill"></i>
+
+                                            <span>
+                                                Quitar
+                                            </span>
+
+                                        </button>
+
+
+                                    </div>
+
+
+
+                                    <span
+                                        class="perfil-error-foto d-none"
+                                        id="errorFotoPerfil"
+                                    ></span>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </section>
+
+
+
+                        <div class="perfil-separador"></div>
+
+
+
+                        <!-- =============================================
+                             INFORMACIÓN PERSONAL
+                        ============================================== -->
+
+                        <section class="perfil-seccion-formulario">
+
+
+                            <div class="perfil-seccion-titulo">
+
+                                <div>
+
+                                    <h4>
+                                        Información personal
+                                    </h4>
+
+                                    <p>
+                                        Datos asociados a tu cuenta.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="row g-4">
+
+
+                                <!-- =========================================
+                                     NOMBRES
+                                ========================================== -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="nombresPerfil"
+                                        class="form-label"
+                                    >
+
+                                        Nombres
+
+                                        <span class="campo-obligatorio">
+                                            *
+                                        </span>
+
+                                    </label>
+
+
+                                    <div class="perfil-input-contenedor">
+
+                                        <span class="perfil-input-icono">
+
+                                            <i class="bi bi-person"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="nombresPerfil"
+                                            name="nombres"
+                                            value="{{ usuario.first_name }}"
+                                            maxlength="150"
+                                            autocomplete="given-name"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <small
+                                        id="errorNombresPerfil"
+                                        class="perfil-error-validacion d-none"
+                                        aria-live="polite"
+                                    ></small>
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                     APELLIDOS
+                                ========================================== -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="apellidosPerfil"
+                                        class="form-label"
+                                    >
+
+                                        Apellidos
+
+                                        <span class="campo-obligatorio">
+                                            *
+                                        </span>
+
+                                    </label>
+
+
+                                    <div class="perfil-input-contenedor">
+
+                                        <span class="perfil-input-icono">
+
+                                            <i class="bi bi-person"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="apellidosPerfil"
+                                            name="apellidos"
+                                            value="{{ usuario.last_name }}"
+                                            maxlength="150"
+                                            autocomplete="family-name"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <small
+                                        id="errorApellidosPerfil"
+                                        class="perfil-error-validacion d-none"
+                                        aria-live="polite"
+                                    ></small>
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                     CORREO
+                                ========================================== -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="correoPerfil"
+                                        class="form-label"
+                                    >
+
+                                        Correo electrónico
+
+                                        <span class="campo-obligatorio">
+                                            *
+                                        </span>
+
+                                    </label>
+
+
+                                    <div class="perfil-input-contenedor">
+
+                                        <span class="perfil-input-icono">
+
+                                            <i class="bi bi-envelope"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            id="correoPerfil"
+                                            name="correo"
+                                            value="{{ usuario.email }}"
+                                            maxlength="254"
+                                            autocomplete="email"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <small class="perfil-ayuda">
+                                        Permitidos:
+                                        @gmail.com,
+                                        @hotmail.com,
+                                        @outlook.com
+                                        y @yahoo.com.
+                                    </small>
+
+
+                                    <small
+                                        id="errorCorreoPerfil"
+                                        class="perfil-error-validacion d-none"
+                                        aria-live="polite"
+                                    ></small>
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                     TELÉFONO
+                                ========================================== -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="telefonoPerfil"
+                                        class="form-label"
+                                    >
+                                        Teléfono
+                                    </label>
+
+
+                                    <div class="perfil-input-contenedor">
+
+                                        <span class="perfil-input-icono">
+
+                                            <i class="bi bi-telephone"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="tel"
+                                            class="form-control"
+                                            id="telefonoPerfil"
+                                            name="telefono"
+                                            value="{{ telefono }}"
+                                            maxlength="10"
+                                            inputmode="numeric"
+                                            autocomplete="tel"
+                                            placeholder="Ejemplo: 3101234567"
+                                        >
+
+                                    </div>
+
+
+                                    <small
+                                        id="ayudaTelefonoPerfil"
+                                        class="perfil-ayuda"
+                                    >
+                                        Debe comenzar por 3 y tener
+                                        exactamente 10 números.
+                                    </small>
+
+
+                                    <small
+                                        id="errorTelefonoPerfil"
+                                        class="perfil-error-validacion d-none"
+                                        aria-live="polite"
+                                    ></small>
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                     IDENTIFICACIÓN
+                                ========================================== -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="identificacionPerfil"
+                                        class="form-label"
+                                    >
+                                        Identificación
+                                    </label>
+
+
+                                    <div
+                                        class="
+                                            perfil-input-contenedor
+                                            perfil-input-bloqueado
+                                        "
+                                    >
+
+                                        <span class="perfil-input-icono">
+
+                                            <i class="bi bi-credit-card-2-front"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="identificacionPerfil"
+                                            value="{{ identificacion }}"
+                                            readonly
+                                            disabled
+                                        >
+
+
+                                        <span class="perfil-input-candado">
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <small class="perfil-ayuda">
+                                        La identificación no puede modificarse
+                                        desde tu perfil.
+                                    </small>
+
+                                </div>
+
+
+
+                                <!-- =========================================
+                                     USERNAME
+                                ========================================== -->
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="usernamePerfil"
+                                        class="form-label"
+                                    >
+                                        Nombre de usuario
+                                    </label>
+
+
+                                    <div
+                                        class="
+                                            perfil-input-contenedor
+                                            perfil-input-bloqueado
+                                        "
+                                    >
+
+                                        <span class="perfil-input-icono">
+
+                                            <i class="bi bi-at"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="usernamePerfil"
+                                            value="{{ usuario.username }}"
+                                            readonly
+                                            disabled
+                                        >
+
+
+                                        <span class="perfil-input-candado">
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <small class="perfil-ayuda">
+                                        El nombre de usuario no se modifica
+                                        desde esta sección.
+                                    </small>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </section>
+
+
+
+                        <!-- =============================================
+                             FOOTER
+                        ============================================== -->
+
+                        <div class="perfil-formulario-footer">
+
+
+                            <div class="perfil-formulario-aviso">
+
+                                <i class="bi bi-info-circle-fill"></i>
+
+                                <span>
+                                    Los cambios realizados aquí afectarán
+                                    la información de tu cuenta.
+                                </span>
+
+                            </div>
+
+
+
+                            <button
+                                type="submit"
+                                class="btn-guardar-perfil"
+                                id="btnGuardarPerfil"
+                            >
+
+                                <i class="bi bi-floppy-fill"></i>
+
+                                <span>
+                                    Guardar cambios
+                                </span>
+
+                            </button>
+
+
+                        </div>
+
+
+                    </form>
+
+
+                </article>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PESTAÑA SEGURIDAD
+            ================================================== -->
+
+            <div
+                class="perfil-tab-panel d-none"
+                data-tab-panel="perfil-tab-seguridad"
+            >
+
+
+                <!-- =================================================
+                     SUBPESTAÑAS
+                ================================================== -->
+
+                <div
+                    class="perfil-subtabs"
+                    role="tablist"
+                >
+
+
+                    <button
+                        type="button"
+                        class="perfil-subtab-btn activo"
+                        data-tab-target="sub-password"
+                        role="tab"
+                        aria-selected="true"
+                    >
+
+                        <i
+                            class="bi bi-key"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>
+                            Contraseña
+                        </span>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="perfil-subtab-btn"
+                        data-tab-target="sub-2fa"
+                        role="tab"
+                        aria-selected="false"
+                    >
+
+                        <i
+                            class="bi bi-shield-check"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>
+                            Verificación en dos pasos
+                        </span>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="perfil-subtab-btn"
+                        data-tab-target="sub-sesiones"
+                        role="tab"
+                        aria-selected="false"
+                    >
+
+                        <i
+                            class="bi bi-laptop"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>
+                            Sesiones
+                        </span>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="perfil-subtab-btn"
+                        data-tab-target="sub-historial"
+                        role="tab"
+                        aria-selected="false"
+                    >
+
+                        <i
+                            class="bi bi-clock-history"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>
+                            Historial
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CONTRASEÑA
+                ================================================== -->
+
+                <div data-tab-panel="sub-password">
+
+
+                    <article class="perfil-card perfil-card-seguridad">
+
+
+                        <div class="perfil-card-header">
+
+                            <div class="perfil-card-titulo">
+
+                                <div class="perfil-card-icono">
 
                                     <i class="bi bi-shield-lock-fill"></i>
 
-                                    <div>
+                                </div>
 
-                                        <strong>
-                                            Protección obligatoria
-                                        </strong>
 
-                                        <p>
-                                            La política de seguridad de
-                                            Mi Colmena requiere que tu cuenta
-                                            utilice verificación en dos pasos.
-                                        </p>
+                                <div>
+
+                                    <h3>
+                                        Seguridad
+                                    </h3>
+
+                                    <p>
+                                        Administra la contraseña
+                                        de acceso a tu cuenta.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="perfil-aviso-seguridad">
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                            <p>
+                                Para cambiar tu contraseña debes ingresar
+                                primero la contraseña que utilizas actualmente.
+                            </p>
+
+                        </div>
+
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'cambiar_password_apicultor' %}"
+                            id="formCambiarPasswordPerfil"
+                            novalidate
+                        >
+
+                            {% csrf_token %}
+
+
+
+                            <!-- CONTRASEÑA ACTUAL -->
+
+                            <div class="mb-4">
+
+                                <label
+                                    for="passwordActualPerfil"
+                                    class="form-label"
+                                >
+
+                                    Contraseña actual
+
+                                    <span class="campo-obligatorio">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="bi bi-key-fill"></i>
+
+                                    </span>
+
+
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="passwordActualPerfil"
+                                        name="password_actual"
+                                        autocomplete="current-password"
+                                        required
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        class="btn-password-perfil"
+                                        data-password-target="passwordActualPerfil"
+                                        aria-label="Mostrar contraseña"
+                                        title="Mostrar contraseña"
+                                    >
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- NUEVA Y CONFIRMAR -->
+
+                            <div class="row g-4">
+
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="passwordNuevoPerfil"
+                                        class="form-label"
+                                    >
+
+                                        Nueva contraseña
+
+                                        <span class="campo-obligatorio">
+                                            *
+                                        </span>
+
+                                    </label>
+
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="password"
+                                            class="form-control"
+                                            id="passwordNuevoPerfil"
+                                            name="password_nueva"
+                                            autocomplete="new-password"
+                                            minlength="8"
+                                            required
+                                        >
+
+
+                                        <button
+                                            type="button"
+                                            class="btn-password-perfil"
+                                            data-password-target="passwordNuevoPerfil"
+                                            aria-label="Mostrar contraseña"
+                                            title="Mostrar contraseña"
+                                        >
+
+                                            <i class="bi bi-eye-fill"></i>
+
+                                        </button>
+
+                                    </div>
+
+
+                                    <small class="perfil-ayuda">
+                                        Usa una contraseña segura
+                                        de mínimo 8 caracteres.
+                                    </small>
+
+                                </div>
+
+
+
+                                <div class="col-md-6">
+
+                                    <label
+                                        for="confirmarPasswordPerfil"
+                                        class="form-label"
+                                    >
+
+                                        Confirmar contraseña
+
+                                        <span class="campo-obligatorio">
+                                            *
+                                        </span>
+
+                                    </label>
+
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                        </span>
+
+
+                                        <input
+                                            type="password"
+                                            class="form-control"
+                                            id="confirmarPasswordPerfil"
+                                            name="password_confirmacion"
+                                            autocomplete="new-password"
+                                            required
+                                        >
+
+
+                                        <button
+                                            type="button"
+                                            class="btn-password-perfil"
+                                            data-password-target="confirmarPasswordPerfil"
+                                            aria-label="Mostrar contraseña"
+                                            title="Mostrar contraseña"
+                                        >
+
+                                            <i class="bi bi-eye-fill"></i>
+
+                                        </button>
 
                                     </div>
 
                                 </div>
 
-                            {% endif %}
-
-
-                            <!-- =========================================
-                                ACCIONES
-                            ========================================== -->
-
-                            <div class="perfil-2fa-acciones">
-
-
-                                {% if configuracion_2fa.activo %}
-
-
-                                    {% if not segundo_factor_obligatorio %}
-
-                                        <form
-                                            method="POST"
-                                            action="{% url 'iniciar_desactivacion_2fa' %}"
-                                        >
-
-                                            {% csrf_token %}
-
-
-                                            <button
-                                                type="submit"
-                                                class="btn-perfil-2fa desactivar"
-                                            >
-
-                                                <i class="bi bi-shield-x"></i>
-
-                                                <span>
-                                                    Desactivar verificación
-                                                </span>
-
-                                            </button>
-
-                                        </form>
-
-                                    {% endif %}
-
-
-                                {% else %}
-
-
-                                    <form
-                                        method="POST"
-                                        action="{% url 'iniciar_activacion_2fa' %}"
-                                    >
-
-                                        {% csrf_token %}
-
-
-                                        <button
-                                            type="submit"
-                                            class="btn-perfil-2fa activar"
-                                            {% if not usuario.email %}
-                                                disabled
-                                            {% endif %}
-                                        >
-
-                                            <i class="bi bi-shield-check"></i>
-
-                                            <span>
-                                                Activar verificación en dos pasos
-                                            </span>
-
-                                        </button>
-
-                                    </form>
-
-
-                                    {% if not usuario.email %}
-
-                                        <small class="perfil-2fa-sin-correo">
-
-                                            <i class="bi bi-exclamation-triangle-fill"></i>
-
-                                            Debes registrar un correo electrónico
-                                            antes de activar esta función.
-
-                                        </small>
-
-                                    {% endif %}
-
-
-                                {% endif %}
-
 
                             </div>
 
-
-                        </div>
-
-
-                    {% endif %}
-
-
-                </article>
-                </div>
-            
-            
-                <div class="d-none" data-tab-panel="sub-sesiones">
-                <article class="perfil-card perfil-card-sesiones">
-
-
-                    <!-- =====================================================
-                        HEADER
-                    ====================================================== -->
-
-                    <div class="perfil-card-header">
-
-                        <div class="perfil-card-titulo">
-
-                            <div class="perfil-card-icono">
-
-                                <i class="bi bi-laptop"></i>
-
-                            </div>
-
-
-                            <div>
-
-                                <h3>
-                                    Sesiones activas
-                                </h3>
-
-                                <p>
-                                    Revisa los dispositivos donde tienes
-                                    abierta tu cuenta.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="perfil-sesiones-contador">
-
-                            {{ total_sesiones_activas|default:0 }}
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- =====================================================
-                        INFORMACIÓN
-                    ====================================================== -->
-
-                    <div class="perfil-sesiones-aviso">
-
-                        <i class="bi bi-shield-check"></i>
-
-                        <div>
-
-                            <strong>
-                                Controla el acceso a tu cuenta
-                            </strong>
-
-                            <p>
-                                Si encuentras un dispositivo que no reconoces,
-                                puedes cerrar esa sesión de forma remota.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- =====================================================
-                        LISTA DE SESIONES
-                    ====================================================== -->
-
-                    <div class="perfil-sesiones-lista">
-
-
-                        {% for sesion in sesiones_activas %}
 
 
                             <div
-                                class="
-                                    perfil-sesion-item
+                                class="perfil-password-error d-none"
+                                id="mensajePasswordPerfil"
+                            >
 
-                                    {% if sesion.es_actual %}
-                                        actual
-                                    {% endif %}
-                                "
+                                <i class="bi bi-exclamation-circle-fill"></i>
+
+                                <span>
+                                    Las contraseñas nuevas no coinciden.
+                                </span>
+
+                            </div>
+
+
+
+                            <div
+                                class="perfil-password-validacion d-none"
+                                id="estadoPasswordPerfil"
                             >
 
 
-                                <!-- =========================================
-                                    ICONO DISPOSITIVO
-                                ========================================== -->
+                                <div class="perfil-password-regla">
 
-                                <div class="perfil-sesion-dispositivo">
+                                    <i
+                                        class="bi bi-circle"
+                                        id="iconoLongitudPassword"
+                                    ></i>
 
-
-                                    {% if sesion.dispositivo == "Móvil" %}
-
-                                        <i class="bi bi-phone-fill"></i>
-
-                                    {% elif sesion.dispositivo == "Tablet" %}
-
-                                        <i class="bi bi-tablet-fill"></i>
-
-                                    {% else %}
-
-                                        <i class="bi bi-laptop-fill"></i>
-
-                                    {% endif %}
-
+                                    <span>
+                                        Mínimo 8 caracteres
+                                    </span>
 
                                 </div>
 
 
 
-                                <!-- =========================================
-                                    INFORMACIÓN
-                                ========================================== -->
+                                <div class="perfil-password-regla">
 
-                                <div class="perfil-sesion-info">
+                                    <i
+                                        class="bi bi-circle"
+                                        id="iconoCoincidenciaPassword"
+                                    ></i>
 
+                                    <span>
+                                        Las contraseñas coinciden
+                                    </span>
 
-                                    <div class="perfil-sesion-superior">
-
-                                        <div>
-
-                                            <strong class="perfil-sesion-navegador">
-
-                                                {{ sesion.navegador|default:"Navegador desconocido" }}
-
-                                            </strong>
+                                </div>
 
 
-                                            <span class="perfil-sesion-sistema">
-
-                                                {{ sesion.sistema_operativo|default:"Sistema desconocido" }}
-
-                                                ·
-
-                                                {{ sesion.dispositivo|default:"Dispositivo desconocido" }}
-
-                                            </span>
-
-                                        </div>
+                            </div>
 
 
-                                        {% if sesion.es_actual %}
 
-                                            <span class="perfil-sesion-actual">
+                            <div class="perfil-formulario-footer">
+
+
+                                <div class="perfil-formulario-aviso">
+
+                                    <i class="bi bi-shield-check"></i>
+
+                                    <span>
+                                        Después de cambiarla seguirás conectado
+                                        en esta sesión.
+                                    </span>
+
+                                </div>
+
+
+                                <button
+                                    type="submit"
+                                    class="btn-guardar-perfil"
+                                    id="btnCambiarPasswordPerfil"
+                                >
+
+                                    <i class="bi bi-shield-lock-fill"></i>
+
+                                    <span>
+                                        Actualizar contraseña
+                                    </span>
+
+                                </button>
+
+
+                            </div>
+
+
+                        </form>
+
+
+                    </article>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     VERIFICACIÓN EN DOS PASOS
+                ================================================== -->
+
+                <div
+                    class="d-none"
+                    data-tab-panel="sub-2fa"
+                >
+
+
+                    <article
+                        class="
+                            perfil-card
+                            perfil-card-seguridad
+                            perfil-card-2fa
+                        "
+                    >
+
+
+                        <div class="perfil-card-header">
+
+                            <div class="perfil-card-titulo">
+
+                                <div class="perfil-card-icono">
+
+                                    <i class="bi bi-shield-check"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h3>
+                                        Verificación en dos pasos
+                                    </h3>
+
+                                    <p>
+                                        Añade una capa adicional
+                                        de seguridad a tu cuenta.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        {% if not permitir_2fa %}
+
+
+                            <div class="perfil-2fa-aviso bloqueado">
+
+                                <div class="perfil-2fa-aviso-icono">
+
+                                    <i class="bi bi-shield-x"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Función no disponible
+                                    </strong>
+
+                                    <p>
+                                        La verificación en dos pasos está
+                                        deshabilitada por la configuración
+                                        de seguridad del sistema.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <div class="perfil-2fa-contenido">
+
+
+                                <!-- ESTADO -->
+
+                                <div class="perfil-2fa-estado">
+
+
+                                    <div>
+
+                                        <span class="perfil-2fa-etiqueta">
+                                            Estado
+                                        </span>
+
+
+                                        {% if configuracion_2fa.activo %}
+
+                                            <span class="perfil-2fa-badge activo">
 
                                                 <i class="bi bi-check-circle-fill"></i>
 
-                                                Esta sesión
+                                                Activada
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="perfil-2fa-badge inactivo">
+
+                                                <i class="bi bi-circle"></i>
+
+                                                Desactivada
 
                                             </span>
 
@@ -1997,93 +1949,127 @@
 
 
 
-                                    <!-- =====================================
-                                        DETALLES
-                                    ====================================== -->
+                                    <div>
 
-                                    <div class="perfil-sesion-detalles">
+                                        <span class="perfil-2fa-etiqueta">
+                                            Método
+                                        </span>
 
+                                        <strong>
 
-                                        <div>
+                                            <i class="bi bi-envelope-fill"></i>
 
-                                            <i class="bi bi-globe2"></i>
+                                            Correo electrónico
 
-                                            <span>
-                                                IP
-                                            </span>
-
-                                            <strong>
-                                                {{ sesion.ip|default:"No disponible" }}
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <i class="bi bi-calendar-check"></i>
-
-                                            <span>
-                                                Inicio
-                                            </span>
-
-                                            <strong>
-
-                                                {{ sesion.fecha_inicio|date:"d/m/Y H:i" }}
-
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <i class="bi bi-clock-history"></i>
-
-                                            <span>
-                                                Última actividad
-                                            </span>
-
-                                            <strong>
-
-                                                {% if sesion.es_actual %}
-
-                                                    Ahora
-
-                                                {% else %}
-
-                                                    Hace
-                                                    {{ sesion.ultima_actividad|timesince }}
-
-                                                {% endif %}
-
-                                            </strong>
-
-                                        </div>
-
+                                        </strong>
 
                                     </div>
 
 
 
-                                    <!-- =====================================
-                                        ACCIONES
-                                    ====================================== -->
+                                    <div>
 
-                                    {% if not sesion.es_actual %}
+                                        <span class="perfil-2fa-etiqueta">
+                                            Correo
+                                        </span>
+
+                                        <strong>
+                                            {{ usuario.email|default:"Sin registrar" }}
+                                        </strong>
+
+                                    </div>
 
 
-                                        <div class="perfil-sesion-acciones">
 
+                                    {% if configuracion_2fa.fecha_activacion %}
+
+                                        <div>
+
+                                            <span class="perfil-2fa-etiqueta">
+                                                Activada desde
+                                            </span>
+
+                                            <strong>
+                                                {{ configuracion_2fa.fecha_activacion|date:"d/m/Y H:i" }}
+                                            </strong>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+
+                                <!-- INFORMACIÓN -->
+
+                                <div class="perfil-2fa-explicacion">
+
+                                    <i class="bi bi-envelope-shield-fill"></i>
+
+
+                                    <div>
+
+                                        <strong>
+                                            Protección mediante código temporal
+                                        </strong>
+
+                                        <p>
+                                            Cuando inicies sesión, Mi Colmena
+                                            enviará un código de 6 dígitos a tu
+                                            correo electrónico. El código vence
+                                            después de 5 minutos.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- OBLIGATORIO -->
+
+                                {% if segundo_factor_obligatorio %}
+
+                                    <div class="perfil-2fa-obligatorio">
+
+                                        <i class="bi bi-shield-lock-fill"></i>
+
+
+                                        <div>
+
+                                            <strong>
+                                                Protección obligatoria
+                                            </strong>
+
+                                            <p>
+                                                La política de seguridad de
+                                                Mi Colmena requiere que tu cuenta
+                                                utilice verificación en dos pasos.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+
+
+
+                                <!-- ACCIONES -->
+
+                                <div class="perfil-2fa-acciones">
+
+
+                                    {% if configuracion_2fa.activo %}
+
+
+                                        {% if not segundo_factor_obligatorio %}
 
                                             <form
                                                 method="POST"
-                                                action="{% url 'cerrar_sesion_remota' sesion.pk %}"
-                                                onsubmit="
-                                                    return confirm(
-                                                        '¿Seguro que quieres cerrar esta sesión?'
-                                                    );
-                                                "
+                                                action="{% url 'iniciar_desactivacion_2fa' %}"
                                             >
 
                                                 {% csrf_token %}
@@ -2091,20 +2077,65 @@
 
                                                 <button
                                                     type="submit"
-                                                    class="btn-cerrar-sesion-remota"
+                                                    class="btn-perfil-2fa desactivar"
                                                 >
 
-                                                    <i class="bi bi-box-arrow-right"></i>
+                                                    <i class="bi bi-shield-x"></i>
 
-                                                    Cerrar sesión
+                                                    <span>
+                                                        Desactivar verificación
+                                                    </span>
 
                                                 </button>
 
-
                                             </form>
 
+                                        {% endif %}
 
-                                        </div>
+
+                                    {% else %}
+
+
+                                        <form
+                                            method="POST"
+                                            action="{% url 'iniciar_activacion_2fa' %}"
+                                        >
+
+                                            {% csrf_token %}
+
+
+                                            <button
+                                                type="submit"
+                                                class="btn-perfil-2fa activar"
+                                                {% if not usuario.email %}
+                                                    disabled
+                                                {% endif %}
+                                            >
+
+                                                <i class="bi bi-shield-check"></i>
+
+                                                <span>
+                                                    Activar verificación en dos pasos
+                                                </span>
+
+                                            </button>
+
+                                        </form>
+
+
+
+                                        {% if not usuario.email %}
+
+                                            <small class="perfil-2fa-sin-correo">
+
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                                Debes registrar un correo electrónico
+                                                antes de activar esta función.
+
+                                            </small>
+
+                                        {% endif %}
 
 
                                     {% endif %}
@@ -2116,383 +2147,676 @@
                             </div>
 
 
-                        {% empty %}
+                        {% endif %}
 
 
-                            <div class="perfil-sesiones-vacio">
+                    </article>
 
-                                <i class="bi bi-shield-exclamation"></i>
 
-                                <strong>
-                                    No hay sesiones registradas
-                                </strong>
+                </div>
 
-                                <p>
-                                    No encontramos sesiones activas
-                                    asociadas a tu cuenta.
-                                </p>
+
+
+                <!-- =================================================
+                     SESIONES
+                ================================================== -->
+
+                <div
+                    class="d-none"
+                    data-tab-panel="sub-sesiones"
+                >
+
+
+                    <article class="perfil-card perfil-card-sesiones">
+
+
+                        <div class="perfil-card-header">
+
+
+                            <div class="perfil-card-titulo">
+
+                                <div class="perfil-card-icono">
+
+                                    <i class="bi bi-laptop"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h3>
+                                        Sesiones activas
+                                    </h3>
+
+                                    <p>
+                                        Revisa los dispositivos donde tienes
+                                        abierta tu cuenta.
+                                    </p>
+
+                                </div>
 
                             </div>
 
 
-                        {% endfor %}
+                            <div class="perfil-sesiones-contador">
+
+                                {{ total_sesiones_activas|default:0 }}
+
+                            </div>
 
 
-                    </div>
+                        </div>
 
 
 
-                    <!-- =====================================================
-                        CERRAR TODAS LAS DEMÁS
-                    ====================================================== -->
+                        <div class="perfil-sesiones-aviso">
 
-                    {% if total_otras_sesiones > 0 %}
-
-
-                        <div class="perfil-sesiones-footer">
+                            <i class="bi bi-shield-check"></i>
 
 
                             <div>
 
                                 <strong>
-                                    ¿No reconoces alguna sesión?
+                                    Controla el acceso a tu cuenta
                                 </strong>
 
                                 <p>
-                                    Puedes cerrar todas excepto la que
-                                    estás usando en este momento.
+                                    Si encuentras un dispositivo que no reconoces,
+                                    puedes cerrar esa sesión de forma remota.
                                 </p>
 
                             </div>
 
-
-                            <form
-                                method="POST"
-                                action="{% url 'cerrar_otras_sesiones' %}"
-                                onsubmit="
-                                    return confirm(
-                                        '¿Seguro que quieres cerrar todas las demás sesiones?'
-                                    );
-                                "
-                            >
-
-                                {% csrf_token %}
+                        </div>
 
 
-                                <button
-                                    type="submit"
-                                    class="btn-cerrar-otras-sesiones"
+
+                        <div class="perfil-sesiones-lista">
+
+
+                            {% for sesion in sesiones_activas %}
+
+
+                                <div
+                                    class="
+                                        perfil-sesion-item
+
+                                        {% if sesion.es_actual %}
+                                            actual
+                                        {% endif %}
+                                    "
                                 >
 
-                                    <i class="bi bi-shield-x"></i>
 
-                                    Cerrar todas las demás
-
-                                </button>
+                                    <div class="perfil-sesion-dispositivo">
 
 
-                            </form>
+                                        {% if sesion.dispositivo == "Móvil" %}
+
+                                            <i class="bi bi-phone-fill"></i>
+
+                                        {% elif sesion.dispositivo == "Tablet" %}
+
+                                            <i class="bi bi-tablet-fill"></i>
+
+                                        {% else %}
+
+                                            <i class="bi bi-laptop-fill"></i>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                    <div class="perfil-sesion-info">
+
+
+                                        <div class="perfil-sesion-superior">
+
+
+                                            <div>
+
+                                                <strong class="perfil-sesion-navegador">
+
+                                                    {{ sesion.navegador|default:"Navegador desconocido" }}
+
+                                                </strong>
+
+
+                                                <span class="perfil-sesion-sistema">
+
+                                                    {{ sesion.sistema_operativo|default:"Sistema desconocido" }}
+
+                                                    ·
+
+                                                    {{ sesion.dispositivo|default:"Dispositivo desconocido" }}
+
+                                                </span>
+
+                                            </div>
+
+
+
+                                            {% if sesion.es_actual %}
+
+                                                <span class="perfil-sesion-actual">
+
+                                                    <i class="bi bi-check-circle-fill"></i>
+
+                                                    Esta sesión
+
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+
+                                        <div class="perfil-sesion-detalles">
+
+
+                                            <div>
+
+                                                <i class="bi bi-globe2"></i>
+
+                                                <span>
+                                                    IP
+                                                </span>
+
+                                                <strong>
+                                                    {{ sesion.ip|default:"No disponible" }}
+                                                </strong>
+
+                                            </div>
+
+
+
+                                            <div>
+
+                                                <i class="bi bi-calendar-check"></i>
+
+                                                <span>
+                                                    Inicio
+                                                </span>
+
+                                                <strong>
+                                                    {{ sesion.fecha_inicio|date:"d/m/Y H:i" }}
+                                                </strong>
+
+                                            </div>
+
+
+
+                                            <div>
+
+                                                <i class="bi bi-clock-history"></i>
+
+                                                <span>
+                                                    Última actividad
+                                                </span>
+
+
+                                                <strong>
+
+                                                    {% if sesion.es_actual %}
+
+                                                        Ahora
+
+                                                    {% else %}
+
+                                                        Hace
+                                                        {{ sesion.ultima_actividad|timesince }}
+
+                                                    {% endif %}
+
+                                                </strong>
+
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        {% if not sesion.es_actual %}
+
+                                            <div class="perfil-sesion-acciones">
+
+
+                                                <form
+                                                    method="POST"
+                                                    action="{% url 'cerrar_sesion_remota' sesion.pk %}"
+                                                    onsubmit="
+                                                        return confirm(
+                                                            '¿Seguro que quieres cerrar esta sesión?'
+                                                        );
+                                                    "
+                                                >
+
+                                                    {% csrf_token %}
+
+
+                                                    <button
+                                                        type="submit"
+                                                        class="btn-cerrar-sesion-remota"
+                                                    >
+
+                                                        <i class="bi bi-box-arrow-right"></i>
+
+                                                        Cerrar sesión
+
+                                                    </button>
+
+
+                                                </form>
+
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            {% empty %}
+
+
+                                <div class="perfil-sesiones-vacio">
+
+                                    <i class="bi bi-shield-exclamation"></i>
+
+                                    <strong>
+                                        No hay sesiones registradas
+                                    </strong>
+
+                                    <p>
+                                        No encontramos sesiones activas
+                                        asociadas a tu cuenta.
+                                    </p>
+
+                                </div>
+
+
+                            {% endfor %}
 
 
                         </div>
 
 
-                    {% endif %}
+
+                        {% if total_otras_sesiones > 0 %}
 
 
-                </article>
-                </div>
-            
-            
-                <div class="d-none" data-tab-panel="sub-historial">
-                <article class="perfil-card perfil-card-historial">
+                            <div class="perfil-sesiones-footer">
 
-                    <!-- =====================================================
-                        HEADER
-                    ====================================================== -->
 
-                    <div class="perfil-card-header">
+                                <div>
 
-                        <div class="perfil-card-titulo">
+                                    <strong>
+                                        ¿No reconoces alguna sesión?
+                                    </strong>
 
-                            <div class="perfil-card-icono">
+                                    <p>
+                                        Puedes cerrar todas excepto la que
+                                        estás usando en este momento.
+                                    </p>
 
-                                <i class="bi bi-clock-history"></i>
+                                </div>
+
+
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'cerrar_otras_sesiones' %}"
+                                    onsubmit="
+                                        return confirm(
+                                            '¿Seguro que quieres cerrar todas las demás sesiones?'
+                                        );
+                                    "
+                                >
+
+                                    {% csrf_token %}
+
+
+                                    <button
+                                        type="submit"
+                                        class="btn-cerrar-otras-sesiones"
+                                    >
+
+                                        <i class="bi bi-shield-x"></i>
+
+                                        Cerrar todas las demás
+
+                                    </button>
+
+
+                                </form>
+
 
                             </div>
 
 
+                        {% endif %}
+
+
+                    </article>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     HISTORIAL
+                ================================================== -->
+
+                <div
+                    class="d-none"
+                    data-tab-panel="sub-historial"
+                >
+
+
+                    <article class="perfil-card perfil-card-historial">
+
+
+                        <div class="perfil-card-header">
+
+
+                            <div class="perfil-card-titulo">
+
+                                <div class="perfil-card-icono">
+
+                                    <i class="bi bi-clock-history"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h3>
+                                        Actividad reciente
+                                    </h3>
+
+                                    <p>
+                                        Consulta los últimos eventos de seguridad
+                                        registrados en tu cuenta.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+
+                            {% if historial_accesos %}
+
+                                <span class="perfil-historial-contador">
+
+                                    Últimos {{ total_historial }}
+
+                                </span>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+
+                        <div class="perfil-historial-aviso">
+
+                            <i class="bi bi-shield-check"></i>
+
+
                             <div>
 
-                                <h3>
-                                    Actividad reciente
-                                </h3>
+                                <strong>
+                                    Historial de seguridad
+                                </strong>
 
                                 <p>
-                                    Consulta los últimos eventos de seguridad
-                                    registrados en tu cuenta.
+                                    Revisa periódicamente esta información.
+                                    Si encuentras una actividad que no reconoces,
+                                    cambia tu contraseña y revisa tus sesiones activas.
                                 </p>
 
                             </div>
 
                         </div>
+
+
+
+                        <div class="perfil-historial-lista">
+
+
+                            {% for registro in historial_accesos %}
+
+
+                                <div
+                                    class="
+                                        perfil-historial-item
+                                        {{ registro.clase_ui }}
+                                    "
+                                >
+
+
+                                    <div class="perfil-historial-icono">
+
+                                        <i class="bi {{ registro.icono_ui }}"></i>
+
+                                    </div>
+
+
+
+                                    <div class="perfil-historial-contenido">
+
+
+                                        <div class="perfil-historial-superior">
+
+
+                                            <div>
+
+                                                <strong class="perfil-historial-titulo">
+
+                                                    {{ registro.titulo_ui }}
+
+                                                </strong>
+
+
+                                                {% if registro.detalle %}
+
+                                                    <p class="perfil-historial-detalle">
+
+                                                        {{ registro.detalle }}
+
+                                                    </p>
+
+                                                {% endif %}
+
+
+                                            </div>
+
+
+
+                                            {% if registro.exitoso %}
+
+                                                <span class="perfil-historial-estado exitoso">
+
+                                                    <i class="bi bi-check-circle-fill"></i>
+
+                                                    Exitoso
+
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="perfil-historial-estado fallido">
+
+                                                    <i class="bi bi-x-circle-fill"></i>
+
+                                                    Fallido
+
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+
+                                        <div class="perfil-historial-dispositivo">
+
+
+                                            <span>
+
+                                                <i class="bi bi-browser-chrome"></i>
+
+                                                {{ registro.navegador|default:"Navegador desconocido" }}
+
+                                            </span>
+
+
+
+                                            <span>
+
+                                                <i class="bi bi-display"></i>
+
+                                                {{ registro.sistema_operativo|default:"Sistema desconocido" }}
+
+                                            </span>
+
+
+
+                                            <span>
+
+
+                                                {% if registro.dispositivo == "Móvil" %}
+
+                                                    <i class="bi bi-phone"></i>
+
+                                                {% elif registro.dispositivo == "Tablet" %}
+
+                                                    <i class="bi bi-tablet"></i>
+
+                                                {% else %}
+
+                                                    <i class="bi bi-laptop"></i>
+
+                                                {% endif %}
+
+
+                                                {{ registro.dispositivo|default:"Dispositivo desconocido" }}
+
+
+                                            </span>
+
+
+                                        </div>
+
+
+
+                                        <div class="perfil-historial-footer">
+
+
+                                            <div class="perfil-historial-ip">
+
+                                                <i class="bi bi-globe2"></i>
+
+                                                <span>
+                                                    IP:
+                                                </span>
+
+                                                <strong>
+                                                    {{ registro.ip|default:"No disponible" }}
+                                                </strong>
+
+                                            </div>
+
+
+
+                                            <div class="perfil-historial-fecha">
+
+                                                <i class="bi bi-clock"></i>
+
+
+                                                <span
+                                                    title="{{ registro.fecha|date:'d/m/Y H:i:s' }}"
+                                                >
+
+                                                    Hace {{ registro.fecha|timesince }}
+
+                                                </span>
+
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            {% empty %}
+
+
+                                <div class="perfil-historial-vacio">
+
+                                    <i class="bi bi-clock-history"></i>
+
+                                    <strong>
+                                        Todavía no hay actividad registrada
+                                    </strong>
+
+                                    <p>
+                                        Los próximos inicios de sesión y eventos
+                                        de seguridad aparecerán aquí.
+                                    </p>
+
+                                </div>
+
+
+                            {% endfor %}
+
+
+                        </div>
+
 
 
                         {% if historial_accesos %}
 
-                            <span class="perfil-historial-contador">
+                            <div class="perfil-historial-nota">
 
-                                Últimos {{ total_historial }}
+                                <i class="bi bi-info-circle"></i>
 
-                            </span>
+                                <span>
+                                    Se muestran los últimos
+                                    {{ total_historial }} eventos de tu cuenta.
+                                </span>
+
+                            </div>
 
                         {% endif %}
 
-                    </div>
 
+                    </article>
 
-                    <!-- =====================================================
-                        AVISO
-                    ====================================================== -->
 
-                    <div class="perfil-historial-aviso">
-
-                        <i class="bi bi-shield-check"></i>
-
-                        <div>
-
-                            <strong>
-                                Historial de seguridad
-                            </strong>
-
-                            <p>
-                                Revisa periódicamente esta información.
-                                Si encuentras una actividad que no reconoces,
-                                cambia tu contraseña y revisa tus sesiones activas.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =====================================================
-                        HISTORIAL
-                    ====================================================== -->
-
-                    <div class="perfil-historial-lista">
-
-                        {% for registro in historial_accesos %}
-
-                            <div
-                                class="
-                                    perfil-historial-item
-                                    {{ registro.clase_ui }}
-                                "
-                            >
-
-                                <!-- =========================================
-                                    ICONO
-                                ========================================== -->
-
-                                <div class="perfil-historial-icono">
-
-                                    <i class="bi {{ registro.icono_ui }}"></i>
-
-                                </div>
-
-
-                                <!-- =========================================
-                                    INFORMACIÓN
-                                ========================================== -->
-
-                                <div class="perfil-historial-contenido">
-
-                                    <div class="perfil-historial-superior">
-
-                                        <div>
-
-                                            <strong class="perfil-historial-titulo">
-
-                                                {{ registro.titulo_ui }}
-
-                                            </strong>
-
-
-                                            {% if registro.detalle %}
-
-                                                <p class="perfil-historial-detalle">
-
-                                                    {{ registro.detalle }}
-
-                                                </p>
-
-                                            {% endif %}
-
-                                        </div>
-
-
-                                        {% if registro.exitoso %}
-
-                                            <span class="perfil-historial-estado exitoso">
-
-                                                <i class="bi bi-check-circle-fill"></i>
-
-                                                Exitoso
-
-                                            </span>
-
-                                        {% else %}
-
-                                            <span class="perfil-historial-estado fallido">
-
-                                                <i class="bi bi-x-circle-fill"></i>
-
-                                                Fallido
-
-                                            </span>
-
-                                        {% endif %}
-
-                                    </div>
-
-
-                                    <!-- =====================================
-                                        DISPOSITIVO
-                                    ====================================== -->
-
-                                    <div class="perfil-historial-dispositivo">
-
-                                        <span>
-
-                                            <i class="bi bi-browser-chrome"></i>
-
-                                            {{ registro.navegador|default:"Navegador desconocido" }}
-
-                                        </span>
-
-
-                                        <span>
-
-                                            <i class="bi bi-display"></i>
-
-                                            {{ registro.sistema_operativo|default:"Sistema desconocido" }}
-
-                                        </span>
-
-
-                                        <span>
-
-                                            {% if registro.dispositivo == "Móvil" %}
-
-                                                <i class="bi bi-phone"></i>
-
-                                            {% elif registro.dispositivo == "Tablet" %}
-
-                                                <i class="bi bi-tablet"></i>
-
-                                            {% else %}
-
-                                                <i class="bi bi-laptop"></i>
-
-                                            {% endif %}
-
-                                            {{ registro.dispositivo|default:"Dispositivo desconocido" }}
-
-                                        </span>
-
-                                    </div>
-
-
-                                    <!-- =====================================
-                                        PIE
-                                    ====================================== -->
-
-                                    <div class="perfil-historial-footer">
-
-                                        <div class="perfil-historial-ip">
-
-                                            <i class="bi bi-globe2"></i>
-
-                                            <span>
-                                                IP:
-                                            </span>
-
-                                            <strong>
-                                                {{ registro.ip|default:"No disponible" }}
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div class="perfil-historial-fecha">
-
-                                            <i class="bi bi-clock"></i>
-
-                                            <span
-                                                title="{{ registro.fecha|date:'d/m/Y H:i:s' }}"
-                                            >
-
-                                                Hace {{ registro.fecha|timesince }}
-
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        {% empty %}
-
-                            <!-- =============================================
-                                SIN HISTORIAL
-                            ============================================== -->
-
-                            <div class="perfil-historial-vacio">
-
-                                <i class="bi bi-clock-history"></i>
-
-                                <strong>
-                                    Todavía no hay actividad registrada
-                                </strong>
-
-                                <p>
-                                    Los próximos inicios de sesión y eventos
-                                    de seguridad aparecerán aquí.
-                                </p>
-
-                            </div>
-
-                        {% endfor %}
-
-                    </div>
-
-
-                    <!-- =====================================================
-                        PIE DE LA TARJETA
-                    ====================================================== -->
-
-                    {% if historial_accesos %}
-
-                        <div class="perfil-historial-nota">
-
-                            <i class="bi bi-info-circle"></i>
-
-                            <span>
-                                Se muestran los últimos
-                                {{ total_historial }} eventos de tu cuenta.
-                            </span>
-
-                        </div>
-
-                    {% endif %}
-
-                </article>
                 </div>
-            
+
+
             </div>
 
 
@@ -2512,7 +2836,7 @@
 {% block extra_js %}
 
 <script
-    src="{% static 'panel_apicultor/js/perfil.js' %}?v=5"
+    src="{% static 'panel_apicultor/js/perfil.js' %}?v=6"
 ></script>
 
 {% endblock %}
