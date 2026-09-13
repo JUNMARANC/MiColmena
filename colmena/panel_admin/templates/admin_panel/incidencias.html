@@ -636,7 +636,7 @@
 
                     <button
                         type="button"
-                        class="btn-close btn-close-white"
+                        class="btn-close"
                         data-bs-dismiss="modal">
                     </button>
                 </div>
@@ -885,14 +885,20 @@
             <div class="modal-content">
 
                 <div class="modal-header modal-header-incidencia">
-                    <h5 class="modal-title">
-                        <i class="bi bi-eye me-2"></i>
-                        Detalle de la incidencia
-                    </h5>
+                    <div>
+                        <h5 class="modal-title">
+                            <i class="bi bi-eye me-2"></i>
+                            Detalle de la incidencia
+                        </h5>
+
+                        <small>
+                            Información completa de la incidencia #{{ incidencia.pk }}.
+                        </small>
+                    </div>
 
                     <button
                         type="button"
-                        class="btn-close btn-close-white"
+                        class="btn-close"
                         data-bs-dismiss="modal">
                     </button>
                 </div>
@@ -1437,14 +1443,20 @@
                     {% csrf_token %}
 
                     <div class="modal-header modal-header-incidencia">
-                        <h5 class="modal-title">
-                            <i class="bi bi-pencil me-2"></i>
-                            Editar incidencia
-                        </h5>
+                        <div>
+                            <h5 class="modal-title">
+                                <i class="bi bi-pencil me-2"></i>
+                                Editar incidencia
+                            </h5>
+
+                            <small>
+                                Modifica la información de la incidencia.
+                            </small>
+                        </div>
 
                         <button
                             type="button"
-                            class="btn-close btn-close-white"
+                            class="btn-close"
                             data-bs-dismiss="modal">
                         </button>
                     </div>
