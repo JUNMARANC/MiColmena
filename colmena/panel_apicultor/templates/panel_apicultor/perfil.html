@@ -327,38 +327,59 @@
 
 
 
-                    <!-- TELÉFONO -->
+                    <!-- =====================================================
+                        TELÉFONO
+                    ====================================================== -->
 
-                    <div class="perfil-resumen-item">
+                    <div class="col-md-6">
 
-                        <div class="perfil-resumen-icono">
+                        <label
+                            for="telefonoPerfil"
+                            class="form-label"
+                        >
+                            Teléfono
+                        </label>
 
-                            <i class="bi bi-telephone-fill"></i>
 
-                        </div>
+                        <div class="perfil-input-contenedor">
 
-
-                        <div>
-
-                            <span>
-                                Teléfono
+                            <span class="perfil-input-icono">
+                                <i class="bi bi-telephone"></i>
                             </span>
 
-                            <strong>
 
-                                {% if telefono %}
-
-                                    {{ telefono }}
-
-                                {% else %}
-
-                                    Sin registrar
-
-                                {% endif %}
-
-                            </strong>
+                            <input
+                                type="tel"
+                                class="form-control"
+                                id="telefonoPerfil"
+                                name="telefono"
+                                value="{{ telefono }}"
+                                maxlength="10"
+                                inputmode="numeric"
+                                autocomplete="tel"
+                                placeholder="Ejemplo: 3101234567"
+                            >
 
                         </div>
+
+
+                        <!-- MENSAJE NORMAL -->
+
+                        <small
+                            id="ayudaTelefonoPerfil"
+                            class="perfil-ayuda"
+                        >
+                            Debe comenzar por 3 y tener exactamente 10 números.
+                        </small>
+
+
+                        <!-- MENSAJE DE ERROR -->
+
+                        <small
+                            id="errorTelefonoPerfil"
+                            class="perfil-error-validacion d-none"
+                            aria-live="polite"
+                        ></small>
 
                     </div>
 
@@ -958,253 +979,8 @@
                         <div class="row g-4">
 
 
-                            <!-- NOMBRES -->
+                            <!-- =====================================================
 
-                            <div class="col-md-6">
-
-
-                                <label
-                                    for="nombresPerfil"
-                                    class="form-label"
-                                >
-
-                                    Nombres
-
-                                    <span class="campo-obligatorio">
-                                        *
-                                    </span>
-
-                                </label>
-
-
-                                <div class="perfil-input-contenedor">
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-person"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="nombresPerfil"
-                                        name="nombres"
-                                        value="{{ usuario.first_name }}"
-                                        maxlength="150"
-                                        autocomplete="given-name"
-                                        required
-                                    >
-
-                                </div>
-
-
-                                <div class="invalid-feedback">
-                                    Ingresa tus nombres.
-                                </div>
-
-                            </div>
-
-
-
-                            <!-- APELLIDOS -->
-
-                            <div class="col-md-6">
-
-
-                                <label
-                                    for="apellidosPerfil"
-                                    class="form-label"
-                                >
-
-                                    Apellidos
-
-                                    <span class="campo-obligatorio">
-                                        *
-                                    </span>
-
-                                </label>
-
-
-                                <div class="perfil-input-contenedor">
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-person"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="apellidosPerfil"
-                                        name="apellidos"
-                                        value="{{ usuario.last_name }}"
-                                        maxlength="150"
-                                        autocomplete="family-name"
-                                        required
-                                    >
-
-                                </div>
-
-
-                                <div class="invalid-feedback">
-                                    Ingresa tus apellidos.
-                                </div>
-
-                            </div>
-
-
-
-                            <!-- CORREO -->
-
-                            <div class="col-md-6">
-
-
-                                <label
-                                    for="correoPerfil"
-                                    class="form-label"
-                                >
-
-                                    Correo electrónico
-
-                                    <span class="campo-obligatorio">
-                                        *
-                                    </span>
-
-                                </label>
-
-
-                                <div class="perfil-input-contenedor">
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-envelope"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="email"
-                                        class="form-control"
-                                        id="correoPerfil"
-                                        name="correo"
-                                        value="{{ usuario.email }}"
-                                        maxlength="254"
-                                        autocomplete="email"
-                                        required
-                                    >
-
-                                </div>
-
-
-                                <div class="invalid-feedback">
-                                    Ingresa un correo electrónico válido.
-                                </div>
-
-                            </div>
-
-
-
-                            <!-- TELÉFONO -->
-
-                            <div class="col-md-6">
-
-
-                                <label
-                                    for="telefonoPerfil"
-                                    class="form-label"
-                                >
-                                    Teléfono
-                                </label>
-
-
-                                <div class="perfil-input-contenedor">
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-telephone"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="tel"
-                                        class="form-control"
-                                        id="telefonoPerfil"
-                                        name="telefono"
-                                        value="{{ telefono }}"
-                                        maxlength="20"
-                                        inputmode="numeric"
-                                        autocomplete="tel"
-                                        placeholder="Ejemplo: 3101234567"
-                                    >
-
-                                </div>
-
-
-                                <small class="perfil-ayuda">
-                                    Solo números.
-                                </small>
-
-                            </div>
-
-
-
-                            <!-- IDENTIFICACIÓN -->
-
-                            <div class="col-md-6">
-
-
-                                <label
-                                    for="identificacionPerfil"
-                                    class="form-label"
-                                >
-                                    Identificación
-                                </label>
-
-
-                                <div
-                                    class="
-                                        perfil-input-contenedor
-                                        perfil-input-bloqueado
-                                    "
-                                >
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-credit-card-2-front"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="identificacionPerfil"
-                                        value="{{ identificacion }}"
-                                        readonly
-                                        disabled
-                                    >
-
-
-                                    <span class="perfil-input-candado">
-
-                                        <i class="bi bi-lock-fill"></i>
-
-                                    </span>
-
-                                </div>
-
-
-                                <small class="perfil-ayuda">
-                                    La identificación no puede modificarse
-                                    desde tu perfil.
-                                </small>
-
-                            </div>
 
 
 
@@ -1266,130 +1042,6 @@
 
 
                     </section>
-
-
-
-                    <div class="perfil-separador"></div>
-
-
-
-                    <!-- =====================================
-                         INFORMACIÓN LABORAL
-                    ====================================== -->
-
-                    <section class="perfil-seccion-formulario">
-
-
-                        <div class="perfil-seccion-titulo">
-
-                            <div>
-
-                                <h4>
-                                    Información como apicultor
-                                </h4>
-
-                                <p>
-                                    Información relacionada con tu actividad
-                                    dentro de Mi Colmena.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="row g-4">
-
-
-                            <!-- ZONA DE TRABAJO -->
-
-                            <div class="col-md-7">
-
-
-                                <label
-                                    for="zonaTrabajoPerfil"
-                                    class="form-label"
-                                >
-                                    Zona de trabajo
-                                </label>
-
-
-                                <div class="perfil-input-contenedor">
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-geo-alt"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="zonaTrabajoPerfil"
-                                        name="zona_trabajo"
-                                        value="{{ zona_trabajo }}"
-                                        maxlength="100"
-                                        placeholder="Ejemplo: Urrao, Antioquia"
-                                    >
-
-                                </div>
-
-                            </div>
-
-
-
-                            <!-- EXPERIENCIA -->
-
-                            <div class="col-md-5">
-
-
-                                <label
-                                    for="experienciaPerfil"
-                                    class="form-label"
-                                >
-                                    Años de experiencia
-                                </label>
-
-
-                                <div class="perfil-input-contenedor">
-
-                                    <span class="perfil-input-icono">
-
-                                        <i class="bi bi-award"></i>
-
-                                    </span>
-
-
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        id="experienciaPerfil"
-                                        name="experiencia"
-                                        value="{% if experiencia != None %}{{ experiencia }}{% endif %}"
-                                        min="0"
-                                        max="80"
-                                        step="1"
-                                        inputmode="numeric"
-                                        placeholder="Ejemplo: 3"
-                                    >
-
-                                </div>
-
-
-                                <small class="perfil-ayuda">
-                                    Entre 0 y 80 años.
-                                </small>
-
-                            </div>
-
-
-                        </div>
-
-
-                    </section>
-
 
 
                     <!-- =====================================

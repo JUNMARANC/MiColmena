@@ -10140,24 +10140,10 @@ def actualizar_estado_evento_apicultor(
 def perfil_apicultor(request):
 
     # ========================================================
-    # 1. USUARIO AUTENTICADO
+    # 1. USUARIO Y PERFIL AUTENTICADO
     # ========================================================
 
     usuario = request.user
-
-
-    # ========================================================
-    # 2. OBTENER PERFIL DEL APICULTOR
-    #
-    # SEGURIDAD:
-    # El perfil siempre se obtiene desde request.user.
-    #
-    # No recibimos el ID del apicultor desde la URL ni
-    # desde el formulario.
-    #
-    # Esto evita que un apicultor pueda intentar editar
-    # el perfil de otro usuario.
-    # ========================================================
 
     apicultor = get_object_or_404(
         Apicultor.objects.select_related(
@@ -10168,13 +10154,16 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 3. ACTUALIZAR PERFIL
+    # 2. ACTUALIZAR PERFIL
     # ========================================================
 
     if request.method == "POST":
 
         # ====================================================
-        # 3.1 OBTENER DATOS DEL FORMULARIO
+        # 2.1 DATOS EDITABLES DEL FORMULARIO
+        #
+        # Zona de trabajo y años de experiencia NO se reciben
+        # ni se modifican desde el perfil del apicultor.
         # ====================================================
 
         nombres = (
@@ -10218,26 +10207,6 @@ def perfil_apicultor(request):
         )
 
 
-        zona_trabajo = (
-            request.POST
-            .get(
-                "zona_trabajo",
-                ""
-            )
-            .strip()
-        )
-
-
-        experiencia_texto = (
-            request.POST
-            .get(
-                "experiencia",
-                ""
-            )
-            .strip()
-        )
-
-
         eliminar_foto = (
             request.POST
             .get(
@@ -10257,14 +10226,14 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.2 LISTA DE ERRORES
+        # 2.2 VALIDACIONES
         # ====================================================
 
         errores = []
 
 
         # ====================================================
-        # 3.3 VALIDAR NOMBRES
+        # NOMBRES
         # ====================================================
 
         if not nombres:
@@ -10273,12 +10242,14 @@ def perfil_apicultor(request):
                 "Debes ingresar tus nombres."
             )
 
+
         elif len(nombres) > 150:
 
             errores.append(
                 "Los nombres no pueden superar "
                 "los 150 caracteres."
             )
+
 
         elif not re.fullmatch(
             r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ' -]+",
@@ -10292,7 +10263,7 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.4 VALIDAR APELLIDOS
+        # APELLIDOS
         # ====================================================
 
         if not apellidos:
@@ -10301,12 +10272,14 @@ def perfil_apicultor(request):
                 "Debes ingresar tus apellidos."
             )
 
+
         elif len(apellidos) > 150:
 
             errores.append(
                 "Los apellidos no pueden superar "
                 "los 150 caracteres."
             )
+
 
         elif not re.fullmatch(
             r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ' -]+",
@@ -10320,7 +10293,7 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.5 VALIDAR CORREO
+        # CORREO
         # ====================================================
 
         if not correo:
@@ -10328,6 +10301,7 @@ def perfil_apicultor(request):
             errores.append(
                 "Debes ingresar un correo electrónico."
             )
+
 
         else:
 
@@ -10337,6 +10311,7 @@ def perfil_apicultor(request):
                     correo
                 )
 
+
             except ValidationError:
 
                 errores.append(
@@ -10345,7 +10320,7 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.6 CORREO ÚNICO
+        # CORREO ÚNICO
         # ====================================================
 
         if correo:
@@ -10374,14 +10349,13 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.7 VALIDAR TELÉFONO
+        # TELÉFONO
         #
-        # Opcional.
-        #
-        # Si existe:
+        # Es opcional.
+        # Si se registra:
         # - Solo números
         # - Exactamente 10 dígitos
-        # - Debe iniciar por 3
+        # - Debe comenzar por 3
         # ====================================================
 
         if telefono:
@@ -10392,12 +10366,14 @@ def perfil_apicultor(request):
                     "El teléfono solo puede contener números."
                 )
 
+
             elif len(telefono) != 10:
 
                 errores.append(
                     "El teléfono debe contener exactamente "
                     "10 números."
                 )
+
 
             elif not telefono.startswith("3"):
 
@@ -10408,55 +10384,7 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.8 VALIDAR ZONA DE TRABAJO
-        # ====================================================
-
-        if len(zona_trabajo) > 100:
-
-            errores.append(
-                "La zona de trabajo no puede superar "
-                "los 100 caracteres."
-            )
-
-
-        # ====================================================
-        # 3.9 VALIDAR EXPERIENCIA
-        # ====================================================
-
-        experiencia = None
-
-
-        if experiencia_texto:
-
-            try:
-
-                experiencia = int(
-                    experiencia_texto
-                )
-
-
-                if (
-                    experiencia < 0
-                    or
-                    experiencia > 80
-                ):
-
-                    errores.append(
-                        "Los años de experiencia deben "
-                        "estar entre 0 y 80."
-                    )
-
-
-            except ValueError:
-
-                errores.append(
-                    "Los años de experiencia deben "
-                    "ser un número entero."
-                )
-
-
-        # ====================================================
-        # 3.10 VALIDAR FOTOGRAFÍA
+        # FOTOGRAFÍA
         # ====================================================
 
         if nueva_foto:
@@ -10468,9 +10396,9 @@ def perfil_apicultor(request):
             }
 
 
-            # ------------------------------------------------
+            # =================================================
             # TIPO MIME
-            # ------------------------------------------------
+            # =================================================
 
             if (
                 nueva_foto.content_type
@@ -10482,9 +10410,9 @@ def perfil_apicultor(request):
                 )
 
 
-            # ------------------------------------------------
+            # =================================================
             # TAMAÑO MÁXIMO 5 MB
-            # ------------------------------------------------
+            # =================================================
 
             if (
                 nueva_foto.size
@@ -10497,9 +10425,9 @@ def perfil_apicultor(request):
                 )
 
 
-            # ------------------------------------------------
+            # =================================================
             # VALIDAR CONTENIDO REAL DE LA IMAGEN
-            # ------------------------------------------------
+            # =================================================
 
             if not errores:
 
@@ -10536,7 +10464,7 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.11 MOSTRAR ERRORES
+        # 2.3 MOSTRAR ERRORES
         # ====================================================
 
         if errores:
@@ -10550,7 +10478,7 @@ def perfil_apicultor(request):
 
 
         # ====================================================
-        # 3.12 GUARDAR CAMBIOS
+        # 2.4 GUARDAR CAMBIOS
         # ====================================================
 
         else:
@@ -10567,9 +10495,11 @@ def perfil_apicultor(request):
                         nombres
                     )
 
+
                     usuario.last_name = (
                         apellidos
                     )
+
 
                     usuario.email = (
                         correo
@@ -10586,25 +10516,16 @@ def perfil_apicultor(request):
 
 
                     # =========================================
-                    # ACTUALIZAR APICULTOR
+                    # DATOS EDITABLES DEL APICULTOR
+                    #
+                    # Zona de trabajo y experiencia
+                    # NO se modifican.
                     # =========================================
 
                     apicultor.telefono = (
                         telefono
                         or
                         None
-                    )
-
-
-                    apicultor.zona_trabajo = (
-                        zona_trabajo
-                        or
-                        None
-                    )
-
-
-                    apicultor.experienciaanios = (
-                        experiencia
                     )
 
 
@@ -10621,6 +10542,7 @@ def perfil_apicultor(request):
                                 apicultor.fotoperfil.delete(
                                     save=False
                                 )
+
 
                             except Exception as error:
 
@@ -10649,6 +10571,7 @@ def perfil_apicultor(request):
                                 apicultor.fotoperfil.delete(
                                     save=False
                                 )
+
 
                             except Exception as error:
 
@@ -10707,7 +10630,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 4. FOTOGRAFÍA DEL PERFIL
+    # 3. FOTOGRAFÍA DEL PERFIL
     # ========================================================
 
     foto = None
@@ -10723,13 +10646,14 @@ def perfil_apicultor(request):
                 .url
             )
 
+
         except ValueError:
 
             foto = None
 
 
     # ========================================================
-    # 5. CONFIGURACIÓN 2FA
+    # 4. CONFIGURACIÓN 2FA
     # ========================================================
 
     configuracion_2fa, _ = (
@@ -10741,7 +10665,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 6. POLÍTICA GLOBAL 2FA
+    # 5. POLÍTICA GLOBAL 2FA
     # ========================================================
 
     politica_2fa = (
@@ -10768,7 +10692,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 7. ESTADO 2FA
+    # 6. ESTADO 2FA
     # ========================================================
 
     dos_factores_activo = (
@@ -10784,7 +10708,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 8. SESIÓN ACTUAL
+    # 7. SESIÓN ACTUAL
     # ========================================================
 
     session_key_actual = (
@@ -10793,14 +10717,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 9. SESIONES ACTIVAS
-    #
-    # El servicio se encarga de:
-    #
-    # - consultar sesiones registradas
-    # - comprobar que sigan existiendo en Django
-    # - descartar sesiones expiradas
-    # - identificar la sesión actual
+    # 8. SESIONES ACTIVAS
     # ========================================================
 
     sesiones_activas = (
@@ -10812,7 +10729,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 10. OTRAS SESIONES ACTIVAS
+    # 9. OTRAS SESIONES ACTIVAS
     # ========================================================
 
     otras_sesiones_activas = [
@@ -10832,14 +10749,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 11. HISTORIAL DE ACCESOS
-    #
-    # SEGURIDAD:
-    #
-    # Solo se consulta el historial asociado al usuario
-    # actualmente autenticado.
-    #
-    # Mostramos máximo los últimos 15 eventos.
+    # 10. HISTORIAL DE ACCESOS
     # ========================================================
 
     historial_accesos = list(
@@ -10858,12 +10768,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 12. PREPARAR HISTORIAL PARA LA INTERFAZ
-    #
-    # Estos atributos son temporales.
-    #
-    # No se guardan nuevamente en MySQL.
-    # Solo facilitan la presentación en el template.
+    # 11. PREPARAR HISTORIAL PARA LA INTERFAZ
     # ========================================================
 
     for registro in historial_accesos:
@@ -10885,9 +10790,11 @@ def perfil_apicultor(request):
                 "Inicio de sesión"
             )
 
+
             registro.icono_ui = (
                 "bi-box-arrow-in-right"
             )
+
 
             registro.clase_ui = (
                 "inicio"
@@ -10904,9 +10811,11 @@ def perfil_apicultor(request):
                 "Cierre de sesión"
             )
 
+
             registro.icono_ui = (
                 "bi-box-arrow-right"
             )
+
 
             registro.clase_ui = (
                 "salida"
@@ -10923,9 +10832,11 @@ def perfil_apicultor(request):
                 "Sesión cerrada por inactividad"
             )
 
+
             registro.icono_ui = (
                 "bi-clock-history"
             )
+
 
             registro.clase_ui = (
                 "inactividad"
@@ -10942,9 +10853,11 @@ def perfil_apicultor(request):
                 "Contraseña actualizada"
             )
 
+
             registro.icono_ui = (
                 "bi-key-fill"
             )
+
 
             registro.clase_ui = (
                 "password"
@@ -10961,9 +10874,11 @@ def perfil_apicultor(request):
                 "Sesión cerrada remotamente"
             )
 
+
             registro.icono_ui = (
                 "bi-shield-x"
             )
+
 
             registro.clase_ui = (
                 "remoto"
@@ -10975,8 +10890,6 @@ def perfil_apicultor(request):
         #
         # Actualmente el backend registra eventos de 2FA
         # utilizando actividad="sistema".
-        #
-        # Por eso identificamos el tipo mediante el detalle.
         # ====================================================
 
         elif (
@@ -10993,9 +10906,11 @@ def perfil_apicultor(request):
                 "Verificación en dos pasos desactivada"
             )
 
+
             registro.icono_ui = (
                 "bi-shield-exclamation"
             )
+
 
             registro.clase_ui = (
                 "advertencia"
@@ -11020,9 +10935,11 @@ def perfil_apicultor(request):
                 "Verificación en dos pasos activada"
             )
 
+
             registro.icono_ui = (
                 "bi-shield-check"
             )
+
 
             registro.clase_ui = (
                 "seguridad"
@@ -11039,9 +10956,11 @@ def perfil_apicultor(request):
                 registro.get_actividad_display()
             )
 
+
             registro.icono_ui = (
                 "bi-shield-fill-check"
             )
+
 
             registro.clase_ui = (
                 "sistema"
@@ -11049,7 +10968,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 13. CONTEXTO
+    # 12. CONTEXTO
     # ========================================================
 
     contexto = {
@@ -11069,8 +10988,10 @@ def perfil_apicultor(request):
         "apicultor":
             apicultor,
 
+
         "foto":
             foto,
+
 
         "rol":
             (
@@ -11080,20 +11001,33 @@ def perfil_apicultor(request):
                 "Apicultor"
             ),
 
+
         "telefono":
             apicultor.telefono
             or
             "",
+
 
         "identificacion":
             apicultor.identificacion
             or
             "",
 
+
+        # ====================================================
+        # DATOS INFORMATIVOS DEL APICULTOR
+        #
+        # Se conservan en el contexto porque todavía pueden
+        # utilizarse en la tarjeta lateral del perfil.
+        #
+        # Ya NO son editables desde el formulario.
+        # ====================================================
+
         "zona_trabajo":
             apicultor.zona_trabajo
             or
             "",
+
 
         "experiencia":
             apicultor.experienciaanios,
@@ -11106,14 +11040,18 @@ def perfil_apicultor(request):
         "configuracion_2fa":
             configuracion_2fa,
 
+
         "permitir_2fa":
             permitir_2fa,
+
 
         "segundo_factor_obligatorio":
             segundo_factor_obligatorio,
 
+
         "dos_factores_activo":
             dos_factores_activo,
+
 
         "tiene_correo_2fa":
             tiene_correo_2fa,
@@ -11126,13 +11064,16 @@ def perfil_apicultor(request):
         "sesiones_activas":
             sesiones_activas,
 
+
         "otras_sesiones_activas":
             otras_sesiones_activas,
+
 
         "total_sesiones_activas":
             len(
                 sesiones_activas
             ),
+
 
         "total_otras_sesiones":
             len(
@@ -11147,6 +11088,7 @@ def perfil_apicultor(request):
         "historial_accesos":
             historial_accesos,
 
+
         "total_historial":
             len(
                 historial_accesos
@@ -11156,7 +11098,7 @@ def perfil_apicultor(request):
 
 
     # ========================================================
-    # 14. RENDERIZAR PERFIL
+    # 13. RENDERIZAR PERFIL
     # ========================================================
 
     return render(
