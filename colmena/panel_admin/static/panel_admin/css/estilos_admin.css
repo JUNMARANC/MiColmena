@@ -1364,23 +1364,19 @@ MÓDULO APIARIOS
 
     border-bottom: none;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--verde-oscuro),
-            #3a6152
-        );
+    background: #E8F7E9;
 
-    color: #ffffff;
+    color: var(--verde-oscuro);
 }
 
 .modal-header-incidencia .modal-title {
     font-weight: 700;
+
+    color: #234F39;
 }
 
 .modal-header-incidencia small {
-    color:
-        rgba(255, 255, 255, 0.78);
+    color: #6c757d;
 }
 
 

@@ -61,7 +61,7 @@
     color:
         #679078;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
 
     text-transform: uppercase;
@@ -78,7 +78,7 @@
     color:
         #294D3B;
 
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 800;
 }
 
@@ -91,7 +91,7 @@
     color:
         #75847C;
 
-    font-size: 9px;
+    font-size: 14px;
 
     line-height: 1.6;
 }
@@ -136,7 +136,7 @@
     font-family:
         inherit;
 
-    font-size: 8px;
+    font-size: 13px;
     font-weight: 800;
 
     cursor: pointer;
@@ -277,7 +277,7 @@
     color:
         #557967;
 
-    font-size: 13px;
+    font-size: 20px;
 }
 
 
@@ -288,7 +288,7 @@
     color:
         #B17B22;
 
-    font-size: 8px;
+    font-size: 20px;
 }
 
 
@@ -317,7 +317,7 @@
     color:
         #79867F;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 700;
 }
 
@@ -326,7 +326,7 @@
     color:
         #314D3E;
 
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 800;
 }
 
@@ -385,7 +385,7 @@
     color:
         #607D6E;
 
-    font-size: 11px;
+    font-size: 16px;
 }
 
 
@@ -397,7 +397,7 @@
     color:
         #40584B;
 
-    font-size: 9px;
+    font-size: 14px;
 }
 
 
@@ -407,7 +407,7 @@
     color:
         #8A958F;
 
-    font-size: 7px;
+    font-size: 12px;
 }
 
 
@@ -435,7 +435,7 @@
     color:
         #6F7F76;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 800;
 }
 
@@ -467,7 +467,7 @@
     font-family:
         inherit;
 
-    font-size: 8px;
+    font-size: 13px;
 
     cursor: pointer;
 }
@@ -500,7 +500,7 @@
     color:
         #7D8D84;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -630,7 +630,7 @@
     color:
         #61776B;
 
-    font-size: 14px;
+    font-size: 22px;
 }
 
 
@@ -717,7 +717,7 @@
     color:
         #324D3F;
 
-    font-size: 10px;
+    font-size: 15px;
     font-weight: 800;
 
     text-overflow: ellipsis;
@@ -753,7 +753,7 @@
     color:
         #95A099;
 
-    font-size: 7px;
+    font-size: 12px;
 }
 
 
@@ -778,7 +778,7 @@
     color:
         #65776D;
 
-    font-size: 6px;
+    font-size: 11px;
     font-weight: 800;
 }
 
@@ -841,7 +841,7 @@
     color:
         #6E7D75;
 
-    font-size: 8px;
+    font-size: 13px;
 
     line-height: 1.55;
 }
@@ -884,7 +884,7 @@
 
     gap: 5px;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 800;
 }
 
@@ -893,7 +893,7 @@
     color:
         #97A19B;
 
-    font-size: 6px;
+    font-size: 11px;
 }
 
 
@@ -910,7 +910,7 @@
 
 
 .estado-no-leida i {
-    font-size: 5px;
+    font-size: 10px;
 }
 
 
@@ -946,7 +946,7 @@
     font-family:
         inherit;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 800;
 
     cursor: pointer;
@@ -1025,7 +1025,7 @@
     color:
         #84968C;
 
-    font-size: 20px;
+    font-size: 26px;
 }
 
 
@@ -1038,7 +1038,7 @@
     color:
         #425A4D;
 
-    font-size: 11px;
+    font-size: 17px;
 }
 
 
@@ -1052,7 +1052,7 @@
     color:
         #89958E;
 
-    font-size: 8px;
+    font-size: 13px;
 
     line-height: 1.55;
 }
@@ -1078,7 +1078,7 @@
     color:
         #547363;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -1125,7 +1125,7 @@
     color:
         #5A7165;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 800;
 
     text-decoration: none;
@@ -1152,7 +1152,7 @@
     color:
         #87938C;
 
-    font-size: 7px;
+    font-size: 12px;
 }
 
 
