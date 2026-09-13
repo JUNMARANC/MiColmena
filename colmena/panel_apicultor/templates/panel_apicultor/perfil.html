@@ -1547,6 +1547,7 @@
                             method="POST"
                             action="{% url 'cambiar_password_apicultor' %}"
                             id="formCambiarPasswordPerfil"
+                            data-validar-password-url="{% url 'validar_password_actual_apicultor' %}"
                             novalidate
                         >
 
@@ -1604,6 +1605,12 @@
                                     </button>
 
                                 </div>
+
+                                <small
+                                    id="errorPasswordActualPerfil"
+                                    class="perfil-error-validacion d-none"
+                                    aria-live="polite"
+                                ></small>
 
                             </div>
 
@@ -1722,6 +1729,11 @@
                                         </button>
 
                                     </div>
+                                    <small
+                                        id="errorConfirmarPasswordPerfil"
+                                        class="perfil-error-validacion d-none"
+                                        aria-live="polite"
+                                    ></small>
 
                                 </div>
 

@@ -38,6 +38,7 @@ from panel_apicultor.views import (
     actualizar_estado_evento_apicultor,
     perfil_apicultor,
     cambiar_password_apicultor,
+    validar_password_actual_apicultor,
 
     # Notificaciones
     notificaciones_apicultor,
@@ -237,6 +238,8 @@ urlpatterns = [
 
     path("perfil/",perfil_apicultor,name="perfil_apicultor",),
     path("perfil/cambiar-password/",cambiar_password_apicultor,name="cambiar_password_apicultor"),
+    path("perfil/validar-password-actual/",validar_password_actual_apicultor,name="validar_password_actual_apicultor",),
+    
 
 
     # ============================================================

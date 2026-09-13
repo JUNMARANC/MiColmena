@@ -1404,9 +1404,15 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const mensajePassword =
+    const errorPasswordActual =
         document.getElementById(
-            "mensajePasswordPerfil"
+            "errorPasswordActualPerfil"
+        );
+
+
+    const errorConfirmarPassword =
+        document.getElementById(
+            "errorConfirmarPasswordPerfil"
         );
 
 
@@ -1434,6 +1440,14 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+    let passwordActualConfirmada =
+        false;
+
+
+    let validandoPasswordActual =
+        false;
+
+
     // =========================================================
     // 19. MOSTRAR / OCULTAR CONTRASEÑA
     // =========================================================
@@ -1458,9 +1472,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                         if (!idInput) {
-
                             return;
-
                         }
 
 
@@ -1471,9 +1483,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                         if (!input) {
-
                             return;
-
                         }
 
 
@@ -1534,7 +1544,360 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================================================
-    // 20. ACTUALIZAR INDICADORES DE CONTRASEÑA
+    // 20. VALIDAR CONTRASEÑA ACTUAL CONTRA DJANGO
+    // =========================================================
+
+    async function validarPasswordActual() {
+
+        if (
+            !formularioPassword
+            ||
+            !passwordActual
+        ) {
+
+            return false;
+
+        }
+
+
+        const valor =
+            passwordActual.value;
+
+
+        // =====================================================
+        // VACÍA
+        // =====================================================
+
+        if (!valor) {
+
+            passwordActualConfirmada =
+                false;
+
+
+            mostrarErrorCampo(
+                passwordActual,
+                errorPasswordActual,
+                "Ingresa tu contraseña actual."
+            );
+
+
+            return false;
+
+        }
+
+
+        // =====================================================
+        // URL DEL BACKEND
+        // =====================================================
+
+        const url =
+            formularioPassword.dataset
+                .validarPasswordUrl;
+
+
+        if (!url) {
+
+            console.error(
+                "No se encontró la URL para validar la contraseña actual."
+            );
+
+
+            return false;
+
+        }
+
+
+        // =====================================================
+        // EVITAR SOLICITUDES DUPLICADAS
+        // =====================================================
+
+        if (validandoPasswordActual) {
+
+            return false;
+
+        }
+
+
+        validandoPasswordActual =
+            true;
+
+
+        // =====================================================
+        // DATOS
+        // =====================================================
+
+        const datos =
+            new FormData();
+
+
+        datos.append(
+            "password_actual",
+            valor
+        );
+
+
+        const csrf =
+            formularioPassword.querySelector(
+                'input[name="csrfmiddlewaretoken"]'
+            );
+
+
+        if (csrf) {
+
+            datos.append(
+                "csrfmiddlewaretoken",
+                csrf.value
+            );
+
+        }
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    url,
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                            datos,
+
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            // =================================================
+            // INCORRECTA
+            // =================================================
+
+            if (
+                !resultado.correcta
+            ) {
+
+                passwordActualConfirmada =
+                    false;
+
+
+                mostrarErrorCampo(
+                    passwordActual,
+                    errorPasswordActual,
+                    resultado.mensaje
+                    ||
+                    "La contraseña actual no es correcta."
+                );
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // CORRECTA
+            // =================================================
+
+            passwordActualConfirmada =
+                true;
+
+
+            limpiarErrorCampo(
+                passwordActual,
+                errorPasswordActual,
+                true
+            );
+
+
+            return true;
+
+
+        } catch (error) {
+
+            console.error(
+                "ERROR VALIDANDO CONTRASEÑA ACTUAL:",
+                error
+            );
+
+
+            passwordActualConfirmada =
+                false;
+
+
+            mostrarErrorCampo(
+                passwordActual,
+                errorPasswordActual,
+                (
+                    "No fue posible validar la contraseña. "
+                    +
+                    "Inténtalo nuevamente."
+                )
+            );
+
+
+            return false;
+
+
+        } finally {
+
+            validandoPasswordActual =
+                false;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // 21. VALIDAR NUEVA CONTRASEÑA
+    // =========================================================
+
+    function validarPasswordNueva() {
+
+        if (!passwordNueva) {
+            return false;
+        }
+
+
+        const valor =
+            passwordNueva.value;
+
+
+        passwordNueva.classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+        if (!valor) {
+
+            passwordNueva.classList.add(
+                "is-invalid"
+            );
+
+
+            return false;
+
+        }
+
+
+        if (
+            valor.length
+            <
+            8
+        ) {
+
+            passwordNueva.classList.add(
+                "is-invalid"
+            );
+
+
+            return false;
+
+        }
+
+
+        passwordNueva.classList.add(
+            "is-valid"
+        );
+
+
+        return true;
+
+    }
+
+
+    // =========================================================
+    // 22. VALIDAR CONFIRMACIÓN
+    // =========================================================
+
+    function validarConfirmacionPassword() {
+
+        if (
+            !passwordNueva
+            ||
+            !confirmarPassword
+        ) {
+
+            return false;
+
+        }
+
+
+        const nueva =
+            passwordNueva.value;
+
+
+        const confirmacion =
+            confirmarPassword.value;
+
+
+        // =====================================================
+        // VACÍA
+        // =====================================================
+
+        if (!confirmacion) {
+
+            mostrarErrorCampo(
+                confirmarPassword,
+                errorConfirmarPassword,
+                "Confirma la nueva contraseña."
+            );
+
+
+            return false;
+
+        }
+
+
+        // =====================================================
+        // NO COINCIDEN
+        // =====================================================
+
+        if (
+            nueva
+            !==
+            confirmacion
+        ) {
+
+            mostrarErrorCampo(
+                confirmarPassword,
+                errorConfirmarPassword,
+                "Las contraseñas nuevas no coinciden."
+            );
+
+
+            return false;
+
+        }
+
+
+        // =====================================================
+        // COINCIDEN
+        // =====================================================
+
+        limpiarErrorCampo(
+            confirmarPassword,
+            errorConfirmarPassword,
+            true
+        );
+
+
+        return true;
+
+    }
+
+
+    // =========================================================
+    // 23. INDICADORES
     // =========================================================
 
     function actualizarIndicadoresPassword() {
@@ -1558,10 +1921,6 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmarPassword.value;
 
 
-        // =====================================================
-        // MOSTRAR PANEL SOLO CUANDO EMPIECE A ESCRIBIR
-        // =====================================================
-
         if (estadoPassword) {
 
             estadoPassword.classList.toggle(
@@ -1574,10 +1933,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // =====================================================
-        // LONGITUD
-        // =====================================================
-
         const longitudValida =
             nueva.length >= 8;
 
@@ -1587,10 +1942,6 @@ document.addEventListener("DOMContentLoaded", function () {
             longitudValida
         );
 
-
-        // =====================================================
-        // COINCIDENCIA
-        // =====================================================
 
         const coinciden = (
             nueva !== ""
@@ -1606,59 +1957,11 @@ document.addEventListener("DOMContentLoaded", function () {
             coinciden
         );
 
-
-        // =====================================================
-        // MENSAJE DE NO COINCIDENCIA
-        // =====================================================
-
-        if (mensajePassword) {
-
-            const mostrarError = (
-                confirmacion !== ""
-                &&
-                nueva !== confirmacion
-            );
-
-
-            mensajePassword.classList.toggle(
-                "d-none",
-                !mostrarError
-            );
-
-        }
-
-
-        // =====================================================
-        // ESTADO VISUAL CONFIRMACIÓN
-        // =====================================================
-
-        if (confirmarPassword) {
-
-            confirmarPassword.classList.remove(
-                "is-valid",
-                "is-invalid"
-            );
-
-
-            if (
-                confirmacion !== ""
-            ) {
-
-                confirmarPassword.classList.add(
-                    coinciden
-                        ? "is-valid"
-                        : "is-invalid"
-                );
-
-            }
-
-        }
-
     }
 
 
     // =========================================================
-    // 21. ACTUALIZAR REGLA INDIVIDUAL
+    // 24. ACTUALIZAR REGLA VISUAL
     // =========================================================
 
     function actualizarReglaPassword(
@@ -1667,9 +1970,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
 
         if (!icono) {
-
             return;
-
         }
 
 
@@ -1732,14 +2033,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================================================
-    // 22. EVENTOS DE CONTRASEÑA
+    // 25. EVENTOS
     // =========================================================
+
+    if (passwordActual) {
+
+        passwordActual.addEventListener(
+            "input",
+            function () {
+
+                passwordActualConfirmada =
+                    false;
+
+
+                passwordActual.classList.remove(
+                    "is-valid",
+                    "is-invalid"
+                );
+
+
+                if (errorPasswordActual) {
+
+                    errorPasswordActual.textContent =
+                        "";
+
+
+                    errorPasswordActual.classList.add(
+                        "d-none"
+                    );
+
+                }
+
+            }
+        );
+
+
+        passwordActual.addEventListener(
+            "blur",
+            validarPasswordActual
+        );
+
+    }
+
 
     if (passwordNueva) {
 
         passwordNueva.addEventListener(
             "input",
-            actualizarIndicadoresPassword
+            function () {
+
+                validarPasswordNueva();
+
+                validarConfirmacionPassword();
+
+                actualizarIndicadoresPassword();
+
+            }
         );
 
     }
@@ -1749,186 +2098,73 @@ document.addEventListener("DOMContentLoaded", function () {
 
         confirmarPassword.addEventListener(
             "input",
-            actualizarIndicadoresPassword
+            function () {
+
+                validarConfirmacionPassword();
+
+                actualizarIndicadoresPassword();
+
+            }
         );
 
     }
 
 
     // =========================================================
-    // 23. VALIDAR FORMULARIO DE CONTRASEÑA
-    // =========================================================
-
-    function validarFormularioPassword() {
-
-        if (
-            !passwordActual
-            ||
-            !passwordNueva
-            ||
-            !confirmarPassword
-        ) {
-
-            return false;
-
-        }
-
-
-        let valido =
-            true;
-
-
-        // =====================================================
-        // LIMPIAR
-        // =====================================================
-
-        [
-            passwordActual,
-            passwordNueva,
-            confirmarPassword
-        ].forEach(
-            function (
-                campo
-            ) {
-
-                campo.classList.remove(
-                    "is-valid",
-                    "is-invalid"
-                );
-
-            }
-        );
-
-
-        // =====================================================
-        // ACTUAL
-        // =====================================================
-
-        if (
-            passwordActual.value.trim()
-            ===
-            ""
-        ) {
-
-            passwordActual.classList.add(
-                "is-invalid"
-            );
-
-
-            valido =
-                false;
-
-        } else {
-
-            passwordActual.classList.add(
-                "is-valid"
-            );
-
-        }
-
-
-        // =====================================================
-        // NUEVA
-        // =====================================================
-
-        if (
-            passwordNueva.value.length
-            <
-            8
-        ) {
-
-            passwordNueva.classList.add(
-                "is-invalid"
-            );
-
-
-            valido =
-                false;
-
-        } else {
-
-            passwordNueva.classList.add(
-                "is-valid"
-            );
-
-        }
-
-
-        // =====================================================
-        // CONFIRMACIÓN
-        // =====================================================
-
-        if (
-            confirmarPassword.value
-            ===
-            ""
-            ||
-            passwordNueva.value
-            !==
-            confirmarPassword.value
-        ) {
-
-            confirmarPassword.classList.add(
-                "is-invalid"
-            );
-
-
-            valido =
-                false;
-
-
-            if (mensajePassword) {
-
-                mensajePassword.classList.remove(
-                    "d-none"
-                );
-
-            }
-
-        } else {
-
-            confirmarPassword.classList.add(
-                "is-valid"
-            );
-
-
-            if (mensajePassword) {
-
-                mensajePassword.classList.add(
-                    "d-none"
-                );
-
-            }
-
-        }
-
-
-        actualizarIndicadoresPassword();
-
-
-        return valido;
-
-    }
-
-
-    // =========================================================
-    // 24. SUBMIT CONTRASEÑA
+    // 26. SUBMIT CONTRASEÑA
     // =========================================================
 
     if (formularioPassword) {
 
         formularioPassword.addEventListener(
             "submit",
-            function (
+            async function (
                 evento
             ) {
 
+                evento.preventDefault();
+
+
+                // =================================================
+                // CONTRASEÑA ACTUAL
+                // =================================================
+
+                const actualCorrecta =
+                    passwordActualConfirmada
+                    ||
+                    await validarPasswordActual();
+
+
+                // =================================================
+                // NUEVA
+                // =================================================
+
+                const nuevaValida =
+                    validarPasswordNueva();
+
+
+                // =================================================
+                // CONFIRMACIÓN
+                // =================================================
+
+                const confirmacionValida =
+                    validarConfirmacionPassword();
+
+
+                actualizarIndicadoresPassword();
+
+
+                // =================================================
+                // NO PERMITIR ENVÍO
+                // =================================================
+
                 if (
-                    !validarFormularioPassword()
+                    !actualCorrecta
+                    ||
+                    !nuevaValida
+                    ||
+                    !confirmacionValida
                 ) {
-
-                    evento.preventDefault();
-
 
                     const primerInvalido =
                         formularioPassword.querySelector(
@@ -1940,6 +2176,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         primerInvalido.focus();
 
+
+                        primerInvalido.scrollIntoView({
+
+                            behavior:
+                                "smooth",
+
+                            block:
+                                "center"
+
+                        });
+
                     }
 
 
@@ -1947,6 +2194,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
+
+                // =================================================
+                // TODO CORRECTO
+                // =================================================
 
                 if (botonCambiarPassword) {
 
@@ -1968,6 +2219,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
 
                 }
+
+
+                // =================================================
+                // ENVÍO REAL
+                //
+                // Usamos submit nativo para no volver a disparar
+                // este mismo listener.
+                // =================================================
+
+                formularioPassword.submit();
 
             }
         );

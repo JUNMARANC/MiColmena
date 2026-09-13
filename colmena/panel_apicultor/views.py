@@ -11408,7 +11408,96 @@ def perfil_apicultor(request):
         contexto
     )
 
+# ============================================================
+# VALIDAR CONTRASEÑA ACTUAL
+# PERFIL APICULTOR
+# ============================================================
 
+@login_required
+@permiso_requerido(
+    "perfil",
+    redireccion="dashboard_apicultor"
+)
+@require_POST
+def validar_password_actual_apicultor(request):
+
+    # ========================================================
+    # 1. CONFIRMAR QUE EL USUARIO SEA APICULTOR
+    # ========================================================
+
+    get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # 2. CONTRASEÑA ENVIADA
+    # ========================================================
+
+    password_actual = (
+        request.POST.get(
+            "password_actual",
+            ""
+        )
+    )
+
+
+    # ========================================================
+    # 3. CAMPO VACÍO
+    # ========================================================
+
+    if not password_actual:
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "correcta": False,
+                "mensaje": (
+                    "Ingresa tu contraseña actual."
+                ),
+            },
+            status=400
+        )
+
+
+    # ========================================================
+    # 4. VALIDAR CONTRA EL HASH DEL USUARIO AUTENTICADO
+    # ========================================================
+
+    correcta = (
+        request.user.check_password(
+            password_actual
+        )
+    )
+
+
+    if not correcta:
+
+        return JsonResponse(
+            {
+                "ok": True,
+                "correcta": False,
+                "mensaje": (
+                    "La contraseña actual no es correcta."
+                ),
+            }
+        )
+
+
+    # ========================================================
+    # 5. CORRECTA
+    # ========================================================
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "correcta": True,
+            "mensaje": (
+                "La contraseña actual es correcta."
+            ),
+        }
+    )
 
 # ============================================================
 # CAMBIAR CONTRASEÑA

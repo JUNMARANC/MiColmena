@@ -6561,3 +6561,122 @@
     }
 
 }
+
+
+/* ==========================================================
+   MENSAJES DE ERROR DE VALIDACIÓN
+   PERFIL APICULTOR
+========================================================== */
+
+.perfil-apicultor-page
+.perfil-error-validacion {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #C95F55 !important;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    line-height: 1.4;
+
+}
+
+
+/* OCULTAR CUANDO NO HAY ERROR */
+
+.perfil-apicultor-page
+.perfil-error-validacion.d-none {
+
+    display: none !important;
+
+}
+
+
+/* ==========================================================
+   CAMPO INVÁLIDO
+========================================================== */
+
+.perfil-apicultor-page
+.form-control.is-invalid {
+
+    border-color: #C95F55 !important;
+
+    background-color: #FFF8F7;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(201, 95, 85, 0.10) !important;
+
+}
+
+
+/* MANTENER ROJO AUNQUE ESTÉ SELECCIONADO */
+
+.perfil-apicultor-page
+.form-control.is-invalid:focus {
+
+    border-color: #C95F55 !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(201, 95, 85, 0.16) !important;
+
+}
+
+
+/* ICONO ROJO */
+
+.perfil-apicultor-page
+.perfil-input-contenedor:has(.form-control.is-invalid)
+.perfil-input-icono {
+
+    color: #C95F55 !important;
+
+}
+
+
+/* ==========================================================
+   CAMPO VÁLIDO
+========================================================== */
+
+.perfil-apicultor-page
+.form-control.is-valid {
+
+    border-color: #4F8A62 !important;
+
+    background-color: #FBFFFC;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 138, 98, 0.08) !important;
+
+}
+
+
+/* MANTENER VERDE AUNQUE TENGA FOCO */
+
+.perfil-apicultor-page
+.form-control.is-valid:focus {
+
+    border-color: #4F8A62 !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 138, 98, 0.14) !important;
+
+}
+
+
+/* ICONO VERDE */
+
+.perfil-apicultor-page
+.perfil-input-contenedor:has(.form-control.is-valid)
+.perfil-input-icono {
+
+    color: #4F8A62 !important;
+
+}
