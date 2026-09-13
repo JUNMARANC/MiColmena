@@ -2170,7 +2170,7 @@
 
 
                 <!-- =================================================
-                     SESIONES
+                    SESIONES
                 ================================================== -->
 
                 <div
@@ -2182,10 +2182,15 @@
                     <article class="perfil-card perfil-card-sesiones">
 
 
-                        <div class="perfil-card-header">
+                        <!-- =================================================
+                            HEADER
+                        ================================================== -->
+
+                        <div class="perfil-card-header perfil-sesiones-header">
 
 
                             <div class="perfil-card-titulo">
+
 
                                 <div class="perfil-card-icono">
 
@@ -2196,23 +2201,31 @@
 
                                 <div>
 
-                                    <h3>
-                                        Sesiones activas
-                                    </h3>
+
+                                    <div class="perfil-sesiones-titulo-fila">
+
+                                        <h3>
+                                            Sesiones activas
+                                        </h3>
+
+
+                                        <span class="perfil-sesiones-contador">
+
+                                            {{ total_sesiones_activas|default:0 }}
+
+                                        </span>
+
+                                    </div>
+
 
                                     <p>
                                         Revisa los dispositivos donde tienes
                                         abierta tu cuenta.
                                     </p>
 
+
                                 </div>
 
-                            </div>
-
-
-                            <div class="perfil-sesiones-contador">
-
-                                {{ total_sesiones_activas|default:0 }}
 
                             </div>
 
@@ -2221,105 +2234,87 @@
 
 
 
-                        <div class="perfil-sesiones-aviso">
+                        <!-- =================================================
+                            CONTENIDO
+                        ================================================== -->
 
-                            <i class="bi bi-shield-check"></i>
+                        <div class="perfil-sesiones-contenido">
 
 
-                            <div>
+                            <!-- =============================================
+                                AVISO
+                            ============================================== -->
 
-                                <strong>
-                                    Controla el acceso a tu cuenta
-                                </strong>
+                            <div class="perfil-sesiones-aviso">
 
-                                <p>
-                                    Si encuentras un dispositivo que no reconoces,
-                                    puedes cerrar esa sesión de forma remota.
-                                </p>
+
+                                <div class="perfil-sesiones-aviso-icono">
+
+                                    <i class="bi bi-shield-check"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Controla el acceso a tu cuenta
+                                    </strong>
+
+
+                                    <p>
+                                        Si encuentras un dispositivo que no reconoces,
+                                        puedes cerrar esa sesión de forma remota.
+                                    </p>
+
+                                </div>
+
 
                             </div>
 
-                        </div>
 
 
+                            <!-- =============================================
+                                LISTA DE SESIONES
+                            ============================================== -->
 
-                        <div class="perfil-sesiones-lista">
-
-
-                            {% for sesion in sesiones_activas %}
-
-
-                                <div
-                                    class="
-                                        perfil-sesion-item
-
-                                        {% if sesion.es_actual %}
-                                            actual
-                                        {% endif %}
-                                    "
-                                >
+                            <div class="perfil-sesiones-lista">
 
 
-                                    <div class="perfil-sesion-dispositivo">
+                                {% for sesion in sesiones_activas %}
 
 
-                                        {% if sesion.dispositivo == "Móvil" %}
-
-                                            <i class="bi bi-phone-fill"></i>
-
-                                        {% elif sesion.dispositivo == "Tablet" %}
-
-                                            <i class="bi bi-tablet-fill"></i>
-
-                                        {% else %}
-
-                                            <i class="bi bi-laptop-fill"></i>
-
-                                        {% endif %}
-
-
-                                    </div>
-
-
-
-                                    <div class="perfil-sesion-info">
-
-
-                                        <div class="perfil-sesion-superior">
-
-
-                                            <div>
-
-                                                <strong class="perfil-sesion-navegador">
-
-                                                    {{ sesion.navegador|default:"Navegador desconocido" }}
-
-                                                </strong>
-
-
-                                                <span class="perfil-sesion-sistema">
-
-                                                    {{ sesion.sistema_operativo|default:"Sistema desconocido" }}
-
-                                                    ·
-
-                                                    {{ sesion.dispositivo|default:"Dispositivo desconocido" }}
-
-                                                </span>
-
-                                            </div>
-
-
+                                    <div
+                                        class="
+                                            perfil-sesion-item
 
                                             {% if sesion.es_actual %}
+                                                actual
+                                            {% endif %}
+                                        "
+                                    >
 
-                                                <span class="perfil-sesion-actual">
 
-                                                    <i class="bi bi-check-circle-fill"></i>
+                                        <!-- =================================
+                                            ICONO DEL DISPOSITIVO
+                                        ================================== -->
 
-                                                    Esta sesión
+                                        <div class="perfil-sesion-dispositivo">
 
-                                                </span>
+
+                                            {% if sesion.dispositivo == "Móvil" %}
+
+                                                <i class="bi bi-phone-fill"></i>
+
+
+                                            {% elif sesion.dispositivo == "Tablet" %}
+
+                                                <i class="bi bi-tablet-fill"></i>
+
+
+                                            {% else %}
+
+                                                <i class="bi bi-laptop-fill"></i>
 
                                             {% endif %}
 
@@ -2328,198 +2323,480 @@
 
 
 
-                                        <div class="perfil-sesion-detalles">
+                                        <!-- =================================
+                                            INFORMACIÓN DE LA SESIÓN
+                                        ================================== -->
+
+                                        <div class="perfil-sesion-info">
 
 
-                                            <div>
+                                            <!-- =============================
+                                                ENCABEZADO
+                                            ============================== -->
 
-                                                <i class="bi bi-globe2"></i>
+                                            <div class="perfil-sesion-superior">
 
-                                                <span>
-                                                    IP
-                                                </span>
 
-                                                <strong>
-                                                    {{ sesion.ip|default:"No disponible" }}
-                                                </strong>
+                                                <div>
+
+
+                                                    <strong class="perfil-sesion-navegador">
+
+                                                        {{ sesion.navegador|default:"Navegador desconocido" }}
+
+                                                    </strong>
+
+
+                                                    <span class="perfil-sesion-sistema">
+
+                                                        {{ sesion.sistema_operativo|default:"Sistema desconocido" }}
+
+                                                        ·
+
+                                                        {{ sesion.dispositivo|default:"Dispositivo desconocido" }}
+
+                                                    </span>
+
+
+                                                </div>
+
+
+
+                                                {% if sesion.es_actual %}
+
+
+                                                    <span class="perfil-sesion-actual">
+
+                                                        <i class="bi bi-check-circle-fill"></i>
+
+                                                        Esta sesión
+
+                                                    </span>
+
+
+                                                {% endif %}
+
 
                                             </div>
 
 
 
-                                            <div>
+                                            <!-- =============================
+                                                DETALLES
+                                            ============================== -->
 
-                                                <i class="bi bi-calendar-check"></i>
+                                            <div class="perfil-sesion-detalles">
 
-                                                <span>
-                                                    Inicio
-                                                </span>
 
-                                                <strong>
-                                                    {{ sesion.fecha_inicio|date:"d/m/Y H:i" }}
-                                                </strong>
+                                                <!-- IP -->
+
+                                                <div>
+
+                                                    <i class="bi bi-globe2"></i>
+
+
+                                                    <span>
+                                                        IP
+                                                    </span>
+
+
+                                                    <strong>
+
+                                                        {{ sesion.ip|default:"No disponible" }}
+
+                                                    </strong>
+
+                                                </div>
+
+
+
+                                                <!-- INICIO -->
+
+                                                <div>
+
+                                                    <i class="bi bi-calendar-check"></i>
+
+
+                                                    <span>
+                                                        Inicio
+                                                    </span>
+
+
+                                                    <strong>
+
+                                                        {{ sesion.fecha_inicio|date:"d/m/Y H:i" }}
+
+                                                    </strong>
+
+                                                </div>
+
+
+
+                                                <!-- ÚLTIMA ACTIVIDAD -->
+
+                                                <div>
+
+                                                    <i class="bi bi-clock-history"></i>
+
+
+                                                    <span>
+                                                        Última actividad
+                                                    </span>
+
+
+                                                    <strong>
+
+
+                                                        {% if sesion.es_actual %}
+
+                                                            Ahora
+
+
+                                                        {% else %}
+
+                                                            Hace {{ sesion.ultima_actividad|timesince }}
+
+                                                        {% endif %}
+
+
+                                                    </strong>
+
+                                                </div>
+
 
                                             </div>
 
 
 
-                                            <div>
+                                            <!-- =============================
+                                                ACCIONES
+                                            ============================== -->
 
-                                                <i class="bi bi-clock-history"></i>
-
-                                                <span>
-                                                    Última actividad
-                                                </span>
+                                            {% if not sesion.es_actual %}
 
 
-                                                <strong>
+                                                <div class="perfil-sesion-acciones">
 
-                                                    {% if sesion.es_actual %}
 
-                                                        Ahora
+                                                    <form
+                                                        method="POST"
+                                                        action="{% url 'cerrar_sesion_remota' sesion.pk %}"
+                                                        class="js-confirmar-cierre-sesion"
+                                                        data-confirmacion-titulo="Cerrar sesión"
+                                                        data-confirmacion-texto="Esta sesión se cerrará de forma remota. Para volver a entrar desde ese dispositivo será necesario iniciar sesión nuevamente."
+                                                        data-confirmacion-boton="Cerrar sesión"
+                                                    >
 
-                                                    {% else %}
+                                                        {% csrf_token %}
 
-                                                        Hace
-                                                        {{ sesion.ultima_actividad|timesince }}
 
-                                                    {% endif %}
+                                                        <button
+                                                            type="submit"
+                                                            class="btn-cerrar-sesion-remota"
+                                                        >
 
-                                                </strong>
+                                                            <i class="bi bi-box-arrow-right"></i>
 
-                                            </div>
+
+                                                            <span>
+                                                                Cerrar sesión
+                                                            </span>
+
+                                                        </button>
+
+
+                                                    </form>
+
+
+                                                </div>
+
+
+                                            {% endif %}
 
 
                                         </div>
 
 
-
-                                        {% if not sesion.es_actual %}
-
-                                            <div class="perfil-sesion-acciones">
+                                    </div>
 
 
-                                                <form
-                                                    method="POST"
-                                                    action="{% url 'cerrar_sesion_remota' sesion.pk %}"
-                                                    onsubmit="
-                                                        return confirm(
-                                                            '¿Seguro que quieres cerrar esta sesión?'
-                                                        );
-                                                    "
-                                                >
-
-                                                    {% csrf_token %}
+                                {% empty %}
 
 
-                                                    <button
-                                                        type="submit"
-                                                        class="btn-cerrar-sesion-remota"
-                                                    >
+                                    <!-- =====================================
+                                        SIN SESIONES
+                                    ====================================== -->
 
-                                                        <i class="bi bi-box-arrow-right"></i>
-
-                                                        Cerrar sesión
-
-                                                    </button>
+                                    <div class="perfil-sesiones-vacio">
 
 
-                                                </form>
+                                        <i class="bi bi-shield-exclamation"></i>
 
 
-                                            </div>
+                                        <strong>
+                                            No hay sesiones registradas
+                                        </strong>
 
-                                        {% endif %}
+
+                                        <p>
+                                            No encontramos sesiones activas
+                                            asociadas a tu cuenta.
+                                        </p>
 
 
                                     </div>
 
 
-                                </div>
-
-
-                            {% empty %}
-
-
-                                <div class="perfil-sesiones-vacio">
-
-                                    <i class="bi bi-shield-exclamation"></i>
-
-                                    <strong>
-                                        No hay sesiones registradas
-                                    </strong>
-
-                                    <p>
-                                        No encontramos sesiones activas
-                                        asociadas a tu cuenta.
-                                    </p>
-
-                                </div>
-
-
-                            {% endfor %}
-
-
-                        </div>
-
-
-
-                        {% if total_otras_sesiones > 0 %}
-
-
-                            <div class="perfil-sesiones-footer">
-
-
-                                <div>
-
-                                    <strong>
-                                        ¿No reconoces alguna sesión?
-                                    </strong>
-
-                                    <p>
-                                        Puedes cerrar todas excepto la que
-                                        estás usando en este momento.
-                                    </p>
-
-                                </div>
-
-
-
-                                <form
-                                    method="POST"
-                                    action="{% url 'cerrar_otras_sesiones' %}"
-                                    onsubmit="
-                                        return confirm(
-                                            '¿Seguro que quieres cerrar todas las demás sesiones?'
-                                        );
-                                    "
-                                >
-
-                                    {% csrf_token %}
-
-
-                                    <button
-                                        type="submit"
-                                        class="btn-cerrar-otras-sesiones"
-                                    >
-
-                                        <i class="bi bi-shield-x"></i>
-
-                                        Cerrar todas las demás
-
-                                    </button>
-
-
-                                </form>
+                                {% endfor %}
 
 
                             </div>
 
 
-                        {% endif %}
+
+                            <!-- =============================================
+                                CERRAR TODAS LAS DEMÁS
+                            ============================================== -->
+
+                            {% if total_otras_sesiones > 0 %}
+
+
+                                <div class="perfil-sesiones-footer">
+
+
+                                    <!-- =============================
+                                        INFORMACIÓN
+                                    ============================== -->
+
+                                    <div class="perfil-sesiones-footer-texto">
+
+
+                                        <div class="perfil-sesiones-footer-icono">
+
+                                            <i class="bi bi-exclamation-triangle"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+
+                                            <strong>
+                                                ¿No reconoces alguna sesión?
+                                            </strong>
+
+
+                                            <p>
+                                                Puedes cerrar todas las demás sesiones
+                                                sin cerrar la que estás usando ahora.
+                                            </p>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                    <!-- =============================
+                                        ACCIÓN
+                                    ============================== -->
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'cerrar_otras_sesiones' %}"
+                                        class="js-confirmar-cierre-sesion"
+                                        data-confirmacion-titulo="Cerrar todas las demás sesiones"
+                                        data-confirmacion-texto="Se cerrarán todas las sesiones activas excepto la que estás utilizando en este momento."
+                                        data-confirmacion-boton="Cerrar todas"
+                                    >
+
+                                        {% csrf_token %}
+
+
+                                        <button
+                                            type="submit"
+                                            class="btn-cerrar-otras-sesiones"
+                                        >
+
+                                            <i class="bi bi-shield-x"></i>
+
+
+                                            <span>
+                                                Cerrar todas las demás
+                                            </span>
+
+                                        </button>
+
+
+                                    </form>
+
+
+                                </div>
+
+
+                            {% endif %}
+
+
+                        </div>
 
 
                     </article>
+
+
+
+                    <!-- =====================================================
+                        MODAL DE CONFIRMACIÓN DE CIERRE
+                    ====================================================== -->
+
+                    <div
+                        class="perfil-modal-confirmacion d-none"
+                        id="modalConfirmacionSesion"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="tituloModalConfirmacionSesion"
+                        aria-describedby="textoModalConfirmacionSesion"
+                    >
+
+
+                        <!-- =================================================
+                            FONDO
+                        ================================================== -->
+
+                        <div
+                            class="perfil-modal-confirmacion-backdrop"
+                            data-cerrar-modal-sesion
+                        ></div>
+
+
+
+                        <!-- =================================================
+                            CONTENIDO DEL MODAL
+                        ================================================== -->
+
+                        <div class="perfil-modal-confirmacion-dialog">
+
+
+                            <!-- =============================================
+                                CERRAR
+                            ============================================== -->
+
+                            <button
+                                type="button"
+                                class="perfil-modal-confirmacion-cerrar"
+                                id="btnCerrarModalSesion"
+                                aria-label="Cerrar"
+                                title="Cerrar"
+                            >
+
+                                <i class="bi bi-x-lg"></i>
+
+                            </button>
+
+
+
+                            <!-- =============================================
+                                ICONO
+                            ============================================== -->
+
+                            <div class="perfil-modal-confirmacion-icono">
+
+                                <i class="bi bi-box-arrow-right"></i>
+
+                            </div>
+
+
+
+                            <!-- =============================================
+                                INFORMACIÓN
+                            ============================================== -->
+
+                            <div class="perfil-modal-confirmacion-contenido">
+
+
+                                <h3 id="tituloModalConfirmacionSesion">
+
+                                    Cerrar sesión
+
+                                </h3>
+
+
+                                <p id="textoModalConfirmacionSesion">
+
+                                    ¿Seguro que deseas cerrar esta sesión?
+
+                                </p>
+
+
+
+                                <!-- =========================================
+                                    AVISO
+                                ========================================== -->
+
+                                <div class="perfil-modal-confirmacion-aviso">
+
+                                    <i class="bi bi-info-circle"></i>
+
+
+                                    <span>
+                                        Esta acción no afecta la sesión que
+                                        estás utilizando actualmente.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <!-- =============================================
+                                BOTONES
+                            ============================================== -->
+
+                            <div class="perfil-modal-confirmacion-acciones">
+
+
+                                <!-- CANCELAR -->
+
+                                <button
+                                    type="button"
+                                    class="btn-modal-sesion-cancelar"
+                                    id="btnCancelarCierreSesion"
+                                >
+
+                                    Cancelar
+
+                                </button>
+
+
+
+                                <!-- CONFIRMAR -->
+
+                                <button
+                                    type="button"
+                                    class="btn-modal-sesion-confirmar"
+                                    id="btnConfirmarCierreSesion"
+                                >
+
+                                    <i class="bi bi-box-arrow-right"></i>
+
+
+                                    <span>
+                                        Cerrar sesión
+                                    </span>
+
+                                </button>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
 
 
                 </div>

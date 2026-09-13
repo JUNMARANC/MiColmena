@@ -3969,306 +3969,6 @@
 }
 
 /* ============================================================
-   VERIFICACIÓN EN DOS PASOS
-============================================================ */
-
-.perfil-card-2fa {
-    overflow: hidden;
-}
-
-
-/* ============================================================
-   CONTENIDO
-============================================================ */
-
-.perfil-2fa-contenido {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-}
-
-
-/* ============================================================
-   ESTADO
-============================================================ */
-
-.perfil-2fa-estado {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-}
-
-
-.perfil-2fa-estado > div {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-
-    padding: 16px 18px;
-
-    border: 1px solid #E1E7E3;
-    border-radius: 14px;
-
-    background: var(--ap-blanco);
-}
-
-
-.perfil-2fa-etiqueta {
-    color: #718078;
-    font-size: 0.82rem;
-    font-weight: 600;
-}
-
-
-.perfil-2fa-estado strong {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-
-    color: #263C32;
-    font-size: 0.93rem;
-}
-
-
-/* ============================================================
-   BADGE
-============================================================ */
-
-.perfil-2fa-badge {
-    width: fit-content;
-
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-
-    padding: 7px 11px;
-
-    border-radius: 999px;
-
-    font-size: 0.82rem;
-    font-weight: 700;
-}
-
-
-.perfil-2fa-badge.activo {
-    color: #23664D;
-    background: #EDF1EF;
-}
-
-
-.perfil-2fa-badge.inactivo {
-    color: #718078;
-    background: #F4F6F4;
-}
-
-
-/* ============================================================
-   EXPLICACIÓN
-============================================================ */
-
-.perfil-2fa-explicacion,
-.perfil-2fa-obligatorio,
-.perfil-2fa-aviso {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-
-    padding: 16px 18px;
-
-    border-radius: 14px;
-}
-
-
-.perfil-2fa-explicacion {
-    background: #F4F6F4;
-    border: 1px solid #E1E7E3;
-}
-
-
-.perfil-2fa-explicacion > i {
-    margin-top: 2px;
-
-    color: #39795F;
-    font-size: 1.25rem;
-}
-
-
-.perfil-2fa-explicacion strong,
-.perfil-2fa-obligatorio strong,
-.perfil-2fa-aviso strong {
-    display: block;
-    margin-bottom: 4px;
-
-    color: #294238;
-}
-
-
-.perfil-2fa-explicacion p,
-.perfil-2fa-obligatorio p,
-.perfil-2fa-aviso p {
-    margin: 0;
-
-    color: var(--ap-texto-tenue);
-    font-size: 0.88rem;
-    line-height: 1.55;
-}
-
-
-/* ============================================================
-   OBLIGATORIO
-============================================================ */
-
-.perfil-2fa-obligatorio {
-    background: #FFFBE8;
-    border: 1px solid #F1DFA6;
-}
-
-
-.perfil-2fa-obligatorio > i {
-    color: #A77819;
-    font-size: 1.2rem;
-}
-
-
-/* ============================================================
-   DESHABILITADO GLOBALMENTE
-============================================================ */
-
-.perfil-2fa-aviso.bloqueado {
-    background: #F4F6F4;
-    border: 1px solid #E1E7E3;
-}
-
-
-.perfil-2fa-aviso-icono {
-    color: #7C8A82;
-    font-size: 1.3rem;
-}
-
-
-/* ============================================================
-   ACCIONES
-============================================================ */
-
-.perfil-2fa-acciones {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-
-.perfil-2fa-acciones form {
-    margin: 0;
-}
-
-
-.btn-perfil-2fa {
-    min-height: 43px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-
-    padding: 10px 17px;
-
-    border-radius: 12px;
-
-    font-size: 0.88rem;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        background 0.18s ease;
-}
-
-
-.btn-perfil-2fa.activar {
-    color: var(--ap-blanco);
-    border: 1px solid #39795F;
-    background: #39795F;
-}
-
-
-.btn-perfil-2fa.activar:hover:not(:disabled) {
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 7px 16px
-        rgba(57, 121, 95, 0.18);
-}
-
-
-.btn-perfil-2fa.desactivar {
-    color: #A84D4D;
-    border: 1px solid #E7BCBC;
-    background: #FFF8F7;
-}
-
-
-.btn-perfil-2fa.desactivar:hover {
-    background: #FCE9E6;
-}
-
-
-.btn-perfil-2fa:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-
-.perfil-2fa-sin-correo {
-    width: 100%;
-
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 6px;
-
-    color: #9C5C35;
-}
-
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-
-@media (max-width: 768px) {
-
-    .perfil-2fa-estado {
-        grid-template-columns: 1fr;
-    }
-
-
-    .perfil-2fa-acciones {
-        justify-content: stretch;
-    }
-
-
-    .perfil-2fa-acciones form {
-        width: 100%;
-    }
-
-
-    .btn-perfil-2fa {
-        width: 100%;
-    }
-
-
-    .perfil-2fa-sin-correo {
-        justify-content: flex-start;
-    }
-
-}
-
-
-
-/* ============================================================
    SESIONES ACTIVAS
 ============================================================ */
 
@@ -6226,80 +5926,6 @@
 }
 
 
-/* ==========================================================
-   VERIFICACIÓN EN DOS PASOS
-========================================================== */
-
-/* El bloque de estado eran dos columnas al 50%: en pantalla
-   ancha quedaban dos cajas enormes con dos líneas de texto
-   cada una. */
-
-.perfil-2fa-estado {
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(240px, 380px));
-
-    justify-content: start;
-
-}
-
-
-/* El contenido no necesita 1900px de ancho para leerse */
-
-.perfil-2fa-contenido {
-
-    max-width: 860px;
-
-}
-
-
-/* La explicación gris no pega con el resto del panel */
-
-.perfil-2fa-explicacion {
-
-    border: 1px solid rgba(137, 104, 23, .18);
-    border-left: 4px solid var(--ap-miel);
-    border-radius: 0 13px 13px 0;
-
-    background: var(--ap-amarillo-suave);
-
-}
-
-
-.perfil-2fa-aviso-icono {
-
-    color: var(--ap-miel-oscura);
-
-}
-
-
-/* Las acciones a la izquierda, alineadas con el contenido, en
-   vez de empujadas al borde derecho de la pantalla */
-
-.perfil-2fa-acciones {
-
-    justify-content: flex-start;
-
-}
-
-
-/* ==========================================================
-   EL PANEL NO NECESITA TODO EL ANCHO
-
-   Un formulario y una lista de sesiones se leen mejor con un
-   ancho acotado. Sin esto, en un monitor grande el ojo tiene
-   que recorrer 1900px para pasar de una etiqueta a su dato.
-========================================================== */
-
-@media (min-width: 1500px) {
-
-    .perfil-contenido-principal {
-
-        max-width: 1100px;
-
-    }
-
-}
 
 
 @media (prefers-reduced-motion: reduce) {
@@ -6462,108 +6088,6 @@
 
 
 /* ==========================================================
-   VERIFICACIÓN EN DOS PASOS: TODO EN UNA FILA
-
-   El administrador muestra el título, la etiqueta de estado,
-   la explicación y el botón en un solo bloque horizontal.
-   Aquí eran dos tarjetas con borde, una debajo de otra.
-========================================================== */
-
-.perfil-2fa-estado {
-
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-
-    gap: 12px 18px;
-
-}
-
-
-.perfil-2fa-estado > div {
-
-    flex-direction: row;
-    align-items: center;
-
-    gap: 9px;
-
-    padding: 0;
-
-    border: none;
-    border-radius: 0;
-
-    background: transparent;
-
-}
-
-
-.perfil-2fa-etiqueta {
-
-    padding: 3px 11px;
-
-    border-radius: 999px;
-
-    background: #EDF1EF;
-    color: var(--ap-texto-tenue);
-
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-
-}
-
-
-/* La explicación como nota, sin envase */
-
-.perfil-2fa-explicacion {
-
-    padding: 0;
-
-    border: none;
-    border-left: none;
-    border-radius: 0;
-
-    background: transparent;
-
-    font-size: 13px;
-
-}
-
-
-.perfil-2fa-contenido {
-
-    gap: 14px;
-
-}
-
-
-/* El botón de activar, a la derecha de la fila */
-
-.perfil-2fa-acciones {
-
-    justify-content: flex-end;
-
-    margin-left: auto;
-
-}
-
-
-@media (max-width: 700px) {
-
-    .perfil-2fa-acciones {
-
-        justify-content: flex-start;
-
-        margin-left: 0;
-        width: 100%;
-
-    }
-
-}
-
-
-/* ==========================================================
    MENSAJES DE ERROR DE VALIDACIÓN
    PERFIL APICULTOR
 ========================================================== */
@@ -6678,5 +6202,2256 @@
 .perfil-input-icono {
 
     color: #4F8A62 !important;
+
+}
+
+
+/* ============================================================
+   ============================================================
+   VERIFICACIÓN EN DOS PASOS
+   PANEL APICULTOR
+   ============================================================
+============================================================ */
+
+
+/* ============================================================
+   TARJETA PRINCIPAL
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-card-2fa {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    overflow: hidden;
+
+}
+
+
+/* ============================================================
+   CONTENIDO GENERAL
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-contenido {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 18px;
+
+    box-sizing: border-box;
+
+    padding:
+        20px
+        24px;
+
+}
+
+
+/* ============================================================
+   RESUMEN:
+   ESTADO / MÉTODO / CORREO / FECHA
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-estado {
+
+    width: 100%;
+
+    max-width: none;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    align-items: stretch;
+
+    gap: 14px;
+
+    margin: 0;
+
+}
+
+
+/* ============================================================
+   TARJETAS DEL RESUMEN
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-estado > div {
+
+    min-width: 0;
+
+    min-height: 88px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        14px
+        16px;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.10);
+
+    border-radius: 12px;
+
+    background:
+        #FAFCFB;
+
+}
+
+
+/* ============================================================
+   ETIQUETAS
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-etiqueta {
+
+    display: block;
+
+    margin: 0;
+
+    color:
+        #7C8A82;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+}
+
+
+/* ============================================================
+   VALORES DEL RESUMEN
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-estado strong {
+
+    width: 100%;
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin: 0;
+
+    overflow-wrap: anywhere;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+}
+
+
+/* ICONOS */
+
+.perfil-contenido-principal
+.perfil-2fa-estado strong i {
+
+    flex-shrink: 0;
+
+    color:
+        var(--ap-verde-medio);
+
+    font-size: 14px;
+
+}
+
+
+/* ============================================================
+   BADGE ESTADO
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-badge {
+
+    width: fit-content;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        6px
+        10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+}
+
+
+/* ACTIVO */
+
+.perfil-contenido-principal
+.perfil-2fa-badge.activo {
+
+    border:
+        1px solid
+        #B9DEC9;
+
+    background:
+        #EAF7EF;
+
+    color:
+        #277250;
+
+}
+
+
+/* INACTIVO */
+
+.perfil-contenido-principal
+.perfil-2fa-badge.inactivo {
+
+    border:
+        1px solid
+        #DDE4E0;
+
+    background:
+        #F4F6F4;
+
+    color:
+        #718078;
+
+}
+
+
+/* ============================================================
+   EXPLICACIÓN
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-explicacion {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    box-sizing: border-box;
+
+    padding:
+        18px
+        20px;
+
+    border:
+        1px solid
+        #D8E8DF;
+
+    border-radius: 12px;
+
+    background:
+        #F6FAF7;
+
+}
+
+
+/* ICONO EXPLICACIÓN */
+
+.perfil-contenido-principal
+.perfil-2fa-explicacion > i {
+
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0;
+
+    border-radius: 10px;
+
+    background:
+        #E2F1E8;
+
+    color:
+        #39795F;
+
+    font-size: 16px;
+
+}
+
+
+/* CONTENIDO */
+
+.perfil-contenido-principal
+.perfil-2fa-explicacion > div {
+
+    min-width: 0;
+
+    flex: 1;
+
+}
+
+
+/* TÍTULO */
+
+.perfil-contenido-principal
+.perfil-2fa-explicacion strong {
+
+    display: block;
+
+    margin:
+        0
+        0
+        3px;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+}
+
+
+/* TEXTO */
+
+.perfil-contenido-principal
+.perfil-2fa-explicacion p {
+
+    margin: 0;
+
+    color:
+        #718078;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    line-height: 1.55;
+
+}
+
+
+/* ============================================================
+   PROTECCIÓN OBLIGATORIA
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-obligatorio {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    box-sizing: border-box;
+
+    padding:
+        14px
+        16px;
+
+    border:
+        1px solid
+        #EBD99C;
+
+    border-radius: 12px;
+
+    background:
+        #FFFBEA;
+
+}
+
+
+/* ICONO */
+
+.perfil-contenido-principal
+.perfil-2fa-obligatorio > i {
+
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color:
+        #A77819;
+
+    font-size: 16px;
+
+}
+
+
+/* TÍTULO */
+
+.perfil-contenido-principal
+.perfil-2fa-obligatorio strong {
+
+    display: block;
+
+    margin:
+        0
+        0
+        3px;
+
+    color:
+        #725812;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+}
+
+
+/* TEXTO */
+
+.perfil-contenido-principal
+.perfil-2fa-obligatorio p {
+
+    margin: 0;
+
+    color:
+        #806D36;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ============================================================
+   FUNCIÓN 2FA DESHABILITADA GLOBALMENTE
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-aviso {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    margin: 20px;
+
+    padding:
+        15px
+        16px;
+
+    border-radius: 12px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-2fa-aviso.bloqueado {
+
+    border:
+        1px solid
+        #E1E7E3;
+
+    background:
+        #F4F6F4;
+
+}
+
+
+/* ICONO */
+
+.perfil-contenido-principal
+.perfil-2fa-aviso-icono {
+
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        #E7ECE9;
+
+    color:
+        #718078;
+
+    font-size: 16px;
+
+}
+
+
+/* TÍTULO */
+
+.perfil-contenido-principal
+.perfil-2fa-aviso strong {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+}
+
+
+/* TEXTO */
+
+.perfil-contenido-principal
+.perfil-2fa-aviso p {
+
+    margin: 0;
+
+    color:
+        #718078;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ============================================================
+   ACCIONES
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-acciones {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin: 0;
+
+    padding-top: 2px;
+
+}
+
+
+/*
+ * IMPORTANTE:
+ *
+ * Los formularios de 2FA NO deben heredar
+ * el padding del formulario de contraseña.
+ */
+
+.perfil-contenido-principal
+.perfil-2fa-acciones form {
+
+    width: auto;
+
+    display: block;
+
+    margin: 0;
+
+    padding: 0 !important;
+
+}
+
+
+/* ============================================================
+   BOTONES 2FA
+============================================================ */
+
+.perfil-contenido-principal
+.btn-perfil-2fa {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        9px
+        16px;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+/* ============================================================
+   ACTIVAR
+============================================================ */
+
+.perfil-contenido-principal
+.btn-perfil-2fa.activar {
+
+    border:
+        1px solid
+        #39795F;
+
+    background:
+        #39795F;
+
+    color:
+        var(--ap-blanco);
+
+    box-shadow:
+        0 4px 11px
+        rgba(57, 121, 95, 0.14);
+
+}
+
+
+.perfil-contenido-principal
+.btn-perfil-2fa.activar:hover:not(:disabled) {
+
+    border-color:
+        #286047;
+
+    background:
+        #286047;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 6px 15px
+        rgba(57, 121, 95, 0.20);
+
+}
+
+
+/* ============================================================
+   DESACTIVAR
+============================================================ */
+
+.perfil-contenido-principal
+.btn-perfil-2fa.desactivar {
+
+    border:
+        1px solid
+        #E4B4AD;
+
+    background:
+        #FFF8F7;
+
+    color:
+        #A84D4D;
+
+}
+
+
+.perfil-contenido-principal
+.btn-perfil-2fa.desactivar:hover {
+
+    border-color:
+        #D99087;
+
+    background:
+        #FCE9E6;
+
+}
+
+
+/* ============================================================
+   BOTÓN DESHABILITADO
+============================================================ */
+
+.perfil-contenido-principal
+.btn-perfil-2fa:disabled {
+
+    border-color:
+        #D8DEDA;
+
+    background:
+        #E9EDEA;
+
+    color:
+        #89958E;
+
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+
+}
+
+
+/* ============================================================
+   SIN CORREO
+============================================================ */
+
+.perfil-contenido-principal
+.perfil-2fa-sin-correo {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 6px;
+
+    margin-top: 2px;
+
+    color:
+        #A6603A;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE 1050 PX
+============================================================ */
+
+@media (max-width: 1050px) {
+
+    .perfil-contenido-principal
+    .perfil-2fa-estado {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE 700 PX
+============================================================ */
+
+@media (max-width: 700px) {
+
+    .perfil-contenido-principal
+    .perfil-2fa-contenido {
+
+        gap: 15px;
+
+        padding:
+            16px
+            18px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-2fa-estado {
+
+        grid-template-columns:
+            1fr;
+
+        gap: 10px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-2fa-estado > div {
+
+        min-height: auto;
+
+        padding:
+            13px
+            14px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-2fa-acciones {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-2fa-acciones form {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-contenido-principal
+    .btn-perfil-2fa {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-2fa-sin-correo {
+
+        justify-content: flex-start;
+
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE 430 PX
+============================================================ */
+
+@media (max-width: 430px) {
+
+    .perfil-contenido-principal
+    .perfil-2fa-contenido {
+
+        padding:
+            14px
+            16px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-2fa-explicacion,
+    .perfil-contenido-principal
+    .perfil-2fa-obligatorio {
+
+        padding:
+            13px
+            14px;
+
+    }
+
+}
+
+
+
+
+/* ==========================================================
+   ==========================================================
+   SESIONES ACTIVAS
+   DISEÑO DEFINITIVO
+   PANEL APICULTOR
+   ==========================================================
+========================================================== */
+
+
+/* ==========================================================
+   TARJETA
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-card-sesiones {
+
+    width: 100%;
+
+    overflow: hidden;
+
+    padding: 0;
+
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesiones-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-titulo-fila {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+/* ==========================================================
+   CONTADOR
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesiones-contador {
+
+    width: auto;
+
+    min-width: 28px;
+    height: 28px;
+
+    flex: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0;
+
+    padding:
+        0
+        9px;
+
+    border-radius: 999px;
+
+    background:
+        var(--ap-amarillo-activo);
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   CONTENIDO
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesiones-contenido {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+        20px
+        24px
+        22px;
+
+}
+
+
+/* ==========================================================
+   AVISO
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesiones-aviso {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    box-sizing: border-box;
+
+    margin:
+        0
+        0
+        18px;
+
+    padding:
+        13px
+        15px;
+
+    border:
+        1px solid
+        #D8E8DF;
+
+    border-radius: 12px;
+
+    background:
+        #F6FAF7;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-aviso-icono {
+
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        #E2F1E8;
+
+    color:
+        #39795F;
+
+    font-size: 15px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-aviso strong {
+
+    display: block;
+
+    margin: 0 0 2px;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-aviso p {
+
+    margin: 0;
+
+    color:
+        #718078;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   LISTA
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesiones-lista {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+
+/* ==========================================================
+   TARJETA DE SESIÓN
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-item {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        46px
+        minmax(0, 1fr);
+
+    align-items: start;
+
+    gap: 14px;
+
+    box-sizing: border-box;
+
+    padding:
+        16px
+        17px;
+
+    border:
+        1px solid
+        #E0E7E3;
+
+    border-radius: 13px;
+
+    background:
+        #FFFFFF;
+
+    box-shadow: none;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-item:hover {
+
+    border-color:
+        #C6D8CE;
+
+    background:
+        #FCFEFD;
+
+    box-shadow:
+        0 5px 14px
+        rgba(33, 79, 59, 0.05);
+
+}
+
+
+/* SESIÓN ACTUAL */
+
+.perfil-contenido-principal
+.perfil-sesion-item.actual {
+
+    border-color:
+        #B9DEC9;
+
+    background:
+        #FBFEFC;
+
+}
+
+
+/* ==========================================================
+   ICONO DISPOSITIVO
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-dispositivo {
+
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        #EFF4F1;
+
+    color:
+        #286B50;
+
+    font-size: 18px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-item.actual
+.perfil-sesion-dispositivo {
+
+    background:
+        #DFF3E7;
+
+    color:
+        #277250;
+
+}
+
+
+/* ==========================================================
+   INFORMACIÓN
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-info {
+
+    min-width: 0;
+
+    width: 100%;
+
+}
+
+
+/* ==========================================================
+   PARTE SUPERIOR
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-superior {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 14px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-navegador {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-sistema {
+
+    display: block;
+
+    color:
+        #7C8A82;
+
+    font-size: 12px;
+
+}
+
+
+/* ==========================================================
+   ESTA SESIÓN
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-actual {
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 999px;
+
+    background:
+        #DFF3E7;
+
+    color:
+        #217448;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+/* ==========================================================
+   DETALLES
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-detalles {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap:
+        9px
+        22px;
+
+    margin-top: 11px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-detalles > div {
+
+    display: inline-flex;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 0;
+
+    border-radius: 0;
+
+    background:
+        transparent;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-detalles i {
+
+    margin: 0;
+
+    color:
+        #56806D;
+
+    font-size: 12px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-detalles span {
+
+    color:
+        #89958E;
+
+    font-size: 11px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-detalles strong {
+
+    overflow: visible;
+
+    color:
+        #344A3F;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    text-overflow: unset;
+
+    white-space: normal;
+
+}
+
+
+/* ==========================================================
+   ACCIÓN POR SESIÓN
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesion-acciones {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 12px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesion-acciones form {
+
+    width: auto;
+
+    margin: 0;
+
+    padding: 0 !important;
+
+}
+
+
+/* ==========================================================
+   BOTÓN CERRAR SESIÓN
+========================================================== */
+
+.perfil-contenido-principal
+.btn-cerrar-sesion-remota {
+
+    min-height: 36px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        7px
+        12px;
+
+    border:
+        1px solid
+        #E2B6B0;
+
+    border-radius: 9px;
+
+    background:
+        #FFF9F8;
+
+    color:
+        #AD5148;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+
+}
+
+
+.perfil-contenido-principal
+.btn-cerrar-sesion-remota:hover {
+
+    border-color:
+        #D58E85;
+
+    background:
+        #FCEAE7;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   FOOTER SESIONES
+========================================================== */
+
+.perfil-contenido-principal
+.perfil-sesiones-footer {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    box-sizing: border-box;
+
+    margin-top: 18px;
+
+    padding-top: 18px;
+
+    border-top:
+        1px solid
+        #E1E7E3;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-footer-texto {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-footer-icono {
+
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        #FFF4D8;
+
+    color:
+        #A77819;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-footer strong {
+
+    display: block;
+
+    margin: 0 0 2px;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-footer p {
+
+    margin: 0;
+
+    color:
+        #7C8A82;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+}
+
+
+.perfil-contenido-principal
+.perfil-sesiones-footer form {
+
+    width: auto;
+
+    flex-shrink: 0;
+
+    margin: 0;
+
+    padding: 0 !important;
+
+}
+
+
+/* ==========================================================
+   CERRAR TODAS
+========================================================== */
+
+.perfil-contenido-principal
+.btn-cerrar-otras-sesiones {
+
+    min-height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        13px;
+
+    border:
+        1px solid
+        #D99B93;
+
+    border-radius: 9px;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #A9473F;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+
+}
+
+
+.perfil-contenido-principal
+.btn-cerrar-otras-sesiones:hover {
+
+    border-color:
+        #C97369;
+
+    background:
+        #FFF2F0;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   ==========================================================
+   MODAL DE CONFIRMACIÓN
+   ==========================================================
+========================================================== */
+
+body.perfil-modal-abierto {
+
+    overflow: hidden;
+
+}
+
+
+.perfil-modal-confirmacion {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+}
+
+
+/* FONDO */
+
+.perfil-modal-confirmacion-backdrop {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(16, 29, 23, 0.56);
+
+    backdrop-filter:
+        blur(2px);
+
+}
+
+
+/* VENTANA */
+
+.perfil-modal-confirmacion-dialog {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: min(
+        100%,
+        440px
+    );
+
+    box-sizing: border-box;
+
+    padding:
+        26px;
+
+    border:
+        1px solid
+        rgba(33, 79, 59, 0.12);
+
+    border-radius: 17px;
+
+    background:
+        #FFFFFF;
+
+    box-shadow:
+        0 22px 65px
+        rgba(20, 42, 31, 0.24);
+
+    animation:
+        perfilModalEntrada
+        0.18s
+        ease;
+
+}
+
+
+/* X */
+
+.perfil-modal-confirmacion-cerrar {
+
+    position: absolute;
+
+    top: 14px;
+    right: 14px;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+        transparent;
+
+    color:
+        #7C8A82;
+
+    cursor: pointer;
+
+}
+
+
+.perfil-modal-confirmacion-cerrar:hover {
+
+    background:
+        #F3F5F4;
+
+    color:
+        var(--ap-verde-oscuro);
+
+}
+
+
+/* ICONO */
+
+.perfil-modal-confirmacion-icono {
+
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom: 15px;
+
+    border-radius: 13px;
+
+    background:
+        #FFF0EE;
+
+    color:
+        #B04D44;
+
+    font-size: 20px;
+
+}
+
+
+/* TÍTULO */
+
+.perfil-modal-confirmacion-contenido h3 {
+
+    margin:
+        0
+        0
+        7px;
+
+    color:
+        var(--ap-verde-oscuro);
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+}
+
+
+/* TEXTO */
+
+.perfil-modal-confirmacion-contenido > p {
+
+    margin: 0;
+
+    color:
+        #718078;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* AVISO */
+
+.perfil-modal-confirmacion-aviso {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 7px;
+
+    margin-top: 16px;
+
+    padding:
+        10px
+        11px;
+
+    border-radius: 9px;
+
+    background:
+        #F5F8F6;
+
+    color:
+        #617269;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+}
+
+
+.perfil-modal-confirmacion-aviso i {
+
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    color:
+        #56806D;
+
+}
+
+
+/* BOTONES */
+
+.perfil-modal-confirmacion-acciones {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    margin-top: 22px;
+
+}
+
+
+.btn-modal-sesion-cancelar,
+.btn-modal-sesion-confirmar {
+
+    min-height: 39px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px
+        14px;
+
+    border-radius: 9px;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+}
+
+
+.btn-modal-sesion-cancelar {
+
+    border:
+        1px solid
+        #D8E0DB;
+
+    background:
+        #FFFFFF;
+
+    color:
+        #52665B;
+
+}
+
+
+.btn-modal-sesion-cancelar:hover {
+
+    background:
+        #F3F5F4;
+
+}
+
+
+.btn-modal-sesion-confirmar {
+
+    border:
+        1px solid
+        #B9574E;
+
+    background:
+        #B9574E;
+
+    color:
+        #FFFFFF;
+
+}
+
+
+.btn-modal-sesion-confirmar:hover {
+
+    border-color:
+        #9F443C;
+
+    background:
+        #9F443C;
+
+}
+
+
+/* ANIMACIÓN */
+
+@keyframes perfilModalEntrada {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(8px)
+            scale(0.98);
+
+    }
+
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .perfil-contenido-principal
+    .perfil-sesiones-contenido {
+
+        padding:
+            16px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesion-item {
+
+        grid-template-columns:
+            40px
+            minmax(0, 1fr);
+
+        gap: 11px;
+
+        padding:
+            14px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesion-dispositivo {
+
+        width: 40px;
+        height: 40px;
+
+        font-size: 16px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesiones-footer {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesiones-footer form {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-contenido-principal
+    .btn-cerrar-otras-sesiones {
+
+        width: 100%;
+
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .perfil-contenido-principal
+    .perfil-sesion-superior {
+
+        flex-direction: column;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesion-actual {
+
+        align-self: flex-start;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesion-detalles {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 7px;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesion-acciones {
+
+        justify-content: stretch;
+
+    }
+
+
+    .perfil-contenido-principal
+    .perfil-sesion-acciones form {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-contenido-principal
+    .btn-cerrar-sesion-remota {
+
+        width: 100%;
+
+    }
+
+
+    .perfil-modal-confirmacion-dialog {
+
+        padding:
+            23px
+            18px
+            18px;
+
+    }
+
+
+    .perfil-modal-confirmacion-acciones {
+
+        align-items: stretch;
+
+        flex-direction: column-reverse;
+
+    }
+
+
+    .btn-modal-sesion-cancelar,
+    .btn-modal-sesion-confirmar {
+
+        width: 100%;
+
+    }
 
 }

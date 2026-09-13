@@ -2446,3 +2446,353 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+
+
+/* ==========================================================
+   ==========================================================
+   CONFIRMACIÓN DE CIERRE DE SESIONES
+   PERFIL APICULTOR
+   ==========================================================
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        const modal =
+            document.getElementById(
+                "modalConfirmacionSesion"
+            );
+
+
+        if (!modal) {
+            return;
+        }
+
+
+        const titulo =
+            document.getElementById(
+                "tituloModalConfirmacionSesion"
+            );
+
+
+        const texto =
+            document.getElementById(
+                "textoModalConfirmacionSesion"
+            );
+
+
+        const botonConfirmar =
+            document.getElementById(
+                "btnConfirmarCierreSesion"
+            );
+
+
+        const botonCancelar =
+            document.getElementById(
+                "btnCancelarCierreSesion"
+            );
+
+
+        const botonCerrar =
+            document.getElementById(
+                "btnCerrarModalSesion"
+            );
+
+
+        const backdrop =
+            modal.querySelector(
+                "[data-cerrar-modal-sesion]"
+            );
+
+
+        let formularioPendiente =
+            null;
+
+
+
+        /* =====================================================
+           ABRIR
+        ====================================================== */
+
+        function abrirModal(
+            formulario
+        ) {
+
+            formularioPendiente =
+                formulario;
+
+
+            const tituloModal =
+                formulario.dataset
+                    .confirmacionTitulo
+                ||
+                "Cerrar sesión";
+
+
+            const textoModal =
+                formulario.dataset
+                    .confirmacionTexto
+                ||
+                "¿Seguro que deseas continuar?";
+
+
+            const textoBoton =
+                formulario.dataset
+                    .confirmacionBoton
+                ||
+                "Confirmar";
+
+
+            if (titulo) {
+
+                titulo.textContent =
+                    tituloModal;
+
+            }
+
+
+            if (texto) {
+
+                texto.textContent =
+                    textoModal;
+
+            }
+
+
+            if (botonConfirmar) {
+
+                const span =
+                    botonConfirmar.querySelector(
+                        "span"
+                    );
+
+
+                if (span) {
+
+                    span.textContent =
+                        textoBoton;
+
+                }
+
+            }
+
+
+            modal.classList.remove(
+                "d-none"
+            );
+
+
+            document.body.classList.add(
+                "perfil-modal-abierto"
+            );
+
+
+            window.setTimeout(
+                function () {
+
+                    if (botonConfirmar) {
+
+                        botonConfirmar.focus();
+
+                    }
+
+                },
+                50
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CERRAR
+        ====================================================== */
+
+        function cerrarModal() {
+
+            modal.classList.add(
+                "d-none"
+            );
+
+
+            document.body.classList.remove(
+                "perfil-modal-abierto"
+            );
+
+
+            formularioPendiente =
+                null;
+
+        }
+
+
+
+        /* =====================================================
+           INTERCEPTAR FORMULARIOS
+        ====================================================== */
+
+        document
+            .querySelectorAll(
+                ".js-confirmar-cierre-sesion"
+            )
+            .forEach(
+                function (
+                    formulario
+                ) {
+
+                    formulario.addEventListener(
+                        "submit",
+                        function (
+                            evento
+                        ) {
+
+                            evento.preventDefault();
+
+
+                            abrirModal(
+                                formulario
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+
+        /* =====================================================
+           CONFIRMAR
+        ====================================================== */
+
+        if (botonConfirmar) {
+
+            botonConfirmar.addEventListener(
+                "click",
+                function () {
+
+                    if (!formularioPendiente) {
+                        return;
+                    }
+
+
+                    const formulario =
+                        formularioPendiente;
+
+
+                    botonConfirmar.disabled =
+                        true;
+
+
+                    botonConfirmar.innerHTML = `
+                        <span
+                            class="
+                                spinner-border
+                                spinner-border-sm
+                            "
+                            aria-hidden="true"
+                        ></span>
+
+                        <span>
+                            Cerrando...
+                        </span>
+                    `;
+
+
+                    /*
+                     * submit() nativo:
+                     *
+                     * no vuelve a disparar el listener
+                     * "submit", evitando abrir otra vez
+                     * el modal.
+                     */
+
+                    formulario.submit();
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CANCELAR
+        ====================================================== */
+
+        if (botonCancelar) {
+
+            botonCancelar.addEventListener(
+                "click",
+                cerrarModal
+            );
+
+        }
+
+
+
+        /* =====================================================
+           X
+        ====================================================== */
+
+        if (botonCerrar) {
+
+            botonCerrar.addEventListener(
+                "click",
+                cerrarModal
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CLICK FUERA DEL MODAL
+        ====================================================== */
+
+        if (backdrop) {
+
+            backdrop.addEventListener(
+                "click",
+                cerrarModal
+            );
+
+        }
+
+
+
+        /* =====================================================
+           ESCAPE
+        ====================================================== */
+
+        document.addEventListener(
+            "keydown",
+            function (
+                evento
+            ) {
+
+                if (
+                    evento.key
+                    ===
+                    "Escape"
+
+                    &&
+
+                    !modal.classList.contains(
+                        "d-none"
+                    )
+                ) {
+
+                    cerrarModal();
+
+                }
+
+            }
+        );
+
+
+    }
+);
