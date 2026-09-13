@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formularioPerfil =
         document.getElementById(
-            "formActualizarPerfil"
+            "formPerfilApicultor"
         );
 
 
@@ -52,17 +52,32 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const zonaTrabajo =
+    // =========================================================
+    // MENSAJES DE VALIDACIÓN
+    // =========================================================
+
+    const errorNombres =
         document.getElementById(
-            "zonaTrabajoPerfil"
+            "errorNombresPerfil"
         );
 
 
-    const experiencia =
+    const errorApellidos =
         document.getElementById(
-            "experienciaPerfil"
+            "errorApellidosPerfil"
         );
 
+
+    const errorCorreo =
+        document.getElementById(
+            "errorCorreoPerfil"
+        );
+
+
+    const errorTelefono =
+        document.getElementById(
+            "errorTelefonoPerfil"
+        );
 
 
     // =========================================================
@@ -119,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-
     // =========================================================
     // 3. CONFIGURACIÓN DE IMÁGENES
     // =========================================================
@@ -151,14 +165,16 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
-
     // =========================================================
     // 4. EXPRESIONES REGULARES
     // =========================================================
 
     /*
+     * Nombres y apellidos:
+     *
      * Permite:
      *
+     * Juan
      * Juan Manuel
      * María José
      * Pérez-Gómez
@@ -167,28 +183,47 @@ document.addEventListener("DOMContentLoaded", function () {
      * No permite:
      *
      * Juan123
-     * Juan@
+     * --------
+     * Juan----
+     * @Juan
      */
+
     const REGEX_NOMBRE =
         /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+(?:[ '\-][A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ]+)*$/;
 
 
-    const REGEX_CORREO =
-        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    /*
+     * Correos permitidos:
+     *
+     * gmail.com
+     * hotmail.com
+     * outlook.com
+     * yahoo.com
+     */
 
+    const REGEX_CORREO =
+        /^[A-Za-z0-9._%+-]+@(gmail\.com|hotmail\.com|outlook\.com|yahoo\.com)$/i;
+
+
+    /*
+     * Número celular colombiano:
+     *
+     * - Empieza por 3
+     * - Exactamente 10 números
+     */
 
     const REGEX_TELEFONO =
-        /^[0-9]{7,20}$/;
-
+        /^3[0-9]{9}$/;
 
 
     // =========================================================
-    // 5. UTILIDADES
+    // 5. UTILIDADES DE VALIDACIÓN
     // =========================================================
 
-    function marcarCampo(
+    function mostrarErrorCampo(
         campo,
-        valido
+        elementoError,
+        mensaje
     ) {
 
         if (!campo) {
@@ -197,34 +232,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         campo.classList.remove(
-            "is-valid",
-            "is-invalid"
+            "is-valid"
         );
-
-
-        if (
-            campo.value.trim()
-            ===
-            ""
-        ) {
-
-            return;
-
-        }
 
 
         campo.classList.add(
-            valido
-                ? "is-valid"
-                : "is-invalid"
+            "is-invalid"
         );
+
+
+        if (elementoError) {
+
+            elementoError.textContent =
+                mensaje;
+
+
+            elementoError.classList.remove(
+                "d-none"
+            );
+
+        }
 
     }
 
 
-
-    function limpiarEstadoCampo(
-        campo
+    function limpiarErrorCampo(
+        campo,
+        elementoError,
+        marcarValido = true
     ) {
 
         if (!campo) {
@@ -233,12 +268,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         campo.classList.remove(
-            "is-valid",
             "is-invalid"
         );
 
-    }
 
+        if (marcarValido) {
+
+            campo.classList.add(
+                "is-valid"
+            );
+
+        } else {
+
+            campo.classList.remove(
+                "is-valid"
+            );
+
+        }
+
+
+        if (elementoError) {
+
+            elementoError.textContent =
+                "";
+
+
+            elementoError.classList.add(
+                "d-none"
+            );
+
+        }
+
+    }
 
 
     function obtenerExtension(
@@ -262,7 +323,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .pop();
 
     }
-
 
 
     // =========================================================
@@ -396,7 +456,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 7. MOSTRAR FOTOGRAFÍA
     // =========================================================
@@ -513,7 +572,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 8. SELECCIONAR NUEVA FOTO
     // =========================================================
@@ -626,7 +684,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 9. QUITAR FOTOGRAFÍA
     // =========================================================
@@ -663,7 +720,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 10. VALIDAR NOMBRES
     // =========================================================
@@ -684,31 +740,81 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-        nombres.value =
-            valor;
+        if (!valor) {
+
+            mostrarErrorCampo(
+                nombres,
+                errorNombres,
+                "Los nombres son obligatorios."
+            );
 
 
-        const valido = (
-            valor.length >= 2
-            &&
-            valor.length <= 150
-            &&
-            REGEX_NOMBRE.test(
+            return false;
+
+        }
+
+
+        if (valor.length < 2) {
+
+            mostrarErrorCampo(
+                nombres,
+                errorNombres,
+                "El nombre debe tener mínimo 2 caracteres."
+            );
+
+
+            return false;
+
+        }
+
+
+        if (valor.length > 150) {
+
+            mostrarErrorCampo(
+                nombres,
+                errorNombres,
+                "Los nombres no pueden superar los 150 caracteres."
+            );
+
+
+            return false;
+
+        }
+
+
+        if (
+            !REGEX_NOMBRE.test(
                 valor
             )
-        );
+        ) {
+
+            mostrarErrorCampo(
+                nombres,
+                errorNombres,
+                (
+                    "Usa únicamente letras. "
+                    +
+                    "No se permiten números, símbolos "
+                    +
+                    "ni secuencias de guiones."
+                )
+            );
 
 
-        marcarCampo(
+            return false;
+
+        }
+
+
+        limpiarErrorCampo(
             nombres,
-            valido
+            errorNombres
         );
 
 
-        return valido;
+        return true;
 
     }
-
 
 
     // =========================================================
@@ -731,31 +837,81 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-        apellidos.value =
-            valor;
+        if (!valor) {
+
+            mostrarErrorCampo(
+                apellidos,
+                errorApellidos,
+                "Los apellidos son obligatorios."
+            );
 
 
-        const valido = (
-            valor.length >= 2
-            &&
-            valor.length <= 150
-            &&
-            REGEX_NOMBRE.test(
+            return false;
+
+        }
+
+
+        if (valor.length < 2) {
+
+            mostrarErrorCampo(
+                apellidos,
+                errorApellidos,
+                "El apellido debe tener mínimo 2 caracteres."
+            );
+
+
+            return false;
+
+        }
+
+
+        if (valor.length > 150) {
+
+            mostrarErrorCampo(
+                apellidos,
+                errorApellidos,
+                "Los apellidos no pueden superar los 150 caracteres."
+            );
+
+
+            return false;
+
+        }
+
+
+        if (
+            !REGEX_NOMBRE.test(
                 valor
             )
-        );
+        ) {
+
+            mostrarErrorCampo(
+                apellidos,
+                errorApellidos,
+                (
+                    "Usa únicamente letras. "
+                    +
+                    "No se permiten números, símbolos "
+                    +
+                    "ni secuencias de guiones."
+                )
+            );
 
 
-        marcarCampo(
+            return false;
+
+        }
+
+
+        limpiarErrorCampo(
             apellidos,
-            valido
+            errorApellidos
         );
 
 
-        return valido;
+        return true;
 
     }
-
 
 
     // =========================================================
@@ -775,22 +931,51 @@ document.addEventListener("DOMContentLoaded", function () {
                 .toLowerCase();
 
 
-        const valido =
-            REGEX_CORREO.test(
-                correo.value
+        if (!correo.value) {
+
+            mostrarErrorCampo(
+                correo,
+                errorCorreo,
+                "El correo electrónico es obligatorio."
             );
 
 
-        marcarCampo(
+            return false;
+
+        }
+
+
+        if (
+            !REGEX_CORREO.test(
+                correo.value
+            )
+        ) {
+
+            mostrarErrorCampo(
+                correo,
+                errorCorreo,
+                (
+                    "Utiliza un correo válido de Gmail, "
+                    +
+                    "Hotmail, Outlook o Yahoo."
+                )
+            );
+
+
+            return false;
+
+        }
+
+
+        limpiarErrorCampo(
             correo,
-            valido
+            errorCorreo
         );
 
 
-        return valido;
+        return true;
 
     }
-
 
 
     // =========================================================
@@ -804,16 +989,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        // =====================================================
+        // SOLO NÚMEROS Y MÁXIMO 10 DÍGITOS
+        // =====================================================
+
         telefono.value =
             telefono.value
                 .replace(
                     /\D/g,
                     ""
+                )
+                .slice(
+                    0,
+                    10
                 );
 
 
         // =====================================================
-        // ES OPCIONAL
+        // EL TELÉFONO ES OPCIONAL
         // =====================================================
 
         if (
@@ -822,8 +1015,10 @@ document.addEventListener("DOMContentLoaded", function () {
             ""
         ) {
 
-            limpiarEstadoCampo(
-                telefono
+            limpiarErrorCampo(
+                telefono,
+                errorTelefono,
+                false
             );
 
 
@@ -832,216 +1027,158 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const valido =
-            REGEX_TELEFONO.test(
-                telefono.value
+        // =====================================================
+        // DEBE COMENZAR POR 3
+        // =====================================================
+
+        if (
+            !telefono.value.startsWith(
+                "3"
+            )
+        ) {
+
+            mostrarErrorCampo(
+                telefono,
+                errorTelefono,
+                "El número de celular debe comenzar por 3."
             );
 
 
-        marcarCampo(
+            return false;
+
+        }
+
+
+        // =====================================================
+        // EXACTAMENTE 10 DÍGITOS
+        // =====================================================
+
+        if (
+            telefono.value.length
+            !==
+            10
+        ) {
+
+            mostrarErrorCampo(
+                telefono,
+                errorTelefono,
+                (
+                    "El número de celular debe tener "
+                    +
+                    "exactamente 10 dígitos."
+                )
+            );
+
+
+            return false;
+
+        }
+
+
+        // =====================================================
+        // VALIDACIÓN FINAL
+        // =====================================================
+
+        if (
+            !REGEX_TELEFONO.test(
+                telefono.value
+            )
+        ) {
+
+            mostrarErrorCampo(
+                telefono,
+                errorTelefono,
+                "Ingresa un número de celular válido."
+            );
+
+
+            return false;
+
+        }
+
+
+        limpiarErrorCampo(
             telefono,
-            valido
+            errorTelefono
         );
 
 
-        return valido;
+        return true;
 
     }
 
 
-
     // =========================================================
-    // 14. VALIDAR ZONA DE TRABAJO
+    // 14. NORMALIZAR NOMBRES Y APELLIDOS
     // =========================================================
 
-    function validarZonaTrabajo() {
+    function normalizarTextoNombre(
+        campo
+    ) {
 
-        if (!zonaTrabajo) {
-            return true;
+        if (!campo) {
+            return;
         }
 
 
-        zonaTrabajo.value =
-            zonaTrabajo.value
+        campo.value =
+            campo.value
                 .trim()
                 .replace(
                     /\s+/g,
                     " "
                 );
 
-
-        if (
-            zonaTrabajo.value
-            ===
-            ""
-        ) {
-
-            limpiarEstadoCampo(
-                zonaTrabajo
-            );
-
-
-            return true;
-
-        }
-
-
-        const valido =
-            zonaTrabajo.value.length <= 100;
-
-
-        marcarCampo(
-            zonaTrabajo,
-            valido
-        );
-
-
-        return valido;
-
     }
 
 
-
     // =========================================================
-    // 15. VALIDAR EXPERIENCIA
-    // =========================================================
-
-    function validarExperiencia() {
-
-        if (!experiencia) {
-            return true;
-        }
-
-
-        // =====================================================
-        // QUITAR TODO LO QUE NO SEA NÚMERO
-        // =====================================================
-
-        experiencia.value =
-            experiencia.value
-                .replace(
-                    /\D/g,
-                    ""
-                );
-
-
-        // =====================================================
-        // OPCIONAL
-        // =====================================================
-
-        if (
-            experiencia.value
-            ===
-            ""
-        ) {
-
-            limpiarEstadoCampo(
-                experiencia
-            );
-
-
-            return true;
-
-        }
-
-
-        const numero =
-            Number(
-                experiencia.value
-            );
-
-
-        const valido = (
-            Number.isInteger(
-                numero
-            )
-            &&
-            numero >= 0
-            &&
-            numero <= 80
-        );
-
-
-        marcarCampo(
-            experiencia,
-            valido
-        );
-
-
-        return valido;
-
-    }
-
-
-
-    // =========================================================
-    // 16. EVENTOS DE VALIDACIÓN
+    // 15. EVENTOS DE VALIDACIÓN EN TIEMPO REAL
     // =========================================================
 
     if (nombres) {
 
         nombres.addEventListener(
-            "blur",
+            "input",
             validarNombres
         );
 
 
         nombres.addEventListener(
-            "input",
+            "blur",
             function () {
 
-                nombres.value =
-                    nombres.value.replace(
-                        /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ '\-]/g,
-                        ""
-                    );
+                normalizarTextoNombre(
+                    nombres
+                );
 
 
-                if (
-                    nombres.classList.contains(
-                        "is-invalid"
-                    )
-                ) {
-
-                    validarNombres();
-
-                }
+                validarNombres();
 
             }
         );
 
     }
-
 
 
     if (apellidos) {
 
         apellidos.addEventListener(
-            "blur",
+            "input",
             validarApellidos
         );
 
 
         apellidos.addEventListener(
-            "input",
+            "blur",
             function () {
 
-                apellidos.value =
-                    apellidos.value.replace(
-                        /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñÀ-ÿ '\-]/g,
-                        ""
-                    );
+                normalizarTextoNombre(
+                    apellidos
+                );
 
 
-                if (
-                    apellidos.classList.contains(
-                        "is-invalid"
-                    )
-                ) {
-
-                    validarApellidos();
-
-                }
+                validarApellidos();
 
             }
         );
@@ -1049,34 +1186,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     if (correo) {
+
+        correo.addEventListener(
+            "input",
+            validarCorreo
+        );
+
 
         correo.addEventListener(
             "blur",
             validarCorreo
         );
 
-
-        correo.addEventListener(
-            "input",
-            function () {
-
-                if (
-                    correo.classList.contains(
-                        "is-invalid"
-                    )
-                ) {
-
-                    validarCorreo();
-
-                }
-
-            }
-        );
-
     }
-
 
 
     if (telefono) {
@@ -1086,34 +1209,17 @@ document.addEventListener("DOMContentLoaded", function () {
             validarTelefono
         );
 
-    }
 
-
-
-    if (zonaTrabajo) {
-
-        zonaTrabajo.addEventListener(
+        telefono.addEventListener(
             "blur",
-            validarZonaTrabajo
+            validarTelefono
         );
 
     }
-
-
-
-    if (experiencia) {
-
-        experiencia.addEventListener(
-            "input",
-            validarExperiencia
-        );
-
-    }
-
 
 
     // =========================================================
-    // 17. ENVIAR FORMULARIO DE PERFIL
+    // 16. ENVIAR FORMULARIO DE PERFIL
     // =========================================================
 
     if (formularioPerfil) {
@@ -1123,6 +1229,24 @@ document.addEventListener("DOMContentLoaded", function () {
             function (
                 evento
             ) {
+
+                // =================================================
+                // NORMALIZAR TEXTO ANTES DE VALIDAR
+                // =================================================
+
+                normalizarTextoNombre(
+                    nombres
+                );
+
+
+                normalizarTextoNombre(
+                    apellidos
+                );
+
+
+                // =================================================
+                // VALIDAR CAMPOS
+                // =================================================
 
                 const nombresValidos =
                     validarNombres();
@@ -1140,15 +1264,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     validarTelefono();
 
 
-                const zonaValida =
-                    validarZonaTrabajo();
-
-
-                const experienciaValida =
-                    validarExperiencia();
-
-
-
                 if (
                     !nombresValidos
                     ||
@@ -1157,10 +1272,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     !correoValido
                     ||
                     !telefonoValido
-                    ||
-                    !zonaValida
-                    ||
-                    !experienciaValida
                 ) {
 
                     evento.preventDefault();
@@ -1193,7 +1304,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
 
                 }
-
 
 
                 // =================================================
@@ -1233,7 +1343,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-
                 // =================================================
                 // EVITAR DOBLE CLICK
                 // =================================================
@@ -1263,7 +1372,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
-
 
 
     // =========================================================
@@ -1324,7 +1432,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById(
             "btnCambiarPasswordPerfil"
         );
-
 
 
     // =========================================================
@@ -1424,7 +1531,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
-
 
 
     // =========================================================
@@ -1551,7 +1657,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 21. ACTUALIZAR REGLA INDIVIDUAL
     // =========================================================
@@ -1626,7 +1731,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 22. EVENTOS DE CONTRASEÑA
     // =========================================================
@@ -1649,7 +1753,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
-
 
 
     // =========================================================
@@ -1808,7 +1911,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 24. SUBMIT CONTRASEÑA
     // =========================================================
@@ -1873,7 +1975,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     // =========================================================
     // 25. RESTAURAR BOTONES AL VOLVER CON ATRÁS
     // =========================================================
@@ -1913,12 +2014,12 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-
     // =========================================================
     // FIN PERFIL DEL APICULTOR
     // =========================================================
 
 });
+
 
 /* ==========================================================
    ==========================================================
@@ -1937,74 +2038,150 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
 
     document
-        .querySelectorAll(".perfil-tabs-principales, .perfil-subtabs")
-        .forEach(function (grupo) {
+        .querySelectorAll(
+            ".perfil-tabs-principales, .perfil-subtabs"
+        )
+        .forEach(
+            function (
+                grupo
+            ) {
 
-            const contenedor = grupo.parentElement;
+                const contenedor =
+                    grupo.parentElement;
 
-            if (!contenedor) {
-                return;
+
+                if (!contenedor) {
+
+                    return;
+
+                }
+
+
+                const botones =
+                    grupo.querySelectorAll(
+                        "[data-tab-target]"
+                    );
+
+
+                botones.forEach(
+                    function (
+                        boton
+                    ) {
+
+                        boton.addEventListener(
+                            "click",
+                            function () {
+
+                                const destino =
+                                    boton.dataset.tabTarget;
+
+
+                                botones.forEach(
+                                    function (
+                                        otro
+                                    ) {
+
+                                        otro.classList.remove(
+                                            "activo"
+                                        );
+
+
+                                        otro.setAttribute(
+                                            "aria-selected",
+                                            "false"
+                                        );
+
+                                    }
+                                );
+
+
+                                boton.classList.add(
+                                    "activo"
+                                );
+
+
+                                boton.setAttribute(
+                                    "aria-selected",
+                                    "true"
+                                );
+
+
+                                contenedor
+                                    .querySelectorAll(
+                                        ":scope > [data-tab-panel]"
+                                    )
+                                    .forEach(
+                                        function (
+                                            panel
+                                        ) {
+
+                                            panel.classList.toggle(
+                                                "d-none",
+                                                panel.dataset.tabPanel
+                                                !==
+                                                destino
+                                            );
+
+                                        }
+                                    );
+
+                            }
+                        );
+
+                    }
+                );
+
             }
-
-            const botones = grupo.querySelectorAll("[data-tab-target]");
-
-            botones.forEach(function (boton) {
-
-                boton.addEventListener("click", function () {
-
-                    const destino = boton.dataset.tabTarget;
-
-                    botones.forEach(function (otro) {
-                        otro.classList.remove("activo");
-                        otro.setAttribute("aria-selected", "false");
-                    });
-
-                    boton.classList.add("activo");
-                    boton.setAttribute("aria-selected", "true");
-
-                    contenedor
-                        .querySelectorAll(":scope > [data-tab-panel]")
-                        .forEach(function (panel) {
-                            panel.classList.toggle(
-                                "d-none",
-                                panel.dataset.tabPanel !== destino
-                            );
-                        });
-
-                });
-
-            });
-
-        });
-
-
-    /* ======================================================
-       ABRIR LA PESTAÑA CORRECTA AL PAGINAR EL HISTORIAL
-
-       El historial se pagina con ?page_accesos=N. Sin esto,
-       al pasar de página la pantalla volvía a "Información"
-       y había que buscar el historial otra vez.
-    ====================================================== */
-
-    const parametros = new URLSearchParams(window.location.search);
-
-    if (parametros.has("page_accesos")) {
-
-        const btnSeguridad = document.querySelector(
-            '.perfil-tab-btn[data-tab-target="perfil-tab-seguridad"]'
         );
 
-        const btnHistorial = document.querySelector(
-            '.perfil-subtab-btn[data-tab-target="sub-historial"]'
+
+    // =========================================================
+    // ABRIR LA PESTAÑA CORRECTA AL PAGINAR EL HISTORIAL
+    //
+    // El historial se pagina con:
+    //
+    // ?page_accesos=N
+    //
+    // Sin esto, al cambiar de página volvería a Información.
+    // =========================================================
+
+    const parametros =
+        new URLSearchParams(
+            window.location.search
         );
+
+
+    if (
+        parametros.has(
+            "page_accesos"
+        )
+    ) {
+
+        const btnSeguridad =
+            document.querySelector(
+                '.perfil-tab-btn[data-tab-target="perfil-tab-seguridad"]'
+            );
+
+
+        const btnHistorial =
+            document.querySelector(
+                '.perfil-subtab-btn[data-tab-target="sub-historial"]'
+            );
+
 
         if (btnSeguridad) {
+
             btnSeguridad.click();
+
         }
 
+
         if (btnHistorial) {
+
             btnHistorial.click();
+
         }
+
     }
 
 });
