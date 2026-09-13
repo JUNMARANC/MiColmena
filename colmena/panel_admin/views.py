@@ -35,6 +35,10 @@ from panel_admin.models import ConfiguracionSistema,ConfiguracionNotificaciones,
 from PIL import Image, UnidentifiedImageError
 from django.db import transaction
 
+# El logo de los reportes, en base64. Lo usan los seis reportes
+# y ahora también el individual del apicultor.
+from panel_admin.reportes.marca import contexto_marca
+
 from panel_admin.reportes.estado_colmenas import (
     generar_reporte_estado_colmenas_pdf,
 )
@@ -10653,6 +10657,11 @@ def reporte_apicultor_pdf(
 
         "fecha_generacion": timezone.localtime(),
         "generado_por": generado_por,
+
+        # Agrega logo_reporte: el logo como data URI, para que
+        # WeasyPrint pueda incrustarlo. Una ruta /static/ no
+        # resolvería, porque el PDF se genera en el servidor.
+        **contexto_marca(),
     }
 
     html_string = render_to_string(

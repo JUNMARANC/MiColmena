@@ -17394,3 +17394,130 @@ tr.fila-oculta-busqueda {
     }
 
 }
+
+/* PERFIL DEL APICULTOR — ESTILOS INCORPORADOS DESDE MASTER */
+
+.fondo-perfil-apicultor {
+    height: 132px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='76' viewBox='0 0 44 76'%3E%3Cpath d='M22 0 L44 13 L44 38 L22 51 L0 38 L0 13 Z' fill='none' stroke='rgba(255,255,255,0.10)' stroke-width='1'/%3E%3Cpath d='M22 25 L44 38 L44 63 L22 76 L0 63 L0 38 Z' fill='none' stroke='rgba(255,255,255,0.10)' stroke-width='1'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, #2E5F49 0%, #4A7D64 55%, #6FA189 100%);
+    background-repeat: repeat, no-repeat;
+    position: relative;
+}
+
+.fondo-perfil-apicultor::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 46px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, .16)
+    );
+    pointer-events: none;
+}
+
+.foto-perfil-grande,
+.foto-perfil-grande-vacia {
+    border: 4px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(33, 79, 59, .22);
+    transition:
+        transform .3s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .25s ease;
+}
+
+.card-perfil-principal:hover .foto-perfil-grande,
+.card-perfil-principal:hover .foto-perfil-grande-vacia {
+    transform: scale(1.03);
+    box-shadow: 0 9px 24px rgba(33, 79, 59, .28);
+}
+
+.foto-perfil-grande-vacia {
+    background: #eef4f0;
+    color: var(--verde-medio);
+}
+
+.icono-seccion-perfil {
+    background: #eef4f0;
+    color: #3D6B54;
+}
+
+.badge-rol-perfil {
+    background: #eef4f0;
+    color: #2E5F49;
+    border: 1px solid #cfe0d7;
+}
+
+@keyframes perfilApicultorEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-perfil-principal,
+.contenido-perfil-principal > * {
+    animation: perfilApicultorEntrada .42s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.card-perfil-principal {
+    animation-delay: .03s;
+}
+
+.contenido-perfil-principal > *:nth-child(1) {
+    animation-delay: .09s;
+}
+
+.contenido-perfil-principal > *:nth-child(2) {
+    animation-delay: .15s;
+}
+
+.contenido-perfil-principal > *:nth-child(3) {
+    animation-delay: .21s;
+}
+
+.contenido-perfil-principal > *:nth-child(n+4) {
+    animation-delay: .25s;
+}
+
+.dato-perfil-completo,
+.apiario-perfil-item {
+    border-radius: 11px;
+    transition: background-color .2s ease, transform .2s ease;
+}
+
+.dato-perfil-completo:hover,
+.apiario-perfil-item:hover {
+    background: #f3f8f5;
+    transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-perfil-principal,
+    .contenido-perfil-principal > * {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .foto-perfil-grande,
+    .foto-perfil-grande-vacia,
+    .dato-perfil-completo,
+    .apiario-perfil-item {
+        transition: none !important;
+    }
+
+    .card-perfil-principal:hover .foto-perfil-grande,
+    .dato-perfil-completo:hover,
+    .apiario-perfil-item:hover {
+        transform: none;
+    }
+}

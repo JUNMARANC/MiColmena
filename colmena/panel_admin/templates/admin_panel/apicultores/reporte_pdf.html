@@ -73,6 +73,13 @@
             width: 65%;
         }
 
+        .logo-marca {
+            width: 44px;
+            height: 44px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
         .icono-marca {
             display: inline-block;
             width: 38px;
@@ -533,6 +540,85 @@
             font-size: 11px;
         }
 
+
+        /* ==================================================
+           PULIDO VISUAL
+
+           WeasyPrint no soporta todo el CSS moderno: nada de
+           gap en flex, ni de variables en algunos contextos.
+           Todo lo de aquí usa propiedades que sí renderiza.
+        ================================================== */
+
+        /* La banda del encabezado con textura de panal, para
+           que no sea un rectángulo verde plano */
+        .encabezado {
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='70' viewBox='0 0 40 70'%3E%3Cpath d='M20 0 L40 12 L40 35 L20 47 L0 35 L0 12 Z' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1'/%3E%3Cpath d='M20 23 L40 35 L40 58 L20 70 L0 58 L0 35 Z' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+
+        /* Un filete miel bajo el encabezado: separa la banda
+           del contenido y aporta el color de la marca */
+        .encabezado {
+            border-bottom: 3px solid #F0A000;
+        }
+
+        /* Los números de sección, como pastilla en vez de
+           texto suelto */
+        .numero-seccion {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            margin-right: 8px;
+            border-radius: 6px;
+            background: #E7F2E3;
+            color: #214F3B;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* La línea bajo cada título de sección, en degradado */
+        .titulo-seccion {
+            border-bottom: 2px solid #E7F2E3;
+            padding-bottom: 7px;
+        }
+
+        /* Las fichas de dato, con filete de color a la
+           izquierda: se leen como tarjetas y no como cajas */
+        .dato-reporte {
+            border-left: 3px solid #CFE0D7;
+        }
+
+        /* La cabecera de la tabla, menos maciza */
+        .tabla-apiarios thead th {
+            background: #2E5F49;
+            border-bottom: 3px solid #F0A000;
+            font-size: 10px;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+        }
+
+        /* Filas alternas, para seguir el renglón */
+        .tabla-apiarios tbody tr:nth-child(even) td {
+            background: #FAFCFA;
+        }
+
+        /* Las cuatro cifras del mes, con más presencia */
+        .metrica-mes strong {
+            font-size: 24px;
+        }
+
+        /* El pie del documento */
+        .pie-reporte {
+            border-top: 2px solid #E7F2E3;
+            padding-top: 10px;
+            margin-top: 22px;
+            color: #7A8A81;
+            font-size: 9px;
+        }
+
     </style>
 
 </head>
@@ -550,9 +636,21 @@
 
                 <td class="marca">
 
-                    <span class="icono-marca">
-                        ⬡
-                    </span>
+                    <!-- El logo llega como data URI desde contexto_marca(),
+                         el mismo helper que usan los otros seis reportes.
+
+                         Va incrustado en base64 y no enlazado, porque
+                         WeasyPrint genera el PDF en el servidor: una ruta
+                         /static/ no resuelve desde ahí.
+
+                         Si por lo que sea no llega el logo, se muestra el
+                         hexágono de antes en su lugar. -->
+
+                    {% if logo_reporte %}
+                        <img src="{{ logo_reporte }}" alt="" class="logo-marca">
+                    {% else %}
+                        <span class="icono-marca">⬡</span>
+                    {% endif %}
 
                     <span class="nombre-marca">
 
@@ -699,7 +797,7 @@
     <section class="seccion">
 
         <div class="titulo-seccion">
-            <span>01.</span>
+            <span class="numero-seccion">01</span>
             Información personal
         </div>
 
@@ -812,7 +910,7 @@
     <section class="seccion">
 
         <div class="titulo-seccion">
-            <span>02.</span>
+            <span class="numero-seccion">02</span>
             Vinculación y antigüedad
         </div>
 
@@ -886,7 +984,7 @@
     <section class="seccion">
 
         <div class="titulo-seccion">
-            <span>03.</span>
+            <span class="numero-seccion">03</span>
             Tiempo trabajado en el mes
         </div>
 
@@ -971,7 +1069,7 @@
     <section class="seccion">
 
         <div class="titulo-seccion">
-            <span>04.</span>
+            <span class="numero-seccion">04</span>
             Apiarios asignados
         </div>
 
@@ -1045,7 +1143,7 @@
     <section class="seccion">
 
         <div class="titulo-seccion">
-            <span>05.</span>
+            <span class="numero-seccion">05</span>
             Historial laboral reciente
         </div>
 
