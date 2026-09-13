@@ -161,7 +161,11 @@
                 <div class="perfil-avatar-contenedor">
 
 
-                    <div class="perfil-avatar-principal">
+                    <label
+                        for="fotoperfil"
+                        class="perfil-avatar-principal"
+                        title="Cambiar fotografía"
+                    >
 
 
                         {% if foto %}
@@ -207,7 +211,32 @@
                         {% endif %}
 
 
-                    </div>
+                        <span class="perfil-avatar-overlay">
+
+                            <i class="bi bi-image"></i>
+
+                        </span>
+
+
+                    </label>
+
+
+                    <button
+                        type="button"
+                        class="
+                            perfil-avatar-quitar
+
+                            {% if not foto %}
+                                d-none
+                            {% endif %}
+                        "
+                        id="btnQuitarFotoPerfil"
+                        title="Quitar fotografía"
+                    >
+
+                        <i class="bi bi-trash3-fill"></i>
+
+                    </button>
 
 
                     <span class="perfil-avatar-estado">
@@ -795,168 +824,13 @@
                         >
 
 
-
-                        <!-- =============================================
-                             FOTOGRAFÍA
-                        ============================================== -->
-
-                        <section class="perfil-seccion-formulario">
-
-
-                            <div class="perfil-seccion-titulo">
-
-                                <div>
-
-                                    <h4>
-                                        Fotografía de perfil
-                                    </h4>
-
-                                    <p>
-                                        Selecciona una fotografía para
-                                        identificar tu cuenta.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="perfil-foto-edicion">
-
-
-                                <div class="perfil-foto-preview">
-
-
-                                    {% if foto %}
-
-                                        <img
-                                            src="{{ foto }}"
-                                            alt="Foto de perfil"
-                                            id="imagenPreviewPerfil"
-                                        >
-
-
-                                        <div
-                                            class="perfil-preview-icono d-none"
-                                            id="iconoPreviewPerfil"
-                                        >
-
-                                            <i class="bi bi-person-fill"></i>
-
-                                        </div>
-
-
-                                    {% else %}
-
-
-                                        <img
-                                            src=""
-                                            alt="Vista previa"
-                                            id="imagenPreviewPerfil"
-                                            class="d-none"
-                                        >
-
-
-                                        <div
-                                            class="perfil-preview-icono"
-                                            id="iconoPreviewPerfil"
-                                        >
-
-                                            <i class="bi bi-person-fill"></i>
-
-                                        </div>
-
-
-                                    {% endif %}
-
-
-                                </div>
-
-
-
-                                <div class="perfil-foto-controles">
-
-
-                                    <h5>
-                                        Tu fotografía
-                                    </h5>
-
-
-                                    <p>
-                                        Formatos permitidos:
-                                        JPG, PNG o WEBP.
-                                        Tamaño máximo: 5 MB.
-                                    </p>
-
-
-
-                                    <div class="perfil-foto-botones">
-
-
-                                        <label
-                                            for="fotoperfil"
-                                            class="btn-cambiar-foto"
-                                        >
-
-                                            <i class="bi bi-camera-fill"></i>
-
-                                            <span>
-                                                Cambiar foto
-                                            </span>
-
-                                        </label>
-
-
-
-                                        <input
-                                            type="file"
-                                            id="fotoperfil"
-                                            name="fotoperfil"
-                                            accept="image/jpeg,image/png,image/webp"
-                                            class="d-none"
-                                        >
-
-
-
-                                        <button
-                                            type="button"
-                                            class="
-                                                btn-quitar-foto
-
-                                                {% if not foto %}
-                                                    d-none
-                                                {% endif %}
-                                            "
-                                            id="btnQuitarFotoPerfil"
-                                        >
-
-                                            <i class="bi bi-trash3-fill"></i>
-
-                                            <span>
-                                                Quitar
-                                            </span>
-
-                                        </button>
-
-
-                                    </div>
-
-
-
-                                    <span
-                                        class="perfil-error-foto d-none"
-                                        id="errorFotoPerfil"
-                                    ></span>
-
-
-                                </div>
-
-
-                            </div>
-
-
-                        </section>
+                        <input
+                            type="file"
+                            id="fotoperfil"
+                            name="fotoperfil"
+                            accept="image/jpeg,image/png,image/webp"
+                            class="d-none"
+                        >
 
 
 

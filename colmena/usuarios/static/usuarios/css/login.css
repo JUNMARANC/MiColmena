@@ -525,32 +525,61 @@ body {
 
     text-decoration: none;
 
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
 
     display: inline-flex;
     align-items: center;
 
-    gap: 5px;
+    gap: 9px;
 
     transition:
-        transform .2s ease,
-        opacity .2s ease;
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
 }
 
 .back-link:hover {
-    transform: translateX(-3px);
-    opacity: .75;
+    transform: translateX(-4px);
+}
+
+.back-link:hover .signo-volver {
+    background: var(--verde-oscuro);
+    transform: rotate(-8deg) scale(1.06);
+}
+
+.back-link:hover .signo-volver i {
+    color: #ffffff;
+    transform: translateX(-1px);
 }
 
 .signo-volver {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+
+    border-radius: 50%;
+
+    background: var(--amarillo);
+
+    transition:
+        background .25s ease,
+        transform .25s ease;
+}
+
+.signo-volver i {
+    font-size: 13px;
     font-weight: 900;
-    font-size: 16px;
     line-height: 1;
 
-    color: var(--amarillo);
+    color: var(--verde-oscuro);
 
-    text-shadow: 1px 1px 0 #d2a84a;
+    transition:
+        color .25s ease,
+        transform .25s ease;
 }
 
 .back-link-esquina {
@@ -561,15 +590,21 @@ body {
 
     z-index: 10;
 
-    background: rgba(255, 255, 255, .85);
+    background: rgba(255, 255, 255, .9);
 
     backdrop-filter: blur(6px);
 
-    padding: 8px 16px;
+    padding: 7px 18px 7px 7px;
+
+    border: 1px solid rgba(33, 79, 59, .08);
 
     border-radius: 999px;
 
     box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+}
+
+.back-link-esquina:hover {
+    box-shadow: 0 10px 24px rgba(33, 79, 59, .18);
 }
 
 /* =========================================================
