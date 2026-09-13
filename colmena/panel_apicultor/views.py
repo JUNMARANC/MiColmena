@@ -4103,35 +4103,68 @@ def mantenimientos_apicultor(request):
     # ANTES DE APLICAR FILTROS
     # ========================================================
 
+    resumen_mantenimientos = (
+        mantenimientos_base
+        .aggregate(
+
+            total=Count(
+                "id_mantenimiento",
+                distinct=True
+            ),
+
+            pendientes=Count(
+                "id_mantenimiento",
+                filter=Q(
+                    estado__iexact="Pendiente"
+                ),
+                distinct=True
+            ),
+
+            completados=Count(
+                "id_mantenimiento",
+                filter=Q(
+                    estado__iexact="Completado"
+                ),
+                distinct=True
+            ),
+
+            cancelados=Count(
+                "id_mantenimiento",
+                filter=Q(
+                    estado__iexact="Cancelado"
+                ),
+                distinct=True
+            ),
+
+        )
+    )
+
+
     total_mantenimientos = (
-        mantenimientos_base.count()
+        resumen_mantenimientos[
+            "total"
+        ]
     )
 
 
     total_pendientes = (
-        mantenimientos_base
-        .filter(
-            estado="Pendiente"
-        )
-        .count()
+        resumen_mantenimientos[
+            "pendientes"
+        ]
     )
 
 
     total_completados = (
-        mantenimientos_base
-        .filter(
-            estado="Completado"
-        )
-        .count()
+        resumen_mantenimientos[
+            "completados"
+        ]
     )
 
 
     total_cancelados = (
-        mantenimientos_base
-        .filter(
-            estado="Cancelado"
-        )
-        .count()
+        resumen_mantenimientos[
+            "cancelados"
+        ]
     )
 
 
@@ -4192,6 +4225,47 @@ def mantenimientos_apicultor(request):
         "Alta",
         "Crítica",
     ]
+
+    # ========================================================
+    # NORMALIZAR FILTROS
+    # ========================================================
+
+    if estado_seleccionado not in estados_disponibles:
+
+        estado_seleccionado = ""
+
+
+    if prioridad_seleccionada not in prioridades_disponibles:
+
+        prioridad_seleccionada = ""
+
+
+    id_apiario_filtro = None
+
+
+    if apiario_seleccionado.isdigit():
+
+        id_apiario_candidato = int(
+            apiario_seleccionado
+        )
+
+
+        if apiarios.filter(
+            id_apiario=id_apiario_candidato
+        ).exists():
+
+            id_apiario_filtro = (
+                id_apiario_candidato
+            )
+
+        else:
+
+            apiario_seleccionado = ""
+
+
+    else:
+
+        apiario_seleccionado = ""
 
 
     mantenimientos = (
@@ -4260,54 +4334,38 @@ def mantenimientos_apicultor(request):
     # FILTRO POR APIARIO
     # ========================================================
 
-    if apiario_seleccionado.isdigit():
+    if id_apiario_filtro is not None:
 
-        id_apiario_filtro = int(
-            apiario_seleccionado
-        )
+        mantenimientos = (
+            mantenimientos.filter(
 
-
-        # Verificar que sea suyo.
-
-        if apiarios.filter(
-            id_apiario=id_apiario_filtro
-        ).exists():
-
-            mantenimientos = (
-                mantenimientos.filter(
-
-                    Q(
-                        id_apiario_id=
-                        id_apiario_filtro
-                    )
-
-                    |
-
-                    Q(
-                        id_colmena__id_apiario_id=
-                        id_apiario_filtro
-                    )
-
+                Q(
+                    id_apiario_id=
+                    id_apiario_filtro
                 )
-                .distinct()
+
+                |
+
+                Q(
+                    id_colmena__id_apiario_id=
+                    id_apiario_filtro
+                )
+
             )
+            .distinct()
+        )
 
 
     # ========================================================
     # FILTRO POR ESTADO
     # ========================================================
 
-    if (
-        estado_seleccionado
-        and
-        estado_seleccionado
-        in estados_disponibles
-    ):
+    if estado_seleccionado:
 
         mantenimientos = (
             mantenimientos.filter(
                 estado=
-                estado_seleccionado
+                    estado_seleccionado
             )
         )
 
@@ -4316,17 +4374,12 @@ def mantenimientos_apicultor(request):
     # FILTRO POR PRIORIDAD
     # ========================================================
 
-    if (
-        prioridad_seleccionada
-        and
-        prioridad_seleccionada
-        in prioridades_disponibles
-    ):
+    if prioridad_seleccionada:
 
         mantenimientos = (
             mantenimientos.filter(
                 prioridad=
-                prioridad_seleccionada
+                    prioridad_seleccionada
             )
         )
 
@@ -5259,13 +5312,7 @@ def crear_mantenimiento_apicultor(request):
     # ERROR AL CREAR EL MANTENIMIENTO
     # ========================================================
 
-    except Exception as error:
-
-        print(
-            "ERROR CREANDO MANTENIMIENTO APICULTOR:",
-            type(error).__name__,
-            error
-        )
+    except Exception:
 
         guardar_formulario_mantenimiento_error(
 
@@ -5339,26 +5386,14 @@ def crear_mantenimiento_apicultor(request):
 
     try:
 
-        resultado_notificaciones = (
-            notificar_mantenimiento_creado(
-                mantenimiento
-            )
+        notificar_mantenimiento_creado(
+            mantenimiento
         )
 
 
-        print(
-            "NOTIFICACIONES MANTENIMIENTO A ADMIN:",
-            resultado_notificaciones
-        )
+    except Exception:
 
-
-    except Exception as error:
-
-        print(
-            "ERROR NOTIFICANDO MANTENIMIENTO A ADMIN:",
-            type(error).__name__,
-            error
-        )
+        pass
 
 
     # ========================================================
