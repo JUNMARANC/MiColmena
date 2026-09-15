@@ -1529,10 +1529,165 @@ def eliminar_apiario(
     )
 
 
-#LOGICA DE LAS COLMENAS
+
+# ============================================================
+# DEPENDENCIAS DE UNA COLMENA
+# ============================================================
+
+def obtener_dependencias_colmena(colmena):
+    """
+    Obtiene toda la información relacionada con una colmena.
+
+    Una colmena solo puede eliminarse cuando no tiene:
+    - mantenimientos;
+    - incidencias;
+    - eventos de agenda;
+    - seguimientos.
+    """
+
+    # ========================================================
+    # MANTENIMIENTOS
+    # ========================================================
+
+    mantenimientos = list(
+        Mantenimiento.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .order_by(
+            "-fechaejecucion",
+            "-id_mantenimiento"
+        )
+    )
+
+
+    # ========================================================
+    # INCIDENCIAS
+    # ========================================================
+
+    incidencias = list(
+        Incidencia.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .order_by(
+            "-fechadeteccion",
+            "-id_incidencia"
+        )
+    )
+
+
+    # ========================================================
+    # EVENTOS DE AGENDA
+    # ========================================================
+
+    eventos = list(
+        EventoAgenda.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .order_by(
+            "-fecha",
+            "-hora",
+            "-id_evento"
+        )
+    )
+
+
+    # ========================================================
+    # SEGUIMIENTOS
+    # ========================================================
+
+    seguimientos = list(
+        Seguimientoapicola.objects
+        .filter(
+            id_colmena=colmena
+        )
+        .order_by(
+            "-fecharegistro",
+            "-id_seguimiento"
+        )
+    )
+
+
+    # ========================================================
+    # TOTALES
+    # ========================================================
+
+    total_mantenimientos = len(
+        mantenimientos
+    )
+
+    total_incidencias = len(
+        incidencias
+    )
+
+    total_eventos = len(
+        eventos
+    )
+
+    total_seguimientos = len(
+        seguimientos
+    )
+
+
+    # ========================================================
+    # VALIDAR SI PUEDE ELIMINARSE
+    # ========================================================
+
+    puede_eliminar = (
+        total_mantenimientos == 0
+        and
+        total_incidencias == 0
+        and
+        total_eventos == 0
+        and
+        total_seguimientos == 0
+    )
+
+
+    return {
+
+        "mantenimientos":
+            mantenimientos,
+
+        "incidencias":
+            incidencias,
+
+        "eventos":
+            eventos,
+
+        "seguimientos":
+            seguimientos,
+
+        "total_mantenimientos":
+            total_mantenimientos,
+
+        "total_incidencias":
+            total_incidencias,
+
+        "total_eventos":
+            total_eventos,
+
+        "total_seguimientos":
+            total_seguimientos,
+
+        "puede_eliminar":
+            puede_eliminar,
+    }
+
+
+# ============================================================
+# LÓGICA DE LAS COLMENAS
+# ============================================================
+
 @administrador_requerido
 @permiso_requerido("cv")
 def colmenas_admin(request):
+
+    # ========================================================
+    # CONSULTA BASE DE COLMENAS
+    # ========================================================
 
     colmenas_lista = (
         Colmena.objects
@@ -1547,7 +1702,7 @@ def colmenas_admin(request):
 
 
     # ========================================================
-    # APIARIOS
+    # CONSULTAR APIARIOS
     # ========================================================
 
     apiarios = (
@@ -1574,6 +1729,10 @@ def colmenas_admin(request):
         )
 
 
+        # ----------------------------------------------------
+        # CAPACIDAD MÁXIMA
+        # ----------------------------------------------------
+
         try:
 
             capacidad_maxima = int(
@@ -1589,22 +1748,23 @@ def colmenas_admin(request):
             capacidad_maxima = 0
 
 
+        # ----------------------------------------------------
+        # DATOS PARA LA INTERFAZ
+        # ----------------------------------------------------
+
         apiario_obj.total_colmenas_reales = (
             total_actual
         )
 
-
         apiario_obj.capacidad_maxima = (
             capacidad_maxima
         )
-
 
         apiario_obj.esta_completo = (
             total_actual
             >=
             capacidad_maxima
         )
-
 
         apiario_obj.cupos_disponibles = max(
             capacidad_maxima
@@ -1615,51 +1775,74 @@ def colmenas_admin(request):
 
 
     # ========================================================
-    # FILTROS
+    # OBTENER FILTROS
     # ========================================================
 
-    codigo = request.GET.get(
-        "codigo"
+    codigo = (
+        request.GET.get(
+            "codigo",
+            ""
+        )
+        .strip()
     )
 
-    apiario = request.GET.get(
-        "apiario"
+    apiario_id = (
+        request.GET.get(
+            "apiario",
+            ""
+        )
+        .strip()
     )
 
-    estado = request.GET.get(
-        "estado"
+    estado = (
+        request.GET.get(
+            "estado",
+            ""
+        )
+        .strip()
     )
 
+
+    # ========================================================
+    # FILTRAR POR CÓDIGO
+    # ========================================================
 
     if codigo:
 
         colmenas_lista = (
             colmenas_lista
             .filter(
-                codigocolmena__icontains=
-                    codigo
+                codigocolmena__icontains=codigo
             )
         )
 
 
-    if apiario:
+    # ========================================================
+    # FILTRAR POR APIARIO
+    # ========================================================
+
+    if apiario_id.isdigit():
 
         colmenas_lista = (
             colmenas_lista
             .filter(
-                id_apiario_id=
-                    apiario
+                id_apiario_id=int(
+                    apiario_id
+                )
             )
         )
 
+
+    # ========================================================
+    # FILTRAR POR ESTADO
+    # ========================================================
 
     if estado:
 
         colmenas_lista = (
             colmenas_lista
             .filter(
-                estadocolmena=
-                    estado
+                estadocolmena=estado
             )
         )
 
@@ -1673,13 +1856,11 @@ def colmenas_admin(request):
         5
     )
 
-
     page_number = (
         request.GET.get(
             "page"
         )
     )
-
 
     colmenas = (
         paginator.get_page(
@@ -1687,14 +1868,20 @@ def colmenas_admin(request):
         )
     )
 
+
     # ========================================================
-    # ESTADO OPERATIVO DE CADA COLMENA
-    #
-    # Se utiliza para saber si una colmena puede pasar
-    # al estado Inactiva.
+    # INFORMACIÓN OPERATIVA Y DEPENDENCIAS DE CADA COLMENA
     # ========================================================
 
     for colmena_obj in colmenas:
+
+        # ====================================================
+        # MANTENIMIENTOS PENDIENTES
+        # ====================================================
+        #
+        # Se utiliza para determinar si puede pasar
+        # al estado Inactiva.
+        # ====================================================
 
         colmena_obj.mantenimientos_pendientes = (
             Mantenimiento.objects
@@ -1705,6 +1892,10 @@ def colmenas_admin(request):
             .count()
         )
 
+
+        # ====================================================
+        # INCIDENCIAS ABIERTAS
+        # ====================================================
 
         colmena_obj.incidencias_abiertas = (
             Incidencia.objects
@@ -1719,81 +1910,148 @@ def colmenas_admin(request):
         )
 
 
+        # ====================================================
+        # ¿PUEDE PASAR A INACTIVA?
+        # ====================================================
+
         colmena_obj.puede_inactivar = (
             colmena_obj.mantenimientos_pendientes == 0
             and
             colmena_obj.incidencias_abiertas == 0
         )
 
+
         # ====================================================
-        # HISTORIAL COMPLETO PARA ELIMINACIÓN
+        # DEPENDENCIAS PARA ELIMINACIÓN
+        # ====================================================
         #
-        # A diferencia de "Inactivar", aquí cualquier registro
-        # histórico bloquea la eliminación, sin importar su
-        # estado actual.
+        # Para eliminar no importa si el mantenimiento,
+        # incidencia o evento está terminado.
+        #
+        # Cualquier registro histórico relacionado
+        # bloquea la eliminación.
+        # ====================================================
+
+        dependencias = (
+            obtener_dependencias_colmena(
+                colmena_obj
+            )
+        )
+
+
+        # ====================================================
+        # MANTENIMIENTOS RELACIONADOS
+        # ====================================================
+
+        colmena_obj.mantenimientos_relacionados = (
+            dependencias[
+                "mantenimientos"
+            ]
+        )
+
+
+        # ====================================================
+        # INCIDENCIAS RELACIONADAS
+        # ====================================================
+
+        colmena_obj.incidencias_relacionadas = (
+            dependencias[
+                "incidencias"
+            ]
+        )
+
+
+        # ====================================================
+        # EVENTOS RELACIONADOS
+        # ====================================================
+
+        colmena_obj.eventos_relacionados = (
+            dependencias[
+                "eventos"
+            ]
+        )
+
+
+        # ====================================================
+        # SEGUIMIENTOS RELACIONADOS
+        # ====================================================
+
+        colmena_obj.seguimientos_relacionados = (
+            dependencias[
+                "seguimientos"
+            ]
+        )
+
+
+        # ====================================================
+        # TOTALES DE HISTORIAL
         # ====================================================
 
         colmena_obj.total_mantenimientos_historial = (
-            Mantenimiento.objects
-            .filter(
-                id_colmena=colmena_obj
-            )
-            .count()
+            dependencias[
+                "total_mantenimientos"
+            ]
         )
-
 
         colmena_obj.total_incidencias_historial = (
-            Incidencia.objects
-            .filter(
-                id_colmena=colmena_obj
-            )
-            .count()
+            dependencias[
+                "total_incidencias"
+            ]
         )
-
-
-        colmena_obj.total_seguimientos_historial = (
-            Seguimientoapicola.objects
-            .filter(
-                id_colmena=colmena_obj
-            )
-            .count()
-        )
-
 
         colmena_obj.total_eventos_agenda = (
-            EventoAgenda.objects
-            .filter(
-                id_colmena=colmena_obj
-            )
-            .count()
+            dependencias[
+                "total_eventos"
+            ]
+        )
+
+        colmena_obj.total_seguimientos_historial = (
+            dependencias[
+                "total_seguimientos"
+            ]
         )
 
 
         # ====================================================
-        # SOLO SE ELIMINA SI NUNCA HA SIDO UTILIZADA
+        # ¿PUEDE ELIMINARSE?
+        # ====================================================
+        #
+        # El estado de la colmena NO importa.
+        #
+        # Activa, Riesgo, Revisión o Inactiva pueden
+        # eliminarse únicamente cuando nunca han generado
+        # información relacionada.
         # ====================================================
 
         colmena_obj.puede_eliminar = (
-            colmena_obj.total_mantenimientos_historial == 0
-            and
-            colmena_obj.total_incidencias_historial == 0
-            and
-            colmena_obj.total_seguimientos_historial == 0
-            and
-            colmena_obj.total_eventos_agenda == 0
+            dependencias[
+                "puede_eliminar"
+            ]
         )
 
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "colmenas":
+            colmenas,
+
+        "apiarios":
+            apiarios,
+    }
+
+
+    # ========================================================
+    # RENDERIZAR
+    # ========================================================
 
     return render(
         request,
         "admin_panel/colmenas.html",
-        {
-            "colmenas":
-                colmenas,
-
-            "apiarios":
-                apiarios,
-        }
+        contexto
     )
 
 
@@ -3277,11 +3535,16 @@ def editar_colmena(
 
 
 
+# ============================================================
+# ELIMINAR COLMENA
+# ============================================================
+
 @administrador_requerido
 @permiso_requerido(
     "cg",
     redireccion="colmenas_admin"
 )
+@require_POST
 def eliminar_colmena(
     request,
     id
@@ -3293,139 +3556,9 @@ def eliminar_colmena(
 
     colmena = get_object_or_404(
         Colmena,
-        id_colmena=id
+        pk=id
     )
 
-
-    # ========================================================
-    # SOLO POST
-    # ========================================================
-
-    if request.method != "POST":
-
-        messages.warning(
-            request,
-            "La solicitud para eliminar la colmena no es válida."
-        )
-
-        return redirect(
-            "colmenas_admin"
-        )
-
-
-    # ========================================================
-    # COMPROBAR TODO EL HISTORIAL
-    # ========================================================
-
-    cantidad_mantenimientos = (
-        Mantenimiento.objects
-        .filter(
-            id_colmena=colmena
-        )
-        .count()
-    )
-
-
-    cantidad_incidencias = (
-        Incidencia.objects
-        .filter(
-            id_colmena=colmena
-        )
-        .count()
-    )
-
-
-    cantidad_seguimientos = (
-        Seguimientoapicola.objects
-        .filter(
-            id_colmena=colmena
-        )
-        .count()
-    )
-
-
-    cantidad_eventos = (
-        EventoAgenda.objects
-        .filter(
-            id_colmena=colmena
-        )
-        .count()
-    )
-
-
-    # ========================================================
-    # CONSTRUIR RAZONES DEL BLOQUEO
-    # ========================================================
-
-    motivos = []
-
-
-    if cantidad_mantenimientos > 0:
-
-        motivos.append(
-            (
-                f"{cantidad_mantenimientos} "
-                "mantenimiento(s)"
-            )
-        )
-
-
-    if cantidad_incidencias > 0:
-
-        motivos.append(
-            (
-                f"{cantidad_incidencias} "
-                "incidencia(s)"
-            )
-        )
-
-
-    if cantidad_seguimientos > 0:
-
-        motivos.append(
-            (
-                f"{cantidad_seguimientos} "
-                "seguimiento(s)"
-            )
-        )
-
-
-    if cantidad_eventos > 0:
-
-        motivos.append(
-            (
-                f"{cantidad_eventos} "
-                "evento(s) de agenda"
-            )
-        )
-
-
-    # ========================================================
-    # NO ELIMINAR SI EXISTE HISTORIAL
-    # ========================================================
-
-    if motivos:
-
-        messages.error(
-            request,
-            (
-                f"No se puede eliminar la colmena "
-                f"«{colmena.codigocolmena}» porque tiene "
-                f"{', '.join(motivos)} asociados. "
-                "El historial debe conservarse. "
-                "Si la colmena ya no está en operación, "
-                "puedes mantenerla en estado Inactiva."
-            )
-        )
-
-        return redirect(
-            "colmenas_admin"
-        )
-
-
-    # ========================================================
-    # GUARDAR CÓDIGO ANTES DE ELIMINAR
-    # ========================================================
 
     codigo_colmena = (
         colmena.codigocolmena
@@ -3433,16 +3566,149 @@ def eliminar_colmena(
 
 
     # ========================================================
-    # INTENTAR ELIMINAR
-    #
-    # Esta es la última barrera. Si existe alguna relación de
-    # base de datos que no hayamos previsto, no aparecerá una
-    # pantalla IntegrityError al administrador.
+    # COMPROBAR DEPENDENCIAS
+    # ========================================================
+
+    dependencias = (
+        obtener_dependencias_colmena(
+            colmena
+        )
+    )
+
+
+    # ========================================================
+    # BLOQUEAR SI TIENE INFORMACIÓN RELACIONADA
+    # ========================================================
+
+    if not dependencias[
+        "puede_eliminar"
+    ]:
+
+        motivos = []
+
+
+        if (
+            dependencias[
+                "total_mantenimientos"
+            ]
+            > 0
+        ):
+
+            motivos.append(
+                (
+                    f"{dependencias['total_mantenimientos']} "
+                    "mantenimiento(s)"
+                )
+            )
+
+
+        if (
+            dependencias[
+                "total_incidencias"
+            ]
+            > 0
+        ):
+
+            motivos.append(
+                (
+                    f"{dependencias['total_incidencias']} "
+                    "incidencia(s)"
+                )
+            )
+
+
+        if (
+            dependencias[
+                "total_eventos"
+            ]
+            > 0
+        ):
+
+            motivos.append(
+                (
+                    f"{dependencias['total_eventos']} "
+                    "evento(s) de agenda"
+                )
+            )
+
+
+        if (
+            dependencias[
+                "total_seguimientos"
+            ]
+            > 0
+        ):
+
+            motivos.append(
+                (
+                    f"{dependencias['total_seguimientos']} "
+                    "seguimiento(s)"
+                )
+            )
+
+
+        messages.error(
+            request,
+            (
+                f"No se puede eliminar la colmena "
+                f"«{codigo_colmena}» porque tiene "
+                f"{', '.join(motivos)} asociados. "
+                "Revise los registros relacionados antes "
+                "de intentar eliminarla."
+            )
+        )
+
+
+        return redirect(
+            "colmenas_admin"
+        )
+
+
+    # ========================================================
+    # ELIMINAR
     # ========================================================
 
     try:
 
         with transaction.atomic():
+
+            # ------------------------------------------------
+            # VOLVER A COMPROBAR JUSTO ANTES DE BORRAR
+            # ------------------------------------------------
+
+            colmena = (
+                Colmena.objects
+                .select_for_update()
+                .get(
+                    pk=id
+                )
+            )
+
+
+            dependencias = (
+                obtener_dependencias_colmena(
+                    colmena
+                )
+            )
+
+
+            if not dependencias[
+                "puede_eliminar"
+            ]:
+
+                messages.error(
+                    request,
+                    (
+                        "La colmena recibió información "
+                        "relacionada antes de completar la "
+                        "eliminación y ya no puede eliminarse."
+                    )
+                )
+
+                return redirect(
+                    "colmenas_admin"
+                )
+
 
             colmena.delete()
 
@@ -3464,7 +3730,7 @@ def eliminar_colmena(
 
 
     # ========================================================
-    # ELIMINACIÓN CORRECTA
+    # ÉXITO
     # ========================================================
 
     messages.success(
@@ -10803,85 +11069,96 @@ def agregar_errores_formulario(request, formulario):
                     f"{etiqueta}: {error}"
                 )
 
-@administrador_requerido
-@permiso_requerido("agenda")
-def agenda_admin(request):
+# ============================================================
+# AGENDA DEL ADMINISTRADOR
+# ============================================================
 
-    mes_actual = obtener_mes_agenda(
-        request.GET.get("mes")
-    )
 
-    mes_siguiente = desplazar_mes(
-        mes_actual,
-        1
-    )
+# ============================================================
+# TIPOS DE EVENTO DISPONIBLES EN LA AGENDA
+# ============================================================
+#
+# "Incidencia" sigue existiendo en el modelo para no afectar
+# registros históricos, pero ya no se permite seleccionarla
+# desde la Agenda.
+# ============================================================
 
-    mes_anterior = desplazar_mes(
-        mes_actual,
-        -1
-    )
+TIPOS_EVENTO_AGENDA = tuple(
+    (valor, nombre)
+    for valor, nombre in EventoAgenda.TipoEvento.choices
+    if valor != EventoAgenda.TipoEvento.INCIDENCIA
+)
 
-    filtro_tipo = request.GET.get(
-        "tipo",
-        ""
-    ).strip()
 
-    filtro_apiario = request.GET.get(
-        "apiario",
-        ""
-    ).strip()
+TIPOS_EVENTO_AGENDA_VALORES = {
+    valor
+    for valor, _ in TIPOS_EVENTO_AGENDA
+}
 
-    busqueda = request.GET.get(
-        "buscar",
-        ""
-    ).strip()
 
-    eventos = (
-        EventoAgenda.objects
-        .select_related(
-            "id_apiario",
-            "id_colmena",
-            "responsable",
-            "responsable__user",
-        )
-        .filter(
-            fecha__gte=mes_actual,
-            fecha__lt=mes_siguiente
-        )
-    )
+# ============================================================
+# FUNCIONES AUXILIARES DE AGENDA
+# ============================================================
 
-    if filtro_tipo:
+def redirigir_agenda(mes=""):
+    """
+    Redirige a la Agenda conservando el mes cuando exista.
+    """
 
-        eventos = eventos.filter(
-            tipo_evento=filtro_tipo
+    url = reverse("agenda_admin")
+
+    if mes:
+        return redirect(
+            f"{url}?mes={mes}"
         )
 
-    if filtro_apiario.isdigit():
+    return redirect(url)
 
-        eventos = eventos.filter(
-            id_apiario_id=int(filtro_apiario)
+
+def obtener_mes_retorno_agenda(
+    request,
+    fecha=None
+):
+    """
+    Obtiene el mes al que debe regresar la Agenda.
+    """
+
+    mes = (
+        request.POST.get(
+            "mes_retorno",
+            ""
         )
-
-    if busqueda:
-
-        eventos = eventos.filter(
-            Q(titulo__icontains=busqueda)
-            | Q(descripcion__icontains=busqueda)
-            | Q(id_apiario__nombreapiario__icontains=busqueda)
-            | Q(id_colmena__codigocolmena__icontains=busqueda)
-            | Q(responsable__user__first_name__icontains=busqueda)
-            | Q(responsable__user__last_name__icontains=busqueda)
-        )
-
-    eventos = eventos.order_by(
-        "fecha",
-        "hora"
+        .strip()
     )
+
+    if mes:
+        return mes
+
+    if fecha:
+        return fecha.strftime("%Y-%m")
+
+    return ""
+
+
+def construir_calendario_agenda(
+    mes_actual,
+    eventos
+):
+    """
+    Organiza los eventos por fecha y construye
+    las semanas que utilizará el calendario.
+    """
 
     eventos_por_fecha = defaultdict(list)
 
     for evento in eventos:
-        eventos_por_fecha[evento.fecha].append(evento)
+
+        eventos_por_fecha[
+            evento.fecha
+        ].append(
+            evento
+        )
+
 
     calendario = Calendar(
         firstweekday=0
@@ -10900,15 +11177,24 @@ def agenda_admin(request):
 
             dias_semana.append({
                 "fecha": fecha_dia,
+
                 "es_mes_actual": (
-                    fecha_dia.month == mes_actual.month
+                    fecha_dia.month
+                    ==
+                    mes_actual.month
                 ),
+
                 "es_hoy": (
-                    fecha_dia == timezone.localdate()
+                    fecha_dia
+                    ==
+                    timezone.localdate()
                 ),
-                "eventos": eventos_por_fecha.get(
-                    fecha_dia,
-                    []
+
+                "eventos": (
+                    eventos_por_fecha.get(
+                        fecha_dia,
+                        []
+                    )
                 ),
             })
 
@@ -10916,153 +11202,717 @@ def agenda_admin(request):
             dias_semana
         )
 
-    apiarios = (
-        Apiario.objects.all()
-        .order_by("nombreapiario")
+    return semanas_calendario
+
+
+def tipo_evento_agenda_permitido(
+    tipo_evento
+):
+    """
+    Comprueba que el tipo recibido pueda utilizarse
+    desde la Agenda.
+    """
+
+    return (
+        tipo_evento
+        in
+        TIPOS_EVENTO_AGENDA_VALORES
     )
+
+
+# ============================================================
+# AGENDA PRINCIPAL
+# ============================================================
+
+@administrador_requerido
+@permiso_requerido("agenda")
+def agenda_admin(request):
+
+    # ========================================================
+    # MES ACTUAL
+    # ========================================================
+
+    mes_actual = obtener_mes_agenda(
+        request.GET.get("mes")
+    )
+
+    mes_siguiente = desplazar_mes(
+        mes_actual,
+        1
+    )
+
+    mes_anterior = desplazar_mes(
+        mes_actual,
+        -1
+    )
+
+
+    # ========================================================
+    # FILTROS
+    # ========================================================
+
+    filtro_tipo = (
+        request.GET.get(
+            "tipo",
+            ""
+        )
+        .strip()
+    )
+
+    filtro_apiario = (
+        request.GET.get(
+            "apiario",
+            ""
+        )
+        .strip()
+    )
+
+    busqueda = (
+        request.GET.get(
+            "buscar",
+            ""
+        )
+        .strip()
+    )
+
+
+    # ========================================================
+    # VALIDAR FILTRO DE TIPO
+    # ========================================================
+    #
+    # Si alguien escribe manualmente:
+    #
+    # ?tipo=incidencia
+    #
+    # simplemente se ignora ese filtro.
+    # ========================================================
+
+    if (
+        filtro_tipo
+        and
+        not tipo_evento_agenda_permitido(
+            filtro_tipo
+        )
+    ):
+        filtro_tipo = ""
+
+
+    # ========================================================
+    # CONSULTAR EVENTOS DEL MES
+    # ========================================================
+
+    eventos = (
+        EventoAgenda.objects
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "responsable__user",
+        )
+        .filter(
+            fecha__gte=mes_actual,
+            fecha__lt=mes_siguiente
+        )
+    )
+
+
+    # ========================================================
+    # FILTRAR POR TIPO
+    # ========================================================
+
+    if filtro_tipo:
+
+        eventos = eventos.filter(
+            tipo_evento=filtro_tipo
+        )
+
+
+    # ========================================================
+    # FILTRAR POR APIARIO
+    # ========================================================
+
+    if filtro_apiario.isdigit():
+
+        eventos = eventos.filter(
+            id_apiario_id=int(
+                filtro_apiario
+            )
+        )
+
+
+    # ========================================================
+    # BUSCADOR
+    # ========================================================
+
+    if busqueda:
+
+        eventos = eventos.filter(
+
+            Q(
+                titulo__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                descripcion__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                id_apiario__nombreapiario__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                id_colmena__codigocolmena__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                responsable__user__first_name__icontains=busqueda
+            )
+
+            |
+
+            Q(
+                responsable__user__last_name__icontains=busqueda
+            )
+
+        )
+
+
+    # ========================================================
+    # ORDENAR EVENTOS
+    # ========================================================
+
+    eventos = eventos.order_by(
+        "fecha",
+        "hora"
+    )
+
+
+    # ========================================================
+    # CONSTRUIR CALENDARIO
+    # ========================================================
+
+    semanas_calendario = (
+        construir_calendario_agenda(
+            mes_actual,
+            eventos
+        )
+    )
+
+
+    # ========================================================
+    # APIARIOS
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+        .all()
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    # ========================================================
+    # COLMENAS
+    # ========================================================
 
     colmenas = (
-        Colmena.objects.select_related("id_apiario")
+        Colmena.objects
+        .select_related(
+            "id_apiario"
+        )
         .all()
-        .order_by("codigocolmena")
+        .order_by(
+            "codigocolmena"
+        )
     )
 
+
+    # ========================================================
+    # RESPONSABLES
+    # ========================================================
+
     responsables = (
-        Apicultor.objects.select_related("user")
+        Apicultor.objects
+        .select_related(
+            "user"
+        )
         .all()
-        .order_by("user__first_name", "user__last_name")
+        .order_by(
+            "user__first_name",
+            "user__last_name"
+        )
     )
+
+
+    # ========================================================
+    # CONTEXTO
+    # ========================================================
+
+    contexto = {
+
+        "semanas_calendario":
+            semanas_calendario,
+
+        "mes_actual":
+            mes_actual,
+
+        "mes_valor":
+            mes_actual.strftime(
+                "%Y-%m"
+            ),
+
+        "mes_anterior":
+            mes_anterior.strftime(
+                "%Y-%m"
+            ),
+
+        "mes_siguiente":
+            mes_siguiente.strftime(
+                "%Y-%m"
+            ),
+
+        "nombre_mes": (
+            f"{MESES_ESPANOL[mes_actual.month]} "
+            f"{mes_actual.year}"
+        ),
+
+        "apiarios":
+            apiarios,
+
+        "colmenas":
+            colmenas,
+
+        "responsables":
+            responsables,
+
+        # Incidencia ya no se envía al template.
+        "tipos_evento":
+            TIPOS_EVENTO_AGENDA,
+
+        "estados_evento":
+            EventoAgenda.EstadoEvento.choices,
+
+        "filtro_tipo":
+            filtro_tipo,
+
+        "filtro_apiario":
+            filtro_apiario,
+
+        "busqueda":
+            busqueda,
+    }
+
 
     return render(
         request,
         "admin_panel/agenda/agenda.html",
-        {
-            "semanas_calendario": semanas_calendario,
-            "mes_actual": mes_actual,
-            "mes_valor": mes_actual.strftime("%Y-%m"),
-            "mes_anterior": mes_anterior.strftime("%Y-%m"),
-            "mes_siguiente": mes_siguiente.strftime("%Y-%m"),
-            "nombre_mes": (
-                f"{MESES_ESPANOL[mes_actual.month]} "
-                f"{mes_actual.year}"
-            ),
-
-            "apiarios": apiarios,
-            "colmenas": colmenas,
-            "responsables": responsables,
-
-            "tipos_evento": EventoAgenda.TipoEvento.choices,
-            "estados_evento": EventoAgenda.EstadoEvento.choices,
-
-            "filtro_tipo": filtro_tipo,
-            "filtro_apiario": filtro_apiario,
-            "busqueda": busqueda,
-        }
+        contexto
     )
+
+
+# ============================================================
+# CREAR EVENTO
+# ============================================================
 
 @administrador_requerido
 @permiso_requerido("agenda")
 @require_POST
 def crear_evento_agenda(request):
 
-    # =========================================================
+    # ========================================================
     # COPIAR DATOS DEL POST
-    # =========================================================
+    # ========================================================
 
     datos = request.POST.copy()
 
 
-    # =========================================================
-    # TODO EVENTO NUEVO NACE COMO PROGRAMADO
-    # =========================================================
+    # ========================================================
+    # VALIDAR TIPO DE EVENTO
+    # ========================================================
     #
-    # No confiamos en lo que venga desde el navegador.
-    # Aunque alguien intente enviar "Completado" o "Cancelado",
-    # Django lo reemplaza por Programado.
-    # =========================================================
+    # Aunque alguien modifique el HTML desde el navegador,
+    # no podrá crear una Incidencia desde Agenda.
+    # ========================================================
+
+    tipo_evento = (
+        datos.get(
+            "tipo_evento",
+            ""
+        )
+        .strip()
+    )
+
+    if not tipo_evento_agenda_permitido(
+        tipo_evento
+    ):
+
+        messages.error(
+            request,
+            (
+                "El tipo de evento seleccionado "
+                "no está permitido en la Agenda."
+            )
+        )
+
+        mes = obtener_mes_retorno_agenda(
+            request
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
+
+    # ========================================================
+    # TODO EVENTO NUEVO NACE COMO PROGRAMADO
+    # ========================================================
+    #
+    # No confiamos en el estado enviado por el navegador.
+    # ========================================================
 
     datos["estado"] = (
-        EventoAgenda.EstadoEvento.PROGRAMADO
+        EventoAgenda
+        .EstadoEvento
+        .PROGRAMADO
     )
 
 
-    # =========================================================
+    # ========================================================
     # VALIDAR FORMULARIO
-    # =========================================================
+    # ========================================================
 
     formulario = EventoAgendaForm(
         datos
     )
 
+    if not formulario.is_valid():
 
-    if formulario.is_valid():
-
-        evento = formulario.save(
-            commit=False
+        agregar_errores_formulario(
+            request,
+            formulario
         )
 
-        # =====================================================
-        # VALIDAR COLMENA OPERATIVA
-        #
-        # Una colmena Inactiva puede conservar eventos
-        # históricos, pero no puede recibir eventos nuevos.
-        # =====================================================
+        mes = obtener_mes_retorno_agenda(
+            request
+        )
 
-        if (
-            evento.id_colmena
-            and
-            evento.id_colmena.estadocolmena
-            ==
-            "Inactiva"
-        ):
-
-            messages.error(
-                request,
-                (
-                    f"No se puede crear el evento porque la "
-                    f"colmena "
-                    f"«{evento.id_colmena.codigocolmena}» "
-                    "se encuentra Inactiva."
-                )
-            )
-
-
-            mes = (
-                request.POST.get(
-                    "mes_retorno",
-                    ""
-                )
-            )
-
-
-            return redirect(
-                f"{reverse('agenda_admin')}?mes={mes}"
-            )
-
-
-        # =====================================================
-        # REFUERZO DE SEGURIDAD
-        # =====================================================
-        #
-        # Incluso después de validar el formulario volvemos
-        # a establecer explícitamente el estado.
-        # =====================================================
-
-        evento.estado = (
-            EventoAgenda.EstadoEvento.PROGRAMADO
+        return redirigir_agenda(
+            mes
         )
 
 
-        evento.creado_por = (
-            request.user
+    # ========================================================
+    # PREPARAR EVENTO
+    # ========================================================
+
+    evento = formulario.save(
+        commit=False
+    )
+
+
+    # ========================================================
+    # VALIDAR COLMENA INACTIVA
+    # ========================================================
+
+    if (
+        evento.id_colmena
+        and
+        evento.id_colmena.estadocolmena
+        ==
+        "Inactiva"
+    ):
+
+        messages.error(
+            request,
+            (
+                "No se puede crear el evento porque "
+                f"la colmena "
+                f"«{evento.id_colmena.codigocolmena}» "
+                "se encuentra Inactiva."
+            )
+        )
+
+        mes = obtener_mes_retorno_agenda(
+            request
+        )
+
+        return redirigir_agenda(
+            mes
         )
 
 
-        evento.save()
+    # ========================================================
+    # REFUERZO DEL ESTADO
+    # ========================================================
 
-        # =====================================================
-        # NOTIFICAR AL APICULTOR RESPONSABLE
-        # =====================================================
+    evento.estado = (
+        EventoAgenda
+        .EstadoEvento
+        .PROGRAMADO
+    )
+
+
+    # ========================================================
+    # USUARIO QUE CREÓ EL EVENTO
+    # ========================================================
+
+    evento.creado_por = (
+        request.user
+    )
+
+
+    # ========================================================
+    # GUARDAR
+    # ========================================================
+
+    evento.save()
+
+
+    # ========================================================
+    # NOTIFICAR AL RESPONSABLE
+    # ========================================================
+
+    try:
+
+        notificar_evento_asignado_apicultor(
+            evento
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR NOTIFICANDO EVENTO AL APICULTOR:",
+            error
+        )
+
+
+    # ========================================================
+    # GENERAR RECORDATORIO
+    # ========================================================
+
+    try:
+
+        revisar_evento_agenda(
+            evento
+        )
+
+    except Exception as error:
+
+        print(
+            "ERROR GENERANDO ALERTA DE AGENDA:",
+            error
+        )
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
+
+    messages.success(
+        request,
+        "El evento fue creado correctamente."
+    )
+
+
+    # ========================================================
+    # REGRESAR AL MES DEL EVENTO
+    # ========================================================
+
+    mes = evento.fecha.strftime(
+        "%Y-%m"
+    )
+
+    return redirigir_agenda(
+        mes
+    )
+
+
+# ============================================================
+# EDITAR EVENTO
+# ============================================================
+
+@administrador_requerido
+@permiso_requerido("agenda")
+@require_POST
+def editar_evento_agenda(
+    request,
+    id_evento
+):
+
+    # ========================================================
+    # OBTENER EVENTO
+    # ========================================================
+
+    evento = get_object_or_404(
+        EventoAgenda,
+        pk=id_evento
+    )
+
+
+    # ========================================================
+    # MES DE RETORNO
+    # ========================================================
+
+    mes_retorno = obtener_mes_retorno_agenda(
+        request,
+        evento.fecha
+    )
+
+
+    # ========================================================
+    # VALIDAR TIPO DE EVENTO
+    # ========================================================
+    #
+    # Incidencia tampoco puede seleccionarse durante edición.
+    # ========================================================
+
+    tipo_evento = (
+        request.POST.get(
+            "tipo_evento",
+            ""
+        )
+        .strip()
+    )
+
+    if not tipo_evento_agenda_permitido(
+        tipo_evento
+    ):
+
+        messages.error(
+            request,
+            (
+                "El tipo de evento seleccionado "
+                "no está permitido en la Agenda."
+            )
+        )
+
+        return redirigir_agenda(
+            mes_retorno
+        )
+
+
+    # ========================================================
+    # GUARDAR DATOS ORIGINALES
+    # ========================================================
+    #
+    # Se guardan antes de validar el ModelForm porque Django
+    # puede modificar la instancia en memoria.
+    # ========================================================
+
+    colmena_original_id = (
+        evento.id_colmena_id
+    )
+
+    responsable_original_id = (
+        evento.responsable_id
+    )
+
+
+    # ========================================================
+    # VALIDAR FORMULARIO
+    # ========================================================
+
+    formulario = EventoAgendaForm(
+        request.POST,
+        instance=evento
+    )
+
+    if not formulario.is_valid():
+
+        agregar_errores_formulario(
+            request,
+            formulario
+        )
+
+        return redirigir_agenda(
+            mes_retorno
+        )
+
+
+    # ========================================================
+    # COLMENA NUEVA
+    # ========================================================
+
+    colmena_nueva = (
+        formulario.cleaned_data.get(
+            "id_colmena"
+        )
+    )
+
+
+    # ========================================================
+    # VALIDAR COLMENA INACTIVA
+    # ========================================================
+    #
+    # Puede conservar una colmena inactiva si ya estaba
+    # asignada al evento.
+    #
+    # No se puede cambiar hacia otra colmena inactiva.
+    # ========================================================
+
+    if (
+        colmena_nueva
+        and
+        colmena_nueva.estadocolmena
+        ==
+        "Inactiva"
+        and
+        colmena_nueva.id_colmena
+        !=
+        colmena_original_id
+    ):
+
+        messages.error(
+            request,
+            (
+                "No puedes asignar el evento a la "
+                f"colmena "
+                f"«{colmena_nueva.codigocolmena}» "
+                "porque se encuentra Inactiva."
+            )
+        )
+
+        return redirigir_agenda(
+            mes_retorno
+        )
+
+
+    # ========================================================
+    # GUARDAR CAMBIOS
+    # ========================================================
+
+    evento = formulario.save()
+
+
+    # ========================================================
+    # VERIFICAR CAMBIO DE RESPONSABLE
+    # ========================================================
+
+    responsable_cambio = (
+        evento.responsable_id
+        !=
+        responsable_original_id
+    )
+
+
+    # ========================================================
+    # NOTIFICAR AL NUEVO RESPONSABLE
+    # ========================================================
+
+    if (
+        responsable_cambio
+        and
+        evento.responsable_id
+    ):
 
         try:
 
@@ -11074,236 +11924,33 @@ def crear_evento_agenda(request):
 
             print(
                 (
-                    "ERROR NOTIFICANDO EVENTO "
-                    "AL APICULTOR:"
+                    "ERROR NOTIFICANDO REASIGNACIÓN "
+                    "DE EVENTO:"
                 ),
                 error
             )
 
 
-        # =====================================================
-        # GENERAR RECORDATORIO SI ES HOY O MAÑANA
-        # =====================================================
+    # ========================================================
+    # MENSAJE
+    # ========================================================
 
-        try:
-
-            revisar_evento_agenda(
-                evento
-            )
-
-        except Exception as error:
-
-            print(
-                "ERROR GENERANDO ALERTA DE AGENDA:",
-                error
-            )
-
-
-        messages.success(
-            request,
-            "El evento fue creado correctamente."
-        )
-
-
-        mes = (
-            evento.fecha.strftime(
-                "%Y-%m"
-            )
-        )
-
-
-    else:
-
-        agregar_errores_formulario(
-            request,
-            formulario
-        )
-
-
-        mes = (
-            request.POST.get(
-                "mes_retorno",
-                ""
-            )
-        )
-
-
-    return redirect(
-        f"{reverse('agenda_admin')}?mes={mes}"
-    )
-
-@administrador_requerido
-@permiso_requerido("agenda")
-@require_POST
-def editar_evento_agenda(
-    request,
-    id_evento
-):
-
-    evento = get_object_or_404(
-        EventoAgenda,
-        pk=id_evento
+    messages.success(
+        request,
+        "El evento fue actualizado correctamente."
     )
 
 
     # ========================================================
-    # GUARDAR COLMENA ORIGINAL
-    #
-    # Se guarda antes de validar el ModelForm porque durante
-    # la validación Django puede actualizar los valores de la
-    # instancia en memoria.
+    # REGRESAR AL NUEVO MES
     # ========================================================
 
-    colmena_original_id = (
-        evento.id_colmena_id
+    mes = evento.fecha.strftime(
+        "%Y-%m"
     )
 
-    # ========================================================
-    # RESPONSABLE ORIGINAL
-    #
-    # Debe guardarse antes de validar el ModelForm porque
-    # Django puede modificar la instancia durante la
-    # validación.
-    # ========================================================
-
-    responsable_original_id = (
-        evento.responsable_id
-    )
-
-
-    formulario = EventoAgendaForm(
-        request.POST,
-        instance=evento
-    )
-
-    if formulario.is_valid():
-
-        # ====================================================
-        # COLMENA SELECCIONADA
-        # ====================================================
-
-        colmena_nueva = (
-            formulario.cleaned_data.get(
-                "id_colmena"
-            )
-        )
-
-
-        # ====================================================
-        # VALIDAR COLMENA INACTIVA
-        #
-        # Se permite conservar una colmena Inactiva solamente
-        # si es exactamente la que ya tenía este evento.
-        #
-        # No se permite cambiar el evento hacia otra
-        # colmena Inactiva.
-        # ====================================================
-
-        if (
-            colmena_nueva
-            and
-            colmena_nueva.estadocolmena
-            ==
-            "Inactiva"
-            and
-            colmena_nueva.id_colmena
-            !=
-            colmena_original_id
-        ):
-
-            messages.error(
-                request,
-                (
-                    f"No puedes asignar el evento a la "
-                    f"colmena "
-                    f"«{colmena_nueva.codigocolmena}» "
-                    "porque se encuentra Inactiva."
-                )
-            )
-
-
-            mes = (
-                request.POST.get(
-                    "mes_retorno",
-                    evento.fecha.strftime(
-                        "%Y-%m"
-                    )
-                )
-            )
-
-
-            return redirect(
-                f"{reverse('agenda_admin')}?mes={mes}"
-            )
-
-
-        # ====================================================
-        # GUARDAR CAMBIOS
-        # ====================================================
-
-        evento = formulario.save()
-
-        # ====================================================
-        # COMPROBAR SI CAMBIÓ EL RESPONSABLE
-        # ====================================================
-
-        responsable_cambio = (
-
-            evento.responsable_id
-            !=
-            responsable_original_id
-
-        )
-
-
-        # ====================================================
-        # NOTIFICAR AL NUEVO RESPONSABLE
-        # ====================================================
-
-        if (
-            responsable_cambio
-            and
-            evento.responsable_id
-        ):
-
-            try:
-
-                notificar_evento_asignado_apicultor(
-                    evento
-                )
-
-            except Exception as error:
-
-                print(
-                    (
-                        "ERROR NOTIFICANDO REASIGNACIÓN "
-                        "DE EVENTO:"
-                    ),
-                    error
-                )
-
-
-        messages.success(
-            request,
-            "El evento fue actualizado correctamente."
-        )
-
-        mes = evento.fecha.strftime("%Y-%m")
-
-    else:
-
-        agregar_errores_formulario(
-            request,
-            formulario
-        )
-
-        mes = request.POST.get(
-            "mes_retorno",
-            evento.fecha.strftime("%Y-%m")
-        )
-
-    return redirect(
-        f"{reverse('agenda_admin')}?mes={mes}"
+    return redirigir_agenda(
+        mes
     )
 
 @administrador_requerido

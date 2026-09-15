@@ -218,7 +218,28 @@ class RegistroLaboralMensualForm(forms.ModelForm):
 
 class EventoAgendaForm(forms.ModelForm):
 
+    # ============================================================
+    # TIPOS DE EVENTO PERMITIDOS EN AGENDA
+    # ============================================================
+    #
+    # Incidencia permanece en el modelo para conservar posibles
+    # registros históricos, pero no puede seleccionarse al crear
+    # o editar eventos desde la Agenda.
+    # ============================================================
+
+    TIPOS_EVENTO_PERMITIDOS = tuple(
+        (valor, nombre)
+        for valor, nombre in EventoAgenda.TipoEvento.choices
+        if valor != EventoAgenda.TipoEvento.INCIDENCIA
+    )
+
+
+    # ============================================================
+    # CONFIGURACIÓN DEL FORMULARIO
+    # ============================================================
+
     class Meta:
+
         model = EventoAgenda
 
         fields = [
@@ -234,6 +255,7 @@ class EventoAgendaForm(forms.ModelForm):
         ]
 
         widgets = {
+
             "titulo": forms.TextInput(
                 attrs={
                     "class": "form-control",
@@ -283,7 +305,7 @@ class EventoAgendaForm(forms.ModelForm):
             "descripcion": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": "4",
+                    "rows": 4,
                     "maxlength": "500",
                     "placeholder": "Descripción del evento",
                 }
@@ -296,39 +318,200 @@ class EventoAgendaForm(forms.ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs)
+    # ============================================================
+    # INICIALIZACIÓN
+    # ============================================================
 
-        self.fields["id_apiario"].queryset = (
-            Apiario.objects.all()
-            .order_by("nombreapiario")
+    def __init__(
+        self,
+        *args,
+        **kwargs
+    ):
+
+        super().__init__(
+            *args,
+            **kwargs
         )
 
-        self.fields["id_colmena"].queryset = (
-            Colmena.objects.select_related("id_apiario")
+
+        # ========================================================
+        # TIPOS DE EVENTO
+        # ========================================================
+
+        self.fields[
+            "tipo_evento"
+        ].choices = (
+            self.TIPOS_EVENTO_PERMITIDOS
+        )
+
+
+        # ========================================================
+        # APIARIOS
+        # ========================================================
+
+        self.fields[
+            "id_apiario"
+        ].queryset = (
+            Apiario.objects
             .all()
-            .order_by("codigocolmena")
+            .order_by(
+                "nombreapiario"
+            )
         )
 
-        self.fields["responsable"].queryset = (
-            Apicultor.objects.select_related("user")
+
+        # ========================================================
+        # COLMENAS
+        # ========================================================
+
+        self.fields[
+            "id_colmena"
+        ].queryset = (
+            Colmena.objects
+            .select_related(
+                "id_apiario"
+            )
             .all()
-            .order_by("user__first_name", "user__last_name")
+            .order_by(
+                "codigocolmena"
+            )
         )
 
-        self.fields["id_colmena"].required = False
-        self.fields["responsable"].required = False
-        self.fields["descripcion"].required = False
 
-        self.fields["id_apiario"].empty_label = (
+        # ========================================================
+        # RESPONSABLES
+        # ========================================================
+
+        self.fields[
+            "responsable"
+        ].queryset = (
+            Apicultor.objects
+            .select_related(
+                "user"
+            )
+            .all()
+            .order_by(
+                "user__first_name",
+                "user__last_name"
+            )
+        )
+
+
+        # ========================================================
+        # CAMPOS OPCIONALES
+        # ========================================================
+
+        self.fields[
+            "id_colmena"
+        ].required = False
+
+        self.fields[
+            "responsable"
+        ].required = False
+
+        self.fields[
+            "descripcion"
+        ].required = False
+
+
+        # ========================================================
+        # ETIQUETAS VACÍAS
+        # ========================================================
+
+        self.fields[
+            "id_apiario"
+        ].empty_label = (
             "Selecciona un apiario"
         )
 
-        self.fields["id_colmena"].empty_label = (
+        self.fields[
+            "id_colmena"
+        ].empty_label = (
             "Sin colmena específica"
         )
 
-        self.fields["responsable"].empty_label = (
+        self.fields[
+            "responsable"
+        ].empty_label = (
             "Sin responsable"
         )
+
+
+    # ============================================================
+    # VALIDAR TIPO DE EVENTO
+    # ============================================================
+
+    def clean_tipo_evento(self):
+
+        tipo_evento = (
+            self.cleaned_data.get(
+                "tipo_evento"
+            )
+        )
+
+        tipos_permitidos = {
+            valor
+            for valor, _
+            in self.TIPOS_EVENTO_PERMITIDOS
+        }
+
+
+        if (
+            tipo_evento
+            not in
+            tipos_permitidos
+        ):
+
+            raise forms.ValidationError(
+                (
+                    "El tipo de evento seleccionado "
+                    "no está permitido en la Agenda."
+                )
+            )
+
+
+        return tipo_evento
+
+
+    # ============================================================
+    # VALIDACIONES GENERALES
+    # ============================================================
+
+    def clean(self):
+
+        datos = super().clean()
+
+        apiario = datos.get(
+            "id_apiario"
+        )
+
+        colmena = datos.get(
+            "id_colmena"
+        )
+
+
+        # ========================================================
+        # VALIDAR RELACIÓN APIARIO / COLMENA
+        # ========================================================
+
+        if (
+            apiario
+            and
+            colmena
+            and
+            colmena.id_apiario_id
+            !=
+            apiario.id_apiario
+        ):
+
+            self.add_error(
+                "id_colmena",
+                (
+                    "La colmena seleccionada no pertenece "
+                    "al apiario indicado."
+                )
+            )
+
+
+        return datos

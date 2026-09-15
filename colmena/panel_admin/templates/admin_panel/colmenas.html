@@ -801,7 +801,9 @@
                     <div
                         class="
                             modal-dialog
+                            modal-lg
                             modal-dialog-centered
+                            modal-dialog-scrollable
                             modal-dialog-eliminar-colmena
                         "
                     >
@@ -832,37 +834,17 @@
                                     "
                                 >
 
-                                    <div
-                                        class="
-                                            d-flex
-                                            align-items-center
-                                            gap-3
-                                        "
-                                    >
+                                    <div class="d-flex align-items-center gap-3">
 
-                                        <div
-                                            class="
-                                                icono-header-eliminar-colmena
-                                            "
-                                        >
+                                        <div class="icono-header-eliminar-colmena">
 
                                             {% if colmena.puede_eliminar %}
 
-                                                <i
-                                                    class="
-                                                        bi
-                                                        bi-trash3-fill
-                                                    "
-                                                ></i>
+                                                <i class="bi bi-trash3-fill"></i>
 
                                             {% else %}
 
-                                                <i
-                                                    class="
-                                                        bi
-                                                        bi-shield-lock-fill
-                                                    "
-                                                ></i>
+                                                <i class="bi bi-shield-lock-fill"></i>
 
                                             {% endif %}
 
@@ -871,13 +853,7 @@
 
                                         <div>
 
-                                            <h5
-                                                class="
-                                                    modal-title
-                                                    fw-bold
-                                                    mb-1
-                                                "
-                                            >
+                                            <h5 class="modal-title fw-bold mb-1">
 
                                                 {% if colmena.puede_eliminar %}
 
@@ -892,7 +868,7 @@
                                             </h5>
 
 
-                                            <p>
+                                            <p class="mb-0">
 
                                                 {% if colmena.puede_eliminar %}
 
@@ -900,7 +876,7 @@
 
                                                 {% else %}
 
-                                                    Esta colmena tiene información
+                                                    Esta colmena tiene información relacionada
                                                     que debe conservarse.
 
                                                 {% endif %}
@@ -914,11 +890,9 @@
 
                                     <button
                                         type="button"
-                                        class="
-                                            btn-close
-                                            btn-close-white
-                                        "
+                                        class="btn-close btn-close-white"
                                         data-bs-dismiss="modal"
+                                        aria-label="Cerrar"
                                     ></button>
 
                                 </div>
@@ -935,40 +909,22 @@
                                     "
                                 >
 
-                                    <div
-                                        class="
-                                            contenido-eliminar-colmena
-                                        "
-                                    >
+                                    <div class="contenido-eliminar-colmena">
 
 
                                         <!-- =========================================
-                                            ICONO
+                                            ICONO PRINCIPAL
                                         ========================================== -->
 
-                                        <div
-                                            class="
-                                                icono-advertencia-eliminar-colmena
-                                            "
-                                        >
+                                        <div class="icono-advertencia-eliminar-colmena">
 
                                             {% if colmena.puede_eliminar %}
 
-                                                <i
-                                                    class="
-                                                        bi
-                                                        bi-trash3-fill
-                                                    "
-                                                ></i>
+                                                <i class="bi bi-trash3-fill"></i>
 
                                             {% else %}
 
-                                                <i
-                                                    class="
-                                                        bi
-                                                        bi-lock-fill
-                                                    "
-                                                ></i>
+                                                <i class="bi bi-lock-fill"></i>
 
                                             {% endif %}
 
@@ -1000,29 +956,20 @@
 
                                             <p>
                                                 Existen registros asociados a esta
-                                                colmena y forman parte del historial
-                                                operativo de Mi Colmena.
+                                                colmena que forman parte de la
+                                                trazabilidad de Mi Colmena.
                                             </p>
 
                                         {% endif %}
 
 
                                         <!-- =========================================
-                                            CÓDIGO
+                                            IDENTIFICACIÓN DE LA COLMENA
                                         ========================================== -->
 
-                                        <div
-                                            class="
-                                                nombre-colmena-eliminar
-                                            "
-                                        >
+                                        <div class="nombre-colmena-eliminar">
 
-                                            <i
-                                                class="
-                                                    bi
-                                                    bi-hexagon-fill
-                                                "
-                                            ></i>
+                                            <i class="bi bi-hexagon-fill"></i>
 
                                             <span>
                                                 {{ colmena.codigocolmena }}
@@ -1045,25 +992,11 @@
 
                                         {% if colmena.puede_eliminar %}
 
-                                            <div
-                                                class="
-                                                    alerta-eliminacion-colmena-permitida
-                                                "
-                                            >
+                                            <div class="alerta-eliminacion-colmena-permitida">
 
-                                                <i
-                                                    class="
-                                                        bi
-                                                        bi-exclamation-triangle-fill
-                                                    "
-                                                ></i>
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
 
-
-                                                <div
-                                                    class="
-                                                        contenido-alerta-eliminar-colmena
-                                                    "
-                                                >
+                                                <div class="contenido-alerta-eliminar-colmena">
 
                                                     <strong>
                                                         Esta acción es permanente
@@ -1086,25 +1019,11 @@
 
                                         {% else %}
 
-                                            <div
-                                                class="
-                                                    alerta-eliminacion-colmena-bloqueada
-                                                "
-                                            >
+                                            <div class="alerta-eliminacion-colmena-bloqueada">
 
-                                                <i
-                                                    class="
-                                                        bi
-                                                        bi-info-circle-fill
-                                                    "
-                                                ></i>
+                                                <i class="bi bi-info-circle-fill"></i>
 
-
-                                                <div
-                                                    class="
-                                                        contenido-alerta-eliminar-colmena
-                                                    "
-                                                >
+                                                <div class="contenido-alerta-eliminar-colmena">
 
                                                     <strong>
                                                         ¿Por qué no se puede eliminar?
@@ -1112,173 +1031,498 @@
 
                                                     <span>
                                                         La colmena tiene información
-                                                        relacionada que debe mantenerse
-                                                        para conservar la trazabilidad
+                                                        relacionada que debe conservarse
+                                                        para mantener la trazabilidad
                                                         del sistema.
                                                     </span>
 
+                                                </div>
 
-                                                    <!-- =============================
-                                                        MOTIVOS
-                                                    ============================== -->
-
-                                                    <ul
-                                                        class="
-                                                            lista-bloqueos-eliminar-colmena
-                                                        "
-                                                    >
+                                            </div>
 
 
-                                                        {% if colmena.total_mantenimientos_historial > 0 %}
+                                            <!-- =====================================
+                                                RESUMEN DE DEPENDENCIAS
+                                            ====================================== -->
 
-                                                            <li
-                                                                class="
-                                                                    item-bloqueo-eliminar-colmena
-                                                                "
-                                                            >
+                                            <div class="resumen-dependencias-colmena">
 
-                                                                <i
-                                                                    class="
-                                                                        bi
-                                                                        bi-tools
-                                                                    "
-                                                                ></i>
+                                                {% if colmena.total_mantenimientos_historial > 0 %}
 
-                                                                <div>
+                                                    <span class="dependencia-contador">
 
-                                                                    <strong>
-                                                                        {{ colmena.total_mantenimientos_historial }}
-                                                                        mantenimiento(s)
-                                                                    </strong>
+                                                        <i class="bi bi-tools"></i>
 
-                                                                    <small>
-                                                                        Registrados en el historial
-                                                                    </small>
-
-                                                                </div>
-
-                                                            </li>
-
-                                                        {% endif %}
-
-
-                                                        {% if colmena.total_incidencias_historial > 0 %}
-
-                                                            <li
-                                                                class="
-                                                                    item-bloqueo-eliminar-colmena
-                                                                "
-                                                            >
-
-                                                                <i
-                                                                    class="
-                                                                        bi
-                                                                        bi-exclamation-triangle-fill
-                                                                    "
-                                                                ></i>
-
-                                                                <div>
-
-                                                                    <strong>
-                                                                        {{ colmena.total_incidencias_historial }}
-                                                                        incidencia(s)
-                                                                    </strong>
-
-                                                                    <small>
-                                                                        Registradas en el historial
-                                                                    </small>
-
-                                                                </div>
-
-                                                            </li>
-
-                                                        {% endif %}
-
-
-                                                        {% if colmena.total_seguimientos_historial > 0 %}
-
-                                                            <li
-                                                                class="
-                                                                    item-bloqueo-eliminar-colmena
-                                                                "
-                                                            >
-
-                                                                <i
-                                                                    class="
-                                                                        bi
-                                                                        bi-clipboard2-pulse-fill
-                                                                    "
-                                                                ></i>
-
-                                                                <div>
-
-                                                                    <strong>
-                                                                        {{ colmena.total_seguimientos_historial }}
-                                                                        seguimiento(s)
-                                                                    </strong>
-
-                                                                    <small>
-                                                                        Asociados a la colmena
-                                                                    </small>
-
-                                                                </div>
-
-                                                            </li>
-
-                                                        {% endif %}
-
-
-                                                        {% if colmena.total_eventos_agenda > 0 %}
-
-                                                            <li
-                                                                class="
-                                                                    item-bloqueo-eliminar-colmena
-                                                                "
-                                                            >
-
-                                                                <i
-                                                                    class="
-                                                                        bi
-                                                                        bi-calendar-event-fill
-                                                                    "
-                                                                ></i>
-
-                                                                <div>
-
-                                                                    <strong>
-                                                                        {{ colmena.total_eventos_agenda }}
-                                                                        evento(s)
-                                                                    </strong>
-
-                                                                    <small>
-                                                                        Registrados en Agenda
-                                                                    </small>
-
-                                                                </div>
-
-                                                            </li>
-
-                                                        {% endif %}
-
-                                                    </ul>
-
-
-                                                    <span
-                                                        class="
-                                                            nota-historial-eliminar-colmena
-                                                        "
-                                                    >
-
-                                                        Si la colmena ya no está
-                                                        en funcionamiento,
-                                                        debe conservarse en estado
-                                                        <strong>
-                                                            Inactiva
-                                                        </strong>.
+                                                        {{ colmena.total_mantenimientos_historial }}
+                                                        mantenimiento(s)
 
                                                     </span>
 
+                                                {% endif %}
+
+
+                                                {% if colmena.total_incidencias_historial > 0 %}
+
+                                                    <span class="dependencia-contador">
+
+                                                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                                        {{ colmena.total_incidencias_historial }}
+                                                        incidencia(s)
+
+                                                    </span>
+
+                                                {% endif %}
+
+
+                                                {% if colmena.total_eventos_agenda > 0 %}
+
+                                                    <span class="dependencia-contador">
+
+                                                        <i class="bi bi-calendar-event-fill"></i>
+
+                                                        {{ colmena.total_eventos_agenda }}
+                                                        evento(s)
+
+                                                    </span>
+
+                                                {% endif %}
+
+
+                                                {% if colmena.total_seguimientos_historial > 0 %}
+
+                                                    <span class="dependencia-contador">
+
+                                                        <i class="bi bi-clipboard2-pulse-fill"></i>
+
+                                                        {{ colmena.total_seguimientos_historial }}
+                                                        seguimiento(s)
+
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </div>
+
+
+                                            <!-- =====================================
+                                                MANTENIMIENTOS RELACIONADOS
+                                            ====================================== -->
+
+                                            {% if colmena.mantenimientos_relacionados %}
+
+                                                <div class="grupo-dependencias-colmena">
+
+                                                    <div class="grupo-dependencias-titulo">
+
+                                                        <div>
+
+                                                            <i class="bi bi-tools"></i>
+
+                                                            <span>
+                                                                Mantenimientos relacionados
+                                                            </span>
+
+                                                        </div>
+
+                                                        <span class="grupo-dependencias-cantidad">
+
+                                                            {{ colmena.total_mantenimientos_historial }}
+
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <div class="lista-dependencias-colmena">
+
+                                                        {% for mantenimiento in colmena.mantenimientos_relacionados %}
+
+                                                            <div class="dependencia-colmena-item">
+
+                                                                <div class="dependencia-colmena-info">
+
+                                                                    <strong>
+                                                                        Mantenimiento
+                                                                        #{{ mantenimiento.id_mantenimiento }}
+                                                                    </strong>
+
+                                                                    <span>
+                                                                        {{ mantenimiento.tipo|default:"Sin tipo registrado" }}
+                                                                    </span>
+
+                                                                </div>
+
+
+                                                                <div class="dependencia-colmena-meta">
+
+                                                                    <span>
+                                                                        {{ mantenimiento.estado|default:"Sin estado" }}
+                                                                    </span>
+
+                                                                    {% if mantenimiento.fechaejecucion %}
+
+                                                                        <span>
+
+                                                                            <i class="bi bi-calendar3"></i>
+
+                                                                            {{ mantenimiento.fechaejecucion|date:"d/m/Y" }}
+
+                                                                        </span>
+
+                                                                    {% endif %}
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        {% endfor %}
+
+                                                    </div>
+
+
+                                                    <a
+                                                        href="{% url 'mantenimientos_admin' %}"
+                                                        class="btn-ver-dependencias"
+                                                    >
+
+                                                        <i class="bi bi-arrow-right-circle"></i>
+
+                                                        Ir a Mantenimientos
+
+                                                    </a>
+
                                                 </div>
+
+                                            {% endif %}
+
+
+                                            <!-- =====================================
+                                                INCIDENCIAS RELACIONADAS
+                                            ====================================== -->
+
+                                            {% if colmena.incidencias_relacionadas %}
+
+                                                <div class="grupo-dependencias-colmena">
+
+                                                    <div class="grupo-dependencias-titulo">
+
+                                                        <div>
+
+                                                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                                            <span>
+                                                                Incidencias relacionadas
+                                                            </span>
+
+                                                        </div>
+
+                                                        <span class="grupo-dependencias-cantidad">
+
+                                                            {{ colmena.total_incidencias_historial }}
+
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <div class="lista-dependencias-colmena">
+
+                                                        {% for incidencia in colmena.incidencias_relacionadas %}
+
+                                                            <div class="dependencia-colmena-item">
+
+                                                                <div class="dependencia-colmena-info">
+
+                                                                    <strong>
+
+                                                                        {% if incidencia.titulo %}
+
+                                                                            {{ incidencia.titulo }}
+
+                                                                        {% else %}
+
+                                                                            Incidencia
+                                                                            #{{ incidencia.id_incidencia }}
+
+                                                                        {% endif %}
+
+                                                                    </strong>
+
+                                                                    <span>
+                                                                        Incidencia
+                                                                        #{{ incidencia.id_incidencia }}
+                                                                    </span>
+
+                                                                </div>
+
+
+                                                                <div class="dependencia-colmena-meta">
+
+                                                                    <span>
+                                                                        {{ incidencia.estado|default:"Sin estado" }}
+                                                                    </span>
+
+                                                                    {% if incidencia.prioridad %}
+
+                                                                        <span>
+                                                                            {{ incidencia.prioridad }}
+                                                                        </span>
+
+                                                                    {% endif %}
+
+
+                                                                    {% if incidencia.fechadeteccion %}
+
+                                                                        <span>
+
+                                                                            <i class="bi bi-calendar3"></i>
+
+                                                                            {{ incidencia.fechadeteccion|date:"d/m/Y" }}
+
+                                                                        </span>
+
+                                                                    {% endif %}
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        {% endfor %}
+
+                                                    </div>
+
+
+                                                    <a
+                                                        href="{% url 'incidencias_admin' %}"
+                                                        class="btn-ver-dependencias"
+                                                    >
+
+                                                        <i class="bi bi-arrow-right-circle"></i>
+
+                                                        Ir a Incidencias
+
+                                                    </a>
+
+                                                </div>
+
+                                            {% endif %}
+
+
+                                            <!-- =====================================
+                                                EVENTOS DE AGENDA RELACIONADOS
+                                            ====================================== -->
+
+                                            {% if colmena.eventos_relacionados %}
+
+                                                <div class="grupo-dependencias-colmena">
+
+                                                    <div class="grupo-dependencias-titulo">
+
+                                                        <div>
+
+                                                            <i class="bi bi-calendar-event-fill"></i>
+
+                                                            <span>
+                                                                Eventos de Agenda relacionados
+                                                            </span>
+
+                                                        </div>
+
+                                                        <span class="grupo-dependencias-cantidad">
+
+                                                            {{ colmena.total_eventos_agenda }}
+
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <div class="lista-dependencias-colmena">
+
+                                                        {% for evento in colmena.eventos_relacionados %}
+
+                                                            <div class="dependencia-colmena-item">
+
+                                                                <div class="dependencia-colmena-info">
+
+                                                                    <strong>
+                                                                        {{ evento.titulo }}
+                                                                    </strong>
+
+                                                                    <span>
+                                                                        {{ evento.get_tipo_evento_display }}
+                                                                    </span>
+
+                                                                </div>
+
+
+                                                                <div class="dependencia-colmena-meta">
+
+                                                                    <span>
+                                                                        {{ evento.get_estado_display }}
+                                                                    </span>
+
+
+                                                                    {% if evento.fecha %}
+
+                                                                        <span>
+
+                                                                            <i class="bi bi-calendar3"></i>
+
+                                                                            {{ evento.fecha|date:"d/m/Y" }}
+
+                                                                        </span>
+
+                                                                    {% endif %}
+
+
+                                                                    {% if evento.hora %}
+
+                                                                        <span>
+
+                                                                            <i class="bi bi-clock"></i>
+
+                                                                            {{ evento.hora|time:"H:i" }}
+
+                                                                        </span>
+
+                                                                    {% endif %}
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        {% endfor %}
+
+                                                    </div>
+
+
+                                                    <a
+                                                        href="{% url 'agenda_admin' %}"
+                                                        class="btn-ver-dependencias"
+                                                    >
+
+                                                        <i class="bi bi-arrow-right-circle"></i>
+
+                                                        Ir a Agenda
+
+                                                    </a>
+
+                                                </div>
+
+                                            {% endif %}
+
+
+                                            <!-- =====================================
+                                                SEGUIMIENTOS RELACIONADOS
+                                            ====================================== -->
+
+                                            {% if colmena.seguimientos_relacionados %}
+
+                                                <div class="grupo-dependencias-colmena">
+
+                                                    <div class="grupo-dependencias-titulo">
+
+                                                        <div>
+
+                                                            <i class="bi bi-clipboard2-pulse-fill"></i>
+
+                                                            <span>
+                                                                Seguimientos relacionados
+                                                            </span>
+
+                                                        </div>
+
+                                                        <span class="grupo-dependencias-cantidad">
+
+                                                            {{ colmena.total_seguimientos_historial }}
+
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <div class="lista-dependencias-colmena">
+
+                                                        {% for seguimiento in colmena.seguimientos_relacionados %}
+
+                                                            <div class="dependencia-colmena-item">
+
+                                                                <div class="dependencia-colmena-info">
+
+                                                                    <strong>
+                                                                        Seguimiento
+                                                                        #{{ seguimiento.id_seguimiento }}
+                                                                    </strong>
+
+                                                                    <span>
+                                                                        {{ seguimiento.tiposeguimiento|default:"Seguimiento" }}
+                                                                    </span>
+
+                                                                </div>
+
+
+                                                                <div class="dependencia-colmena-meta">
+
+                                                                    {% if seguimiento.estado %}
+
+                                                                        <span>
+                                                                            {{ seguimiento.estado }}
+                                                                        </span>
+
+                                                                    {% endif %}
+
+
+                                                                    {% if seguimiento.fecharegistro %}
+
+                                                                        <span>
+
+                                                                            <i class="bi bi-calendar3"></i>
+
+                                                                            {{ seguimiento.fecharegistro|date:"d/m/Y" }}
+
+                                                                        </span>
+
+                                                                    {% endif %}
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        {% endfor %}
+
+                                                    </div>
+
+                                                </div>
+
+                                            {% endif %}
+
+
+                                            <!-- =====================================
+                                                NOTA FINAL
+                                            ====================================== -->
+
+                                            <div class="nota-historial-eliminar-colmena">
+
+                                                <i class="bi bi-shield-check"></i>
+
+                                                <span>
+
+                                                    Mientras existan registros
+                                                    relacionados, esta colmena no puede
+                                                    eliminarse.
+
+                                                    Si ya no está en funcionamiento,
+                                                    debe conservarse en estado
+
+                                                    <strong>
+                                                        Inactiva
+                                                    </strong>
+
+                                                    para mantener el historial.
+
+                                                </span>
 
                                             </div>
 
@@ -1324,39 +1568,28 @@
 
                                     <button
                                         type="{% if colmena.puede_eliminar %}submit{% else %}button{% endif %}"
-
                                         class="
                                             btn
                                             btn-confirmar-eliminacion-colmena
                                         "
 
                                         {% if not colmena.puede_eliminar %}
+
                                             disabled
                                             aria-disabled="true"
+
                                         {% endif %}
                                     >
 
                                         {% if colmena.puede_eliminar %}
 
-                                            <i
-                                                class="
-                                                    bi
-                                                    bi-trash3-fill
-                                                    me-2
-                                                "
-                                            ></i>
+                                            <i class="bi bi-trash3-fill me-2"></i>
 
                                             Sí, eliminar
 
                                         {% else %}
 
-                                            <i
-                                                class="
-                                                    bi
-                                                    bi-lock-fill
-                                                    me-2
-                                                "
-                                            ></i>
+                                            <i class="bi bi-lock-fill me-2"></i>
 
                                             Eliminar bloqueado
 

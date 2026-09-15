@@ -8967,7 +8967,7 @@ PAGINADOR
     min-height: 42px;
     border: 1px solid var(--borde);
     border-radius: 12px;
-    background: #ffffff;
+    background-color: #ffffff;
     font-size: 0.75rem;
 }
 
@@ -17520,4 +17520,332 @@ tr.fila-oculta-busqueda {
     .apiario-perfil-item:hover {
         transform: none;
     }
+}
+
+/* ==========================================================
+   FLECHA DE LOS SELECTORES DE AGENDA
+   ========================================================== */
+
+.filtros-agenda .form-select {
+    cursor: pointer;
+
+    padding-right: 42px;
+
+    background-size: 16px 12px;
+    background-position:
+        right 16px center;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+
+.filtros-agenda .form-select:hover {
+    border-color: var(--verde-medio);
+}
+
+
+.filtros-agenda .form-select:focus {
+    border-color: var(--verde-medio);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(95, 151, 129, .18);
+}
+
+
+/* ==========================================================
+   DETALLE DE DEPENDENCIAS
+   MODAL ELIMINAR COLMENA
+   ========================================================== */
+
+
+/* ==========================================================
+   RESUMEN
+   ========================================================== */
+
+.resumen-dependencias-colmena {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    width: 100%;
+    margin-top: 16px;
+}
+
+
+.dependencia-contador {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pastilla);
+
+    background: var(--fondo-suave);
+    color: var(--verde-oscuro);
+
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+
+.dependencia-contador i {
+    color: var(--verde-medio);
+}
+
+
+/* ==========================================================
+   GRUPOS
+   ========================================================== */
+
+.grupo-dependencias-colmena {
+    width: 100%;
+
+    margin-top: 14px;
+    padding: 14px;
+
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+
+    background: var(--blanco);
+}
+
+
+.grupo-dependencias-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 10px;
+}
+
+
+.grupo-dependencias-titulo > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--verde-oscuro);
+
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+
+.grupo-dependencias-titulo i {
+    color: var(--verde-medio);
+}
+
+
+.grupo-dependencias-cantidad {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 28px;
+    height: 28px;
+
+    padding: 0 8px;
+
+    border-radius: var(--radio-pastilla);
+
+    background: var(--verde-oscuro);
+    color: var(--blanco);
+
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   LISTADO
+   ========================================================== */
+
+.lista-dependencias-colmena {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.dependencia-colmena-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid var(--borde-tenue);
+}
+
+
+.dependencia-colmena-item:last-child {
+    border-bottom: 0;
+}
+
+
+.dependencia-colmena-info {
+    min-width: 0;
+}
+
+
+.dependencia-colmena-info strong {
+    display: block;
+
+    color: var(--texto);
+
+    font-size: .8rem;
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+}
+
+
+.dependencia-colmena-info > span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--texto-secundario);
+
+    font-size: .72rem;
+}
+
+
+/* ==========================================================
+   META INFORMACIÓN
+   ========================================================== */
+
+.dependencia-colmena-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 5px;
+
+    flex-shrink: 0;
+}
+
+
+.dependencia-colmena-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px 8px;
+
+    border-radius: var(--radio-pastilla);
+
+    background: var(--fondo-suave);
+    color: var(--verde-oscuro);
+
+    font-size: .67rem;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   ENLACE AL MÓDULO
+   ========================================================== */
+
+.btn-ver-dependencias {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 10px;
+
+    color: var(--verde-oscuro);
+
+    font-size: .75rem;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        color var(--tiempo-rapido) ease,
+        transform var(--tiempo-rapido) ease;
+}
+
+
+.btn-ver-dependencias:hover {
+    color: var(--verde-medio);
+
+    transform: translateX(3px);
+}
+
+
+/* ==========================================================
+   NOTA FINAL
+   ========================================================== */
+
+.nota-historial-eliminar-colmena {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    width: 100%;
+
+    margin-top: 16px;
+    padding: 13px 14px;
+
+    border-radius: 12px;
+
+    background: var(--alerta-fondo);
+    color: var(--alerta-texto);
+
+    font-size: .76rem;
+    line-height: 1.5;
+}
+
+
+.nota-historial-eliminar-colmena > i {
+    margin-top: 2px;
+    flex-shrink: 0;
+
+    font-size: 1rem;
+}
+
+
+/* ==========================================================
+   SCROLL DEL MODAL
+   ========================================================== */
+
+.modal-dialog-eliminar-colmena {
+    max-width: 760px;
+}
+
+
+.modal-body-eliminar-colmena {
+    max-height: 68vh;
+    overflow-y: auto;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 576px) {
+
+    .dependencia-colmena-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+
+    .dependencia-colmena-meta {
+        justify-content: flex-start;
+    }
+
+
+    .grupo-dependencias-titulo {
+        align-items: flex-start;
+    }
+
 }
