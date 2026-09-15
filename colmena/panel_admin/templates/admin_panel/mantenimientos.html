@@ -160,52 +160,10 @@
 
     <form method="GET">
 
-        <div
-            class="
-                d-flex
-                justify-content-between
-                align-items-center
-                flex-wrap
-                gap-3
-                mb-4
-            "
-        >
-
-            <div>
-
-                <h5
-                    class="mb-0 fw-bold"
-                    style="color:#234F39;"
-                >
-
-                    <i class="bi bi-search me-2"></i>
-
-                    Filtros de búsqueda
-
-                </h5>
-
-
-                <small class="text-muted">
-
-                    Filtra por apiario, colmena o estado.
-
-                </small>
-
-            </div>
-
-
-            <a
-                href="{% url 'mantenimientos_admin' %}"
-                class="btn btn-outline-secondary"
-            >
-
-                <i class="bi bi-arrow-clockwise me-2"></i>
-
-                Limpiar
-
-            </a>
-
-        </div>
+        <!-- El encabezado «Filtros de búsqueda» se quitó: los campos
+             ya llevan su etiqueta y el botón dice Filtrar, así que el
+             título repetía lo que se ve. Los demás módulos tampoco lo
+             tienen. -->
 
 
         <div class="row g-3 align-items-end">
@@ -215,7 +173,7 @@
                  APIARIO
             ============================================== -->
 
-            <div class="col-md-4">
+            <div class="col-md-3">
 
                 <label
                     for="filtroApiario"
@@ -360,7 +318,12 @@
                  FILTRAR
             ============================================== -->
 
-            <div class="col-md-2 d-grid">
+            <!-- Los botones iban en col-md-2 con d-grid, que los apila
+                 uno sobre otro en una columna de 2/12: demasiado
+                 estrecha para los dos. Ahora comparten una columna más
+                 ancha, en fila, como en los demás módulos. -->
+
+            <div class="col-md-3 mantenimientos-toolbar-acciones">
 
                 <button
                     type="submit"
@@ -372,6 +335,14 @@
                     Filtrar
 
                 </button>
+
+                <a
+                    href="{% url 'mantenimientos_admin' %}"
+                    class="btn btn-limpiar"
+                >
+                    <i class="bi bi-x-lg me-1" aria-hidden="true"></i>
+                    Limpiar
+                </a>
 
             </div>
 

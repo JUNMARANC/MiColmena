@@ -114,6 +114,17 @@
             Buscar
         </button>
 
+        <!-- Limpiar. Solo aparece si hay algún filtro puesto: si no
+             hay nada que limpiar, el botón sobra. -->
+
+            <a
+                href="{% url 'agenda_admin' %}"
+                class="btn btn-limpiar"
+            >
+                <i class="bi bi-x-lg me-1" aria-hidden="true"></i>
+                Limpiar
+            </a>
+
     </form>
 
     <section class="tarjeta-calendario">

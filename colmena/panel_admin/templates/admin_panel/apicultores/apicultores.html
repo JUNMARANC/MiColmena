@@ -136,16 +136,14 @@
                         Buscar
                     </button>
 
-                    {% if busqueda or tipo_filtro %}
-                        <a
-                            href="{% url 'apicultores_admin' %}"
-                            class="btn btn-limpiar"
-                            title="Quitar el filtro y ver todos"
-                        >
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                            Limpiar
-                        </a>
-                    {% endif %}
+                    <a
+                        href="{% url 'apicultores_admin' %}"
+                        class="btn btn-limpiar"
+                        title="Quitar los filtros y ver todos"
+                    >
+                        <i class="bi bi-x-lg me-1" aria-hidden="true"></i>
+                        Limpiar
+                    </a>
 
                 </div>
 
