@@ -952,6 +952,12 @@
 
 }
 
+.leyenda-punto.vencido {
+
+    background: #ea580c;
+
+}
+
 
 /* ==========================================================
    22. PRÓXIMOS EVENTOS
@@ -5055,6 +5061,41 @@
 
     }
 
+}
+
+/* ==========================================================
+   EVENTOS VENCIDOS
+========================================================== */
+
+/* Estado mostrado en tabla y modal */
+
+.agenda-estado.vencido {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+
+/* Punto del estado */
+
+.agenda-estado.vencido > span:first-child {
+    background: #ea580c;
+}
+
+
+/* Evento vencido dentro del calendario */
+
+.agenda-dia-evento.vencido {
+    background: #fff7ed;
+    color: #9a3412;
+    border-left: 3px solid #ea580c;
+}
+
+
+/* Hover */
+
+.agenda-dia-evento.vencido:hover {
+    background: #ffedd5;
 }
 
 

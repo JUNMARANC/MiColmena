@@ -49,7 +49,7 @@
             </h1>
 
             <p>
-                Consulta mantenimientos, revisiones, incidencias
+                Consulta mantenimientos, revisiones
                 y eventos relacionados con tus apiarios asignados.
             </p>
 
@@ -268,18 +268,18 @@
 
                 <span>
 
-                    <i class="leyenda-punto incidencia"></i>
+                    <i class="leyenda-punto evento"></i>
 
-                    Incidencia
+                    Evento general
 
                 </span>
 
 
                 <span>
 
-                    <i class="leyenda-punto evento"></i>
+                    <i class="leyenda-punto vencido"></i>
 
-                    Evento
+                    Vencido
 
                 </span>
 
@@ -325,7 +325,7 @@
                     <button
                         type="button"
                         class="agenda-proximo-evento"
-                        data-modal-evento="modalEvento{{ evento.id_evento }}"
+                        data-evento-id="{{ evento.id }}"
                     >
 
 
@@ -334,19 +334,19 @@
                         <div
                             class="
                                 agenda-proximo-icono
-                                {{ evento.tipo_evento }}
+                                {{ evento.tipo }}
                             "
                         >
 
-                            {% if evento.tipo_evento == "mantenimiento" %}
+                            {% if evento.tipo == "mantenimiento" %}
 
                                 <i class="bi bi-tools"></i>
 
-                            {% elif evento.tipo_evento == "revision" %}
+                            {% elif evento.tipo == "revision" %}
 
                                 <i class="bi bi-search"></i>
 
-                            {% elif evento.tipo_evento == "incidencia" %}
+                            {% elif evento.tipo == "incidencia" %}
 
                                 <i class="bi bi-exclamation-triangle-fill"></i>
 
@@ -379,24 +379,24 @@
 
                                 <i class="bi bi-clock"></i>
 
-                                {{ evento.hora|time:"H:i" }}
+                                {{ evento.hora }}
 
                             </span>
 
 
                             <small>
 
-                                {% if evento.id_colmena %}
+                                {% if evento.colmena %}
 
-                                    {{ evento.id_apiario.nombreapiario }}
+                                    {{ evento.apiario }}
 
                                     · Colmena
 
-                                    {{ evento.id_colmena.codigocolmena }}
+                                    {{ evento.colmena }}
 
                                 {% else %}
 
-                                    {{ evento.id_apiario.nombreapiario }}
+                                    {{ evento.apiario }}
 
                                 {% endif %}
 
@@ -488,7 +488,7 @@
                     <button
                         type="button"
                         class="agenda-hoy-evento"
-                        data-modal-evento="modalEvento{{ evento.id_evento }}"
+                        data-evento-id="{{ evento.id }}"
                     >
 
 
@@ -496,7 +496,7 @@
 
                         <div class="agenda-hoy-hora">
 
-                            {{ evento.hora|time:"H:i" }}
+                            {{ evento.hora }}
 
                         </div>
 
@@ -507,7 +507,7 @@
                         <div
                             class="
                                 agenda-hoy-linea
-                                {{ evento.tipo_evento }}
+                                {{ evento.tipo }}
                             "
                         ></div>
 
@@ -523,17 +523,17 @@
 
                             <span>
 
-                                {% if evento.id_colmena %}
+                                {% if evento.colmena %}
 
-                                    {{ evento.id_apiario.nombreapiario }}
+                                    {{ evento.apiario }}
 
                                     · Colmena
 
-                                    {{ evento.id_colmena.codigocolmena }}
+                                    {{ evento.colmena }}
 
                                 {% else %}
 
-                                    {{ evento.id_apiario.nombreapiario }}
+                                    {{ evento.apiario }}
 
                                 {% endif %}
 
@@ -549,12 +549,24 @@
                             class="
                                 agenda-estado
                                 {{ evento.estado }}
+
+                                {% if evento.esta_vencido %}
+                                    vencido
+                                {% endif %}
                             "
                         >
 
                             <span></span>
 
-                            {{ evento.get_estado_display }}
+                            {% if evento.esta_vencido %}
+
+                                Vencido
+
+                            {% else %}
+
+                                {{ evento.estado_nombre }}
+
+                            {% endif %}
 
                         </span>
 
@@ -1012,12 +1024,24 @@
                                         class="
                                             agenda-estado
                                             {{ evento.estado }}
+
+                                            {% if evento.esta_vencido %}
+                                                vencido
+                                            {% endif %}
                                         "
                                     >
 
                                         <span></span>
 
-                                        {{ evento.get_estado_display }}
+                                        {% if evento.esta_vencido %}
+
+                                            Vencido
+
+                                        {% else %}
+
+                                            {{ evento.get_estado_display }}
+
+                                        {% endif %}
 
                                     </span>
 
@@ -1486,12 +1510,24 @@
                             class="
                                 agenda-estado
                                 {{ evento.estado }}
+
+                                {% if evento.esta_vencido %}
+                                    vencido
+                                {% endif %}
                             "
                         >
 
                             <span></span>
 
-                            {{ evento.get_estado_display }}
+                            {% if evento.esta_vencido %}
+
+                                Vencido
+
+                            {% else %}
+
+                                {{ evento.get_estado_display }}
+
+                            {% endif %}
 
                         </span>
 
@@ -1628,23 +1664,35 @@
 
 
             <!-- =================================================
-                 =================================================
-                 GESTIÓN DEL ESTADO
-                 =================================================
+                GESTIÓN DEL ESTADO
+                =================================================
 
-                 REGLAS:
+                REGLAS:
 
-                 EVENTO FUTURO
-                 → no se puede modificar.
+                EVENTO FUTURO
+                → puede cancelarse.
+                → puede editarse si fue creado por el apicultor.
+                → todavía no puede completarse.
 
-                 EVENTO DE HOY
-                 → puede completarse o cancelarse.
+                EVENTO DE HOY
+                → puede completarse cuando ya llegó su hora.
+                → puede cancelarse mientras siga Programado.
+                → puede editarse si fue creado por el apicultor.
 
-                 EVENTO PASADO
-                 → puede completarse o cancelarse.
+                EVENTO PASADO
+                → puede completarse o cancelarse
+                mientras siga Programado.
+                → puede editarse si fue creado por el apicultor.
+                → al editarlo deberá reprogramarse
+                para hoy o una fecha futura.
 
-                 COMPLETADO / CANCELADO
-                 → el apicultor ya no puede volver a cambiarlo.
+                COMPLETADO / CANCELADO
+                → ya no puede editarse.
+                → ya no puede cambiar nuevamente de estado.
+
+                EVENTO ASIGNADO POR ADMINISTRACIÓN
+                → puede consultarse.
+                → no puede editarse desde el panel del apicultor.
             ================================================== -->
 
 
@@ -1656,7 +1704,7 @@
                 ================================================== -->
 
 
-                {% if evento.fecha <= hoy %}
+                {% if evento.puede_completar %}
 
 
                     <!-- =============================================
@@ -1702,7 +1750,7 @@
 
                                 <p>
 
-                                    La fecha programada ya llegó.
+                                    La fecha y hora programadas ya llegaron.
 
                                     Registra si la actividad fue
                                     completada o si tuvo que cancelarse.
@@ -1804,51 +1852,95 @@
 
 
                     <!-- =============================================
-                         EVENTO FUTURO
+                         TODAVÍA NO LLEGA LA FECHA / HORA
                     ============================================== -->
 
                     <section
                         class="
                             agenda-gestion-estado
-                            agenda-gestion-estado-bloqueado
+                            agenda-gestion-estado-disponible
                         "
                     >
 
 
-                        <div class="agenda-gestion-estado-icono">
+                        <div class="agenda-gestion-estado-header">
 
-                            <i class="bi bi-lock-fill"></i>
+
+                            <div class="agenda-gestion-estado-icono">
+
+                                <i class="bi bi-clock-history"></i>
+
+                            </div>
+
+
+                            <div class="agenda-gestion-estado-contenido">
+
+
+                                <span class="agenda-gestion-estado-etiqueta">
+
+                                    Evento pendiente
+
+                                </span>
+
+
+                                <strong>
+
+                                    Aún no puedes marcarlo como completado
+
+                                </strong>
+
+
+                                <p>
+
+                                    Podrás completarlo a partir del
+
+                                    <b>
+                                        {{ evento.fecha|date:"d/m/Y" }}
+
+                                        {% if evento.hora %}
+                                            a las {{ evento.hora|time:"H:i" }}
+                                        {% endif %}
+                                    </b>.
+
+                                    Si la actividad ya no se realizará,
+                                    puedes cancelarla ahora.
+
+                                </p>
+
+
+                            </div>
+
 
                         </div>
 
 
-                        <div class="agenda-gestion-estado-contenido">
+
+                        <div class="agenda-gestion-estado-acciones">
 
 
-                            <span class="agenda-gestion-estado-etiqueta">
+                            <button
+                                type="button"
+                                class="
+                                    btn-evento-estado
+                                    btn-evento-cancelado
+                                "
 
-                                Cambio de estado bloqueado
+                                data-cambiar-estado-evento
 
-                            </span>
+                                data-evento-url="{% url 'actualizar_estado_evento_apicultor' evento.id_evento %}"
 
+                                data-evento-estado="cancelado"
 
-                            <strong>
+                                data-evento-titulo="{{ evento.titulo }}"
+                            >
 
-                                El evento todavía no ha llegado
+                                <i class="bi bi-x-circle-fill"></i>
 
-                            </strong>
+                                <span>
+                                    Cancelar evento
+                                </span>
 
-
-                            <p>
-
-                                Podrás cambiar el estado de esta
-                                actividad a partir del
-
-                                <b>
-                                    {{ evento.fecha|date:"d/m/Y" }}
-                                </b>.
-
-                            </p>
+                            </button>
 
 
                         </div>
@@ -1986,10 +2078,29 @@
 
             <div class="agenda-modal-footer">
 
+                <!-- EDITAR EVENTO -->
+
+                {% if evento.puede_editar %}
+
+                    <a
+                        href="{% url 'editar_evento_apicultor' evento.id_evento %}"
+                        class="btn-agenda-ver-apiario"
+                    >
+
+                        <i class="bi bi-pencil-square"></i>
+
+                        <span>
+                            Editar evento
+                        </span>
+
+                    </a>
+
+                {% endif %}
+
 
                 <!-- VER APIARIO -->
 
-                {% if evento.id_apiario %}
+                {% if evento.puede_ver_apiario %}
 
 
                     <a

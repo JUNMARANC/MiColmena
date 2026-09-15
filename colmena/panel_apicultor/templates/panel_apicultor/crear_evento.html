@@ -3,17 +3,28 @@
 
 
 {% block title %}
-    Agregar evento | Mi Colmena
+    {% if modo_edicion %}
+        Editar evento | Mi Colmena
+    {% else %}
+        Agregar evento | Mi Colmena
+    {% endif %}
 {% endblock %}
 
-
 {% block page_title %}
-    Agregar evento
+    {% if modo_edicion %}
+        Editar evento
+    {% else %}
+        Agregar evento
+    {% endif %}
 {% endblock %}
 
 
 {% block page_subtitle %}
-    Programa actividades para tus apiarios y colmenas asignadas
+    {% if modo_edicion %}
+        Modifica la programación de tu evento
+    {% else %}
+        Programa actividades para tus apiarios y colmenas asignadas
+    {% endif %}
 {% endblock %}
 
 
@@ -57,19 +68,41 @@
 
 
             <span class="crear-evento-etiqueta">
-                Nuevo evento
+
+                {% if modo_edicion %}
+                    Editar evento
+                {% else %}
+                    Nuevo evento
+                {% endif %}
+
             </span>
 
 
             <h1>
-                Agregar evento
+
+                {% if modo_edicion %}
+                    Editar evento
+                {% else %}
+                    Agregar evento
+                {% endif %}
+
             </h1>
 
 
             <p>
-                Programa mantenimientos, revisiones, seguimientos
-                de incidencias o actividades generales relacionadas
-                con tus apiarios y colmenas asignadas.
+
+                {% if modo_edicion %}
+
+                    Actualiza los datos y la programación
+                    de este evento.
+
+                {% else %}
+
+                    Programa revisiones y actividades generales relacionadas
+                    con tus apiarios y colmenas asignadas.
+
+                {% endif %}
+
             </p>
 
 
@@ -108,10 +141,8 @@
             </strong>
 
             <p>
-                Puedes crear mantenimientos programados, revisiones,
-                seguimientos de incidencias y eventos generales
-                únicamente para los apiarios y colmenas que tienes
-                asignados.
+                Puedes programar revisiones y eventos generales
+                únicamente para los apiarios y colmenas que tienes asignados.
             </p>
 
         </div>
@@ -129,6 +160,7 @@
         method="POST"
         class="crear-evento-form"
         id="formCrearEvento"
+        data-modo="{% if modo_edicion %}editar{% else %}crear{% endif %}"
         novalidate
     >
 
@@ -189,14 +221,8 @@
                         class="
                             tipo-evento-opcion
 
-                            {% if tipo.valor == 'mantenimiento' %}
-                                mantenimiento
-
-                            {% elif tipo.valor == 'revision' %}
+                            {% if tipo.valor == 'revision' %}
                                 revision
-
-                            {% elif tipo.valor == 'incidencia' %}
-                                incidencia
 
                             {% else %}
                                 evento
@@ -233,20 +259,9 @@
                         <span class="tipo-evento-icono">
 
 
-                            {% if tipo.valor == "mantenimiento" %}
-
-                                <i class="bi bi-tools"></i>
-
-
-                            {% elif tipo.valor == "revision" %}
+                            {% if tipo.valor == "revision" %}
 
                                 <i class="bi bi-search"></i>
-
-
-                            {% elif tipo.valor == "incidencia" %}
-
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-
 
                             {% else %}
 
@@ -272,23 +287,10 @@
                             <small>
 
 
-                                {% if tipo.valor == "mantenimiento" %}
-
-                                    Programa una actividad de mantenimiento
-                                    para un apiario o una colmena.
-
-
-                                {% elif tipo.valor == "revision" %}
+                                {% if tipo.valor == "revision" %}
 
                                     Programa una inspección o revisión
                                     de un apiario o colmena.
-
-
-                                {% elif tipo.valor == "incidencia" %}
-
-                                    Programa un seguimiento relacionado
-                                    con una incidencia detectada.
-
 
                                 {% else %}
 
@@ -483,6 +485,12 @@
                                     {{ colmena.codigocolmena }}
                                     -
                                     {{ colmena.id_apiario.nombreapiario }}
+
+                                    {% if colmena.estadocolmena|lower == "inactiva" %}
+
+                                        · Inactiva (asociación actual)
+
+                                    {% endif %}
 
                                 </option>
 
@@ -866,11 +874,23 @@
                 id="btnGuardarEvento"
             >
 
-                <i class="bi bi-calendar-plus-fill"></i>
+                {% if modo_edicion %}
 
-                <span>
-                    Agregar evento
-                </span>
+                    <i class="bi bi-pencil-square"></i>
+
+                    <span>
+                        Guardar cambios
+                    </span>
+
+                {% else %}
+
+                    <i class="bi bi-calendar-plus-fill"></i>
+
+                    <span>
+                        Agregar evento
+                    </span>
+
+                {% endif %}
 
             </button>
 

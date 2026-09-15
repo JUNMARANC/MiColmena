@@ -33,9 +33,10 @@ from panel_apicultor.views import (
     # Agenda
     agenda_apicultor,
     crear_evento_apicultor,
+    editar_evento_apicultor,
+    actualizar_estado_evento_apicultor,
 
     #perfil
-    actualizar_estado_evento_apicultor,
     perfil_apicultor,
     cambiar_password_apicultor,
     validar_password_actual_apicultor,
@@ -224,6 +225,12 @@ urlpatterns = [
         "agenda/crear/",
         crear_evento_apicultor,
         name="crear_evento_apicultor",
+    ),
+
+    path(
+        "agenda/evento/<int:id_evento>/editar/",
+        editar_evento_apicultor,
+        name="editar_evento_apicultor",
     ),
 
     path(

@@ -841,11 +841,50 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
+        if (
+            evento.fuente
+            ===
+            "evento"
+
+            &&
+
+            evento.esta_vencido
+            ===
+            true
+        ) {
+
+            boton.classList.add(
+                "vencido"
+            );
+
+        }
+
+
         boton.dataset.eventoId =
             evento.id;
 
 
         boton.title =
+            (
+                evento.esta_vencido
+                ===
+                true
+
+                &&
+
+                evento.fuente
+                ===
+                "evento"
+
+                    ?
+                    "Vencido · "
+
+                    :
+                    ""
+            )
+
+            +
+
             (
                 evento.hora
                     ?
@@ -1712,28 +1751,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ======================================================
-       29. ¿PUEDE CAMBIAR ESTADO?
+    29. ¿PUEDE COMPLETARSE?
     ====================================================== */
 
-    function eventoPuedeCambiarEstado(
+    function eventoPuedeCompletarse(
         evento
     ) {
 
-        if (!evento) {
-
-            return false;
-
-        }
-
-
-        /*
-         * Solamente un evento programado.
-         */
-
         if (
-            evento.estado
-            !==
-            "programado"
+            !evento
+            ||
+            evento.estado !== "programado"
+            ||
+            !evento.fecha
         ) {
 
             return false;
@@ -1741,30 +1771,98 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        if (!evento.fecha) {
+        const fechaEvento =
+            parsearFechaLocal(
+                evento.fecha
+            );
+
+
+        if (!fechaEvento) {
 
             return false;
 
         }
 
 
-        const hoyISO =
-            fechaAISO(
-                fechaActual
+        const horaTexto =
+            String(
+                evento.hora || ""
+            ).trim();
+
+
+        if (horaTexto) {
+
+            const partesHora =
+                horaTexto.split(
+                    ":"
+                );
+
+
+            if (
+                partesHora.length < 2
+            ) {
+
+                return false;
+
+            }
+
+
+            const horas =
+                Number(
+                    partesHora[0]
+                );
+
+
+            const minutos =
+                Number(
+                    partesHora[1]
+                );
+
+
+            if (
+                !Number.isInteger(horas)
+                ||
+                !Number.isInteger(minutos)
+                ||
+                horas < 0
+                ||
+                horas > 23
+                ||
+                minutos < 0
+                ||
+                minutos > 59
+            ) {
+
+                return false;
+
+            }
+
+
+            fechaEvento.setHours(
+                horas,
+                minutos,
+                0,
+                0
             );
 
+        }
 
-        /*
-         * REGLA PRINCIPAL:
-         *
-         * La fecha del evento debe ser
-         * hoy o una fecha anterior.
-         */
+        else {
+
+            fechaEvento.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+        }
+
 
         return (
-            evento.fecha
+            fechaEvento
             <=
-            hoyISO
+            new Date()
         );
 
     }
@@ -1783,6 +1881,82 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!evento) {
 
             return "";
+
+        }
+
+        /* ======================================================
+        MANTENIMIENTO REAL
+        SE GESTIONA DESDE SU PROPIO MÓDULO
+        ====================================================== */
+
+        if (
+            evento.fuente
+            ===
+            "mantenimiento"
+        ) {
+
+            return `
+
+                <section
+                    class="
+                        agenda-gestion-estado
+                        agenda-gestion-estado-bloqueado
+                    "
+                >
+
+                    <div
+                        class="
+                            agenda-gestion-estado-icono
+                        "
+                    >
+
+                        <i
+                            class="
+                                bi
+                                bi-tools
+                            "
+                        ></i>
+
+                    </div>
+
+
+                    <div
+                        class="
+                            agenda-gestion-estado-contenido
+                        "
+                    >
+
+                        <span
+                            class="
+                                agenda-gestion-estado-etiqueta
+                            "
+                        >
+
+                            Mantenimiento vinculado
+
+                        </span>
+
+
+                        <strong>
+
+                            Se gestiona desde Mantenimientos
+
+                        </strong>
+
+
+                        <p>
+
+                            Esta actividad proviene del módulo
+                            Mantenimientos. La agenda únicamente
+                            muestra su programación.
+
+                        </p>
+
+                    </div>
+
+                </section>
+
+            `;
 
         }
 
@@ -1806,6 +1980,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 evento.id
             );
 
+        const momentoProgramado =
+            (
+                formatearFechaVisual(
+                    evento.fecha
+                )
+
+                +
+
+                (
+                    evento.hora
+                        ?
+                        (
+                            " a las "
+                            +
+                            escaparHTML(
+                                evento.hora
+                            )
+                        )
+                        :
+                        ""
+                )
+            );
+
 
 
         /* ==================================================
@@ -1824,7 +2021,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ============================================== */
 
             if (
-                eventoPuedeCambiarEstado(
+                eventoPuedeCompletarse(
                     evento
                 )
             ) {
@@ -1939,7 +2136,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==============================================
-               EVENTO FUTURO
+            TODAVÍA NO LLEGA LA FECHA / HORA
             ============================================== */
 
             return `
@@ -1947,50 +2144,81 @@ document.addEventListener("DOMContentLoaded", function () {
                 <section
                     class="
                         agenda-gestion-estado
-                        agenda-gestion-estado-bloqueado
+                        agenda-gestion-estado-disponible
                     "
                 >
 
 
-                    <div class="agenda-gestion-estado-icono">
+                    <div class="agenda-gestion-estado-header">
 
-                        <i class="bi bi-lock-fill"></i>
+
+                        <div class="agenda-gestion-estado-icono">
+
+                            <i class="bi bi-clock-history"></i>
+
+                        </div>
+
+
+                        <div class="agenda-gestion-estado-contenido">
+
+
+                            <span class="agenda-gestion-estado-etiqueta">
+
+                                Evento pendiente
+
+                            </span>
+
+
+                            <strong>
+
+                                Aún no puedes marcarlo como completado
+
+                            </strong>
+
+
+                            <p>
+
+                                Podrás completarlo a partir del
+
+                                <b>
+                                    ${momentoProgramado}
+                                </b>.
+
+                                Si la actividad ya no se realizará,
+                                puedes cancelarla ahora.
+
+                            </p>
+
+
+                        </div>
+
 
                     </div>
 
 
-                    <div class="agenda-gestion-estado-contenido">
+
+                    <div class="agenda-gestion-estado-acciones">
 
 
-                        <span class="agenda-gestion-estado-etiqueta">
+                        <button
+                            type="button"
+                            class="
+                                btn-evento-estado
+                                btn-evento-cancelado
+                            "
+                            data-cambiar-estado-evento
+                            data-evento-url="${urlEstado}"
+                            data-evento-estado="cancelado"
+                            data-evento-titulo="${titulo}"
+                        >
 
-                            Cambio de estado bloqueado
+                            <i class="bi bi-x-circle-fill"></i>
 
-                        </span>
+                            <span>
+                                Cancelar evento
+                            </span>
 
-
-                        <strong>
-
-                            El evento todavía no ha llegado
-
-                        </strong>
-
-
-                        <p>
-
-                            Podrás modificar su estado a partir del
-
-                            <b>
-
-                                ${
-                                    formatearFechaVisual(
-                                        evento.fecha
-                                    )
-                                }
-
-                            </b>.
-
-                        </p>
+                        </button>
 
 
                     </div>
@@ -2184,18 +2412,57 @@ document.addEventListener("DOMContentLoaded", function () {
             "Evento";
 
 
+        const estaVencido =
+            (
+                evento.fuente
+                ===
+                "evento"
+
+                &&
+
+                evento.esta_vencido
+                ===
+                true
+            );
+
+
         const nombreEstado =
-            nombresEstados[
+            estaVencido
+                ?
+                "Vencido"
+                :
+                (
+                    evento.estado_nombre
+
+                    ||
+
+                    nombresEstados[
+                        evento.estado
+                    ]
+
+                    ||
+
+                    evento.estado
+
+                    ||
+
+                    "Sin definir"
+                );
+
+        const claseEstado =
+            (
                 evento.estado
-            ]
-
-            ||
-
-            evento.estado
-
-            ||
-
-            "Sin definir";
+                ||
+                ""
+            )
+            +
+            (
+                estaVencido
+                    ?
+                    " vencido"
+                    :
+                    ""
+            );
 
 
         const icono =
@@ -2206,6 +2473,31 @@ document.addEventListener("DOMContentLoaded", function () {
             ||
 
             "bi-calendar-event-fill";
+
+        const referenciaElemento =
+            (
+                evento.fuente
+                ===
+                "mantenimiento"
+            )
+                ?
+                (
+                    "Mantenimiento #"
+                    +
+                    (
+                        evento.id_real
+                        || ""
+                    )
+                )
+                :
+                (
+                    "Evento #"
+                    +
+                    (
+                        evento.id
+                        || ""
+                    )
+                );
 
 
 
@@ -2240,6 +2532,30 @@ document.addEventListener("DOMContentLoaded", function () {
             construirGestionEstadoDinamico(
                 evento
             );
+
+        const botonEditar =
+            (
+                evento.puede_editar
+                &&
+                evento.editar_url
+            )
+                ?
+                `
+                    <a
+                        href="${escaparHTML(evento.editar_url)}"
+                        class="btn-agenda-ver-apiario"
+                    >
+
+                        <i class="bi bi-pencil-square"></i>
+
+                        <span>
+                            Editar evento
+                        </span>
+
+                    </a>
+                `
+                :
+                "";
 
 
 
@@ -2309,7 +2625,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             ·
 
-                            Evento #${escaparHTML(evento.id)}
+                            ${escaparHTML(referenciaElemento)}
 
                         </span>
 
@@ -2457,7 +2773,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <span
                                 class="
                                     agenda-estado
-                                    ${escaparHTML(evento.estado || "")}
+                                    ${escaparHTML(claseEstado)}
                                 "
                             >
 
@@ -2528,6 +2844,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 ========================================== -->
 
                 <div class="agenda-modal-footer">
+
+                    ${botonEditar}    
 
 
                     <button

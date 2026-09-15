@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    const modoEdicion =
+        formulario.dataset.modo
+        ===
+        "editar";
+
 
     /* ======================================================
        2. ELEMENTOS - TIPO DE EVENTO
@@ -97,9 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ====================================================== */
 
     const TIPOS_EVENTO_VALIDOS = [
-        "mantenimiento",
         "revision",
-        "incidencia",
         "evento"
     ];
 
@@ -1378,13 +1381,27 @@ document.addEventListener("DOMContentLoaded", function () {
             false;
 
 
-        btnGuardar.innerHTML = `
-            <i class="bi bi-calendar-plus-fill"></i>
+        if (modoEdicion) {
 
-            <span>
-                Agregar evento
-            </span>
-        `;
+            btnGuardar.innerHTML = `
+                <i class="bi bi-pencil-square"></i>
+
+                <span>
+                    Guardar cambios
+                </span>
+            `;
+
+        } else {
+
+            btnGuardar.innerHTML = `
+                <i class="bi bi-calendar-plus-fill"></i>
+
+                <span>
+                    Agregar evento
+                </span>
+            `;
+
+        }
 
     }
 

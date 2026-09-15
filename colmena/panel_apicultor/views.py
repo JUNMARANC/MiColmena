@@ -398,19 +398,77 @@ def dashboard_apicultor(request):
 
     # ========================================================
     # PRÓXIMOS EVENTOS
+    #
+    # Se utiliza la misma regla de acceso y tiempo que Agenda.
+    #
+    # Incluye:
+    #
+    # - Eventos posteriores a hoy.
+    # - Eventos de hoy cuya hora todavía no ha llegado.
+    # - Eventos de hoy sin hora.
+    #
+    # Excluye:
+    #
+    # - Eventos vencidos.
+    # - Completados.
+    # - Cancelados.
     # ========================================================
 
+    ahora_local = (
+        timezone.localtime()
+    )
+
+
+    hoy = (
+        ahora_local.date()
+    )
+
+
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None
+        )
+    )
+
+
     proximos_eventos = (
-        EventoAgenda.objects
+        obtener_eventos_accesibles_apicultor(
+            apicultor
+        )
         .filter(
-            responsable=
-                apicultor,
-
             estado=
-                "programado",
+                EventoAgenda
+                .EstadoEvento
+                .PROGRAMADO
+        )
+        .filter(
 
-            fecha__gte=
-                timezone.localdate()
+            Q(
+                fecha__gt=hoy
+            )
+
+            |
+
+            Q(
+                fecha=hoy,
+                hora__gt=hora_actual
+            )
+
+            |
+
+            Q(
+                fecha=hoy,
+                hora__isnull=True
+            )
+
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "creado_por"
         )
         .order_by(
             "fecha",
@@ -433,9 +491,6 @@ def dashboard_apicultor(request):
     # ========================================================
     # REVISIONES DEL MES
     # ========================================================
-
-    hoy = timezone.localdate()
-
 
     revisiones_mes = (
         EventoAgenda.objects
@@ -744,8 +799,22 @@ def datos_dashboard_apicultor(
     )
 
 
+    ahora_local = (
+        timezone.localtime()
+    )
+
+
     hoy = (
-        timezone.localdate()
+        ahora_local.date()
+    )
+
+
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None
+        )
     )
 
 
@@ -776,22 +845,52 @@ def datos_dashboard_apicultor(
 
     # ========================================================
     # PRÓXIMAS 5 ACTIVIDADES
+    #
+    # Misma regla utilizada en Agenda:
+    #
+    # - Eventos posteriores a hoy.
+    # - Eventos de hoy cuya hora todavía no ha llegado.
+    # - Eventos de hoy sin hora.
+    #
+    # No incluye eventos vencidos.
     # ========================================================
 
     proximos_eventos = (
-        EventoAgenda.objects
+        obtener_eventos_accesibles_apicultor(
+            apicultor
+        )
         .filter(
-            responsable=
-                apicultor,
-
             estado=
-                "programado",
+                EventoAgenda
+                .EstadoEvento
+                .PROGRAMADO
+        )
+        .filter(
 
-            fecha__gte=
-                hoy
+            Q(
+                fecha__gt=hoy
+            )
+
+            |
+
+            Q(
+                fecha=hoy,
+                hora__gt=hora_actual
+            )
+
+            |
+
+            Q(
+                fecha=hoy,
+                hora__isnull=True
+            )
+
         )
         .select_related(
-            "id_apiario"
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "creado_por"
         )
         .order_by(
             "fecha",
@@ -3126,6 +3225,12 @@ def editar_colmena_apicultor(
 
     # ========================================================
     # VALIDAR TRANSICIÓN A INACTIVA
+    #
+    # Para inactivar una colmena debe estar libre de:
+    #
+    # - Mantenimientos pendientes.
+    # - Incidencias pendientes o en proceso.
+    # - Eventos de Agenda programados.
     # ========================================================
 
     if (
@@ -3133,6 +3238,10 @@ def editar_colmena_apicultor(
         and
         estado_original != "Inactiva"
     ):
+
+        # ====================================================
+        # MANTENIMIENTOS PENDIENTES
+        # ====================================================
 
         tiene_mantenimiento_pendiente = (
             Mantenimiento.objects
@@ -3143,6 +3252,10 @@ def editar_colmena_apicultor(
             .exists()
         )
 
+
+        # ====================================================
+        # INCIDENCIAS ABIERTAS
+        # ====================================================
 
         tiene_incidencia_abierta = (
             Incidencia.objects
@@ -3162,10 +3275,34 @@ def editar_colmena_apicultor(
         )
 
 
+        # ====================================================
+        # EVENTOS DE AGENDA PROGRAMADOS
+        # ====================================================
+
+        tiene_evento_programado = (
+            EventoAgenda.objects
+            .filter(
+                id_colmena=colmena,
+                estado=(
+                    EventoAgenda
+                    .EstadoEvento
+                    .PROGRAMADO
+                )
+            )
+            .exists()
+        )
+
+
+        # ====================================================
+        # BLOQUEAR INACTIVACIÓN
+        # ====================================================
+
         if (
             tiene_mantenimiento_pendiente
             or
             tiene_incidencia_abierta
+            or
+            tiene_evento_programado
         ):
 
             motivos = []
@@ -3182,6 +3319,13 @@ def editar_colmena_apicultor(
 
                 motivos.append(
                     "incidencias pendientes o en proceso"
+                )
+
+
+            if tiene_evento_programado:
+
+                motivos.append(
+                    "eventos de Agenda programados"
                 )
 
 
@@ -9228,6 +9372,98 @@ def editar_incidencia_apicultor(
 # PANEL APICULTOR
 # ============================================================
 
+def obtener_eventos_accesibles_apicultor(
+    apicultor
+):
+
+    # ========================================================
+    # REGLA ÚNICA DE ACCESO A EVENTOS
+    #
+    # El apicultor puede acceder a un evento cuando:
+    #
+    # 1. Está asignado directamente como responsable.
+    #
+    # O
+    #
+    # 2. El evento pertenece a uno de sus apiarios.
+    #
+    # Esta función debe utilizarse en:
+    #
+    # - Agenda
+    # - Editar evento
+    # - Cambiar estado
+    # ========================================================
+
+    return (
+        EventoAgenda.objects
+        .filter(
+
+            Q(
+                responsable=apicultor
+            )
+
+            |
+
+            Q(
+                id_apiario__id_apicultor=apicultor
+            )
+
+        )
+        .distinct()
+    )
+
+
+def evento_esta_vencido(
+    evento,
+    hoy,
+    hora_actual
+):
+
+    # ========================================================
+    # EVENTO VENCIDO
+    #
+    # Un evento se considera vencido cuando:
+    #
+    # - Sigue en estado Programado.
+    #
+    # Y además:
+    #
+    # - Su fecha ya pasó.
+    #
+    # O
+    #
+    # - Es hoy y su hora ya pasó.
+    #
+    # Un evento sin hora programado para hoy todavía
+    # no se considera vencido.
+    # ========================================================
+
+    if (
+        evento.estado
+        !=
+        EventoAgenda.EstadoEvento.PROGRAMADO
+    ):
+        return False
+
+
+    if evento.fecha < hoy:
+        return True
+
+
+    if (
+        evento.fecha == hoy
+        and
+        evento.hora
+        and
+        evento.hora <= hora_actual
+    ):
+        return True
+
+
+    return False
+
+
+
 @login_required
 @permiso_requerido(
     "agenda",
@@ -9261,11 +9497,25 @@ def agenda_apicultor(request):
 
 
     # ========================================================
-    # 3. FECHA ACTUAL
+    # 3. FECHA Y HORA ACTUALES
     # ========================================================
 
+    ahora_local = (
+        timezone.localtime()
+    )
+
+
     hoy = (
-        timezone.localdate()
+        ahora_local.date()
+    )
+
+
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None
+        )
     )
 
 
@@ -9283,19 +9533,8 @@ def agenda_apicultor(request):
     # ========================================================
 
     eventos_base = (
-        EventoAgenda.objects
-        .filter(
-
-            Q(
-                responsable=apicultor
-            )
-
-            |
-
-            Q(
-                id_apiario__in=apiarios
-            )
-
+        obtener_eventos_accesibles_apicultor(
+            apicultor
         )
         .select_related(
             "id_apiario",
@@ -9303,7 +9542,6 @@ def agenda_apicultor(request):
             "responsable",
             "creado_por"
         )
-        .distinct()
     )
 
 
@@ -9323,33 +9561,11 @@ def agenda_apicultor(request):
 
 
     # ========================================================
-    # 6. TIPOS VÁLIDOS
-    # ========================================================
-
-    tipos_validos = [
-
-        EventoAgenda.TipoEvento.MANTENIMIENTO,
-
-        EventoAgenda.TipoEvento.REVISION,
-
-        EventoAgenda.TipoEvento.INCIDENCIA,
-
-        EventoAgenda.TipoEvento.EVENTO,
-
-    ]
-
-
-    # ========================================================
     # 7. CONTADORES GENERALES
     #
     # Los contadores se calculan sobre todos los eventos del
     # apicultor, independientemente del filtro seleccionado.
     # ========================================================
-
-    total_eventos = (
-        eventos_base.count()
-    )
-
 
     total_programados = (
         eventos_base
@@ -9364,43 +9580,18 @@ def agenda_apicultor(request):
     )
 
 
-    total_completados = (
-        eventos_base
-        .filter(
-            estado=(
-                EventoAgenda
-                .EstadoEvento
-                .COMPLETADO
-            )
-        )
-        .count()
-    )
-
-
-    total_cancelados = (
-        eventos_base
-        .filter(
-            estado=(
-                EventoAgenda
-                .EstadoEvento
-                .CANCELADO
-            )
-        )
-        .count()
-    )
-
-
     # ========================================================
-    # 8. EVENTOS PARA HOY
+    # 8. ACTIVIDADES PARA HOY
     #
-    # Aquí solamente mostramos actividades que todavía están
-    # PROGRAMADAS.
+    # Incluye:
     #
-    # Un evento completado o cancelado no debe seguir
-    # apareciendo dentro de "Actividades para hoy".
+    # - Eventos de agenda Programados.
+    # - Mantenimientos reales Pendientes.
+    #
+    # No se crean copias entre modelos.
     # ========================================================
 
-    eventos_hoy = (
+    eventos_hoy_agenda = (
         eventos_base
         .filter(
             fecha=hoy,
@@ -9410,42 +9601,442 @@ def agenda_apicultor(request):
                 .PROGRAMADO
             )
         )
-        .order_by(
-            "hora"
+        .select_related(
+            "id_apiario",
+            "id_colmena"
         )
     )
 
 
-    total_hoy = (
-        eventos_hoy.count()
+    mantenimientos_hoy = (
+        Mantenimiento.objects
+        .filter(
+            id_apiario__in=apiarios,
+            fechaejecucion=hoy,
+            estado__iexact="Pendiente"
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena"
+        )
+    )
+
+
+    eventos_hoy = []
+
+
+    # ========================================================
+    # EVENTOS DE AGENDA
+    # ========================================================
+
+    for evento in eventos_hoy_agenda:
+
+        esta_vencido = (
+            evento_esta_vencido(
+                evento,
+                hoy,
+                hora_actual
+            )
+        )
+
+        hora_texto = (
+            evento.hora.strftime(
+                "%H:%M"
+            )
+            if evento.hora
+            else "Sin hora"
+        )
+
+
+        hora_orden = (
+            evento.hora.strftime(
+                "%H:%M"
+            )
+            if evento.hora
+            else "99:99"
+        )
+
+
+        eventos_hoy.append({
+
+            "id":
+                str(
+                    evento.id_evento
+                ),
+
+            "fuente":
+                "evento",
+
+            "esta_vencido":
+                esta_vencido,
+
+            "titulo":
+                evento.titulo,
+
+            "tipo":
+                evento.tipo_evento,
+
+            "fecha":
+                evento.fecha,
+
+            "hora":
+                hora_texto,
+
+            "hora_orden":
+                hora_orden,
+
+            "apiario":
+                (
+                    evento
+                    .id_apiario
+                    .nombreapiario
+
+                    if evento.id_apiario
+
+                    else ""
+                ),
+
+            "colmena":
+                (
+                    evento
+                    .id_colmena
+                    .codigocolmena
+
+                    if evento.id_colmena
+
+                    else ""
+                ),
+
+            "estado":
+                evento.estado,
+
+            "estado_nombre":
+                evento.get_estado_display(),
+
+        })
+
+
+    # ========================================================
+    # MANTENIMIENTOS REALES
+    # ========================================================
+
+    for mantenimiento in mantenimientos_hoy:
+
+        eventos_hoy.append({
+
+            "id":
+                (
+                    "mantenimiento-"
+                    +
+                    str(
+                        mantenimiento.id_mantenimiento
+                    )
+                ),
+
+            "fuente":
+                "mantenimiento",
+
+            "titulo":
+                mantenimiento.tipo,
+
+            "tipo":
+                "mantenimiento",
+
+            "fecha":
+                mantenimiento.fechaejecucion,
+
+            "hora":
+                "Sin hora",
+
+            # Los mantenimientos no tienen hora.
+            # Los dejamos después de los eventos con hora.
+            "hora_orden":
+                "99:99",
+
+            "apiario":
+                (
+                    mantenimiento
+                    .id_apiario
+                    .nombreapiario
+
+                    if mantenimiento.id_apiario
+
+                    else ""
+                ),
+
+            "colmena":
+                (
+                    mantenimiento
+                    .id_colmena
+                    .codigocolmena
+
+                    if mantenimiento.id_colmena
+
+                    else ""
+                ),
+
+            # Clase visual compatible con Agenda.
+            "estado":
+                "programado",
+
+            # Nombre real del estado.
+            "estado_nombre":
+                mantenimiento.estado,
+
+        })
+
+
+    # ========================================================
+    # ORDENAR ACTIVIDADES DE HOY
+    # ========================================================
+
+    eventos_hoy.sort(
+        key=lambda actividad: (
+            actividad["hora_orden"],
+            actividad["titulo"].lower()
+        )
+    )
+
+
+    total_hoy = len(
+        eventos_hoy
     )
 
 
     # ========================================================
-    # 9. PRÓXIMOS EVENTOS
+    # 9. PRÓXIMAS ACTIVIDADES
     #
-    # Solamente:
+    # Incluye:
     #
-    # - Fecha actual o futura.
-    # - Estado Programado.
+    # - Eventos Programados cuya fecha todavía no ha llegado.
+    # - Eventos de hoy cuya hora todavía no ha llegado.
+    # - Eventos de hoy sin hora definida.
+    # - Mantenimientos Pendientes desde hoy en adelante.
     #
-    # No mostramos aquí eventos ya completados o cancelados.
+    # Un evento de hoy cuya hora ya pasó ya NO se considera
+    # próximo.
+    #
+    # Los registros siguen perteneciendo a sus modelos reales.
     # ========================================================
 
-    proximos_eventos = (
+    proximos_eventos_agenda = (
         eventos_base
         .filter(
-            fecha__gte=hoy,
             estado=(
                 EventoAgenda
                 .EstadoEvento
                 .PROGRAMADO
             )
         )
-        .order_by(
-            "fecha",
-            "hora"
-        )[:5]
+        .filter(
+
+            # Fechas posteriores a hoy.
+            Q(
+                fecha__gt=hoy
+            )
+
+            |
+
+            # Hoy, pero con una hora que todavía no ha llegado.
+            Q(
+                fecha=hoy,
+                hora__gt=hora_actual
+            )
+
+            |
+
+            # Evento de hoy sin una hora específica.
+            Q(
+                fecha=hoy,
+                hora__isnull=True
+            )
+
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena"
+        )
+    )
+
+
+    proximos_mantenimientos = (
+        Mantenimiento.objects
+        .filter(
+            id_apiario__in=apiarios,
+            fechaejecucion__gte=hoy,
+            estado__iexact="Pendiente"
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena"
+        )
+    )
+
+
+    proximos_eventos = []
+
+
+    # ========================================================
+    # EVENTOS DE AGENDA
+    # ========================================================
+
+    for evento in proximos_eventos_agenda:
+
+        hora_texto = (
+            evento.hora.strftime(
+                "%H:%M"
+            )
+            if evento.hora
+            else "Sin hora"
+        )
+
+
+        hora_orden = (
+            evento.hora.strftime(
+                "%H:%M"
+            )
+            if evento.hora
+            else "99:99"
+        )
+
+
+        proximos_eventos.append({
+
+            "id":
+                str(
+                    evento.id_evento
+                ),
+
+            "fuente":
+                "evento",
+
+            "titulo":
+                evento.titulo,
+
+            "tipo":
+                evento.tipo_evento,
+
+            "fecha":
+                evento.fecha,
+
+            "hora":
+                hora_texto,
+
+            "hora_orden":
+                hora_orden,
+
+            "apiario":
+                (
+                    evento
+                    .id_apiario
+                    .nombreapiario
+
+                    if evento.id_apiario
+
+                    else ""
+                ),
+
+            "colmena":
+                (
+                    evento
+                    .id_colmena
+                    .codigocolmena
+
+                    if evento.id_colmena
+
+                    else ""
+                ),
+
+            "estado":
+                evento.estado,
+
+            "estado_nombre":
+                evento.get_estado_display(),
+
+        })
+
+
+    # ========================================================
+    # MANTENIMIENTOS REALES
+    # ========================================================
+
+    for mantenimiento in proximos_mantenimientos:
+
+        proximos_eventos.append({
+
+            "id":
+                (
+                    "mantenimiento-"
+                    +
+                    str(
+                        mantenimiento.id_mantenimiento
+                    )
+                ),
+
+            "fuente":
+                "mantenimiento",
+
+            "titulo":
+                mantenimiento.tipo,
+
+            "tipo":
+                "mantenimiento",
+
+            "fecha":
+                mantenimiento.fechaejecucion,
+
+            "hora":
+                "Sin hora",
+
+            "hora_orden":
+                "99:99",
+
+            "apiario":
+                (
+                    mantenimiento
+                    .id_apiario
+                    .nombreapiario
+
+                    if mantenimiento.id_apiario
+
+                    else ""
+                ),
+
+            "colmena":
+                (
+                    mantenimiento
+                    .id_colmena
+                    .codigocolmena
+
+                    if mantenimiento.id_colmena
+
+                    else ""
+                ),
+
+            "estado":
+                "programado",
+
+            "estado_nombre":
+                mantenimiento.estado,
+
+        })
+
+
+    # ========================================================
+    # ORDENAR Y MOSTRAR SOLO LAS 5 MÁS PRÓXIMAS
+    # ========================================================
+
+    proximos_eventos.sort(
+        key=lambda actividad: (
+            actividad["fecha"],
+            actividad["hora_orden"],
+            actividad["titulo"].lower()
+        )
+    )
+
+
+    proximos_eventos = (
+        proximos_eventos[:5]
     )
 
 
@@ -9459,30 +10050,10 @@ def agenda_apicultor(request):
             "valor":
                 EventoAgenda
                 .TipoEvento
-                .MANTENIMIENTO,
-
-            "nombre":
-                "Mantenimiento",
-        },
-
-        {
-            "valor":
-                EventoAgenda
-                .TipoEvento
                 .REVISION,
 
             "nombre":
                 "Revisión",
-        },
-
-        {
-            "valor":
-                EventoAgenda
-                .TipoEvento
-                .INCIDENCIA,
-
-            "nombre":
-                "Incidencia",
         },
 
         {
@@ -9570,6 +10141,43 @@ def agenda_apicultor(request):
         .strip()
     )
 
+    # ========================================================
+    # NORMALIZAR TIPO DEL FILTRO
+    #
+    # Desde Agenda solamente se pueden filtrar directamente:
+    #
+    # - Revisión
+    # - Evento general
+    #
+    # Mantenimientos se muestran automáticamente desde su
+    # modelo real y las incidencias pertenecen a su módulo.
+    # ========================================================
+
+    tipos_filtrables = [
+
+        EventoAgenda.TipoEvento.REVISION,
+
+        EventoAgenda.TipoEvento.EVENTO,
+
+    ]
+
+
+    if (
+        tipo_seleccionado
+        and
+        tipo_seleccionado
+        not in
+        tipos_filtrables
+    ):
+
+        tipo_seleccionado = ""
+
+    estado_fue_enviado = (
+        "estado"
+        in
+        request.GET
+    )
+
 
     estado_seleccionado = (
         request.GET
@@ -9590,24 +10198,58 @@ def agenda_apicultor(request):
         .strip()
     )
 
+    # ========================================================
+    # VALIDAR FECHA DEL FILTRO
+    #
+    # Evita que una fecha manipulada desde la URL llegue
+    # directamente al ORM.
+    #
+    # Ejemplo inválido:
+    # ?fecha=hola
+    # ========================================================
+
+    if fecha_seleccionada:
+
+        try:
+
+            datetime.strptime(
+                fecha_seleccionada,
+                "%Y-%m-%d"
+            )
+
+        except ValueError:
+
+            fecha_seleccionada = ""
+
 
     # ========================================================
     # 13. NORMALIZAR ESTADO
     #
-    # REGLA PRINCIPAL:
+    # REGLAS:
     #
-    # Si no existe un estado válido en el filtro,
-    # la agenda utiliza PROGRAMADO.
+    # Si se entra normalmente a Agenda sin parámetro "estado":
+    #     → mostramos Programados por defecto.
     #
-    # Por lo tanto:
+    # Si el usuario selecciona "Todos los estados":
+    #     → estado llega vacío ("")
+    #     → no aplicamos filtro de estado.
     #
-    # - Al entrar → Programados.
-    # - Limpiar filtros → Programados.
-    # - Elegir Completado → Completados.
-    # - Elegir Cancelado → Cancelados.
+    # Si llega un valor manipulado o inválido:
+    #     → volvemos a Programado.
     # ========================================================
 
-    if (
+    if not estado_fue_enviado:
+
+        estado_seleccionado = (
+            EventoAgenda
+            .EstadoEvento
+            .PROGRAMADO
+        )
+
+
+    elif (
+        estado_seleccionado
+        and
         estado_seleccionado
         not in
         estados_validos
@@ -9636,10 +10278,17 @@ def agenda_apicultor(request):
 
     eventos = (
         eventos_base
-        .filter(
-            estado=estado_seleccionado
-        )
     )
+
+
+    if estado_seleccionado:
+
+        eventos = (
+            eventos
+            .filter(
+                estado=estado_seleccionado
+            )
+        )
 
 
     # ========================================================
@@ -9710,7 +10359,7 @@ def agenda_apicultor(request):
         and
         tipo_seleccionado
         in
-        tipos_validos
+        tipos_filtrables
     ):
 
         eventos = (
@@ -9784,10 +10433,65 @@ def agenda_apicultor(request):
 
     for evento in eventos:
 
+        esta_vencido = (
+            evento_esta_vencido(
+                evento,
+                hoy,
+                hora_actual
+            )
+        )
+
+        puede_editar = (
+
+            evento.estado
+            ==
+            EventoAgenda.EstadoEvento.PROGRAMADO
+
+            and
+
+            evento.creado_por_id
+            ==
+            request.user.id
+
+            and
+
+            evento.tipo_evento
+            in
+            {
+                EventoAgenda.TipoEvento.REVISION,
+                EventoAgenda.TipoEvento.EVENTO,
+            }
+
+        )
+
+
         eventos_calendario.append({
 
             "id":
                 evento.id_evento,
+            
+            "fuente":
+                "evento",
+
+            "esta_vencido":
+                esta_vencido,
+
+            "puede_editar":
+                puede_editar,
+
+            "editar_url":
+                (
+                    reverse(
+                        "editar_evento_apicultor",
+                        args=[
+                            evento.id_evento
+                        ]
+                    )
+
+                    if puede_editar
+
+                    else ""
+                ),
 
 
             "titulo":
@@ -9809,8 +10513,12 @@ def agenda_apicultor(request):
 
 
             "hora":
-                evento.hora.strftime(
-                    "%H:%M"
+                (
+                    evento.hora.strftime(
+                        "%H:%M"
+                    )
+                    if evento.hora
+                    else ""
                 ),
 
 
@@ -9847,6 +10555,248 @@ def agenda_apicultor(request):
 
         })
 
+    # ========================================================
+    # MANTENIMIENTOS REALES EN EL CALENDARIO
+    #
+    # IMPORTANTE:
+    # No creamos copias en EventoAgenda.
+    # La fuente real sigue siendo Mantenimiento.
+    # ========================================================
+
+    mantenimientos_calendario = (
+        Mantenimiento.objects
+        .filter(
+            id_apiario__in=apiarios
+        )
+        .exclude(
+            fechaejecucion__isnull=True
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena"
+        )
+    )
+
+
+    # ========================================================
+    # ESTADO EQUIVALENTE
+    #
+    # Agenda:
+    # programado  -> Mantenimiento Pendiente
+    # completado -> Mantenimiento Completado
+    # cancelado  -> Mantenimiento Cancelado
+    # ========================================================
+
+    estado_mantenimiento = {
+        EventoAgenda.EstadoEvento.PROGRAMADO:
+            "Pendiente",
+
+        EventoAgenda.EstadoEvento.COMPLETADO:
+            "Completado",
+
+        EventoAgenda.EstadoEvento.CANCELADO:
+            "Cancelado",
+    }.get(
+        estado_seleccionado
+    )
+
+
+    if estado_mantenimiento:
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .filter(
+                estado__iexact=
+                    estado_mantenimiento
+            )
+        )
+
+
+    # ========================================================
+    # FILTRO DE TIPO
+    #
+    # Si el usuario eligió otro tipo,
+    # no mostramos mantenimientos reales.
+    # ========================================================
+
+    if (
+        tipo_seleccionado
+        and
+        tipo_seleccionado
+        !=
+        EventoAgenda.TipoEvento.MANTENIMIENTO
+    ):
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario.none()
+        )
+
+
+    # ========================================================
+    # BUSCADOR
+    # ========================================================
+
+    if busqueda:
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .filter(
+
+                Q(
+                    tipo__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    observaciones__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_apiario__nombreapiario__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_colmena__codigocolmena__icontains=
+                        busqueda
+                )
+
+            )
+        )
+
+
+    # ========================================================
+    # APIARIO
+    # ========================================================
+
+    if (
+        apiario_seleccionado
+        .isdigit()
+    ):
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .filter(
+                id_apiario__id_apiario=
+                    int(
+                        apiario_seleccionado
+                    )
+            )
+        )
+
+
+    # ========================================================
+    # FECHA
+    # ========================================================
+
+    if fecha_seleccionada:
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .filter(
+                fechaejecucion=
+                    fecha_seleccionada
+            )
+        )
+
+
+    # ========================================================
+    # AGREGARLOS AL JSON DEL CALENDARIO
+    # ========================================================
+
+    for mantenimiento in mantenimientos_calendario:
+
+        estado_visual = {
+            "Pendiente":
+                "programado",
+
+            "Completado":
+                "completado",
+
+            "Cancelado":
+                "cancelado",
+        }.get(
+            mantenimiento.estado,
+            "programado"
+        )
+
+
+        eventos_calendario.append({
+
+            "id":
+                (
+                    "mantenimiento-"
+                    +
+                    str(
+                        mantenimiento.id_mantenimiento
+                    )
+                ),
+
+            "id_real":
+                mantenimiento.id_mantenimiento,
+
+            "fuente":
+                "mantenimiento",
+
+            "titulo":
+                mantenimiento.tipo,
+
+            "tipo":
+                "mantenimiento",
+
+            "estado":
+                estado_visual,
+
+            "estado_nombre":
+                mantenimiento.estado,
+
+            "fecha":
+                mantenimiento.fechaejecucion.strftime(
+                    "%Y-%m-%d"
+                ),
+
+            # Mantenimiento no tiene campo hora.
+            "hora":
+                "",
+
+            "apiario":
+                (
+                    mantenimiento
+                    .id_apiario
+                    .nombreapiario
+
+                    if mantenimiento.id_apiario
+
+                    else ""
+                ),
+
+            "colmena":
+                (
+                    mantenimiento
+                    .id_colmena
+                    .codigocolmena
+
+                    if mantenimiento.id_colmena
+
+                    else ""
+                ),
+
+            "descripcion":
+                (
+                    mantenimiento.observaciones
+                    or
+                    ""
+                ),
+
+        })
+
 
     # ========================================================
     # 21. PAGINACIÓN DEL LISTADO
@@ -9873,6 +10823,91 @@ def agenda_apicultor(request):
             pagina
         )
     )
+
+    # ========================================================
+    # DISPONIBILIDAD PARA COMPLETAR EVENTOS
+    #
+    # Un evento solamente puede marcarse como completado
+    # cuando ya llegó su fecha y su hora.
+    # ========================================================
+
+    for evento in eventos_pagina:
+
+        evento.esta_vencido = (
+            evento_esta_vencido(
+                evento,
+                hoy,
+                hora_actual
+            )
+        )
+
+        evento.puede_completar = (
+
+            evento.fecha < hoy
+
+            or
+
+            (
+                evento.fecha == hoy
+
+                and
+
+                (
+                    not evento.hora
+
+                    or
+
+                    evento.hora <= hora_actual
+                )
+            )
+
+        )
+
+        # ====================================================
+        # DISPONIBILIDAD PARA VER APIARIO
+        #
+        # El evento puede ser visible porque el apicultor es
+        # responsable, aunque el apiario pertenezca a otra
+        # persona.
+        #
+        # Solo mostramos "Ver apiario" cuando realmente es uno
+        # de los apiarios asignados al apicultor autenticado.
+        # ====================================================
+
+        evento.puede_ver_apiario = (
+            evento.id_apiario_id
+            and
+            evento.id_apiario.id_apicultor_id
+            ==
+            apicultor.id_apicultor
+        )
+
+        # ====================================================
+        # DISPONIBILIDAD PARA EDITAR
+        # ====================================================
+
+        evento.puede_editar = (
+
+            evento.estado
+            ==
+            EventoAgenda.EstadoEvento.PROGRAMADO
+
+            and
+
+            evento.creado_por_id
+            ==
+            request.user.id
+
+            and
+
+            evento.tipo_evento
+            in
+            {
+                EventoAgenda.TipoEvento.REVISION,
+                EventoAgenda.TipoEvento.EVENTO,
+            }
+
+        )
 
 
     # ========================================================
@@ -9921,20 +10956,8 @@ def agenda_apicultor(request):
         # CONTADORES
         # ====================================================
 
-        "total_eventos":
-            total_eventos,
-
-
         "total_programados":
             total_programados,
-
-
-        "total_completados":
-            total_completados,
-
-
-        "total_cancelados":
-            total_cancelados,
 
 
         "total_hoy":
@@ -10084,18 +11107,8 @@ def crear_evento_apicultor(request):
     tipos_disponibles = [
 
         {
-            "valor": EventoAgenda.TipoEvento.MANTENIMIENTO,
-            "nombre": "Mantenimiento",
-        },
-
-        {
             "valor": EventoAgenda.TipoEvento.REVISION,
             "nombre": "Revisión",
-        },
-
-        {
-            "valor": EventoAgenda.TipoEvento.INCIDENCIA,
-            "nombre": "Incidencia",
         },
 
         {
@@ -10116,11 +11129,7 @@ def crear_evento_apicultor(request):
 
     tipos_validos = [
 
-        EventoAgenda.TipoEvento.MANTENIMIENTO,
-
         EventoAgenda.TipoEvento.REVISION,
-
-        EventoAgenda.TipoEvento.INCIDENCIA,
 
         EventoAgenda.TipoEvento.EVENTO,
 
@@ -10539,6 +11548,12 @@ def crear_evento_apicultor(request):
                 "valores_formulario":
                     valores_formulario,
 
+                "modo_edicion":
+                    False,
+
+                "evento":
+                    None,
+
             }
 
 
@@ -10671,6 +11686,12 @@ def crear_evento_apicultor(request):
         "valores_formulario":
             {},
 
+        "modo_edicion":
+            False,
+
+        "evento":
+            None,
+
     }
 
 
@@ -10681,7 +11702,791 @@ def crear_evento_apicultor(request):
     )
 
 
+# ============================================================
+# EDITAR EVENTO
+# PANEL APICULTOR
+# ============================================================
 
+@login_required
+@permiso_requerido(
+    "agenda",
+    redireccion="dashboard_apicultor"
+)
+def editar_evento_apicultor(
+    request,
+    id_evento
+):
+
+    # ========================================================
+    # 1. APICULTOR AUTENTICADO
+    # ========================================================
+
+    apicultor = get_object_or_404(
+        Apicultor,
+        user=request.user
+    )
+
+
+    # ========================================================
+    # 2. BUSCAR EVENTO
+    #
+    # El evento debe estar relacionado con uno de los
+    # apiarios asignados al apicultor autenticado.
+    # ========================================================
+
+    evento = get_object_or_404(
+
+        obtener_eventos_accesibles_apicultor(
+            apicultor
+        )
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+            "responsable",
+            "creado_por",
+        ),
+
+        id_evento=id_evento,
+
+    )
+
+
+    # ========================================================
+    # 3. SOLO PUEDE EDITAR EVENTOS CREADOS POR ÉL
+    #
+    # Si el administrador creó el evento, el apicultor
+    # podrá consultarlo en Agenda, pero no modificarlo.
+    # ========================================================
+
+    if evento.creado_por_id != request.user.id:
+
+        messages.error(
+            request,
+            (
+                "No puedes editar este evento porque "
+                "fue asignado por administración."
+            )
+        )
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # 4. SOLO EVENTOS PROGRAMADOS
+    # ========================================================
+
+    if (
+        evento.estado
+        !=
+        EventoAgenda.EstadoEvento.PROGRAMADO
+    ):
+
+        messages.error(
+            request,
+            (
+                "Solo puedes editar eventos que se "
+                "encuentren en estado Programado."
+            )
+        )
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # 5. TIPOS PERMITIDOS
+    #
+    # Agenda permite editar únicamente:
+    #
+    # - Revisión
+    # - Evento general
+    #
+    # Los mantenimientos reales se administran desde
+    # el módulo de Mantenimientos.
+    # ========================================================
+
+    tipos_validos = [
+
+        EventoAgenda.TipoEvento.REVISION,
+
+        EventoAgenda.TipoEvento.EVENTO,
+
+    ]
+
+
+    if evento.tipo_evento not in tipos_validos:
+
+        messages.error(
+            request,
+            (
+                "Este tipo de actividad no puede "
+                "editarse directamente desde la Agenda."
+            )
+        )
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # 6. APIARIOS ASIGNADOS
+    # ========================================================
+
+    apiarios = (
+        Apiario.objects
+        .filter(
+            id_apicultor=apicultor
+        )
+        .order_by(
+            "nombreapiario"
+        )
+    )
+
+
+    # ========================================================
+    # 7. COLMENAS DEL APICULTOR
+    # ========================================================
+
+    colmenas_todas = (
+        Colmena.objects
+        .filter(
+            id_apiario__id_apicultor=apicultor
+        )
+        .select_related(
+            "id_apiario"
+        )
+        .order_by(
+            "id_apiario__nombreapiario",
+            "codigocolmena"
+        )
+    )
+
+
+    # ========================================================
+    # COLMENAS DISPONIBLES
+    #
+    # Normalmente no mostramos colmenas Inactivas.
+    #
+    # EXCEPCIÓN:
+    # Si el evento ya estaba asociado a una colmena que
+    # posteriormente quedó Inactiva, la mostramos únicamente
+    # para que el usuario pueda ver la asociación actual.
+    #
+    # El backend seguirá impidiendo guardar el evento mientras
+    # continúe usando esa colmena Inactiva.
+    # ========================================================
+
+    colmenas = list(
+        colmenas_todas
+        .exclude(
+            estadocolmena__iexact="Inactiva"
+        )
+    )
+
+
+    if evento.id_colmena_id:
+
+        colmena_actual = (
+            colmenas_todas
+            .filter(
+                id_colmena=
+                    evento.id_colmena_id
+            )
+            .first()
+        )
+
+
+        if (
+            colmena_actual
+            and
+            not colmena_esta_operativa(
+                colmena_actual
+            )
+        ):
+
+            colmenas.append(
+                colmena_actual
+            )
+
+
+    # ========================================================
+    # 8. TIPOS DISPONIBLES
+    # ========================================================
+
+    tipos_disponibles = [
+
+        {
+            "valor":
+                EventoAgenda.TipoEvento.REVISION,
+
+            "nombre":
+                "Revisión",
+        },
+
+        {
+            "valor":
+                EventoAgenda.TipoEvento.EVENTO,
+
+            "nombre":
+                "Evento general",
+        },
+
+    ]
+
+
+    # ========================================================
+    # 9. FECHA ACTUAL
+    # ========================================================
+
+    fecha_hoy = timezone.localdate()
+
+
+    # ========================================================
+    # 10. PROCESAR EDICIÓN
+    # ========================================================
+
+    if request.method == "POST":
+
+        # ====================================================
+        # 10.1 RECIBIR DATOS
+        # ====================================================
+
+        titulo = request.POST.get(
+            "titulo",
+            ""
+        ).strip()
+
+
+        tipo_evento = request.POST.get(
+            "tipo_evento",
+            ""
+        ).strip()
+
+
+        id_apiario = request.POST.get(
+            "apiario",
+            ""
+        ).strip()
+
+
+        id_colmena = request.POST.get(
+            "colmena",
+            ""
+        ).strip()
+
+
+        fecha = request.POST.get(
+            "fecha",
+            ""
+        ).strip()
+
+
+        hora = request.POST.get(
+            "hora",
+            ""
+        ).strip()
+
+
+        descripcion = request.POST.get(
+            "descripcion",
+            ""
+        ).strip()
+
+
+        # ====================================================
+        # 10.2 CONSERVAR VALORES
+        # ====================================================
+
+        valores_formulario = {
+
+            "titulo":
+                titulo,
+
+            "tipo_evento":
+                tipo_evento,
+
+            "apiario":
+                id_apiario,
+
+            "colmena":
+                id_colmena,
+
+            "fecha":
+                fecha,
+
+            "hora":
+                hora,
+
+            "descripcion":
+                descripcion,
+
+        }
+
+
+        errores = []
+
+
+        # ====================================================
+        # 11. VALIDAR TÍTULO
+        # ====================================================
+
+        if not titulo:
+
+            errores.append(
+                "Debes ingresar un título para el evento."
+            )
+
+
+        elif len(titulo) < 3:
+
+            errores.append(
+                "El título debe tener al menos 3 caracteres."
+            )
+
+
+        elif len(titulo) > 150:
+
+            errores.append(
+                "El título no puede superar los 150 caracteres."
+            )
+
+
+        # ====================================================
+        # 12. VALIDAR TIPO
+        # ====================================================
+
+        if tipo_evento not in tipos_validos:
+
+            errores.append(
+                "Selecciona un tipo de evento válido."
+            )
+
+
+        # ====================================================
+        # 13. VALIDAR APIARIO
+        # ====================================================
+
+        apiario = None
+
+
+        if not id_apiario:
+
+            errores.append(
+                "Debes seleccionar un apiario."
+            )
+
+
+        elif not id_apiario.isdigit():
+
+            errores.append(
+                "El apiario seleccionado no es válido."
+            )
+
+
+        else:
+
+            apiario = (
+                apiarios
+                .filter(
+                    id_apiario=int(
+                        id_apiario
+                    )
+                )
+                .first()
+            )
+
+
+            if not apiario:
+
+                errores.append(
+                    "El apiario seleccionado no pertenece "
+                    "a tus apiarios asignados."
+                )
+
+
+        # ====================================================
+        # 14. VALIDAR COLMENA
+        # ====================================================
+
+        colmena = None
+
+
+        if id_colmena:
+
+            if not id_colmena.isdigit():
+
+                errores.append(
+                    "La colmena seleccionada no es válida."
+                )
+
+
+            elif apiario:
+
+                colmena = (
+                    colmenas_todas
+                    .filter(
+
+                        id_colmena=int(
+                            id_colmena
+                        ),
+
+                        id_apiario=apiario,
+
+                        id_apiario__id_apicultor=apicultor,
+
+                    )
+                    .first()
+                )
+
+
+                if not colmena:
+
+                    errores.append(
+                        "La colmena seleccionada no pertenece "
+                        "al apiario indicado."
+                    )
+
+
+                elif not colmena_esta_operativa(
+                    colmena
+                ):
+
+                    errores.append(
+                        f'La colmena "{colmena.codigocolmena}" '
+                        "se encuentra inactiva y no puede "
+                        "utilizarse para este evento."
+                    )
+
+
+        # ====================================================
+        # 15. VALIDAR FECHA
+        # ====================================================
+
+        fecha_evento = None
+
+
+        if not fecha:
+
+            errores.append(
+                "Debes seleccionar la fecha del evento."
+            )
+
+
+        else:
+
+            try:
+
+                fecha_evento = datetime.strptime(
+                    fecha,
+                    "%Y-%m-%d"
+                ).date()
+
+
+            except ValueError:
+
+                errores.append(
+                    "La fecha seleccionada no es válida."
+                )
+
+
+        # ====================================================
+        # 16. NO PERMITIR FECHAS PASADAS
+        # ====================================================
+
+        if (
+            fecha_evento
+            and
+            fecha_evento < fecha_hoy
+        ):
+
+            errores.append(
+                "No puedes reprogramar un evento "
+                "en una fecha pasada."
+            )
+
+
+        # ====================================================
+        # 17. VALIDAR HORA
+        # ====================================================
+
+        hora_evento = None
+
+
+        if not hora:
+
+            errores.append(
+                "Debes seleccionar la hora del evento."
+            )
+
+
+        else:
+
+            try:
+
+                hora_evento = datetime.strptime(
+                    hora,
+                    "%H:%M"
+                ).time()
+
+
+            except ValueError:
+
+                errores.append(
+                    "La hora seleccionada no es válida."
+                )
+
+
+        # ====================================================
+        # 18. EVENTO PARA HOY
+        #
+        # La nueva hora debe seguir estando en el futuro.
+        # ====================================================
+
+        if (
+            fecha_evento
+            and
+            hora_evento
+            and
+            fecha_evento == fecha_hoy
+        ):
+
+            hora_actual = (
+                timezone.localtime()
+                .replace(
+                    second=0,
+                    microsecond=0
+                )
+                .time()
+            )
+
+
+            if hora_evento <= hora_actual:
+
+                errores.append(
+                    "Si el evento es para hoy, debes seleccionar "
+                    "una hora posterior a la actual."
+                )
+
+
+        # ====================================================
+        # 19. VALIDAR DESCRIPCIÓN
+        # ====================================================
+
+        if len(descripcion) > 500:
+
+            errores.append(
+                "La descripción no puede superar "
+                "los 500 caracteres."
+            )
+
+
+        # ====================================================
+        # 20. SI HAY ERRORES
+        # ====================================================
+
+        if errores:
+
+            for error in errores:
+
+                messages.error(
+                    request,
+                    error
+                )
+
+
+            contexto = {
+
+                "apicultor":
+                    apicultor,
+
+                "apiarios":
+                    apiarios,
+
+                "colmenas":
+                    colmenas,
+
+                "tipos_disponibles":
+                    tipos_disponibles,
+
+                "fecha_hoy":
+                    fecha_hoy,
+
+                "valores_formulario":
+                    valores_formulario,
+
+                "modo_edicion":
+                    True,
+
+                "evento":
+                    evento,
+
+            }
+
+
+            return render(
+                request,
+                "panel_apicultor/crear_evento.html",
+                contexto
+            )
+
+
+        # ====================================================
+        # 21. ACTUALIZAR EVENTO
+        #
+        # IMPORTANTE:
+        #
+        # No modificamos:
+        #
+        # - estado
+        # - responsable
+        # - creado_por
+        # ====================================================
+
+        evento.titulo = titulo
+
+        evento.tipo_evento = tipo_evento
+
+        evento.id_apiario = apiario
+
+        evento.id_colmena = colmena
+
+        evento.fecha = fecha_evento
+
+        evento.hora = hora_evento
+
+        evento.descripcion = descripcion
+
+
+        evento.save(
+            update_fields=[
+
+                "titulo",
+
+                "tipo_evento",
+
+                "id_apiario",
+
+                "id_colmena",
+
+                "fecha",
+
+                "hora",
+
+                "descripcion",
+
+            ]
+        )
+
+
+        # ====================================================
+        # 22. MENSAJE
+        # ====================================================
+
+        messages.success(
+            request,
+            "El evento fue actualizado correctamente."
+        )
+
+
+        # ====================================================
+        # 23. REGRESAR A AGENDA
+        # ====================================================
+
+        return redirect(
+            "agenda_apicultor"
+        )
+
+
+    # ========================================================
+    # 24. GET
+    #
+    # Precargamos los datos actuales del evento.
+    # ========================================================
+
+    valores_formulario = {
+
+        "titulo":
+            evento.titulo,
+
+        "tipo_evento":
+            evento.tipo_evento,
+
+        "apiario":
+            str(
+                evento.id_apiario_id
+            ),
+
+        "colmena":
+            (
+                str(
+                    evento.id_colmena_id
+                )
+
+                if evento.id_colmena_id
+
+                else ""
+            ),
+
+        "fecha":
+            evento.fecha.strftime(
+                "%Y-%m-%d"
+            ),
+
+        "hora":
+            (
+                evento.hora.strftime(
+                    "%H:%M"
+                )
+
+                if evento.hora
+
+                else ""
+            ),
+
+        "descripcion":
+            evento.descripcion or "",
+
+    }
+
+
+    contexto = {
+
+        "apicultor":
+            apicultor,
+
+        "apiarios":
+            apiarios,
+
+        "colmenas":
+            colmenas,
+
+        "tipos_disponibles":
+            tipos_disponibles,
+
+        "fecha_hoy":
+            fecha_hoy,
+
+        "valores_formulario":
+            valores_formulario,
+
+        "modo_edicion":
+            True,
+
+        "evento":
+            evento,
+
+    }
+
+
+    return render(
+        request,
+        "panel_apicultor/crear_evento.html",
+        contexto
+    )
 
 # ============================================================
 # ACTUALIZAR ESTADO DE EVENTO
@@ -10714,16 +12519,23 @@ def actualizar_estado_evento_apicultor(
     # BUSCAR EVENTO
     #
     # SEGURIDAD:
-    # El evento debe pertenecer a uno de los apiarios
-    # asignados al apicultor autenticado.
+    # Aplicamos la misma regla de acceso utilizada
+    # por la Agenda.
     #
-    # NO utilizamos el campo "responsable" como regla
-    # de acceso.
+    # El apicultor puede acceder cuando:
+    #
+    # - Es el responsable directo del evento.
+    #
+    # O
+    #
+    # - El evento pertenece a uno de sus apiarios.
     # ========================================================
 
     evento = get_object_or_404(
 
-        EventoAgenda.objects
+        obtener_eventos_accesibles_apicultor(
+            apicultor
+        )
         .select_related(
             "id_apiario",
             "id_colmena",
@@ -10733,46 +12545,30 @@ def actualizar_estado_evento_apicultor(
 
         id_evento=id_evento,
 
-        id_apiario__id_apicultor=apicultor,
-
     )
 
 
     # ========================================================
-    # FECHA ACTUAL
+    # FECHA Y HORA ACTUALES
     # ========================================================
 
-    hoy = timezone.localdate()
+    ahora_local = (
+        timezone.localtime()
+    )
 
 
-    # ========================================================
-    # VALIDAR FECHA DEL EVENTO
-    #
-    # EVENTO FUTURO:
-    # NO se puede modificar.
-    #
-    # EVENTO HOY:
-    # SÍ.
-    #
-    # EVENTO PASADO:
-    # SÍ.
-    # ========================================================
+    hoy = (
+        ahora_local.date()
+    )
 
-    if evento.fecha > hoy:
 
-        messages.error(
-            request,
-            (
-                "Todavía no puedes actualizar este evento. "
-                "Podrás cambiar su estado a partir del "
-                f"{evento.fecha.strftime('%d/%m/%Y')}."
-            )
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None
         )
-
-
-        return redirect(
-            "agenda_apicultor"
-        )
+    )
 
 
     # ========================================================
@@ -10855,6 +12651,80 @@ def actualizar_estado_evento_apicultor(
         return redirect(
             "agenda_apicultor"
         )
+
+    # ========================================================
+    # VALIDAR MOMENTO PARA COMPLETAR
+    #
+    # CANCELAR:
+    # Se permite mientras el evento siga Programado.
+    #
+    # COMPLETAR:
+    # Solamente cuando ya llegó la fecha y hora.
+    # ========================================================
+
+    if (
+        nuevo_estado
+        ==
+        EventoAgenda.EstadoEvento.COMPLETADO
+    ):
+
+        evento_aun_no_llega = (
+
+            evento.fecha > hoy
+
+            or
+
+            (
+                evento.fecha == hoy
+
+                and
+
+                evento.hora
+
+                and
+
+                evento.hora > hora_actual
+            )
+
+        )
+
+
+        if evento_aun_no_llega:
+
+            fecha_evento = (
+                evento.fecha.strftime(
+                    "%d/%m/%Y"
+                )
+            )
+
+
+            if evento.hora:
+
+                momento_evento = (
+                    f"{fecha_evento} a las "
+                    f"{evento.hora.strftime('%H:%M')}"
+                )
+
+            else:
+
+                momento_evento = (
+                    fecha_evento
+                )
+
+
+            messages.error(
+                request,
+                (
+                    "Este evento todavía no puede marcarse "
+                    "como completado. La actividad está "
+                    f"programada para el {momento_evento}."
+                )
+            )
+
+
+            return redirect(
+                "agenda_apicultor"
+            )
 
 
     # ========================================================
