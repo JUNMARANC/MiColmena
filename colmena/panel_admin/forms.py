@@ -220,19 +220,27 @@ class EventoAgendaForm(forms.ModelForm):
 
     # ============================================================
     # TIPOS DE EVENTO PERMITIDOS EN AGENDA
-    # ============================================================
     #
-    # Incidencia permanece en el modelo para conservar posibles
-    # registros históricos, pero no puede seleccionarse al crear
-    # o editar eventos desde la Agenda.
+    # Desde Agenda únicamente se pueden crear o editar:
+    #
+    # - Revisión.
+    # - Evento general.
+    #
+    # Mantenimiento e Incidencia permanecen en el modelo para
+    # compatibilidad con registros históricos, pero no pueden
+    # crearse manualmente desde Agenda.
     # ============================================================
 
-    TIPOS_EVENTO_PERMITIDOS = tuple(
-        (valor, nombre)
-        for valor, nombre in EventoAgenda.TipoEvento.choices
-        if valor != EventoAgenda.TipoEvento.INCIDENCIA
+    TIPOS_EVENTO_PERMITIDOS = (
+        (
+            EventoAgenda.TipoEvento.REVISION,
+            "Revisión",
+        ),
+        (
+            EventoAgenda.TipoEvento.EVENTO,
+            "Evento general",
+        ),
     )
-
 
     # ============================================================
     # CONFIGURACIÓN DEL FORMULARIO

@@ -58,6 +58,100 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            // =====================================================
+            // TIPO DE REGISTRO ABIERTO
+            // =====================================================
+
+            const esMantenimiento = (
+                eventoSeleccionado.dataset.fuente
+                ===
+                "mantenimiento"
+            );
+
+            // =====================================================
+            // ESTADO REAL DEL EVENTO
+            // =====================================================
+
+            const estadoReal = (
+                eventoSeleccionado.dataset.estado
+                ||
+                ""
+            );
+
+            const esEstadoFinal = (
+                estadoReal === "completado"
+                ||
+                estadoReal === "cancelado"
+            );
+
+            // =====================================================
+            // REGISTRO HISTÓRICO DE INCIDENCIA
+            // =====================================================
+
+            const esIncidenciaHistorica = (
+                eventoSeleccionado.dataset.fuente
+                ===
+                "evento"
+                &&
+                eventoSeleccionado.dataset.tipo
+                ===
+                "incidencia"
+            );
+
+
+            // =====================================================
+            // BOTONES DEL DETALLE
+            // =====================================================
+
+            const botonEditarDetalle = document.getElementById(
+                "btnEditarEventoDetalle"
+            );
+
+            const botonEliminarDetalle = document.getElementById(
+                "btnEliminarEventoDetalle"
+            );
+
+
+            // =====================================================
+            // LOS MANTENIMIENTOS SE GESTIONAN DESDE SU MÓDULO
+            // =====================================================
+            //
+            // Agenda solamente los muestra como información.
+            //
+            // classList.toggle(..., true)  -> oculta
+            // classList.toggle(..., false) -> vuelve a mostrar
+            //
+            // Así, al abrir después un evento normal, los botones
+            // reaparecen automáticamente.
+            // =====================================================
+
+            if (botonEditarDetalle) {
+
+                botonEditarDetalle.classList.toggle(
+                    "d-none",
+                    esMantenimiento
+                    ||
+                    esEstadoFinal
+                    ||
+                    esIncidenciaHistorica
+                );
+
+            }
+
+
+            if (botonEliminarDetalle) {
+
+                botonEliminarDetalle.classList.toggle(
+                    "d-none",
+                    esMantenimiento
+                    ||
+                    esEstadoFinal
+                    ||
+                    esIncidenciaHistorica
+                );
+
+            }
+
             asignarTexto(
                 "detalleTipoEvento",
                 eventoSeleccionado.dataset.tipoTexto
@@ -83,16 +177,55 @@ document.addEventListener("DOMContentLoaded", function () {
                 eventoSeleccionado.dataset.responsable
             );
 
+            const fechaTexto = (
+                eventoSeleccionado.dataset.fechaTexto
+                ||
+                ""
+            );
+
+            const horaTexto = (
+                eventoSeleccionado.dataset.hora
+                ||
+                ""
+            );
+
+
             asignarTexto(
                 "detalleFechaEvento",
-                `${eventoSeleccionado.dataset.fechaTexto}, ` +
-                `${eventoSeleccionado.dataset.hora}`
+                horaTexto
+                    ? `${fechaTexto}, ${horaTexto}`
+                    : fechaTexto
             );
 
             asignarTexto(
                 "detalleEstadoEvento",
                 eventoSeleccionado.dataset.estadoTexto
             );
+
+            // =====================================================
+            // ESTADO VISUAL DEL EVENTO
+            // =====================================================
+
+            const detalleEstado = document.getElementById(
+                "detalleEstadoEvento"
+            );
+
+            if (detalleEstado) {
+
+                const estadoVisual = (
+                    eventoSeleccionado.dataset.estadoVisual
+                    ||
+                    eventoSeleccionado.dataset.estado
+                    ||
+                    "programado"
+                );
+
+
+                detalleEstado.className =
+                    "estado-detalle-evento " +
+                    `estado-${estadoVisual}`;
+
+            }
 
             asignarTexto(
                 "detalleDescripcionEvento",
@@ -190,8 +323,50 @@ document.addEventListener("DOMContentLoaded", function () {
         "btnEditarEventoDetalle"
     )?.addEventListener("click", function () {
 
-        if (!eventoSeleccionado) {
+        if (
+            !eventoSeleccionado
+            ||
+            eventoSeleccionado.dataset.fuente
+                ===
+                "mantenimiento"
+            ||
+            !eventoSeleccionado.dataset.editarUrl
+        ) {
             return;
+        }
+
+        // =====================================================
+        // ESTADO VISUAL ORIGINAL
+        // =====================================================
+        //
+        // "vencido" no existe en la base de datos.
+        // El estado real continúa siendo "programado".
+        //
+        // Guardamos esta información para que las validaciones
+        // de edición sepan si el evento ya venció.
+        // =====================================================
+
+        formEditar.dataset.estadoVisual = (
+            eventoSeleccionado.dataset.estadoVisual
+            ||
+            eventoSeleccionado.dataset.estado
+        );
+
+
+        const fechaEditar = document.getElementById(
+            "editarFechaEvento"
+        );
+
+        if (fechaEditar) {
+
+            fechaEditar.dataset.vencido = (
+                eventoSeleccionado.dataset.estadoVisual
+                ===
+                "vencido"
+            )
+                ? "1"
+                : "0";
+
         }
 
         formEditar.action =
@@ -292,7 +467,15 @@ document.addEventListener("DOMContentLoaded", function () {
         "btnEliminarEventoDetalle"
     )?.addEventListener("click", function () {
 
-        if (!eventoSeleccionado) {
+        if (
+            !eventoSeleccionado
+            ||
+            eventoSeleccionado.dataset.fuente
+                ===
+                "mantenimiento"
+            ||
+            !eventoSeleccionado.dataset.eliminarUrl
+        ) {
             return;
         }
 
@@ -682,6 +865,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const hora = document.getElementById(`${prefijo}HoraEvento`);
         const apiario = document.getElementById(`${prefijo}ApiarioEvento`);
         const colmena = document.getElementById(`${prefijo}ColmenaEvento`);
+        const estado = document.getElementById(
+            `${prefijo}EstadoEvento`
+        );
 
         // En Crear, la fecha siempre debe ser hoy o en adelante.
         if (esCreacion && fecha) {
@@ -731,8 +917,104 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+        // =====================================================
+        // LIMPIAR ERROR ANTERIOR DE FECHA
+        // =====================================================
+        //
+        // setCustomValidity() permanece activo aunque el usuario
+        // cambie posteriormente la fecha. Por eso debemos limpiar
+        // el mensaje en cuanto modifique el campo.
+        // =====================================================
+
+        if (fecha) {
+
+            fecha.addEventListener(
+                "input",
+                function () {
+                    fecha.setCustomValidity("");
+                }
+            );
+
+            fecha.addEventListener(
+                "change",
+                function () {
+                    fecha.setCustomValidity("");
+                }
+            );
+
+        }
+
 
         form.addEventListener("submit", function (e) {
+
+            // =====================================================
+            // ESTADO QUE SE INTENTA GUARDAR
+            // =====================================================
+            //
+            // En Crear no existe selector de estado porque todo
+            // evento nuevo nace como Programado.
+            //
+            // En Editar utilizamos el valor seleccionado.
+            // =====================================================
+
+            const estadoSeleccionado = (
+                estado
+                    ? estado.value
+                    : "programado"
+            );
+
+
+            // Solo un evento que vaya a quedar Programado necesita
+            // estar ubicado en un momento futuro.
+            const exigeMomentoFuturo = (
+                esCreacion
+                ||
+                estadoSeleccionado === "programado"
+            );
+
+            // =====================================================
+            // NO COMPLETAR EVENTOS FUTUROS
+            // =====================================================
+
+            if (estado) {
+
+                estado.setCustomValidity("");
+
+
+                const eventoTodaviaNoLlega = (
+                    fecha
+                    &&
+                    fecha.value
+                    &&
+                    (
+                        fecha.value > hoyTexto
+                        ||
+                        (
+                            fecha.value === hoyTexto
+                            &&
+                            hora
+                            &&
+                            hora.value
+                            &&
+                            hora.value > horaActualComoTexto()
+                        )
+                    )
+                );
+
+
+                if (
+                    estadoSeleccionado === "completado"
+                    &&
+                    eventoTodaviaNoLlega
+                ) {
+
+                    estado.setCustomValidity(
+                        "No puedes marcar como Completado un evento cuya fecha y hora todavía no han llegado."
+                    );
+
+                }
+
+            }
 
             // 1) Título: no puede quedar vacío (solo espacios). En vez
             //    de una alerta emergente, usamos el mismo mecanismo
@@ -749,45 +1031,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // 2) La fecha no puede ser anterior a hoy — salvo que el
-            //    evento ya haya vencido (ver el bloque de Editar más
-            //    abajo, que marca fecha.dataset.vencido = "1" y en
-            //    ese caso no se valida aquí).
+            // =====================================================
+            // 2) VALIDAR FECHA
+            // =====================================================
+
             if (fecha) {
 
-                if (fecha.dataset.vencido !== "1") {
+                fecha.setCustomValidity("");
 
-                    if (!fecha.value || fecha.value < hoyTexto) {
-                        fecha.setCustomValidity("La fecha del evento no puede ser anterior a hoy.");
-                    } else {
-                        fecha.setCustomValidity("");
-                    }
 
-                } else {
-                    fecha.setCustomValidity("");
+                if (
+                    exigeMomentoFuturo
+                    &&
+                    (
+                        !fecha.value
+                        ||
+                        fecha.value < hoyTexto
+                    )
+                ) {
+
+                    fecha.setCustomValidity(
+                        "Un evento Programado no puede quedar en una fecha pasada."
+                    );
+
                 }
+
             }
 
-            // 3) Si la fecha elegida es HOY, la hora no puede haber
-            //    pasado ya. Si el campo está vacío o incompleto (el
-            //    usuario aún está escribiendo), no es un caso de
-            //    "ya pasó" — eso lo maneja el propio required nativo
-            //    del campo con su mensaje normal.
+            // =====================================================
+            // 3) VALIDAR HORA
+            // =====================================================
+
             if (hora) {
 
-                if (fecha && fecha.value === hoyTexto && hora.value) {
+                hora.setCustomValidity("");
 
-                    if (hora.value < horaActualComoTexto()) {
-                        hora.setCustomValidity(
-                            "La hora ya pasó para el día de hoy."
-                        );
-                    } else {
-                        hora.setCustomValidity("");
-                    }
 
-                } else {
-                    hora.setCustomValidity("");
+                if (
+                    exigeMomentoFuturo
+                    &&
+                    fecha
+                    &&
+                    fecha.value === hoyTexto
+                    &&
+                    hora.value
+                    &&
+                    hora.value <= horaActualComoTexto()
+                ) {
+
+                    hora.setCustomValidity(
+                        "Un evento Programado debe tener una hora posterior a la actual."
+                    );
+
                 }
+
             }
 
             // =================================================
@@ -854,10 +1151,31 @@ document.addEventListener("DOMContentLoaded", function () {
                             );
 
 
+                            // =============================================
+                            // OTRA COLMENA INACTIVA
+                            // =============================================
+
                             if (!esOriginalEdicion) {
 
                                 colmena.setCustomValidity(
                                     "No puedes asignar un evento a una colmena Inactiva."
+                                );
+
+                            }
+
+
+                            // =============================================
+                            // MISMA COLMENA INACTIVA + PROGRAMADO
+                            // =============================================
+
+                            else if (
+                                estadoSeleccionado
+                                ===
+                                "programado"
+                            ) {
+
+                                colmena.setCustomValidity(
+                                    "Una colmena Inactiva no puede tener eventos Programados."
                                 );
 
                             }
@@ -887,31 +1205,69 @@ document.addEventListener("DOMContentLoaded", function () {
     configurarValidacionEvento("crear", "formCrearEvento", true);
     configurarValidacionEvento("editar", "formEditarEvento", false);
 
-    // Para Editar: cuando el modal termina de abrirse (agenda.js ya
-    // cargó los datos del evento seleccionado en los campos), se
-    // decide si la fecha original ya venció. Si venció, se bloquea
-    // el campo para que no se pueda mover, pero el resto del
-    // formulario se puede seguir editando con normalidad.
-    const modalEditarElemento = document.getElementById("modalEditarEvento");
-    const fechaEditar = document.getElementById("editarFechaEvento");
+    // =========================================================
+    // CONFIGURAR FECHA AL EDITAR
+    // =========================================================
+    //
+    // Un evento vencido puede:
+    //
+    // - Reprogramarse.
+    // - Marcarse como Completado.
+    // - Marcarse como Cancelado.
+    //
+    // Por eso la fecha nunca debe quedar bloqueada.
+    // =========================================================
 
-    if (modalEditarElemento && fechaEditar) {
+    const modalEditarElemento = document.getElementById(
+        "modalEditarEvento"
+    );
 
-        modalEditarElemento.addEventListener("shown.bs.modal", function () {
+    const fechaEditar = document.getElementById(
+        "editarFechaEvento"
+    );
 
-            if (fechaEditar.value && fechaEditar.value < hoyTexto) {
 
-                fechaEditar.dataset.vencido = "1";
-                fechaEditar.readOnly = true;
-                fechaEditar.title = "Este evento ya pasó y su fecha no puede modificarse.";
+    if (
+        modalEditarElemento
+        &&
+        fechaEditar
+    ) {
 
-            } else {
+        modalEditarElemento.addEventListener(
+            "shown.bs.modal",
+            function () {
 
-                fechaEditar.dataset.vencido = "0";
+                // Nunca bloquear la fecha.
                 fechaEditar.readOnly = false;
-                fechaEditar.min = hoyTexto;
-                fechaEditar.removeAttribute("title");
+
+                fechaEditar.removeAttribute(
+                    "title"
+                );
+
+
+                // Si el evento NO está vencido,
+                // no permitimos seleccionar días anteriores.
+                if (
+                    fechaEditar.dataset.vencido
+                    !==
+                    "1"
+                ) {
+
+                    fechaEditar.min = hoyTexto;
+
+                } else {
+
+                    // Un vencido necesita conservar temporalmente
+                    // su fecha original para poder cerrarlo como
+                    // Completado o Cancelado.
+                    fechaEditar.removeAttribute(
+                        "min"
+                    );
+
+                }
+
             }
-        });
+        );
+
     }
 });

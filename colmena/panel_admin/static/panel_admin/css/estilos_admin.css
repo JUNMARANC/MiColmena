@@ -9147,6 +9147,30 @@ PAGINADOR
     background: #4d9ac7;
 }
 
+/* =========================================================
+   ESTADO VISUAL: VENCIDO
+========================================================= */
+
+/*
+El color base del evento se conserva según su tipo
+(Revisión, Evento general, etc.).
+
+El borde rojo indica únicamente que el evento sigue
+Programado, pero su fecha/hora ya pasó.
+*/
+
+.evento-calendario.estado-vencido {
+    border: 1px solid rgba(196, 65, 52, 0.38);
+    box-shadow:
+        inset 3px 0 0 var(--rojo-incidencia);
+}
+
+
+/* El punto también indica visualmente el vencimiento. */
+
+.evento-calendario.estado-vencido span {
+    background: var(--rojo-incidencia);
+}
 
 /* Modal */
 
@@ -9215,6 +9239,56 @@ PAGINADOR
 .lista-detalle-evento span {
     color: #6f7e76;
     font-size: 0.76rem;
+}
+
+/* =========================================================
+   ESTADOS DEL DETALLE DE AGENDA
+========================================================= */
+
+.estado-detalle-evento {
+    display: inline-flex;
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+
+/* PROGRAMADO */
+
+.estado-detalle-evento.estado-programado {
+    background: var(--info-fondo);
+    color: var(--info-texto);
+}
+
+
+/* VENCIDO */
+
+.estado-detalle-evento.estado-vencido {
+    background: var(--rojo-fondo);
+    color: var(--rojo-incidencia);
+}
+
+
+/* COMPLETADO */
+
+.estado-detalle-evento.estado-completado {
+    background: var(--exito-fondo);
+    color: var(--exito-texto);
+}
+
+
+/* CANCELADO */
+
+.estado-detalle-evento.estado-cancelado {
+    background: #f0f2f1;
+    color: var(--texto-secundario);
 }
 
 .footer-detalle-evento {

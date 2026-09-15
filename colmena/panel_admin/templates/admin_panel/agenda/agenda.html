@@ -61,7 +61,7 @@
         >
             <option value="">Todos los tipos</option>
 
-            {% for valor, nombre in tipos_evento %}
+            {% for valor, nombre in tipos_filtro %}
 
                 <option
                     value="{{ valor }}"
@@ -71,6 +71,43 @@
                 </option>
 
             {% endfor %}
+        </select>
+
+        <select
+            name="estado"
+            class="form-select"
+        >
+            <option value="">
+                Todos los estados
+            </option>
+
+            <option
+                value="programado"
+                {% if filtro_estado == "programado" %}selected{% endif %}
+            >
+                Programado
+            </option>
+
+            <option
+                value="vencido"
+                {% if filtro_estado == "vencido" %}selected{% endif %}
+            >
+                Vencido
+            </option>
+
+            <option
+                value="completado"
+                {% if filtro_estado == "completado" %}selected{% endif %}
+            >
+                Completado
+            </option>
+
+            <option
+                value="cancelado"
+                {% if filtro_estado == "cancelado" %}selected{% endif %}
+            >
+                Cancelado
+            </option>
         </select>
 
         <select
@@ -132,7 +169,7 @@
         <div class="navegacion-calendario">
 
             <a
-                href="?mes={{ mes_anterior }}&tipo={{ filtro_tipo }}&apiario={{ filtro_apiario }}&buscar={{ busqueda|urlencode }}"
+                href="?mes={{ mes_anterior }}&tipo={{ filtro_tipo }}&estado={{ filtro_estado }}&apiario={{ filtro_apiario }}&buscar={{ busqueda|urlencode }}"
                 class="btn-navegar-mes"
             >
                 <i class="bi bi-chevron-left"></i>
@@ -143,7 +180,7 @@
             </h3>
 
             <a
-                href="?mes={{ mes_siguiente }}&tipo={{ filtro_tipo }}&apiario={{ filtro_apiario }}&buscar={{ busqueda|urlencode }}"
+                href="?mes={{ mes_siguiente }}&tipo={{ filtro_tipo }}&estado={{ filtro_estado }}&apiario={{ filtro_apiario }}&buscar={{ busqueda|urlencode }}"
                 class="btn-navegar-mes"
             >
                 <i class="bi bi-chevron-right"></i>
@@ -187,37 +224,47 @@
 
                                 <button
                                     type="button"
+
                                     class="
                                         evento-calendario
                                         evento-{{ evento.tipo_evento }}
+                                        estado-{{ evento.estado_visual|default:evento.estado }}
                                     "
+
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalDetalleEvento"
 
-                                    data-id="{{ evento.id_evento }}"
+                                    data-id="{{ evento.id }}"
+                                    data-id-real="{{ evento.id_real }}"
+                                    data-fuente="{{ evento.fuente }}"
+
                                     data-titulo="{{ evento.titulo|escape }}"
+
                                     data-tipo="{{ evento.tipo_evento }}"
-                                    data-tipo-texto="{{ evento.get_tipo_evento_display|escape }}"
+                                    data-tipo-texto="{{ evento.tipo_texto|escape }}"
 
-                                    data-apiario-id="{{ evento.id_apiario_id }}"
-                                    data-apiario="{{ evento.id_apiario.nombreapiario|escape }}"
+                                    data-apiario-id="{{ evento.apiario_id|default:'' }}"
+                                    data-apiario="{{ evento.apiario|default:''|escape }}"
 
-                                    data-colmena-id="{{ evento.id_colmena_id|default:'' }}"
-                                    data-colmena="{{ evento.id_colmena.codigocolmena|default:'Sin colmena específica'|escape }}"
+                                    data-colmena-id="{{ evento.colmena_id|default:'' }}"
+                                    data-colmena="{{ evento.colmena|default:'Sin colmena específica'|escape }}"
 
                                     data-responsable-id="{{ evento.responsable_id|default:'' }}"
-                                    data-responsable="{% if evento.responsable %}{{ evento.responsable.nombre_completo|escape }}{% else %}Sin responsable{% endif %}"
+                                    data-responsable="{{ evento.responsable|default:'Sin responsable'|escape }}"
 
                                     data-fecha="{{ evento.fecha|date:'Y-m-d' }}"
-                                    data-fecha-texto="{{ evento.fecha|date:'d/m/Y' }}"
-                                    data-hora="{{ evento.hora|time:'H:i' }}"
+                                    data-fecha-texto="{{ evento.fecha_texto }}"
+
+                                    data-hora="{{ evento.hora|default:'' }}"
 
                                     data-descripcion="{{ evento.descripcion|default:'Sin descripción'|escape }}"
-                                    data-estado="{{ evento.estado }}"
-                                    data-estado-texto="{{ evento.get_estado_display|escape }}"
 
-                                    data-editar-url="{% url 'editar_evento_agenda' evento.id_evento %}"
-                                    data-eliminar-url="{% url 'eliminar_evento_agenda' evento.id_evento %}"
+                                    data-estado="{{ evento.estado }}"
+                                    data-estado-visual="{{ evento.estado_visual|default:evento.estado }}"
+                                    data-estado-texto="{{ evento.estado_texto|escape }}"
+
+                                    data-editar-url="{{ evento.editar_url }}"
+                                    data-eliminar-url="{{ evento.eliminar_url }}"
                                 >
 
                                     <span></span>
