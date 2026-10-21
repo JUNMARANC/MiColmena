@@ -1909,6 +1909,23 @@ def colmenas_admin(request):
             .count()
         )
 
+        # ====================================================
+        # EVENTOS PROGRAMADOS EN AGENDA
+        # ====================================================
+
+        colmena_obj.eventos_programados = (
+            EventoAgenda.objects
+            .filter(
+                id_colmena=colmena_obj,
+                estado=(
+                    EventoAgenda
+                    .EstadoEvento
+                    .PROGRAMADO
+                )
+            )
+            .count()
+        )
+
 
         # ====================================================
         # ¿PUEDE PASAR A INACTIVA?
@@ -1918,6 +1935,8 @@ def colmenas_admin(request):
             colmena_obj.mantenimientos_pendientes == 0
             and
             colmena_obj.incidencias_abiertas == 0
+            and
+            colmena_obj.eventos_programados == 0
         )
 
 
@@ -3405,11 +3424,30 @@ def editar_colmena(
                 .count()
             )
 
+            # ====================================================
+            # EVENTOS PROGRAMADOS EN AGENDA
+            # ====================================================
+
+            eventos_programados = (
+                EventoAgenda.objects
+                .filter(
+                    id_colmena=colmena,
+                    estado=(
+                        EventoAgenda
+                        .EstadoEvento
+                        .PROGRAMADO
+                    )
+                )
+                .count()
+            )
+
 
             if (
                 mantenimientos_pendientes > 0
                 or
                 incidencias_abiertas > 0
+                or
+                eventos_programados > 0
             ):
 
                 motivos = []
@@ -3434,6 +3472,15 @@ def editar_colmena(
                         )
                     )
 
+                if eventos_programados > 0:
+
+                    motivos.append(
+                        (
+                            f"{eventos_programados} "
+                            "evento(s) programado(s) en Agenda"
+                        )
+                    )
+
 
                 messages.error(
                     request,
@@ -3441,8 +3488,8 @@ def editar_colmena(
                         f"No puedes inactivar la colmena "
                         f"«{colmena.codigocolmena}» porque tiene "
                         f"{' y '.join(motivos)}. "
-                        "Completa o cancela los mantenimientos "
-                        "y resuelve las incidencias antes de continuar."
+                        "Completa o cancela las actividades pendientes "
+                        "antes de continuar."
                     )
                 )
 
@@ -11076,17 +11123,47 @@ def agregar_errores_formulario(request, formulario):
 
 # ============================================================
 # TIPOS DE EVENTO DISPONIBLES EN LA AGENDA
-# ============================================================
 #
-# "Incidencia" sigue existiendo en el modelo para no afectar
-# registros históricos, pero ya no se permite seleccionarla
-# desde la Agenda.
+# La Agenda permite crear manualmente únicamente:
+#
+# - Revisión.
+# - Evento general.
+#
+# Los mantenimientos se administran desde su propio módulo
+# y se muestran automáticamente en el calendario.
+#
+# Incidencia y Mantenimiento permanecen en el modelo por
+# compatibilidad con registros históricos.
 # ============================================================
 
-TIPOS_EVENTO_AGENDA = tuple(
-    (valor, nombre)
-    for valor, nombre in EventoAgenda.TipoEvento.choices
-    if valor != EventoAgenda.TipoEvento.INCIDENCIA
+TIPOS_EVENTO_AGENDA = (
+    (
+        EventoAgenda.TipoEvento.REVISION,
+        "Revisión",
+    ),
+    (
+        EventoAgenda.TipoEvento.EVENTO,
+        "Evento general",
+    ),
+)
+
+# ============================================================
+# TIPOS DISPONIBLES EN EL FILTRO DE AGENDA
+# ============================================================
+
+TIPOS_FILTRO_AGENDA = (
+    (
+        "mantenimiento",
+        "Mantenimiento",
+    ),
+    (
+        EventoAgenda.TipoEvento.REVISION,
+        "Revisión",
+    ),
+    (
+        EventoAgenda.TipoEvento.EVENTO,
+        "Evento general",
+    ),
 )
 
 
@@ -11145,26 +11222,48 @@ def construir_calendario_agenda(
     eventos
 ):
     """
-    Organiza los eventos por fecha y construye
+    Organiza las actividades por fecha y construye
     las semanas que utilizará el calendario.
+
+    Puede recibir actividades normalizadas provenientes de:
+
+    - EventoAgenda.
+    - Mantenimiento.
     """
 
     eventos_por_fecha = defaultdict(list)
 
+
+    # ========================================================
+    # AGRUPAR ACTIVIDADES POR FECHA
+    # ========================================================
+
     for evento in eventos:
 
+        fecha_evento = evento.get(
+            "fecha"
+        )
+
+        if not fecha_evento:
+            continue
+
         eventos_por_fecha[
-            evento.fecha
+            fecha_evento
         ].append(
             evento
         )
 
+
+    # ========================================================
+    # CONSTRUIR CALENDARIO
+    # ========================================================
 
     calendario = Calendar(
         firstweekday=0
     )
 
     semanas_calendario = []
+
 
     for semana in calendario.monthdatescalendar(
         mes_actual.year,
@@ -11173,10 +11272,13 @@ def construir_calendario_agenda(
 
         dias_semana = []
 
+
         for fecha_dia in semana:
 
             dias_semana.append({
-                "fecha": fecha_dia,
+
+                "fecha":
+                    fecha_dia,
 
                 "es_mes_actual": (
                     fecha_dia.month
@@ -11196,11 +11298,14 @@ def construir_calendario_agenda(
                         []
                     )
                 ),
+
             })
+
 
         semanas_calendario.append(
             dias_semana
         )
+
 
     return semanas_calendario
 
@@ -11219,6 +11324,49 @@ def tipo_evento_agenda_permitido(
         TIPOS_EVENTO_AGENDA_VALORES
     )
 
+def evento_agenda_esta_vencido(
+    evento,
+    hoy,
+    hora_actual
+):
+    """
+    Determina si un evento Programado ya venció.
+
+    Vencido es únicamente un estado visual.
+    En la base de datos el evento continúa como Programado.
+    """
+
+    if (
+        evento.estado
+        !=
+        EventoAgenda.EstadoEvento.PROGRAMADO
+    ):
+        return False
+
+
+    # ========================================================
+    # FECHA ANTERIOR A HOY
+    # ========================================================
+
+    if evento.fecha < hoy:
+        return True
+
+
+    # ========================================================
+    # MISMO DÍA, PERO LA HORA YA PASÓ
+    # ========================================================
+
+    if (
+        evento.fecha == hoy
+        and
+        evento.hora
+        and
+        evento.hora <= hora_actual
+    ):
+        return True
+
+
+    return False
 
 # ============================================================
 # AGENDA PRINCIPAL
@@ -11267,6 +11415,14 @@ def agenda_admin(request):
         .strip()
     )
 
+    filtro_estado = (
+        request.GET.get(
+            "estado",
+            ""
+        )
+        .strip()
+    )
+
     busqueda = (
         request.GET.get(
             "buscar",
@@ -11290,18 +11446,27 @@ def agenda_admin(request):
     if (
         filtro_tipo
         and
-        not tipo_evento_agenda_permitido(
-            filtro_tipo
-        )
+        filtro_tipo not in {
+            valor
+            for valor, _
+            in TIPOS_FILTRO_AGENDA
+        }
     ):
         filtro_tipo = ""
 
 
     # ========================================================
-    # CONSULTAR EVENTOS DEL MES
+    # CONSULTAR EVENTOS DE AGENDA DEL MES
+    #
+    # Los mantenimientos antiguos creados como EventoAgenda
+    # no se muestran aquí para evitar duplicarlos con los
+    # mantenimientos reales.
+    #
+    # Las incidencias antiguas pueden conservarse como
+    # información histórica.
     # ========================================================
 
-    eventos = (
+    eventos_agenda = (
         EventoAgenda.objects
         .select_related(
             "id_apiario",
@@ -11313,85 +11478,579 @@ def agenda_admin(request):
             fecha__gte=mes_actual,
             fecha__lt=mes_siguiente
         )
+        .exclude(
+            tipo_evento=(
+                EventoAgenda
+                .TipoEvento
+                .MANTENIMIENTO
+            )
+        )
     )
 
 
     # ========================================================
-    # FILTRAR POR TIPO
+    # FILTRAR EVENTOS DE AGENDA POR TIPO
     # ========================================================
 
-    if filtro_tipo:
+    if filtro_tipo == "mantenimiento":
 
-        eventos = eventos.filter(
-            tipo_evento=filtro_tipo
+        eventos_agenda = (
+            eventos_agenda
+            .none()
+        )
+
+    elif filtro_tipo:
+
+        eventos_agenda = (
+            eventos_agenda
+            .filter(
+                tipo_evento=filtro_tipo
+            )
         )
 
 
     # ========================================================
-    # FILTRAR POR APIARIO
+    # FILTRAR EVENTOS DE AGENDA POR APIARIO
     # ========================================================
 
     if filtro_apiario.isdigit():
 
-        eventos = eventos.filter(
-            id_apiario_id=int(
-                filtro_apiario
+        eventos_agenda = (
+            eventos_agenda
+            .filter(
+                id_apiario_id=int(
+                    filtro_apiario
+                )
             )
         )
 
 
     # ========================================================
-    # BUSCADOR
+    # BUSCADOR DE EVENTOS DE AGENDA
     # ========================================================
 
     if busqueda:
 
-        eventos = eventos.filter(
+        eventos_agenda = (
+            eventos_agenda
+            .filter(
 
-            Q(
-                titulo__icontains=busqueda
+                Q(
+                    titulo__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    descripcion__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_apiario__nombreapiario__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_colmena__codigocolmena__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    responsable__user__first_name__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    responsable__user__last_name__icontains=
+                        busqueda
+                )
+
             )
+        )
 
-            |
 
-            Q(
-                descripcion__icontains=busqueda
-            )
+    eventos_agenda = (
+        eventos_agenda
+        .order_by(
+            "fecha",
+            "hora"
+        )
+    )
 
-            |
 
-            Q(
-                id_apiario__nombreapiario__icontains=busqueda
-            )
+    # ========================================================
+    # CONSULTAR MANTENIMIENTOS REALES DEL MES
+    # ========================================================
 
-            |
+    mantenimientos_calendario = (
+        Mantenimiento.objects
+        .select_related(
+            "id_apiario",
+            "id_colmena",
+        )
+        .filter(
+            fechaejecucion__gte=mes_actual,
+            fechaejecucion__lt=mes_siguiente
+        )
+    )
 
-            Q(
-                id_colmena__codigocolmena__icontains=busqueda
-            )
 
-            |
+    # ========================================================
+    # FILTRO DE TIPO
+    #
+    # Si se selecciona Revisión o Evento general,
+    # no mostramos mantenimientos.
+    #
+    # Con "Todos los tipos", los mantenimientos sí aparecen.
+    # ========================================================
 
-            Q(
-                responsable__user__first_name__icontains=busqueda
-            )
+    if (
+        filtro_tipo
+        and
+        filtro_tipo != "mantenimiento"
+    ):
 
-            |
-
-            Q(
-                responsable__user__last_name__icontains=busqueda
-            )
-
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .none()
         )
 
 
     # ========================================================
-    # ORDENAR EVENTOS
+    # FILTRAR MANTENIMIENTOS POR APIARIO
     # ========================================================
 
-    eventos = eventos.order_by(
-        "fecha",
-        "hora"
+    if filtro_apiario.isdigit():
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .filter(
+                id_apiario_id=int(
+                    filtro_apiario
+                )
+            )
+        )
+
+
+    # ========================================================
+    # BUSCADOR DE MANTENIMIENTOS
+    # ========================================================
+
+    if busqueda:
+
+        mantenimientos_calendario = (
+            mantenimientos_calendario
+            .filter(
+
+                Q(
+                    tipo__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    observaciones__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_apiario__nombreapiario__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    id_colmena__codigocolmena__icontains=
+                        busqueda
+                )
+
+                |
+
+                Q(
+                    responsable__icontains=
+                        busqueda
+                )
+
+            )
+        )
+
+
+    mantenimientos_calendario = (
+        mantenimientos_calendario
+        .order_by(
+            "fechaejecucion",
+            "id_mantenimiento"
+        )
+    )
+
+    # ========================================================
+    # FECHA Y HORA ACTUALES
+    # ========================================================
+
+    ahora_local = timezone.localtime()
+
+    hoy = ahora_local.date()
+
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None,
+            second=0,
+            microsecond=0
+        )
+    )
+
+    # ========================================================
+    # NORMALIZAR ACTIVIDADES DEL CALENDARIO
+    #
+    # Tanto EventoAgenda como Mantenimiento se convierten
+    # a una misma estructura.
+    # ========================================================
+
+    eventos_calendario = []
+
+
+    # ========================================================
+    # EVENTOS DE AGENDA
+    # ========================================================
+
+    for evento in eventos_agenda:
+
+        hora_texto = (
+            evento.hora.strftime(
+                "%H:%M"
+            )
+            if evento.hora
+            else ""
+        )
+
+
+        responsable_texto = (
+            evento.responsable.nombre_completo()
+
+            if evento.responsable
+
+            else "Sin responsable"
+        )
+
+        # ========================================================
+        # ESTADO VISUAL
+        # ========================================================
+
+        es_vencido = evento_agenda_esta_vencido(
+            evento,
+            hoy,
+            hora_actual
+        )
+
+
+        if es_vencido:
+
+            estado_visual = "vencido"
+            estado_texto = "Vencido"
+
+        else:
+
+            estado_visual = evento.estado
+            estado_texto = evento.get_estado_display()
+
+
+        eventos_calendario.append({
+
+            "id":
+                str(
+                    evento.id_evento
+                ),
+
+            "id_real":
+                evento.id_evento,
+
+            "fuente":
+                "evento",
+
+            "titulo":
+                evento.titulo,
+
+            "tipo_evento":
+                evento.tipo_evento,
+
+            "tipo_texto":
+                evento.get_tipo_evento_display(),
+
+            "apiario_id":
+                evento.id_apiario_id,
+
+            "apiario":
+                (
+                    evento.id_apiario.nombreapiario
+                    if evento.id_apiario
+                    else ""
+                ),
+
+            "colmena_id":
+                evento.id_colmena_id,
+
+            "colmena":
+                (
+                    evento.id_colmena.codigocolmena
+                    if evento.id_colmena
+                    else "Sin colmena específica"
+                ),
+
+            "responsable_id":
+                evento.responsable_id,
+
+            "responsable":
+                responsable_texto,
+
+            "fecha":
+                evento.fecha,
+
+            "fecha_texto":
+                evento.fecha.strftime(
+                    "%d/%m/%Y"
+                ),
+
+            "hora":
+                hora_texto,
+
+            "descripcion":
+                (
+                    evento.descripcion
+                    or
+                    "Sin descripción"
+                ),
+
+            "estado":
+                evento.estado,
+
+            "estado_visual":
+                estado_visual,
+
+            "estado_texto":
+                estado_texto,
+
+            "editar_url":
+                reverse(
+                    "editar_evento_agenda",
+                    args=[
+                        evento.id_evento
+                    ]
+                ),
+
+            "eliminar_url":
+                reverse(
+                    "eliminar_evento_agenda",
+                    args=[
+                        evento.id_evento
+                    ]
+                ),
+
+        })
+
+
+    # ========================================================
+    # MANTENIMIENTOS REALES
+    # ========================================================
+
+    for mantenimiento in mantenimientos_calendario:
+
+        estado_real = {
+
+            "Pendiente":
+                "programado",
+
+            "Completado":
+                "completado",
+
+            "Cancelado":
+                "cancelado",
+
+        }.get(
+            mantenimiento.estado,
+            "programado"
+        )
+
+
+        estado_visual = estado_real
+        estado_texto = mantenimiento.estado
+
+
+        # ========================================================
+        # MANTENIMIENTO VENCIDO
+        # ========================================================
+        #
+        # Como Mantenimiento no maneja hora, solamente se considera
+        # vencido cuando su fecha ya quedó en un día anterior.
+        # ========================================================
+
+        if (
+            mantenimiento.estado == "Pendiente"
+            and
+            mantenimiento.fechaejecucion
+            and
+            mantenimiento.fechaejecucion < hoy
+        ):
+            estado_visual = "vencido"
+            estado_texto = "Vencido"
+
+
+        eventos_calendario.append({
+
+            "id":
+                (
+                    "mantenimiento-"
+                    +
+                    str(
+                        mantenimiento.id_mantenimiento
+                    )
+                ),
+
+            "id_real":
+                mantenimiento.id_mantenimiento,
+
+            "fuente":
+                "mantenimiento",
+
+            "titulo":
+                (
+                    mantenimiento.tipo
+                    or
+                    "Mantenimiento"
+                ),
+
+            "tipo_evento":
+                "mantenimiento",
+
+            "tipo_texto":
+                "Mantenimiento",
+
+            "apiario_id":
+                mantenimiento.id_apiario_id,
+
+            "apiario":
+                (
+                    mantenimiento.id_apiario.nombreapiario
+                    if mantenimiento.id_apiario
+                    else ""
+                ),
+
+            "colmena_id":
+                mantenimiento.id_colmena_id,
+
+            "colmena":
+                (
+                    mantenimiento.id_colmena.codigocolmena
+                    if mantenimiento.id_colmena
+                    else "Sin colmena específica"
+                ),
+
+            "responsable_id":
+                "",
+
+            "responsable":
+                (
+                    mantenimiento.responsable
+                    or
+                    "Sin responsable"
+                ),
+
+            "fecha":
+                mantenimiento.fechaejecucion,
+
+            "fecha_texto":
+                mantenimiento.fechaejecucion.strftime(
+                    "%d/%m/%Y"
+                ),
+
+            # Mantenimiento no maneja hora.
+            "hora":
+                "",
+
+            "descripcion":
+                (
+                    mantenimiento.observaciones
+                    or
+                    "Sin observaciones"
+                ),
+
+            "estado":
+                estado_real,
+
+            "estado_visual":
+                estado_visual,
+
+            "estado_texto":
+                estado_texto,
+
+            # Se gestiona desde Mantenimientos,
+            # no directamente desde Agenda.
+            "editar_url":
+                "",
+
+            "eliminar_url":
+                "",
+
+        })
+
+
+    # ========================================================
+    # ORDENAR TODAS LAS ACTIVIDADES
+    # ========================================================
+
+    # ========================================================
+    # FILTRAR POR ESTADO VISUAL
+    # ========================================================
+
+    ESTADOS_FILTRO_AGENDA = {
+        "programado",
+        "vencido",
+        "completado",
+        "cancelado",
+    }
+
+
+    if filtro_estado not in ESTADOS_FILTRO_AGENDA:
+        filtro_estado = ""
+
+
+    if filtro_estado:
+
+        eventos_calendario = [
+            actividad
+            for actividad in eventos_calendario
+            if (
+                actividad.get(
+                    "estado_visual",
+                    actividad.get("estado", "")
+                )
+                ==
+                filtro_estado
+            )
+        ]
+
+    eventos_calendario.sort(
+        key=lambda actividad: (
+            actividad["fecha"],
+            actividad["hora"]
+            or
+            "99:99"
+        )
     )
 
 
@@ -11402,7 +12061,7 @@ def agenda_admin(request):
     semanas_calendario = (
         construir_calendario_agenda(
             mes_actual,
-            eventos
+            eventos_calendario
         )
     )
 
@@ -11498,6 +12157,9 @@ def agenda_admin(request):
         "tipos_evento":
             TIPOS_EVENTO_AGENDA,
 
+        "tipos_filtro":
+            TIPOS_FILTRO_AGENDA,
+
         "estados_evento":
             EventoAgenda.EstadoEvento.choices,
 
@@ -11506,6 +12168,9 @@ def agenda_admin(request):
 
         "filtro_apiario":
             filtro_apiario,
+
+        "filtro_estado":
+            filtro_estado,
 
         "busqueda":
             busqueda,
@@ -11617,6 +12282,96 @@ def crear_evento_agenda(request):
     evento = formulario.save(
         commit=False
     )
+
+    # ========================================================
+    # VALIDAR FECHA Y HORA
+    # ========================================================
+    #
+    # Un evento nuevo no puede programarse en el pasado.
+    # Si es para hoy, la hora también debe ser posterior
+    # a la hora actual.
+    # ========================================================
+
+    ahora_local = timezone.localtime()
+
+    hoy = ahora_local.date()
+
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None,
+            second=0,
+            microsecond=0
+        )
+    )
+
+
+    # ========================================================
+    # NO PERMITIR FECHA PASADA
+    # ========================================================
+
+    if evento.fecha < hoy:
+
+        messages.error(
+            request,
+            "No puedes programar un evento en una fecha pasada."
+        )
+
+        mes = obtener_mes_retorno_agenda(
+            request
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
+
+    # ========================================================
+    # HORA OBLIGATORIA
+    # ========================================================
+
+    if not evento.hora:
+
+        messages.error(
+            request,
+            "Debes seleccionar la hora del evento."
+        )
+
+        mes = obtener_mes_retorno_agenda(
+            request
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
+
+    # ========================================================
+    # SI ES HOY, LA HORA DEBE SER FUTURA
+    # ========================================================
+
+    if (
+        evento.fecha == hoy
+        and
+        evento.hora <= hora_actual
+    ):
+
+        messages.error(
+            request,
+            (
+                "Si el evento es para hoy, debes seleccionar "
+                "una hora posterior a la actual."
+            )
+        )
+
+        mes = obtener_mes_retorno_agenda(
+            request
+        )
+
+        return redirigir_agenda(
+            mes
+        )
 
 
     # ========================================================
@@ -11757,6 +12512,68 @@ def editar_evento_agenda(
         pk=id_evento
     )
 
+    # ========================================================
+    # BLOQUEAR TIPOS HISTÓRICOS
+    # ========================================================
+    #
+    # Incidencia y Mantenimiento pueden existir como registros
+    # antiguos de EventoAgenda, pero ya no se gestionan desde
+    # este módulo.
+    # ========================================================
+
+    if not tipo_evento_agenda_permitido(
+        evento.tipo_evento
+    ):
+
+        messages.info(
+            request,
+            (
+                "Este registro se conserva únicamente "
+                "como información histórica y no puede editarse "
+                "desde la Agenda."
+            )
+        )
+
+        mes = evento.fecha.strftime(
+            "%Y-%m"
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
+    # ========================================================
+    # SOLO LOS EVENTOS PROGRAMADOS PUEDEN EDITARSE
+    # ========================================================
+    #
+    # Completado y Cancelado son estados finales.
+    # Una vez que el evento llega a uno de ellos,
+    # se conserva como historial.
+    # ========================================================
+
+    if (
+        evento.estado
+        !=
+        EventoAgenda.EstadoEvento.PROGRAMADO
+    ):
+
+        messages.info(
+            request,
+            (
+                "Este evento ya tiene un estado final "
+                f"({evento.get_estado_display()}) "
+                "y no puede editarse."
+            )
+        )
+
+        mes = evento.fecha.strftime(
+            "%Y-%m"
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
 
     # ========================================================
     # MES DE RETORNO
@@ -11837,6 +12654,124 @@ def editar_evento_agenda(
             mes_retorno
         )
 
+    # ========================================================
+    # VALIDAR CAMBIO DE ESTADO
+    # ========================================================
+
+    nuevo_estado = (
+        formulario.cleaned_data.get(
+            "estado"
+        )
+    )
+
+    nueva_fecha = (
+        formulario.cleaned_data.get(
+            "fecha"
+        )
+    )
+
+    nueva_hora = (
+        formulario.cleaned_data.get(
+            "hora"
+        )
+    )
+
+
+    # ========================================================
+    # FECHA Y HORA ACTUALES
+    # ========================================================
+
+    ahora_local = timezone.localtime()
+
+    hoy = ahora_local.date()
+
+    hora_actual = (
+        ahora_local
+        .time()
+        .replace(
+            tzinfo=None,
+            second=0,
+            microsecond=0
+        )
+    )
+
+
+    # ========================================================
+    # NO COMPLETAR UN EVENTO QUE TODAVÍA NO HA LLEGADO
+    # ========================================================
+
+    evento_aun_no_llega = (
+        nueva_fecha > hoy
+        or
+        (
+            nueva_fecha == hoy
+            and
+            nueva_hora > hora_actual
+        )
+    )
+
+
+    if (
+        nuevo_estado
+        ==
+        EventoAgenda.EstadoEvento.COMPLETADO
+        and
+        evento_aun_no_llega
+    ):
+
+        messages.error(
+            request,
+            (
+                "No puedes marcar este evento como Completado "
+                "porque su fecha y hora todavía no han llegado."
+            )
+        )
+
+        return redirigir_agenda(
+            mes_retorno
+        )
+
+    # ========================================================
+    # UN EVENTO PROGRAMADO NO PUEDE QUEDAR EN EL PASADO
+    # ========================================================
+    #
+    # Si un evento vencido se edita y continúa como Programado,
+    # debe reprogramarse para una fecha/hora futura.
+    #
+    # Completado y Cancelado pueden conservar la fecha original.
+    # ========================================================
+
+    fecha_hora_ya_paso = (
+        nueva_fecha < hoy
+        or
+        (
+            nueva_fecha == hoy
+            and
+            nueva_hora <= hora_actual
+        )
+    )
+
+
+    if (
+        nuevo_estado
+        ==
+        EventoAgenda.EstadoEvento.PROGRAMADO
+        and
+        fecha_hora_ya_paso
+    ):
+
+        messages.error(
+            request,
+            (
+                "Un evento Programado no puede quedar con una "
+                "fecha u hora que ya pasó. "
+                "Debes reprogramarlo para un momento futuro."
+            )
+        )
+
+        return redirigir_agenda(
+            mes_retorno
+        )
 
     # ========================================================
     # COLMENA NUEVA
@@ -11853,10 +12788,14 @@ def editar_evento_agenda(
     # VALIDAR COLMENA INACTIVA
     # ========================================================
     #
-    # Puede conservar una colmena inactiva si ya estaba
-    # asignada al evento.
+    # Una colmena Inactiva no puede recibir actividades
+    # Programadas.
     #
-    # No se puede cambiar hacia otra colmena inactiva.
+    # Si el evento ya estaba asociado históricamente a esa
+    # misma colmena, únicamente puede conservarse al cerrar
+    # el evento como Completado o Cancelado.
+    #
+    # Tampoco se permite cambiar hacia otra colmena Inactiva.
     # ========================================================
 
     if (
@@ -11865,25 +12804,59 @@ def editar_evento_agenda(
         colmena_nueva.estadocolmena
         ==
         "Inactiva"
-        and
-        colmena_nueva.id_colmena
-        !=
-        colmena_original_id
     ):
 
-        messages.error(
-            request,
-            (
-                "No puedes asignar el evento a la "
-                f"colmena "
-                f"«{colmena_nueva.codigocolmena}» "
-                "porque se encuentra Inactiva."
-            )
+        es_colmena_original = (
+            colmena_nueva.id_colmena
+            ==
+            colmena_original_id
         )
 
-        return redirigir_agenda(
-            mes_retorno
-        )
+
+        # ====================================================
+        # NO CAMBIAR HACIA OTRA COLMENA INACTIVA
+        # ====================================================
+
+        if not es_colmena_original:
+
+            messages.error(
+                request,
+                (
+                    "No puedes asignar el evento a la "
+                    f"colmena «{colmena_nueva.codigocolmena}» "
+                    "porque se encuentra Inactiva."
+                )
+            )
+
+            return redirigir_agenda(
+                mes_retorno
+            )
+
+
+        # ====================================================
+        # NO MANTENER PROGRAMADO EN COLMENA INACTIVA
+        # ====================================================
+
+        if (
+            nuevo_estado
+            ==
+            EventoAgenda.EstadoEvento.PROGRAMADO
+        ):
+
+            messages.error(
+                request,
+                (
+                    f"La colmena «{colmena_nueva.codigocolmena}» "
+                    "se encuentra Inactiva y no puede tener "
+                    "eventos Programados. "
+                    "Reactiva la colmena, selecciona otra "
+                    "o finaliza el evento."
+                )
+            )
+
+            return redirigir_agenda(
+                mes_retorno
+            )
 
 
     # ========================================================
@@ -11966,18 +12939,92 @@ def eliminar_evento_agenda(
         pk=id_evento
     )
 
-    mes = evento.fecha.strftime("%Y-%m")
-    titulo = evento.titulo
+    mes = evento.fecha.strftime(
+        "%Y-%m"
+    )
 
-    evento.delete()
+    # ========================================================
+    # BLOQUEAR TIPOS HISTÓRICOS
+    # ========================================================
+    #
+    # Incidencia y Mantenimiento antiguos se conservan
+    # únicamente como historial dentro de Agenda.
+    # ========================================================
+
+    if not tipo_evento_agenda_permitido(
+        evento.tipo_evento
+    ):
+
+        messages.info(
+            request,
+            (
+                "Este registro se conserva únicamente "
+                "como información histórica y no puede "
+                "cancelarse desde la Agenda."
+            )
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
+
+    # ========================================================
+    # SOLO SE PUEDEN CANCELAR EVENTOS PROGRAMADOS
+    # ========================================================
+
+    if (
+        evento.estado
+        !=
+        EventoAgenda.EstadoEvento.PROGRAMADO
+    ):
+
+        messages.info(
+            request,
+            (
+                "Este evento ya tiene un estado final "
+                f"({evento.get_estado_display()}) "
+                "y no puede cancelarse."
+            )
+        )
+
+        return redirigir_agenda(
+            mes
+        )
+
+
+    # ========================================================
+    # CONSERVAR HISTORIAL
+    # ========================================================
+
+    evento.estado = (
+        EventoAgenda
+        .EstadoEvento
+        .CANCELADO
+    )
+
+    evento.save()
+
+
+    # ========================================================
+    # MENSAJE
+    # ========================================================
 
     messages.success(
         request,
-        f'El evento "{titulo}" fue eliminado correctamente.'
+        (
+            f'El evento "{evento.titulo}" '
+            "fue cancelado correctamente."
+        )
     )
 
-    return redirect(
-        f"{reverse('agenda_admin')}?mes={mes}"
+
+    # ========================================================
+    # REGRESAR A LA AGENDA
+    # ========================================================
+
+    return redirigir_agenda(
+        mes
     )
 
 #LOGICA DE LOS REPORTES

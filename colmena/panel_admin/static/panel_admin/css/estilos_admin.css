@@ -9147,6 +9147,30 @@ PAGINADOR
     background: #4d9ac7;
 }
 
+/* =========================================================
+   ESTADO VISUAL: VENCIDO
+========================================================= */
+
+/*
+El color base del evento se conserva según su tipo
+(Revisión, Evento general, etc.).
+
+El borde rojo indica únicamente que el evento sigue
+Programado, pero su fecha/hora ya pasó.
+*/
+
+.evento-calendario.estado-vencido {
+    border: 1px solid rgba(196, 65, 52, 0.38);
+    box-shadow:
+        inset 3px 0 0 var(--rojo-incidencia);
+}
+
+
+/* El punto también indica visualmente el vencimiento. */
+
+.evento-calendario.estado-vencido span {
+    background: var(--rojo-incidencia);
+}
 
 /* Modal */
 
@@ -9215,6 +9239,56 @@ PAGINADOR
 .lista-detalle-evento span {
     color: #6f7e76;
     font-size: 0.76rem;
+}
+
+/* =========================================================
+   ESTADOS DEL DETALLE DE AGENDA
+========================================================= */
+
+.estado-detalle-evento {
+    display: inline-flex;
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+
+/* PROGRAMADO */
+
+.estado-detalle-evento.estado-programado {
+    background: var(--info-fondo);
+    color: var(--info-texto);
+}
+
+
+/* VENCIDO */
+
+.estado-detalle-evento.estado-vencido {
+    background: var(--rojo-fondo);
+    color: var(--rojo-incidencia);
+}
+
+
+/* COMPLETADO */
+
+.estado-detalle-evento.estado-completado {
+    background: var(--exito-fondo);
+    color: var(--exito-texto);
+}
+
+
+/* CANCELADO */
+
+.estado-detalle-evento.estado-cancelado {
+    background: #f0f2f1;
+    color: var(--texto-secundario);
 }
 
 .footer-detalle-evento {
@@ -17846,6 +17920,121 @@ tr.fila-oculta-busqueda {
 
     .grupo-dependencias-titulo {
         align-items: flex-start;
+    }
+
+}
+
+/* ==========================================================
+   ==========================================================
+   BARRAS DE FILTRO DE MANTENIMIENTOS Y AGENDA
+
+   Las dos quedaron descuadradas al agregar el botón Limpiar,
+   cada una por su motivo.
+   ========================================================== */
+
+/* ---------- MANTENIMIENTOS ----------
+
+   Los dos botones estaban en una columna de Bootstrap con
+   d-grid, que los apila en vertical. Ahora van en fila, con el
+   mismo alto y separación que en apiarios e incidencias.
+------------------------------------------------------- */
+
+.mantenimientos-toolbar-acciones {
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+
+    gap: 10px;
+
+    /* se alinean con el borde inferior de los selectores de al
+       lado, que llevan su etiqueta encima */
+    align-self: flex-end;
+
+}
+
+
+.mantenimientos-toolbar-acciones .btn {
+
+    flex: 1 1 auto;
+
+    min-width: 116px;
+
+}
+
+
+/* ---------- AGENDA ----------
+
+   .filtros-agenda declaraba cuatro columnas fijas
+   (180px 220px 1fr 120px) y ahora hay cinco elementos: el
+   quinto se salía de la rejilla.
+
+   Pasa a flex, que se acomoda a los elementos que haya sin
+   tener que contarlos.
+------------------------------------------------------- */
+
+.filtros-agenda {
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.filtros-agenda .form-select {
+
+    flex: 0 1 200px;
+
+}
+
+
+.filtros-agenda .buscador-agenda {
+
+    flex: 1 1 260px;
+
+    min-width: 0;
+
+}
+
+
+.filtros-agenda .btn {
+
+    /* nowrap + min-width: sin esto el botón Buscar se comprimía
+       y el texto salía cortado por el borde */
+    flex: 0 0 auto;
+
+    min-width: 118px;
+
+    white-space: nowrap;
+
+    /* align-self: center evita que el botón se estire o se
+       aplaste al alto de la fila: mantiene el suyo, el mismo
+       que los selectores de al lado. */
+    align-self: center;
+
+    height: 42px;
+
+}
+
+
+/* En pantallas estrechas, cada control ocupa su línea */
+
+@media (max-width: 700px) {
+
+    .filtros-agenda .form-select,
+    .filtros-agenda .buscador-agenda {
+        flex: 1 1 100%;
+    }
+
+    .filtros-agenda .btn {
+        flex: 1 1 calc(50% - 6px);
+    }
+
+    .mantenimientos-toolbar-acciones .btn {
+        flex: 1 1 calc(50% - 5px);
     }
 
 }
