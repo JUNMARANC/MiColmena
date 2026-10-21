@@ -18,7 +18,6 @@ import os
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
-
 # ============================================================
 # RUTAS DEL PROYECTO
 # ============================================================
@@ -205,9 +204,13 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # ============================================================
 
+
 MIDDLEWARE = [
 
     "django.middleware.security.SecurityMiddleware",
+
+    # Archivos estaticos en Azure
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
 
@@ -224,6 +227,7 @@ MIDDLEWARE = [
 
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
 
 
 # ============================================================
@@ -325,6 +329,35 @@ DATABASES = {
 
 
 # ============================================================
+# MYSQL AZURE - CONEXION SEGURA TLS
+# ============================================================
+
+DB_SSL_CA = os.environ.get(
+    "MICOLMENA_DB_SSL_CA",
+    ""
+).strip()
+
+if DB_SSL_CA:
+    DB_SSL_CA_PATH = Path(DB_SSL_CA)
+
+    if not DB_SSL_CA_PATH.is_absolute():
+        DB_SSL_CA_PATH = BASE_DIR / DB_SSL_CA_PATH
+
+    if not DB_SSL_CA_PATH.is_file():
+        raise ImproperlyConfigured(
+            f"No existe el certificado CA: {DB_SSL_CA_PATH}"
+        )
+
+    DATABASES["default"]["OPTIONS"] = {
+        "ssl": {
+            "ca": str(DB_SSL_CA_PATH),
+        },
+        "ssl_mode": "VERIFY_IDENTITY",
+    }
+
+
+
+# ============================================================
 # VALIDACIÓN DE CONTRASEÑAS
 # ============================================================
 
@@ -383,9 +416,47 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # ARCHIVOS MEDIA
 # ============================================================
 
-MEDIA_URL = "/media/"
 
+# ============================================================
+# ARCHIVOS MEDIA - LOCAL / AZURE
+# ============================================================
+
+
+# ============================================================
+# ALMACENAMIENTO DJANGO - LOCAL / AZURE
+# ============================================================
+
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+USE_AZURE_STORAGE = env_bool(
+    "MICOLMENA_USE_AZURE_STORAGE",
+    False
+)
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+if USE_AZURE_STORAGE:
+    from azure.identity import DefaultAzureCredential
+
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "account_name": required_env(
+                "MICOLMENA_AZURE_STORAGE_ACCOUNT"
+            ),
+            "azure_container": "media",
+            "token_credential": DefaultAzureCredential(),
+            "expiration_secs": 3600,
+        },
+    }
 
 
 # ============================================================
@@ -570,6 +641,37 @@ CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
 
 CSRF_COOKIE_SECURE = not DEBUG
+
+
+# ============================================================
+# SEGURIDAD HTTPS - PRODUCCION AZURE
+# ============================================================
+
+if not DEBUG:
+
+    # Reconocer HTTPS cuando Azure App Service
+    # termina TLS en su proxy.
+    SECURE_PROXY_SSL_HEADER = (
+        "HTTP_X_FORWARDED_PROTO",
+        "https",
+    )
+
+    # Redirigir peticiones HTTP a HTTPS.
+    SECURE_SSL_REDIRECT = True
+
+    # HSTS inicial: 5 minutos.
+    SECURE_HSTS_SECONDS = 300
+
+    # No activar subdominios ni preload inicialmente.
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+
+else:
+
+    # Desarrollo local.
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+
 
 
 # ============================================================
