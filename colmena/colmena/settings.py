@@ -209,6 +209,8 @@ MIDDLEWARE = [
 
     "django.middleware.security.SecurityMiddleware",
 
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
 
     "django.middleware.common.CommonMiddleware",
@@ -323,6 +325,13 @@ DATABASES = {
 
 }
 
+if os.environ.get("DJANGO_DB_SSL_CA"):
+    DATABASES["default"]["OPTIONS"] = {
+        "ssl": {
+            "ca": str(BASE_DIR / os.environ["DJANGO_DB_SSL_CA"])
+        },
+        "ssl_mode": "VERIFY_IDENTITY",
+    }
 
 # ============================================================
 # VALIDACIÓN DE CONTRASEÑAS
@@ -386,6 +395,26 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+if os.environ.get("AZURE_ACCOUNT_NAME"):
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "account_name": os.environ["AZURE_ACCOUNT_NAME"],
+            "account_key": os.environ["AZURE_ACCOUNT_KEY"],
+            "azure_container": "media",
+            "expiration_secs": 3600,
+        },
+    }
 
 
 # ============================================================
@@ -606,3 +635,13 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 DEFAULT_AUTO_FIELD = (
     "django.db.models.BigAutoField"
 )
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
